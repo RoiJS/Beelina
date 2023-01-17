@@ -11,6 +11,7 @@ namespace Beelina.LIB.Models
         public string EmailAddress { get; set; } = String.Empty;
 
         public List<RefreshToken> RefreshTokens { get; set; }
+        public List<UserPermission> UserPermissions { get; set; }
 
         #region User Accounts Tracker
         public List<UserAccount> DeletedAccounts { get; set; }
