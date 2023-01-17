@@ -19,6 +19,12 @@ namespace Beelina.LIB.DbContexts
 
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<UserPermission> UserPermission { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductUnit> ProductUnits { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<Store> Stores { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<ProductTransaction> ProductTransactions { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         #endregion
@@ -59,6 +65,98 @@ namespace Beelina.LIB.DbContexts
                 .WithMany(fk => fk.RefreshTokens)
                 .HasForeignKey(fk => fk.UserAccountId)
                 .HasConstraintName("FK_RefreshToken_UserAccounts_AccountId");
+            });
+
+            modelBuilder.Entity<Product>(a =>
+            {
+                a.HasOne(field => field.CreatedBy)
+                .WithMany(fk => fk.CreatedProducts)
+                .HasForeignKey(fk => fk.CreatedById)
+                .HasConstraintName("FK_Product_CreatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeletedBy)
+                .WithMany(fk => fk.DeletedProducts)
+                .HasForeignKey(fk => fk.DeletedById)
+                .HasConstraintName("FK_Product_DeletedById_Accounts_AccountId");
+
+                a.HasOne(field => field.UpdatedBy)
+                .WithMany(fk => fk.UpdatedProducts)
+                .HasForeignKey(fk => fk.UpdatedById)
+                .HasConstraintName("FK_Product_UpdatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeactivatedBy)
+                .WithMany(fk => fk.DeactivatedProducts)
+                .HasForeignKey(fk => fk.DeactivatedById)
+                .HasConstraintName("FK_Product_DeactivatedById_Accounts_AccountId");
+            });
+
+            modelBuilder.Entity<Store>(a =>
+            {
+                a.HasOne(field => field.CreatedBy)
+                .WithMany(fk => fk.CreatedStores)
+                .HasForeignKey(fk => fk.CreatedById)
+                .HasConstraintName("FK_Store_CreatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeletedBy)
+                .WithMany(fk => fk.DeletedStores)
+                .HasForeignKey(fk => fk.DeletedById)
+                .HasConstraintName("FK_Store_DeletedById_Accounts_AccountId");
+
+                a.HasOne(field => field.UpdatedBy)
+                .WithMany(fk => fk.UpdatedStores)
+                .HasForeignKey(fk => fk.UpdatedById)
+                .HasConstraintName("FK_Store_UpdatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeactivatedBy)
+                .WithMany(fk => fk.DeactivatedStores)
+                .HasForeignKey(fk => fk.DeactivatedById)
+                .HasConstraintName("FK_Store_DeactivatedById_Accounts_AccountId");
+            });
+
+            modelBuilder.Entity<Transaction>(a =>
+            {
+                a.HasOne(field => field.CreatedBy)
+                .WithMany(fk => fk.CreatedTransactions)
+                .HasForeignKey(fk => fk.CreatedById)
+                .HasConstraintName("FK_Transaction_CreatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeletedBy)
+                .WithMany(fk => fk.DeletedTransactions)
+                .HasForeignKey(fk => fk.DeletedById)
+                .HasConstraintName("FK_Transaction_DeletedById_Accounts_AccountId");
+
+                a.HasOne(field => field.UpdatedBy)
+                .WithMany(fk => fk.UpdatedTransactions)
+                .HasForeignKey(fk => fk.UpdatedById)
+                .HasConstraintName("FK_Transaction_UpdatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeactivatedBy)
+                .WithMany(fk => fk.DeactivatedTransactions)
+                .HasForeignKey(fk => fk.DeactivatedById)
+                .HasConstraintName("FK_Transaction_DeactivatedById_Accounts_AccountId");
+            });
+            
+            modelBuilder.Entity<ProductTransaction>(a =>
+            {
+                a.HasOne(field => field.CreatedBy)
+                .WithMany(fk => fk.CreatedProductTransactions)
+                .HasForeignKey(fk => fk.CreatedById)
+                .HasConstraintName("FK_ProductTransaction_CreatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeletedBy)
+                .WithMany(fk => fk.DeletedProductTransactions)
+                .HasForeignKey(fk => fk.DeletedById)
+                .HasConstraintName("FK_ProductTransaction_DeletedById_Accounts_AccountId");
+
+                a.HasOne(field => field.UpdatedBy)
+                .WithMany(fk => fk.UpdatedProductTransactions)
+                .HasForeignKey(fk => fk.UpdatedById)
+                .HasConstraintName("FK_ProductTransaction_UpdatedById_Accounts_AccountId");
+
+                a.HasOne(field => field.DeactivatedBy)
+                .WithMany(fk => fk.DeactivatedProductTransactions)
+                .HasForeignKey(fk => fk.DeactivatedById)
+                .HasConstraintName("FK_ProductTransaction_DeactivatedById_Accounts_AccountId");
             });
         }
 

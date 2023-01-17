@@ -20,6 +20,35 @@ namespace Beelina.LIB.Models
         public List<UserAccount> DeactivatedAccounts { get; set; }
         #endregion
 
+        #region Products Tracker
+        public List<Product> DeletedProducts { get; set; }
+        public List<Product> UpdatedProducts { get; set; }
+        public List<Product> CreatedProducts { get; set; }
+        public List<Product> DeactivatedProducts { get; set; }
+        #endregion
+
+        #region Stores Tracker
+        public List<Store> DeletedStores { get; set; }
+        public List<Store> UpdatedStores { get; set; }
+        public List<Store> CreatedStores { get; set; }
+        public List<Store> DeactivatedStores { get; set; }
+        #endregion
+        
+        #region Transactions Tracker
+        public List<Transaction> DeletedTransactions { get; set; }
+        public List<Transaction> UpdatedTransactions { get; set; }
+        public List<Transaction> CreatedTransactions { get; set; }
+        public List<Transaction> DeactivatedTransactions { get; set; }
+        #endregion
+
+        #region Product Transactions Tracker
+        public List<ProductTransaction> DeletedProductTransactions { get; set; }
+        public List<ProductTransaction> UpdatedProductTransactions { get; set; }
+        public List<ProductTransaction> CreatedProductTransactions { get; set; }
+        public List<ProductTransaction> DeactivatedProductTransactions { get; set; }
+        #endregion
+
+
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }
         public int? UpdatedById { get; set; }

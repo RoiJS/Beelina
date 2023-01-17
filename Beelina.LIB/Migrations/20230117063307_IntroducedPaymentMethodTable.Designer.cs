@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations
 {
     [DbContext(typeof(BeelinaClientDataContext))]
-    partial class BeelinaClientDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230117063307_IntroducedPaymentMethodTable")]
+    partial class IntroducedPaymentMethodTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,70 +126,6 @@ namespace Beelina.LIB.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateDeactivated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateDeleted")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("DeactivatedById")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DeletedById")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("DeactivatedById");
-
-                    b.HasIndex("DeletedById");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("TransactionId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("ProductTransactions");
-                });
-
             modelBuilder.Entity("Beelina.LIB.Models.ProductUnit", b =>
                 {
                     b.Property<int>("Id")
@@ -265,124 +203,6 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("UserAccountId");
 
                     b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateDeactivated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateDeleted")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("DeactivatedById")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DeletedById")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PaymentMethodId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("DeactivatedById");
-
-                    b.HasIndex("DeletedById");
-
-                    b.HasIndex("PaymentMethodId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("Stores");
-                });
-
-            modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateDeactivated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateDeleted")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("DeactivatedById")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DeletedById")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("DeactivatedById");
-
-                    b.HasIndex("DeletedById");
-
-                    b.HasIndex("StoreId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserAccount", b =>
@@ -544,53 +364,6 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
-                {
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
-                        .WithMany("CreatedProductTransactions")
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("FK_ProductTransaction_CreatedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeactivatedBy")
-                        .WithMany("DeactivatedProductTransactions")
-                        .HasForeignKey("DeactivatedById")
-                        .HasConstraintName("FK_ProductTransaction_DeactivatedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeletedBy")
-                        .WithMany("DeletedProductTransactions")
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("FK_ProductTransaction_DeletedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Beelina.LIB.Models.Transaction", "Transaction")
-                        .WithMany()
-                        .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
-                        .WithMany("UpdatedProductTransactions")
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("FK_ProductTransaction_UpdatedById_Accounts_AccountId");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeactivatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Transaction");
-
-                    b.Navigation("UpdatedBy");
-                });
-
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.UserAccount", "UserAccount")
@@ -601,84 +374,6 @@ namespace Beelina.LIB.Migrations
                         .HasConstraintName("FK_RefreshToken_UserAccounts_AccountId");
 
                     b.Navigation("UserAccount");
-                });
-
-            modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
-                {
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
-                        .WithMany("CreatedStores")
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("FK_Store_CreatedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeactivatedBy")
-                        .WithMany("DeactivatedStores")
-                        .HasForeignKey("DeactivatedById")
-                        .HasConstraintName("FK_Store_DeactivatedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeletedBy")
-                        .WithMany("DeletedStores")
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("FK_Store_DeletedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.PaymentMethod", "PaymentMethod")
-                        .WithMany()
-                        .HasForeignKey("PaymentMethodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
-                        .WithMany("UpdatedStores")
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("FK_Store_UpdatedById_Accounts_AccountId");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeactivatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("PaymentMethod");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
-                {
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
-                        .WithMany("CreatedTransactions")
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("FK_Transaction_CreatedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeactivatedBy")
-                        .WithMany("DeactivatedTransactions")
-                        .HasForeignKey("DeactivatedById")
-                        .HasConstraintName("FK_Transaction_DeactivatedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeletedBy")
-                        .WithMany("DeletedTransactions")
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("FK_Transaction_DeletedById_Accounts_AccountId");
-
-                    b.HasOne("Beelina.LIB.Models.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
-                        .WithMany("UpdatedTransactions")
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("FK_Transaction_UpdatedById_Accounts_AccountId");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeactivatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("Store");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserAccount", b =>
@@ -727,45 +422,21 @@ namespace Beelina.LIB.Migrations
                 {
                     b.Navigation("CreatedAccounts");
 
-                    b.Navigation("CreatedProductTransactions");
-
                     b.Navigation("CreatedProducts");
-
-                    b.Navigation("CreatedStores");
-
-                    b.Navigation("CreatedTransactions");
 
                     b.Navigation("DeactivatedAccounts");
 
-                    b.Navigation("DeactivatedProductTransactions");
-
                     b.Navigation("DeactivatedProducts");
-
-                    b.Navigation("DeactivatedStores");
-
-                    b.Navigation("DeactivatedTransactions");
 
                     b.Navigation("DeletedAccounts");
 
-                    b.Navigation("DeletedProductTransactions");
-
                     b.Navigation("DeletedProducts");
-
-                    b.Navigation("DeletedStores");
-
-                    b.Navigation("DeletedTransactions");
 
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("UpdatedAccounts");
 
-                    b.Navigation("UpdatedProductTransactions");
-
                     b.Navigation("UpdatedProducts");
-
-                    b.Navigation("UpdatedStores");
-
-                    b.Navigation("UpdatedTransactions");
 
                     b.Navigation("UserPermissions");
                 });
