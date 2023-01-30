@@ -5,11 +5,14 @@ using HotChocolate.AspNetCore.Authorization;
 namespace Beelina.API.Types.Query
 {
     [ExtendObjectType("Query")]
-    public class UserAccountQuery
+    public class ProductQuery
     {
         [Authorize]
         [UsePaging]
         [UseProjection]
-        public async Task<IList<UserAccount>> GetUserAccounts([Service] IUserAccountRepository<UserAccount> userAccountRepository) => await userAccountRepository.GetAllEntities().ToListObjectAsync();
+        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository)
+        {
+            return await productRepository.GetAllEntities().ToListObjectAsync();
+        }
     }
 }

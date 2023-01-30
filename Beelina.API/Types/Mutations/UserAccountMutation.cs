@@ -6,7 +6,6 @@ using Beelina.LIB.GraphQL.Payloads;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Constants;
-using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.AspNetCore.Authorization;

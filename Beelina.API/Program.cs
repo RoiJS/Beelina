@@ -2,14 +2,14 @@ using Beelina.API.Types.Mutations;
 using Beelina.API.Types.Query;
 using Beelina.LIB.BusinessLogic;
 using Beelina.LIB.DbContexts;
+using Beelina.LIB.GraphQL.Errors;
+using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -32,19 +32,34 @@ services.AddScoped(typeof(IBeelinaRepository<>), typeof(BeelinaRepository<>));
 services.AddScoped(typeof(IUserAccountRepository<UserAccount>), typeof(UserAccountRepository));
 services.AddScoped(typeof(IClientRepository<Client>), typeof(ClientRepository));
 services.AddScoped(typeof(ICurrentUserService), typeof(CurrentUserService));
+services.AddScoped(typeof(IProductUnitRepository<ProductUnit>), typeof(ProductUnitRepository));
+services.AddScoped(typeof(IProductRepository<Product>), typeof(ProductRepository));
+services.AddScoped(typeof(IPaymentMethodRepository<PaymentMethod>), typeof(PaymentMethodRepository));
+services.AddScoped(typeof(IStoreRepository<Store>), typeof(StoreRepository));
+services.AddScoped(typeof(ITransactionRepository<Transaction>), typeof(TransactionRepository));
 services.AddTransient<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
 
+// GraphQL Services
 services.AddGraphQLServer()
     .AddAuthorization()
     .AddMutationConventions()
     .AddQueryType(q => q.Name("Query"))
-        .AddType<UserAccountQuery>()
         .AddProjections()
         .AddFiltering()
         .AddSorting()
     .AddMutationType(m => m.Name("Mutation"))
+        .AddType<UserAccountQuery>()
+        .AddType<ClientQuery>()
+        .AddType<ProductQuery>()
+        .AddType<StoreQuery>()
+        .AddType<TransactionQuery>()
         .AddType<UserAccountMutation>()
-        .AddType<ClientMutation>();
+        .AddType<ProductMutation>()
+        .AddType<StoreMutation>()
+        .AddType<TransactionMutation>()
+        .AddType<ClientMutation>()
+        .AddType<ClientInformationResult>()
+        .AddType<ClientNotExistsError>();
 
 // Register IOptions pattern for AppSettings section
 services.Configure<ApplicationSettings>(configuration.GetSection("AppSettings"));
@@ -147,6 +162,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
 app.UseAuthentication();
 app.UseAuthorization();
