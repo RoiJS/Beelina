@@ -1,0 +1,112 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "@angular/material" as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$Beelina-primary-palette: (
+  50: #faf3e5,
+  100: #f3e1bf,
+  200: #ecce95,
+  300: #e4ba6a,
+  400: #deab4a,
+  500: #d89c2a,
+  600: #d49425,
+  700: #ce8a1f,
+  800: #c88019,
+  900: #bf6e0f,
+  A100: #fff6ec,
+  A200: #ffddb9,
+  A400: #ffc386,
+  A700: #ffb76d,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #000000,
+    600: #000000,
+    700: #000000,
+    800: #000000,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
+$Beelina-accent-palette: (
+  50: #fbf6ed,
+  100: #f6ead3,
+  200: #f0dcb6,
+  300: #eacd98,
+  400: #e6c382,
+  500: #e1b86c,
+  600: #ddb164,
+  700: #d9a859,
+  800: #d5a04f,
+  900: #cd913d,
+  A100: #ffffff,
+  A200: #fff5e8,
+  A400: #ffdfb5,
+  A700: #ffd49c,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #000000,
+    600: #000000,
+    700: #000000,
+    800: #000000,
+    900: #000000,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
+$BeelinaAPP-primary: mat.define-palette($Beelina-primary-palette);
+$BeelinaAPP-accent: mat.define-palette($Beelina-primary-palette);
+
+// The warn palette is optional (defaults to red).
+$BeelinaAPP-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$BeelinaAPP-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $BeelinaAPP-primary,
+      accent: $BeelinaAPP-accent,
+      warn: $BeelinaAPP-warn,
+    ),
+  )
+);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($BeelinaAPP-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

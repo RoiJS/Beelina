@@ -1,0 +1,38 @@
+{
+  "GENERAL_TEXTS": {
+    "BEELINA": "Beelina"
+  },
+
+  "MAIN_MENU": {
+    "ORDERS": "Order",
+    "SALES": "Sales",
+    "CUSTOMERS": "Customers",
+    "TOP_PRODUCTS": "Top Products",
+    "PRODUCTS": "Products",
+    "LOGOUT": "Logout"
+  },
+
+  "AUTH_PAGE": {
+    "TITLE": "Login"
+  },
+
+  "ORDERS_PAGE": {
+    "TITLE": "Orders"
+  },
+
+  "CUSTOMERS_PAGE": {
+    "TITLE": "Customer"
+  },
+
+  "PRODUCTS_PAGE": {
+    "TITLE": "Products"
+  },
+
+  "TOP_PRODUCTS_PAGE": {
+    "TITLE": "Top Products"
+  },
+
+  "SALES_PAGE": {
+    "TITLE": "Sales"
+  }
+}

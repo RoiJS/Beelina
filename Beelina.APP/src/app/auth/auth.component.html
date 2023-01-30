@@ -1,0 +1,57 @@
+<div class="login-main-container">
+  <div class="app-logo-container">
+    <div class="main-logo">
+      <img src="../../assets/logo/mainlogo.png" />
+    </div>
+  </div>
+
+  <div class="login-form-container">
+    <div class="lock-icon">
+      <mat-icon>lock</mat-icon>
+    </div>
+
+    <div class="login-form">
+      <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+        <div class="login-form-fields">
+          <mat-form-field>
+            <mat-label>Company: </mat-label>
+            <input
+              matInput
+              id="company"
+              type="text"
+              formControlName="company"
+            />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Username: </mat-label>
+            <input
+              matInput
+              id="username"
+              type="text"
+              formControlName="username"
+            />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Password: </mat-label>
+            <input
+              matInput
+              id="password"
+              type="password"
+              formControlName="password"
+            />
+          </mat-form-field>
+        </div>
+        <div class="login-form-buttons">
+          <button mat-button color="primary" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="login-footer">
+    <!-- <label [text]="appVersion" textWrap="true"></label>
+    <label class="fa" [text]="copyRightText"></label> -->
+  </div>
+</div>

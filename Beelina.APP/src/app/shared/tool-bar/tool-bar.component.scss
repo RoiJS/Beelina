@@ -1,0 +1,31 @@
+@import "../../../app-variables";
+
+mat-toolbar {
+  background: $primary-gradient;
+  position: fixed;
+  z-index: 9999;
+
+  .title,
+  .sidenav-toggle-icon {
+    color: white;
+  }
+
+  .reserbiz-logo {
+    display: none;
+  }
+}
+
+@media (max-width: 425px) {
+  mat-toolbar {
+    // justify-content: space-between;
+
+    // .title {
+    //   display: none;
+    // }
+
+    .reserbiz-logo {
+      width: 40px;
+      display: block;
+    }
+  }
+}

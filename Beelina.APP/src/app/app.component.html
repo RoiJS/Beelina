@@ -1,0 +1,67 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="isHandset ? 'dialog' : 'navigation'"
+    [mode]="isHandset ? 'over' : 'side'"
+    [opened]="!isHandset"
+  >
+    <!-- <mat-toolbar>Menu</mat-toolbar> -->
+    <!-- <mat-toolbar>{{ "MAIN_MENU.SYSTEM_OVERVIEW" | translate }}</mat-toolbar> -->
+
+    <!-- <div class="sidenav-header">
+      <img src="../assets/images/mainlogo/reserbiz-logo.png" />
+    </div> -->
+
+    <mat-tree
+      [dataSource]="menuDataSource"
+      [treeControl]="treeControl"
+      class="side-drawer-menu-tree"
+    >
+      <!-- This is the tree node template for leaf nodes -->
+      <!-- There is inline padding applied to this node using styles.
+        This padding value depends on the mat-icon-button width. -->
+      <mat-tree-node
+        (click)="onNavItemTap(node.name, node.url, node.fragment)"
+        *matTreeNodeDef="let node"
+        matTreeNodeToggle
+        [class.active]="isPageSelected(node.url, node.fragment)"
+      >
+        {{ node.name | translate }}
+      </mat-tree-node>
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+        <div
+          (click)="onNavItemTap(node.name, node.url, node.fragment)"
+          class="mat-tree-node"
+          [class.active]="isPageSelected(node.url, node.fragment)"
+          style="font-weight: 500"
+        >
+          {{ node.name | translate }}
+          <button mat-icon-button matTreeNodeToggle>
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{
+                treeControl.isExpanded(node) ? "expand_more" : "chevron_right"
+              }}
+            </mat-icon>
+          </button>
+        </div>
+        <!-- There is inline padding applied to this div using styles.
+              This padding value depends on the mat-icon-button width.  -->
+        <div
+          [class.side-drawer-menu-tree-invisible]="
+            !treeControl.isExpanded(node)
+          "
+          role="group"
+        >
+          <ng-container matTreeNodeOutlet></ng-container>
+        </div>
+      </mat-nested-tree-node>
+    </mat-tree>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

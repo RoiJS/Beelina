@@ -1,0 +1,108 @@
+@import "../../app-variables";
+
+.login-main-container {
+  height: 100%;
+  background: $primary-gradient;
+  padding: 15px;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+
+  .app-logo-container {
+    font-size: 120px;
+    text-align: center;
+    color: $primary;
+    font-weight: bold;
+
+    .main-logo img {
+      width: 150px;
+      height: 150px;
+      border-width: 5;
+      border-color: #414141;
+      background-color: $white;
+      border-radius: 100%;
+      padding: 8px;
+    }
+  }
+
+  .login-form-container {
+    display: flex;
+    flex-direction: column;
+
+    .lock-icon {
+      display: flex;
+      justify-content: space-around;
+      align-self: center;
+      width: 100px;
+      height: 100px;
+      background-color: white;
+      border-radius: 100%;
+      margin-bottom: -50px;
+      z-index: 1;
+
+      mat-icon {
+        font-size: 60px;
+        align-self: center;
+        width: auto;
+        height: auto;
+      }
+
+      label {
+        font-size: 50px;
+        text-align: center;
+      }
+    }
+
+    .login-form {
+      align-self: center;
+      box-shadow: 5px 5px 15px #6e6e6e;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      height: 350px;
+      width: 85%;
+      border-radius: 10px;
+      background: $background-gradient;
+
+      form {
+        padding: 20px;
+      }
+
+      .login-form-buttons {
+        display: flex;
+        flex-direction: column;
+
+        button {
+          align-self: end;
+        }
+      }
+    }
+
+    .login-form input {
+      border-width: 2px;
+      background-color: $white;
+      padding: 10px;
+      font-size: 15px;
+    }
+  }
+
+  .login-footer {
+    text-align: center;
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .btn-login {
+    background: $primary-gradient;
+    border-radius: 50%;
+    color: $white;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .forgot-password-link {
+    font-size: 12px;
+    text-align: center;
+  }
+}
