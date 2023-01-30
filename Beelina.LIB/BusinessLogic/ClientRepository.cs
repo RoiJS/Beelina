@@ -14,10 +14,10 @@ namespace Beelina.LIB.BusinessLogic
         private readonly IOptions<ApplicationSettings> _appSettings;
 
         public ClientRepository(
-                IBeelinaRepository<Client> reserbizRepository,
+                IBeelinaRepository<Client> beelinaRepository,
                 IOptions<ApplicationSettings> appSettings
             )
-            : base(reserbizRepository, reserbizRepository.SystemDbContext)
+            : base(beelinaRepository, beelinaRepository.SystemDbContext)
         {
             _appSettings = appSettings;
         }
