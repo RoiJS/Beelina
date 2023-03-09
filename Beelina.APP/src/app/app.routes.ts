@@ -30,4 +30,12 @@ export const routes: Routes = [
       import('./sales/sales.module').then((m) => m.SalesModule),
     canLoad: [AuthGuard],
   },
+  {
+    path: 'transaction-history',
+    loadChildren: () =>
+      import('./transaction-history/transaction-history.module').then(
+        (m) => m.TransactionHistoryModule
+      ),
+    canLoad: [AuthGuard],
+  },
 ];

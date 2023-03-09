@@ -1,0 +1,24 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate">
+  <button mat-icon-button class="toolbar-option">
+    <mat-icon matBadgeColor="warn">search</mat-icon>
+  </button>
+</app-tool-bar>
+
+<app-loader-layout [busy]="false">
+  <div class="page-container" style="height: 100%">
+    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
+      <div *cdkVirtualFor="let item of transactionHistoryDates">
+        <div
+          matRipple
+          class="transaction-date list-container__item-section"
+          [ngClass]="{ unpaid: !item.allTransactionsPaid }"
+          style="display: flex; justify-content: space-between"
+          (click)="goToTransactionDate(item.transactionDate)"
+        >
+          <span>{{ item.transactionDateFormatted }}</span>
+          <mat-icon>keyboard_arrow_right</mat-icon>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+</app-loader-layout>

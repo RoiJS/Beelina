@@ -9,6 +9,7 @@
     "CUSTOMERS": "Customers",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
+    "TRANSACTION_HISTORY": "Transaction History",
     "LOGOUT": "Logout"
   },
 
@@ -121,7 +122,7 @@
         "LABEL": "Payment Method"
       },
       "DATE_CONTROL": {
-        "LABEL": "Date"
+        "LABEL": "Due Date"
       }
     },
     "SAVE_NEW_ORDER_DIALOG": {
@@ -218,6 +219,14 @@
       "SUCCESS_MESSAGE": "Selected product has been successfully removed.",
       "ERROR_MESSAGE": "Removing product failed. Please again later."
     }
+  },
+
+  "TRANSACTION_HISTORY_PAGE": {
+    "TITLE": "Transactions"
+  },
+
+  "TRANSACTION_DETAILS_PAGE": {
+    "TITLE": "Transactions Details"
   },
 
   "TOP_PRODUCTS_PAGE": {

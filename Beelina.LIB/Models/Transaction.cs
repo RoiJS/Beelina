@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
 {
@@ -10,6 +11,14 @@ namespace Beelina.LIB.Models
         public Store Store { get; set; }
 
         public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
+
+        public bool HasUnpaidProductTransaction
+        {
+            get
+            {
+                return ProductTransactions.Any(p => p.Status == PaymentStatusEnum.Unpaid);
+            }
+        }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

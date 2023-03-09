@@ -25,6 +25,11 @@ export class SidedrawerService {
         icon: 'add_shopping_cart',
       },
       {
+        name: 'MAIN_MENU.TRANSACTION_HISTORY',
+        url: '/transaction-history',
+        icon: 'history',
+      },
+      {
         name: 'MAIN_MENU.CUSTOMERS',
         url: '/customers/customer-list',
         icon: 'people',

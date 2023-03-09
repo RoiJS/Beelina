@@ -1,0 +1,65 @@
+<app-tool-bar [title]="transaction?.store?.name"> </app-tool-bar>
+
+<app-loader-layout [busy]="false">
+  <div class="page-container" style="height: 100%">
+    <div class="panel" style="height: 100%">
+      <div class="panel__details-group-panel">
+        <div class="panel__header-section">
+          {{
+            "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE" | translate
+          }}
+        </div>
+        <div class="panel__body-section">
+          <mat-list
+            role="list"
+            style="max-height: 200px; overflow: auto; margin-bottom: 15px"
+          >
+            <mat-list-item
+              style="height: 35px"
+              *ngFor="let item of transaction?.productTransactions"
+              role="listitem"
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                  width: 100%;
+                  font-size: 14px;
+                "
+              >
+                <span>{{ item.product?.name }}</span>
+                <div
+                  style="
+                    width: 85px;
+                    display: flex;
+                    justify-content: space-between;
+                  "
+                >
+                  <span>{{ item.product?.priceFormatted }}</span>
+                  <span>X</span>
+                  <span>{{ item.quantity }}</span>
+                </div>
+                <span></span>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <div
+            *ngIf="transaction?.productTransactions?.length > 0"
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              width: 100%;
+              font-size: 15px;
+              font-weight: bold;
+            "
+          >
+            <span>TOTAL</span>
+            <span>{{ totalAmount }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

@@ -1,0 +1,20 @@
+<app-tool-bar [title]="transationDate"> </app-tool-bar>
+
+<app-loader-layout [busy]="false">
+  <div class="page-container" style="height: 100%">
+    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
+      <div *cdkVirtualFor="let item of transactions">
+        <div
+          matRipple
+          class="transaction-date list-container__item-section"
+          [ngClass]="{ unpaid: item.hasUnpaidProductTransaction }"
+          style="display: flex; justify-content: space-between"
+          (click)="goToTransaction(item.id)"
+        >
+          <span>{{ item.store.name }}</span>
+          <mat-icon>keyboard_arrow_right</mat-icon>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+</app-loader-layout>

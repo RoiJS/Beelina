@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
 {
@@ -8,6 +9,7 @@ namespace Beelina.LIB.Models
         public int TransactionId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
+        public PaymentStatusEnum Status { get; set; } = PaymentStatusEnum.Unpaid;
 
         public Transaction Transaction { get; set; }
         public Product Product { get; set; }
