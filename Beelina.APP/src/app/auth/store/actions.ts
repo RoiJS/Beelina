@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ILoginAuthCredentialsInterface } from '../types/login-auth-credentials.interface';
+import { ILoginAuthCredentials } from '../types/login-auth-credentials.interface';
 
 export const loginAction = createAction(
   '[Auth] Login',
@@ -8,7 +8,7 @@ export const loginAction = createAction(
 
 export const getLoginSuccess = createAction(
   '[Auth] Login Success',
-  props<{ authTokenCredentials: ILoginAuthCredentialsInterface }>()
+  props<{ authTokenCredentials: ILoginAuthCredentials }>()
 );
 
 export const getLoginError = createAction(

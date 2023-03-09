@@ -33,15 +33,15 @@
       display: flex;
       justify-content: space-around;
       align-self: center;
-      width: 100px;
-      height: 100px;
-      background-color: white;
+      width: 90px;
+      height: 90px;
+      background-color: $white;
       border-radius: 100%;
       margin-bottom: -50px;
       z-index: 1;
 
       mat-icon {
-        font-size: 60px;
+        font-size: 55px;
         align-self: center;
         width: auto;
         height: auto;
@@ -58,14 +58,22 @@
       box-shadow: 5px 5px 15px #6e6e6e;
       display: flex;
       flex-direction: column;
-      justify-content: space-around;
+      justify-content: flex-end;
       height: 350px;
       width: 85%;
       border-radius: 10px;
       background: $background-gradient;
 
+      .mat-form-field {
+        width: 100%;
+      }
+
       form {
         padding: 20px;
+      }
+
+      input {
+        box-sizing: border-box;
       }
 
       .login-form-buttons {
@@ -74,6 +82,7 @@
 
         button {
           align-self: end;
+          color: $white;
         }
       }
     }
@@ -90,6 +99,22 @@
     text-align: center;
     font-size: 12px;
     padding: 5px;
+    display: flex;
+    justify-content: space-around;
+    color: $white;
+
+    .login-footer-copyright-section {
+      display: flex;
+      flex-direction: column;
+
+      .login-footer-copyright-label {
+        display: flex;
+      }
+
+      mat-icon {
+        font-size: 18px;
+      }
+    }
   }
 
   .btn-login {

@@ -1,19 +1,43 @@
 {
   "GENERAL_TEXTS": {
-    "BEELINA": "Beelina"
+    "BEELINA": "Beelina",
+    "CLOSE": "Close"
   },
 
   "MAIN_MENU": {
-    "ORDERS": "Order",
     "SALES": "Sales",
     "CUSTOMERS": "Customers",
     "TOP_PRODUCTS": "Top Products",
-    "PRODUCTS": "Products",
+    "PRODUCTS_CATALOGUE": "Products Catalogue",
     "LOGOUT": "Logout"
   },
 
+  "DIALOG": {
+    "CONFIRM_DIALOG_BUTTONS": {
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel"
+    },
+    "ALERT_DIALOG_BUTTONS": {
+      "OK": "OK"
+    }
+  },
+
   "AUTH_PAGE": {
-    "TITLE": "Login"
+    "TITLE": "Login",
+    "AUTH_FORM": {
+      "COMPANY_FIELD": {
+        "LABEL": "Company"
+      },
+      "USERNAME_FIELD": {
+        "LABEL": "Username"
+      },
+      "PASSWORD_FIELD": {
+        "LABEL": "Password"
+      },
+      "LOGIN_BUTTON": {
+        "LABEL": "Login"
+      }
+    }
   },
 
   "ORDERS_PAGE": {
@@ -21,11 +45,179 @@
   },
 
   "CUSTOMERS_PAGE": {
-    "TITLE": "Customer"
+    "TITLE": "Customer",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search customer name..."
+    },
+    "DELETE_CUSTOMER_DIALOG": {
+      "TITLE": "Delete customer",
+      "CONFIRM": "Are you sure to delete selected customer?",
+      "SUCCESS_MESSAGE": "Selected customer has been successfully removed.",
+      "ERROR_MESSAGE": "Removing customer failed. Please again later."
+    }
   },
 
-  "PRODUCTS_PAGE": {
-    "TITLE": "Products"
+  "EDIT_CUSTOMER_DETAILS_PAGE": {
+    "TITLE": "Edit Customer",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Edit Store",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter customer name"
+      },
+      "ADDRESS_CONTROL": {
+        "LABEL": "Address",
+        "HINT": "Please enter customer address"
+      },
+      "PAYMENT_METHOD_CONTROL": {
+        "LABEL": "Payment Method",
+        "HINT": "Please specify payment method"
+      }
+    },
+    "EDIT_CUSTOMER_DIALOG": {
+      "TITLE": "Update customer",
+      "CONFIRM": "Are you sure to save customer details?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating customer failed. Please again later."
+    }
+  },
+
+  "ADD_CUSTOMER_DETAILS_PAGE": {
+    "TITLE": "Add Customer",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Add New Store",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter customer name"
+      },
+      "ADDRESS_CONTROL": {
+        "LABEL": "Address",
+        "HINT": "Please enter customer address"
+      },
+      "PAYMENT_METHOD_CONTROL": {
+        "LABEL": "Payment Method",
+        "HINT": "Please specify payment method"
+      }
+    },
+    "SAVE_NEW_CUSTOMER_DIALOG": {
+      "TITLE": "Save new customer",
+      "CONFIRM": "Are you sure to save new customer details?",
+      "SUCCESS_MESSAGE": "New customer has been saved!",
+      "ERROR_MESSAGE": "Saving new customer failed. Please again later."
+    }
+  },
+  "PRODUCT_CART_PAGE": {
+    "TITLE": "Order Summary",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Order Summary",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please select customer name"
+      },
+      "ADDRESS_CONTROL": {
+        "LABEL": "Address"
+      },
+      "PAYMENT_METHOD_CONTROL": {
+        "LABEL": "Payment Method"
+      },
+      "DATE_CONTROL": {
+        "LABEL": "Date"
+      }
+    },
+    "SAVE_NEW_ORDER_DIALOG": {
+      "TITLE": "Save new order",
+      "CONFIRM": "Are you sure to save new order?",
+      "SUCCESS_MESSAGE": "New order has been saved!",
+      "ERROR_MESSAGE": "Saving order failed. Please again later."
+    }
+  },
+  "ADD_PRODUCT_DETAILS_PAGE": {
+    "TITLE": "Add Product",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Add New Product",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter product name"
+      },
+      "CODE_CONTROL": {
+        "LABEL": "Code",
+        "HINT": "Please enter product code",
+        "ALREADY_EXIST_ERROR_MESSAGE": "Code already exists. Please enter a different code"
+      },
+      "DESCRIPTION_CONTROL": {
+        "LABEL": "Description",
+        "HINT": "Please enter description"
+      },
+      "STOCK_QUANTITY_CONTROL": {
+        "LABEL": "Stock",
+        "HINT": "Please specify stock"
+      },
+      "PRICE_PER_UNIT_CONTROL": {
+        "LABEL": "Price",
+        "HINT": "Please specify price"
+      },
+      "UNIT_CONTROL": {
+        "LABEL": "Unit",
+        "HINT": "Please specify unit"
+      }
+    },
+    "SAVE_NEW_PRODUCT_DIALOG": {
+      "TITLE": "Save new product",
+      "CONFIRM": "Are you sure to save new prouct details?",
+      "SUCCESS_MESSAGE": "New product has been saved!",
+      "ERROR_MESSAGE": "Saving new product failed. Please again later."
+    }
+  },
+
+  "EDIT_PRODUCT_DETAILS_PAGE": {
+    "TITLE": "Edit Product",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Edit New Product",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter product name"
+      },
+      "CODE_CONTROL": {
+        "LABEL": "Code",
+        "HINT": "Please enter product code",
+        "ALREADY_EXIST_ERROR_MESSAGE": "Code already exists. Please enter a different code"
+      },
+      "DESCRIPTION_CONTROL": {
+        "LABEL": "Description",
+        "HINT": "Please enter description"
+      },
+      "STOCK_QUANTITY_CONTROL": {
+        "LABEL": "Stock",
+        "HINT": "Please specify stock"
+      },
+      "PRICE_PER_UNIT_CONTROL": {
+        "LABEL": "Price",
+        "HINT": "Please specify price"
+      },
+      "UNIT_CONTROL": {
+        "LABEL": "Unit",
+        "HINT": "Please specify unit"
+      }
+    },
+    "EDIT_PRODUCT_DIALOG": {
+      "TITLE": "Update product",
+      "CONFIRM": "Are you sure to save product details?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating product failed. Please again later."
+    }
+  },
+
+  "PRODUCTS_CATALOGUE_PAGE": {
+    "TITLE": "Product Catalogue",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search product name..."
+    },
+    "DELETE_PRODUCT_DIALOG": {
+      "TITLE": "Delete product",
+      "CONFIRM": "Are you sure to delete selected product?",
+      "SUCCESS_MESSAGE": "Selected product has been successfully removed.",
+      "ERROR_MESSAGE": "Removing product failed. Please again later."
+    }
   },
 
   "TOP_PRODUCTS_PAGE": {
@@ -34,5 +226,13 @@
 
   "SALES_PAGE": {
     "TITLE": "Sales"
+  },
+
+  "SIDE_DRAWER_SECTION": {
+    "FOOTER": {
+      "VERSION": "Version",
+      "COPYRIGHT": "Copyright 2022.",
+      "ALL_RIGHTS_RESERVED": "All rights reserved"
+    }
   }
 }

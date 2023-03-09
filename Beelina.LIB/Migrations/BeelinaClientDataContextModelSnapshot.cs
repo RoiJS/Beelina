@@ -53,7 +53,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentMethods");
+                    b.ToTable("PaymentMethods", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
@@ -63,6 +63,9 @@ namespace Beelina.LIB.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
@@ -121,7 +124,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
@@ -185,7 +188,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductTransactions");
+                    b.ToTable("ProductTransactions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductUnit", b =>
@@ -222,7 +225,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductUnits");
+                    b.ToTable("ProductUnits", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -264,7 +267,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -274,6 +277,9 @@ namespace Beelina.LIB.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
@@ -323,7 +329,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
@@ -382,7 +388,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserAccount", b =>
@@ -460,7 +466,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("UserAccounts");
+                    b.ToTable("UserAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserPermission", b =>
@@ -502,7 +508,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserPermission");
+                    b.ToTable("UserPermission", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>

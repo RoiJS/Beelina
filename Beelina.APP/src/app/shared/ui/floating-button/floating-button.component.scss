@@ -1,0 +1,12 @@
+@import "../../../../app-variables";
+
+.floating-button {
+  button {
+    position: absolute;
+    right: 30px;
+    bottom: 90px;
+    background: $primary-gradient;
+    border-radius: 50%;
+    color: white;
+  }
+}

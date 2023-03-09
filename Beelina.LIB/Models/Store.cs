@@ -6,6 +6,7 @@ namespace Beelina.LIB.Models
           : Entity, IUserActionTracker
     {
         public string Name { get; set; }
+        public string Address { get; set; }
         public int PaymentMethodId { get; set; }
 
         public PaymentMethod PaymentMethod { get; set; }

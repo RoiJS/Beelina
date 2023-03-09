@@ -1,0 +1,99 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate">
+  <button mat-icon-button class="toolbar-option" (click)="saveProduct()">
+    <mat-icon>save</mat-icon>
+  </button>
+</app-tool-bar>
+<app-loader-layout [busy]="$isLoading | async">
+  <div class="page-container">
+    <div class="panel">
+      <div [formGroup]="productForm" class="panel__details-group-panel">
+        <div class="panel__header-section">
+          <label>{{
+            "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE"
+              | translate
+          }}</label>
+        </div>
+        <div class="panel__body-section">
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.CODE_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="text" formControlName="code" />
+
+            <mat-error
+              *ngIf="productForm.get('code').hasError('productAlreadyExists')"
+            >
+              {{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.CODE_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                  | translate
+              }}
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="text" formControlName="name" />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.DESCRIPTION_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="text" formControlName="description" />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="number" formControlName="stockQuantity" />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRICE_PER_UNIT_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="number" formControlName="pricePerUnit" />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.UNIT_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input
+              type="text"
+              aria-label="Number"
+              matInput
+              formControlName="productUnit"
+              [matAutocomplete]="auto"
+            />
+
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option
+                *ngFor="let option of productUnitFilterOptions | async"
+                [value]="option.name"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

@@ -15,6 +15,7 @@ import { filter } from 'rxjs';
 import { SharedComponent } from './shared/components/shared/shared.component';
 
 import { IMenu } from './_interfaces/imenu';
+import { AppVersionService } from './_services/app-version.service';
 
 import { AuthService } from './_services/auth.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
@@ -38,6 +39,7 @@ export class AppComponent
 
   constructor(
     private authService: AuthService,
+    private appVersionService: AppVersionService,
     private router: Router,
     private sideDrawerService: SidedrawerService,
     private translateService: TranslateService,
@@ -75,10 +77,9 @@ export class AppComponent
   isPageSelected(url: string, fragment: string = ''): boolean {
     let currentUrl = url;
 
-    if (fragment) {
-      currentUrl = `${url}#${fragment}`;
-    }
-
+    // if (fragment) {
+    //   currentUrl = `${url}#${fragment}`;
+    // }
     return this.activatedUrl === currentUrl;
   }
 
@@ -88,6 +89,14 @@ export class AppComponent
       .subscribe(
         (event: NavigationEnd) => (this.activatedUrl = event.urlAfterRedirects)
       );
+  }
+
+  get copyRightText(): string {
+    return this.appVersionService.copyRightText;
+  }
+
+  get appVersion(): string {
+    return this.appVersionService.appVersion;
   }
 
   hasChild = (_: number, node: IMenu) =>

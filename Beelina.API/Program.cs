@@ -35,8 +35,10 @@ services.AddScoped(typeof(ICurrentUserService), typeof(CurrentUserService));
 services.AddScoped(typeof(IProductUnitRepository<ProductUnit>), typeof(ProductUnitRepository));
 services.AddScoped(typeof(IProductRepository<Product>), typeof(ProductRepository));
 services.AddScoped(typeof(IPaymentMethodRepository<PaymentMethod>), typeof(PaymentMethodRepository));
+services.AddScoped(typeof(IRefreshTokenRepository<RefreshToken>), typeof(RefreshTokenRepository));
 services.AddScoped(typeof(IStoreRepository<Store>), typeof(StoreRepository));
 services.AddScoped(typeof(ITransactionRepository<Transaction>), typeof(TransactionRepository));
+services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), typeof(ProductTransactionRepository));
 services.AddTransient<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
 
 // GraphQL Services
@@ -51,7 +53,9 @@ services.AddGraphQLServer()
         .AddType<UserAccountQuery>()
         .AddType<ClientQuery>()
         .AddType<ProductQuery>()
+        .AddType<ProductUnitQuery>()
         .AddType<StoreQuery>()
+        .AddType<PaymentMethodQuery>()
         .AddType<TransactionQuery>()
         .AddType<UserAccountMutation>()
         .AddType<ProductMutation>()
@@ -59,6 +63,12 @@ services.AddGraphQLServer()
         .AddType<TransactionMutation>()
         .AddType<ClientMutation>()
         .AddType<ClientInformationResult>()
+        .AddType<StoreInformationResult>()
+        .AddType<ProductInformationResult>()
+        .AddType<CheckProductCodeInformationResult>()
+        .AddType<StoreNotExistsError>()
+        .AddType<ProductCodeExistsError>()
+        .AddType<ProductNotExistsError>()
         .AddType<ClientNotExistsError>();
 
 // Register IOptions pattern for AppSettings section

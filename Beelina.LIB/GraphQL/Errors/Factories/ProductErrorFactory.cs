@@ -6,5 +6,9 @@ namespace Beelina.LIB.GraphQL.Errors.Factories
          : BaseErrorFactory
     {
 
+        public ProductNotExistsError CreateErrorFrom(ProductNotExistsException ex)
+        {
+            return new ProductNotExistsError(ex.ProductId);
+        }
     }
 }

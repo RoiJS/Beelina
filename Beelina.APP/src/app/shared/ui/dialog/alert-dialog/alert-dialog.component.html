@@ -1,0 +1,15 @@
+<div class="dialog-container" style="display: flex">
+  <div class="dialog-container__title">
+    <mat-icon>question_answer</mat-icon>
+    <label>{{ data.title }}</label>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="dialog-container__message">
+    <p>{{ data.message }}</p>
+  </div>
+  <div class="dialog-container__alert-buttons">
+    <button mat-button mat-raised-button color="primary" (click)="onConfirm()">
+      {{ "DIALOG.ALERT_DIALOG_BUTTONS.OK" | translate }}
+    </button>
+  </div>
+</div>

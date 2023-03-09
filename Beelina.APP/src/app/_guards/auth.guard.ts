@@ -3,7 +3,6 @@ import {
   CanLoad,
   Route,
   UrlSegment,
-  Router,
   CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,

@@ -22,5 +22,10 @@ namespace Beelina.LIB.GraphQL.Errors.Factories
         {
             return new UserAccountNotExistsError();
         }
+        
+        public InvalidRefreshTokenError CreateErrorFrom(InvalidRefreshTokenException ex)
+        {
+            return new InvalidRefreshTokenError();
+        }
     }
 }

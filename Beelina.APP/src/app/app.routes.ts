@@ -5,7 +5,7 @@ import { AuthGuard } from './_guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/order',
+    redirectTo: '/product-catalogue/product-list',
     pathMatch: 'full',
   },
   {
@@ -13,21 +13,15 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
   },
   {
-    path: 'order',
-    loadChildren: () =>
-      import('./order/order.module').then((m) => m.OrderModule),
-    canLoad: [AuthGuard],
-  },
-  {
-    path: 'customer',
-    loadChildren: () =>
-      import('./customer/customer.module').then((m) => m.CustomerModule),
-    canLoad: [AuthGuard],
-  },
-  {
-    path: 'product',
+    path: 'product-catalogue',
     loadChildren: () =>
       import('./product/product.module').then((m) => m.ProductModule),
+    canLoad: [AuthGuard],
+  },
+  {
+    path: 'customers',
+    loadChildren: () =>
+      import('./customer/customer.module').then((m) => m.CustomerModule),
     canLoad: [AuthGuard],
   },
   {

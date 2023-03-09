@@ -17,5 +17,15 @@ namespace Beelina.LIB.BusinessLogic
 
             return store;
         }
+
+        public async Task<Store> UpdateStore(Store store)
+        {
+            if (store.Id == 0)
+                await AddEntity(store);
+            else
+                await SaveChanges();
+
+            return store;
+        }
     }
 }

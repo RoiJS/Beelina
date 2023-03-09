@@ -3,8 +3,12 @@
 namespace Beelina.LIB.GraphQL.Errors.Factories
 {
     public class StoreErrorFactory
-         : BaseErrorFactory
+         : BaseErrorFactory,
+         IPayloadErrorFactory<StoreNotExistsException, StoreNotExistsError>
     {
-
+        public StoreNotExistsError CreateErrorFrom(StoreNotExistsException ex)
+        {
+            return new StoreNotExistsError(ex.StoreId);
+        }
     }
 }

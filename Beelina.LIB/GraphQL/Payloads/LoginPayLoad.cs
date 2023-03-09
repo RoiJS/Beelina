@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Beelina.LIB.GraphQL.Payloads
+﻿namespace Beelina.LIB.GraphQL.Payloads
 {
-    public class LoginPayLoad
+    public class AuthenticationPayLoad
     {
         public string AccessToken { get; set; }
         public DateTime? ExpiresIn { get; set; }

@@ -7,8 +7,6 @@ import { map, switchMap, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, Observable } from 'rxjs';
 import { ApolloQueryResult } from '@apollo/client';
 
-import { environment } from '../../environments/environment';
-
 import { RoutingService } from './routing.service';
 import { StorageService } from './storage.service';
 
@@ -16,8 +14,7 @@ import { User } from '../_models/user.model';
 import { AuthToken } from '../_models/auth-token.model';
 import { GenderEnum } from '../_enum/gender.enum';
 import { ILoginInput } from '../_interfaces/inputs/ilogin.input';
-import { ILoginOutput } from '../_interfaces/outputs/ilogin.output';
-import { IAuthResponseOutput } from '../_interfaces/outputs/iauth-response.output';
+import { IAuthenticationOutput } from '../_interfaces/outputs/ilogin.output';
 import { IClientInformationQueryPayload } from '../_interfaces/payloads/iclient-information-query.payload';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
 
@@ -40,7 +37,7 @@ const GET_CLIENT_INFORMATION_QUERY = gql`
 const LOGIN_QUERY = gql`
   mutation ($loginInput: LoginInput!) {
     login(loginInput: $loginInput) {
-      loginPayLoad {
+      authenticationPayLoad {
         accessToken
         expiresIn
         refreshToken
@@ -48,6 +45,27 @@ const LOGIN_QUERY = gql`
       errors {
         code: __typename
         ... on InvalidCredentialsError {
+          message
+        }
+      }
+    }
+  }
+`;
+
+const REFRESH_QUERY = gql`
+  mutation ($refreshAccountInput: RefreshAccountInput!) {
+    refresh(input: { refreshAccountInput: $refreshAccountInput }) {
+      authenticationPayLoad {
+        accessToken
+        expiresIn
+        refreshToken
+      }
+      errors {
+        code: __typename
+        ... on UserAccountNotExistsError {
+          message
+        }
+        ... on InvalidRefreshTokenError {
           message
         }
       }
@@ -101,9 +119,9 @@ export class AuthService {
         },
       })
       .pipe(
-        map((result: MutationResult<{ login: ILoginOutput }>) => {
+        map((result: MutationResult<{ login: IAuthenticationOutput }>) => {
           const output = result.data.login;
-          const payload = output.loginPayLoad;
+          const payload = output.authenticationPayLoad;
           const errors = output.errors;
 
           if (payload) {
@@ -149,7 +167,7 @@ export class AuthService {
       );
   }
 
-  refresh(): Observable<IAuthResponseOutput> {
+  refresh() {
     const storedTokenInfo = <string>this.storageService.getString('authToken');
 
     const tokenInfo: {
@@ -164,22 +182,32 @@ export class AuthService {
       new Date(tokenInfo._refreshTokenExpirationDate)
     );
 
-    return this.http
-      .post<IAuthResponseOutput>(
-        `${environment.beelinaAPIEndPoint}/auth/refresh`,
-        {
-          accessToken: authToken.token,
-          refreshToken: authToken.refreshToken,
-        }
-      )
+    return this.apollo
+      .mutate({
+        mutation: REFRESH_QUERY,
+        variables: {
+          refreshAccountInput: {
+            accessToken: authToken.token,
+            refreshToken: authToken.refreshToken,
+          },
+        },
+      })
       .pipe(
-        tap((resData) => {
-          if (resData && resData.accessToken) {
+        map((result: MutationResult<{ refresh: IAuthenticationOutput }>) => {
+          const output = result.data.refresh;
+          const payload = output.authenticationPayLoad;
+          const errors = output.errors;
+
+          if (payload) {
             this.handleLogin(
-              resData.accessToken,
-              resData.refreshToken,
-              resData.expiresIn
+              payload.accessToken,
+              payload.refreshToken,
+              payload.expiresIn
             );
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
           }
         })
       );

@@ -6,9 +6,10 @@ import {
   HttpHandler,
   HttpRequest,
   HttpEvent,
+  HttpResponse,
 } from '@angular/common/http';
-import { catchError, switchMap, take, tap } from 'rxjs/operators';
-import { throwError, Observable, of, from } from 'rxjs';
+import { catchError, switchMap, take } from 'rxjs/operators';
+import { throwError, Observable, of } from 'rxjs';
 
 import { AuthService } from './auth.service';
 import { AuthToken } from '../_models/auth-token.model';
@@ -22,15 +23,30 @@ export class ErrorInterceptorService implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
+      switchMap((response: HttpResponse<any>) => {
+        const errors = response.body?.errors;
+        if (errors && errors.length > 0) {
+          const errorCode = errors[0].extensions.code;
+
+          if (errorCode === 'AUTH_NOT_AUTHENTICATED') {
+            return this.authService.refresh().pipe(
+              switchMap(() => {
+                return this.updateHeader(req);
+              }),
+              switchMap((newRequest) => {
+                return next.handle(newRequest);
+              })
+            );
+          }
+        }
+        return of(response);
+      }),
       catchError((exception) => {
         // If the error status is Unauthorized and
         // Header request contains Token-Expired,
         // we will send request to refresh the token
         // attempt to resend the request.
-        if (
-          exception.status === 401 &&
-          exception.headers.has('Token-Expired')
-        ) {
+        if (exception.status === 500 && exception.statusText === 'OK') {
           return this.authService.refresh().pipe(
             switchMap(() => {
               return this.updateHeader(req);
@@ -46,7 +62,7 @@ export class ErrorInterceptorService implements HttpInterceptor {
         if (exception instanceof HttpErrorResponse) {
           const applicationError = exception.headers.get('Application-Error');
           if (applicationError) {
-            return throwError(applicationError);
+            return throwError(() => new Error(applicationError));
           } else {
             serverError = (<any>exception).error;
             if (
@@ -63,7 +79,9 @@ export class ErrorInterceptorService implements HttpInterceptor {
           }
         }
 
-        return throwError(modelStateErrors || serverError || 'Server Error');
+        return throwError(
+          () => new Error(modelStateErrors || serverError || 'Server Error')
+        );
       })
     );
   }

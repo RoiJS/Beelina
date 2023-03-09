@@ -1,0 +1,8 @@
+<div class="loader-layout-container">
+  <div class="loader-section" *ngIf="busy">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div class="component-placeholder">
+    <ng-content></ng-content>
+  </div>
+</div>

@@ -6,5 +6,6 @@ namespace Beelina.LIB.Interfaces
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
         Task<Store> RegisterStore(Store store);
+        Task<Store> UpdateStore(Store store);
     }
 }

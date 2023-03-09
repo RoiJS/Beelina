@@ -14,7 +14,10 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<Transaction> RegisterTransaction(Transaction transaction)
         {
-            await AddEntity(transaction);
+            if (transaction.Id <= 0)
+                await AddEntity(transaction);
+            else
+                await SaveChanges();
 
             return transaction;
         }

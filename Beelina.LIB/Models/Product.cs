@@ -1,9 +1,4 @@
 ﻿using Beelina.LIB.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Beelina.LIB.Models
 {
@@ -11,9 +6,19 @@ namespace Beelina.LIB.Models
         : Entity, IUserActionTracker
     {
         public string Name { get; set; }
+        public string Code { get; set; }
         public string Description { get; set; }
         public int StockQuantity { get; set; }
         public float PricePerUnit { get; set; }
+
+        public double Price
+        {
+            get
+            {
+                return Math.Round(PricePerUnit, 2);
+            }
+        }
+
         public int ProductUnitId { get; set; }
 
         public ProductUnit ProductUnit { get; set; }

@@ -1,10 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
 
-import { LoginAuthCredentialsStateInterface } from '../types/login-state.interface';
+import { ILoginAuthCredentialsState } from '../types/login-state.interface';
 import * as LoginActions from './actions';
 
-export const initialState: LoginAuthCredentialsStateInterface = {
+export const initialState: ILoginAuthCredentialsState = {
   isLoading: false,
+  isUpdateLoading: false,
   authCredentials: {
     accessToken: null,
     refreshToken: null,

@@ -1,8 +1,44 @@
-<app-tool-bar
-  [title]="'GENERAL_TEXTS.BEELINA' | translate"
-></app-tool-bar>
-<p>
-  customers works!
-</p>
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate"></app-tool-bar>
+<app-loader-layout [busy]="$isLoading | async">
+  <div class="page-container">
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+      <div class="search-field-container">
+        <input
+          type="text"
+          class="txt-search-field"
+          formControlName="filterKeyword"
+          placeholder="{{ 'CUSTOMERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER' | translate }}"
+        />
+        <button type="submit" mat-fab color="primary">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+    </form>
+    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
+      <div *cdkVirtualFor="let item of dataSource">
+        <div class="list-container__item-section">
+          <div class="list-container__icon-section">
+            <mat-icon>store</mat-icon>
+          </div>
+          <div class="list-container__details-section">
+            <label class="main-label">{{ item.name }}</label>
+            <label>{{ item.address }}</label>
+          </div>
+          <div class="list-container__options-section">
+            <button mat-button (click)="deleteStore(item.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-button (click)="openDetails(item.id)">
+              <mat-icon>border_color</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
 
-
+  <app-floating-button
+    (tapButton)="addCustomer()"
+    [icon]="'add'"
+  ></app-floating-button>
+</app-loader-layout>

@@ -6,11 +6,11 @@
     (click)="toggleDrawer()"
     *ngIf="isHandset"
   >
-    <mat-icon class="sidenav-toggle-icon" aria-label="Side nav toggle icon">menu</mat-icon>
+    <mat-icon class="sidenav-toggle-icon" aria-label="Side nav toggle icon"
+      >menu</mat-icon
+    >
   </button>
   <span class="title">{{ title }}</span>
-  <!-- <img
-    class="reserbiz-logo"
-    src="../../../assets//images/mainlogo/reserbiz-logo.png"
-  /> -->
+  <span class="toolbar-option-spacer"></span>
+  <ng-content></ng-content>
 </mat-toolbar>

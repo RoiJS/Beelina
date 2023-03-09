@@ -9,6 +9,8 @@ namespace Beelina.LIB.Models
         public DateTime TransactionDate { get; set; }
         public Store Store { get; set; }
 
+        public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
+
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }
         public int? UpdatedById { get; set; }

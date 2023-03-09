@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { IMenu } from '../_interfaces/imenu';
 
@@ -13,26 +12,28 @@ export class SidedrawerService {
       {
         name: 'MAIN_MENU.SALES',
         url: '/sales',
-      },
-      {
-        name: 'MAIN_MENU.ORDERS',
-        url: '/order',
-      },
-      {
-        name: 'MAIN_MENU.CUSTOMERS',
-        url: '/customer',
+        icon: 'monetization_on',
       },
       {
         name: 'MAIN_MENU.TOP_PRODUCTS',
-        url: '/product/top-products',
+        url: '/product-catalogue/top-products',
+        icon: 'trending_up',
       },
       {
-        name: 'MAIN_MENU.PRODUCTS',
-        url: '/product',
+        name: 'MAIN_MENU.PRODUCTS_CATALOGUE',
+        url: '/product-catalogue/product-list',
+        icon: 'add_shopping_cart',
       },
+      {
+        name: 'MAIN_MENU.CUSTOMERS',
+        url: '/customers/customer-list',
+        icon: 'people',
+      },
+
       {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',
+        icon: 'remove_circle_outline',
       },
     ];
   }

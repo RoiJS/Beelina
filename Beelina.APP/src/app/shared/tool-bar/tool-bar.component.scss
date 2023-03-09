@@ -2,7 +2,6 @@
 
 mat-toolbar {
   background: $primary-gradient;
-  position: fixed;
   z-index: 9999;
 
   .title,
@@ -12,6 +11,14 @@ mat-toolbar {
 
   .reserbiz-logo {
     display: none;
+  }
+
+  .toolbar-option-spacer {
+    flex: 1 1 auto;
+  }
+
+  .toolbar-option {
+    color: $white;
   }
 }
 

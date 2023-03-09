@@ -1,10 +1,6 @@
-﻿using Beelina.LIB.Enums;
-using Beelina.LIB.Helpers;
-using Beelina.LIB.Helpers.Classes;
-using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace Beelina.LIB.BusinessLogic
 {
@@ -23,5 +19,22 @@ namespace Beelina.LIB.BusinessLogic
 
             return product;
         }
+
+        public async Task<Product> UpdateProduct(Product product)
+        {
+            if (product.Id == 0)
+                await AddEntity(product);
+            else
+                await SaveChanges();
+
+            return product;
+        }
+
+        public async Task<Product> GetProductByUniqueCode(int productId, string productCode)
+        {
+            var productFromRepo = await _beelinaRepository.ClientDbContext.Products.Where((p) => p.Id != productId && p.Code == productCode).FirstOrDefaultAsync();
+            return productFromRepo;
+        }
+
     }
 }

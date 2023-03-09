@@ -1,0 +1,44 @@
+@import "../../../../app-variables";
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+
+  &__title {
+    display: flex;
+    label {
+      font-size: 15px;
+      font-weight: bold;
+      display: flex;
+      text-transform: uppercase;
+      color: $primary;
+    }
+
+    mat-icon {
+      margin-right: 10px;
+    }
+  }
+
+  mat-divider {
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  &__confirmation-buttons {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      width: 45%;
+    }
+  }
+
+  &__alert-buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      width: 45%;
+    }
+  }
+}

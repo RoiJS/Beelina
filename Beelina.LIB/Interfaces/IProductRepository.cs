@@ -6,5 +6,7 @@ namespace Beelina.LIB.Interfaces
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
         Task<Product> RegisterProduct(Product product);
+        Task<Product> UpdateProduct(Product product);
+        Task<Product> GetProductByUniqueCode(int productId, string productCode);
     }
 }

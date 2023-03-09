@@ -1,0 +1,69 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate">
+  <button
+    mat-icon-button
+    class="toolbar-option"
+    aria-label="Update Customer"
+    (click)="updateCustomer()"
+  >
+    <mat-icon>save</mat-icon>
+  </button>
+</app-tool-bar>
+<app-loader-layout [busy]="$isLoading | async">
+  <div class="page-container">
+    <div class="panel">
+      <div [formGroup]="customerForm" class="panel__details-group-panel">
+        <div class="panel__header-section">
+          <label>{{
+            "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE"
+              | translate
+          }}</label>
+        </div>
+        <div class="panel__body-section">
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="text" formControlName="name" />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="text" formControlName="address" />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input
+              type="text"
+              placeholder="Pick one"
+              aria-label="Number"
+              matInput
+              formControlName="paymentMethod"
+              [matAutocomplete]="auto"
+            />
+
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option
+                *ngFor="let option of paymentMethodFilterOptions | async"
+                [value]="option.name"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

@@ -12,6 +12,14 @@ namespace Beelina.LIB.Models
         public Transaction Transaction { get; set; }
         public Product Product { get; set; }
 
+        public double CurrentQuantity
+        {
+            get
+            {
+                return Quantity;
+            }
+        }
+
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }
         public int? UpdatedById { get; set; }

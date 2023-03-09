@@ -7,9 +7,9 @@ import * as LoginActions from './actions';
 
 import { AuthService } from 'src/app/_services/auth.service';
 
-import { ILoginPayload } from 'src/app/_interfaces/payloads/ilogin.payload';
+import { IAuthenticationPayload } from 'src/app/_interfaces/payloads/ilogin.payload';
 
-import { ILoginAuthCredentialsInterface } from '../types/login-auth-credentials.interface';
+import { ILoginAuthCredentials } from '../types/login-auth-credentials.interface';
 
 @Injectable()
 export class LoginEffects {
@@ -18,8 +18,8 @@ export class LoginEffects {
       ofType(LoginActions.loginAction),
       switchMap((action: { username: string; password: string }) => {
         return this.authService.login(action.username, action.password).pipe(
-          map((data: ILoginPayload) => {
-            const authTokenCredentials: ILoginAuthCredentialsInterface = {
+          map((data: IAuthenticationPayload) => {
+            const authTokenCredentials: ILoginAuthCredentials = {
               accessToken: data.accessToken,
               refreshToken: data.refreshToken,
               expiresIn: data.expiresIn,

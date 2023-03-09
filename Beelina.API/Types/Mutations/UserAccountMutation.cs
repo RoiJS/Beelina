@@ -64,7 +64,7 @@ namespace Beelina.API.Types.Mutations
         }
 
         [Error(typeof(UserAccountErrorFactory))]
-        public async Task<LoginPayLoad> Login(
+        public async Task<AuthenticationPayLoad> Login(
             [Service] IUserAccountRepository<UserAccount> userAccountRepository,
             [Service] IOptions<ApplicationSettings> appSettings,
             LoginInput loginInput)
@@ -84,11 +84,54 @@ namespace Beelina.API.Types.Mutations
 
             await userAccountRepository.SaveChanges();
 
-            return new LoginPayLoad
+            return new AuthenticationPayLoad
             {
                 AccessToken = accessToken,
                 ExpiresIn = refreshToken.ExpirationDate,
                 RefreshToken = refreshToken.Token
+            };
+        }
+
+        [Error(typeof(UserAccountErrorFactory))]
+        public async Task<AuthenticationPayLoad> Refresh(
+            [Service] IOptions<ApplicationSettings> appSettings,
+            [Service] IUserAccountRepository<UserAccount> userAccountRepository,
+            [Service] IRefreshTokenRepository<RefreshToken> refreshTokenRepository,
+            RefreshAccountInput refreshAccountInput)
+        {
+            var userId = GetUserIdFromAccessToken(appSettings, refreshAccountInput.AccessToken);
+
+            var userFromRepo = await userAccountRepository
+                    .GetEntity(userId)
+                    .Includes(a => a.RefreshTokens)
+                    .ToObjectAsync();
+
+            if (userFromRepo == null)
+            {
+                throw new UserAccountNotExistsException();
+            }
+
+            if (!ValidateRefreshToken(userFromRepo, refreshAccountInput.RefreshToken))
+            {
+                throw new InvalidRefreshTokenException();
+            }
+
+            var newAccessToken = GenerateAccessToken(appSettings, userFromRepo);
+            var userRefreshTokenFromRepo = await refreshTokenRepository.GetRefreshToken(refreshAccountInput.RefreshToken);
+            var newRefreshToken = userAccountRepository.GenerateNewRefreshToken();
+
+            userFromRepo.RefreshTokens.Add(newRefreshToken);
+
+            if (!await userAccountRepository.SaveChanges())
+            {
+                throw new BaseException($"Updating account refresh token failed on save!");
+            }
+
+            return new AuthenticationPayLoad
+            {
+                AccessToken = newAccessToken,
+                ExpiresIn = newRefreshToken.ExpirationDate,
+                RefreshToken = newRefreshToken.Token
             };
         }
 

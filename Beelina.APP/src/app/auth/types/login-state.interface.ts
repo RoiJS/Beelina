@@ -1,7 +1,6 @@
-import { ILoginAuthCredentialsInterface } from './login-auth-credentials.interface';
+import { IBaseState } from 'src/app/payment-methods/types/payment-method-state.interface';
+import { ILoginAuthCredentials } from './login-auth-credentials.interface';
 
-export interface LoginAuthCredentialsStateInterface {
-  isLoading: boolean;
-  authCredentials: ILoginAuthCredentialsInterface;
-  error: string;
+export interface ILoginAuthCredentialsState extends IBaseState {
+  authCredentials: ILoginAuthCredentials;
 }

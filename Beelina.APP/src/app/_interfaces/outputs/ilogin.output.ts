@@ -1,7 +1,7 @@
 import { IBaseError } from '../errors/ibase.error';
-import { ILoginPayload } from '../payloads/ilogin.payload';
+import { IAuthenticationPayload } from '../payloads/ilogin.payload';
 
-export interface ILoginOutput {
-  loginPayLoad: ILoginPayload;
+export interface IAuthenticationOutput {
+  authenticationPayLoad: IAuthenticationPayload;
   errors: Array<IBaseError>;
 }

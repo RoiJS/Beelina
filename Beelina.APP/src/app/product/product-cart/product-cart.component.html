@@ -1,0 +1,145 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate"> </app-tool-bar>
+<app-loader-layout [busy]="false">
+  <div class="page-container">
+    <div class="panel" style="height: 100%">
+      <div class="panel__details-group-panel">
+        <div class="panel__header-section">
+          {{
+            "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE" | translate
+          }}
+        </div>
+        <div class="panel__body-section">
+          <mat-list
+            role="list"
+            style="max-height: 200px; overflow: auto; margin-bottom: 15px"
+          >
+            <mat-list-item
+              style="height: 35px"
+              *ngFor="let item of productCartTransactions"
+              role="listitem"
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                  width: 100%;
+                  font-size: 14px;
+                "
+              >
+                <span>{{ item.productName }}</span>
+                <div
+                  style="
+                    width: 85px;
+                    display: flex;
+                    justify-content: space-between;
+                  "
+                >
+                  <span>{{ item.priceFormatted }}</span>
+                  <span>X</span>
+                  <span>{{ item.quantity }}</span>
+                </div>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <div
+            *ngIf="productCartTransactions.length > 0"
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              width: 100%;
+              font-size: 15px;
+              font-weight: bold;
+            "
+          >
+            <span>TOTAL</span>
+            <span>{{ totalAmount }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div [formGroup]="orderForm" class="panel__details-group-panel">
+        <div class="panel__body-section">
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input
+              matInput
+              type="text"
+              formControlName="name"
+              [matAutocomplete]="auto"
+            />
+
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option
+                *ngFor="let option of customerStoreFilterOptions | async"
+                [value]="option.name"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input matInput type="text" formControlName="address" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input
+              type="text"
+              matInput
+              formControlName="paymentMethod"
+              readonly
+            />
+          </mat-form-field>
+          <mat-form-field class="transaction-date" appearance="fill">
+            <mat-label
+              >{{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DATE_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input
+              matInput
+              [matDatepicker]="picker"
+              formControlName="dueDate"
+            />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="panel__footer-section">
+          <div>
+            <button
+              style="width: 100%"
+              mat-raised-button
+              color="primary"
+              (click)="confirm()"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>
