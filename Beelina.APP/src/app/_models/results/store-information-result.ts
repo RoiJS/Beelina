@@ -1,5 +1,5 @@
 import { IStoreInformationQueryPayload } from 'src/app/_interfaces/payloads/istore-information-query.payload';
-import { PaymentMethod } from 'src/app/_services/payment-method.service';
+import { PaymentMethod } from '../payment-method';
 
 export class StoreInformationResult implements IStoreInformationQueryPayload {
   public typename: string;

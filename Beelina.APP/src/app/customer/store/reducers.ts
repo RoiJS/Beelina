@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { CustomerStore } from 'src/app/_services/customer-store.service';
+import { CustomerStore } from 'src/app/_models/customer-store';
 import { ICustomerStoreState } from '../types/payment-method-state.interface';
 
 import * as CustomerActions from './actions';

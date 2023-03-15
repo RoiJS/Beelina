@@ -1,5 +1,5 @@
 import { IProductInformationQueryPayload } from 'src/app/_interfaces/payloads/iproduct-information-query.payload';
-import { ProductUnit } from 'src/app/_services/product-unit.service';
+import { ProductUnit } from '../product-unit';
 
 export class ProductInformationResult
   implements IProductInformationQueryPayload

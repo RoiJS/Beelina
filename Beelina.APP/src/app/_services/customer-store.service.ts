@@ -6,10 +6,6 @@ import { Store } from '@ngrx/store';
 import { ApolloQueryResult } from '@apollo/client';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
 
-import { IBaseError } from '../_interfaces/errors/ibase.error';
-import { Entity } from '../_models/entity.model';
-
-import { IBaseConnection, PaymentMethod } from './payment-method.service';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import {
   endCursorSelector,
@@ -18,38 +14,10 @@ import {
 import { IStoreInformationQueryPayload } from '../_interfaces/payloads/istore-information-query.payload';
 import { StoreNotExistsError } from '../_models/errors/store-not-exists.error';
 
-export interface IStorePayload {
-  id: number;
-  name: string;
-}
-
-export interface IStoreOutput {
-  store: IStorePayload;
-  errors: Array<IBaseError>;
-}
-
-export interface IStoreInput {
-  id: number;
-  name: string;
-  address: string;
-  paymentMethodInput: IPaymentMethodInput;
-}
-
-export interface IPaymentMethodInput {
-  id: number;
-  name: string;
-}
-
-export class CustomerStore extends Entity {
-  public name: string;
-  public address: string;
-  public paymentMethod: PaymentMethod;
-
-  constructor() {
-    super();
-    this.paymentMethod = new PaymentMethod();
-  }
-}
+import { IStoreOutput } from '../_interfaces/outputs/istore.output';
+import { IStoreInput } from '../_interfaces/inputs/istore.input';
+import { CustomerStore } from '../_models/customer-store';
+import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 
 const UPDATE_STORE_MUTATION = gql`
   mutation ($storeInput: StoreInput!) {

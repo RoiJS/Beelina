@@ -4,11 +4,13 @@ import { Store } from '@ngrx/store';
 
 import { Apollo, gql } from 'apollo-angular';
 import { map, take } from 'rxjs';
+
 import { endCursorSelector } from '../payment-methods/store/selectors';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
+import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 
-import { Entity } from '../_models/entity.model';
+import { PaymentMethod } from '../_models/payment-method';
 
 const GET_PAYMENT_METHODS = gql`
   query ($cursor: String) {
@@ -32,34 +34,6 @@ const GET_PAYMENT_METHODS = gql`
     }
   }
 `;
-
-export interface IBaseConnection {
-  edges: IEdge[];
-  nodes: IModelNode[];
-  pageInfo: IPageInfo;
-}
-
-export interface IEdge {
-  cursor: string;
-  node: IModelNode;
-}
-
-export interface IModelNode {}
-
-export interface IPageInfo {
-  endCursor: string;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  startCursor: string;
-}
-
-export class PaymentMethod extends Entity implements IModelNode {
-  public name: string;
-
-  constructor() {
-    super();
-  }
-}
 
 @Injectable({ providedIn: 'root' })
 export class PaymentMethodService {

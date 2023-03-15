@@ -8,8 +8,7 @@ import { map, Observable, startWith, Subscription } from 'rxjs';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
-import { ProductUnit } from 'src/app/_services/product-unit.service';
-import { Product, ProductService } from 'src/app/_services/product.service';
+import { ProductService } from 'src/app/_services/product.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 
 import * as ProductUnitActions from '../../units/store/actions';
@@ -21,6 +20,8 @@ import { productUnitsSelector } from 'src/app/units/store/selectors';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
+import { ProductUnit } from 'src/app/_models/product-unit';
+import { Product } from 'src/app/_models/product';
 
 @Component({
   selector: 'app-add-product-details',

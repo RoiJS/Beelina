@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { CustomerStore } from 'src/app/_services/customer-store.service';
+import { CustomerStore } from 'src/app/_models/customer-store';
 
 export const getCustomerStoreAction = createAction('[Customer] Get Customers');
 

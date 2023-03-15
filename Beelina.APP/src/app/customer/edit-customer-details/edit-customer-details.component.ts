@@ -9,11 +9,7 @@ import { map, Observable, startWith, Subscription } from 'rxjs';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import {
-  CustomerStore,
-  CustomerStoreService,
-} from 'src/app/_services/customer-store.service';
-import { PaymentMethod } from 'src/app/_services/payment-method.service';
+import { CustomerStoreService } from 'src/app/_services/customer-store.service';
 
 import * as PaymentMethodActions from '../../payment-methods/store/actions';
 import * as CustomerStoresActions from '../store/actions';
@@ -22,6 +18,8 @@ import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors'
 import { isUpdateLoadingSelector } from '../store/selectors';
 
 import { StoreInformationResult } from 'src/app/_models/results/store-information-result';
+import { PaymentMethod } from 'src/app/_models/payment-method';
+import { CustomerStore } from 'src/app/_models/customer-store';
 
 @Component({
   selector: 'app-edit-customer',
@@ -62,7 +60,6 @@ export class EditCustomerDetailsComponent implements OnInit {
     this.customerStoreService
       .getCustomerStore(this._storeId)
       .subscribe((customerStore: StoreInformationResult) => {
-
         this._customerForm.get('name').setValue(customerStore.name);
         this._customerForm.get('address').setValue(customerStore.address);
         this._customerForm

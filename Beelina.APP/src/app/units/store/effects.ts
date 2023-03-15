@@ -6,10 +6,8 @@ import { catchError, map, of, switchMap } from 'rxjs';
 
 import * as ProductUnitActions from './actions';
 
-import {
-  ProductUnit,
-  ProductUnitService,
-} from 'src/app/_services/product-unit.service';
+import { ProductUnitService } from 'src/app/_services/product-unit.service';
+import { ProductUnit } from 'src/app/_models/product-unit';
 
 @Injectable()
 export class ProductUnitEffects {

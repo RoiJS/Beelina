@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { catchError, map, of, switchMap } from 'rxjs';
-import { Product, ProductService } from 'src/app/_services/product.service';
+import { Product } from 'src/app/_models/product';
+import { ProductService } from 'src/app/_services/product.service';
 
 import * as ProductActions from './actions';
 

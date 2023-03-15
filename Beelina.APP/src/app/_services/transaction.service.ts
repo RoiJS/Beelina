@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client';
-import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { map } from 'rxjs';
 
-import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { Entity } from '../_models/entity.model';
+import { Product } from '../_models/product';
+import { ProductTransaction } from '../_models/transaction';
 
-import { IBaseError } from '../_interfaces/errors/ibase.error';
+import { CustomerStore } from '../_models/customer-store';
 
-import { IModelNode } from './payment-method.service';
-import { CustomerStore } from './customer-store.service';
-import { Product } from './product.service';
+import { IModelNode } from '../_interfaces/imodel-node';
 
-import { PaymenStatusEnum } from '../_enum/payment-status.enum';
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
+import { ITransactionInput } from '../_interfaces/inputs/itransaction.input';
+import { IProductTransactionInput } from '../_interfaces/inputs/iproduct-transaction.input';
+import { ITransactionOutput } from '../_interfaces/outputs/itransaction.output';
 
 const REGISTER_TRANSACTION_MUTATION = gql`
   mutation ($transactionInput: TransactionInput!) {
@@ -108,47 +108,6 @@ const GET_TRANSACTION_SALES = gql`
     }
   }
 `;
-
-export interface ITransactionPayload {
-  id: number;
-}
-
-export interface ITransactionOutput {
-  transaction: ITransactionPayload;
-  errors: Array<IBaseError>;
-}
-
-export interface ITransactionInput {
-  id: number;
-  storeId: number;
-  transactionDate: string;
-  productTransactionInputs: Array<IProductTransactionInput>;
-}
-
-export interface IProductTransactionInput {
-  id: number;
-  productId: number;
-  quantity: number;
-  price: number;
-  currentQuantity: number;
-}
-
-export class ProductTransaction extends Entity implements IModelNode {
-  public productId: number;
-  public quantity: number;
-  public currentQuantity: number;
-  public status: PaymenStatusEnum;
-  public product: Product;
-  public price: number;
-
-  get isPaid(): boolean {
-    return this.status === PaymenStatusEnum.Paid;
-  }
-
-  get priceFormatted(): string {
-    return NumberFormatter.formatCurrency(this.price);
-  }
-}
 
 export class Transaction extends Entity implements IModelNode {
   public storeId: number;

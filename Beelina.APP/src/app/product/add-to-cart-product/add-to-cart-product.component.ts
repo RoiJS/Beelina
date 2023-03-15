@@ -9,10 +9,12 @@ import { select, Store } from '@ngrx/store';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 
-import { Product, ProductService } from 'src/app/_services/product.service';
-import { ProductTransaction } from 'src/app/_services/transaction.service';
+import { ProductService } from 'src/app/_services/product.service';
 import { productTransactionsSelector } from './store/selectors';
 import * as ProductTransactionActions from './store/actions';
+
+import { Product } from 'src/app/_models/product';
+import { ProductTransaction } from 'src/app/_models/transaction';
 
 @Component({
   selector: 'app-add-to-cart-product',

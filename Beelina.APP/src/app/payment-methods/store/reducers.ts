@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
+import { PaymentMethod } from 'src/app/_models/payment-method';
 
-import { PaymentMethod } from 'src/app/_services/payment-method.service';
 import { IPaymentMethodState } from '../types/payment-method-state.interface';
 
 import * as PaymentMethodActions from './actions';

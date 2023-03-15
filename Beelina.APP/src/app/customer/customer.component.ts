@@ -10,13 +10,11 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import * as CustomerStoreActions from '../customer/store/actions';
 import { customerStoresSelector, isLoadingSelector } from './store/selectors';
-import {
-  CustomerStore,
-  CustomerStoreService,
-} from '../_services/customer-store.service';
+import { CustomerStoreService } from '../_services/customer-store.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { ButtonOptions } from '../_enum/button-options.enum';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { CustomerStore } from '../_models/customer-store';
 
 @Component({
   selector: 'app-customer',

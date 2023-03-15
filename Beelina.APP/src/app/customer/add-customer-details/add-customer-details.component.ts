@@ -10,12 +10,8 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
-import { PaymentMethod } from 'src/app/_services/payment-method.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import {
-  CustomerStore,
-  CustomerStoreService,
-} from 'src/app/_services/customer-store.service';
+import { CustomerStoreService } from 'src/app/_services/customer-store.service';
 
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
 import { isUpdateLoadingSelector } from '../store/selectors';
@@ -23,6 +19,8 @@ import * as PaymentMethodActions from '../../payment-methods/store/actions';
 import * as CustomerStoresActions from '../../customer/store/actions';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { PaymentMethod } from 'src/app/_models/payment-method';
+import { CustomerStore } from 'src/app/_models/customer-store';
 
 @Component({
   selector: 'app-add-customer-details',

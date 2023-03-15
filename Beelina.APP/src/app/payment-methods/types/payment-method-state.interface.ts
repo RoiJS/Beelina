@@ -1,4 +1,4 @@
-import { PaymentMethod } from 'src/app/_services/payment-method.service';
+import { PaymentMethod } from 'src/app/_models/payment-method';
 
 export interface IBaseStateConnection {
   hasNextPage: boolean;

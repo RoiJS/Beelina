@@ -5,10 +5,8 @@ import { catchError, map, of, switchMap } from 'rxjs';
 
 import * as CustomerActions from './actions';
 
-import {
-  CustomerStore,
-  CustomerStoreService,
-} from 'src/app/_services/customer-store.service';
+import { CustomerStoreService } from 'src/app/_services/customer-store.service';
+import { CustomerStore } from 'src/app/_models/customer-store';
 
 @Injectable()
 export class CustomerEffects {

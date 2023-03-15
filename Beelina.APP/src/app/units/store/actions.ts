@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ProductUnit } from 'src/app/_services/product-unit.service';
+import { ProductUnit } from 'src/app/_models/product-unit';
 
 export const getProductUnitsAction = createAction(
   '[Product Units] Get Product Units'

@@ -11,14 +11,15 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import { ProductUnit } from 'src/app/_services/product-unit.service';
-import { Product, ProductService } from 'src/app/_services/product.service';
+import { ProductService } from 'src/app/_services/product.service';
 import { isUpdateLoadingSelector } from '../store/selectors';
 
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
+import { ProductUnit } from 'src/app/_models/product-unit';
+import { Product } from 'src/app/_models/product';
 
 @Component({
   selector: 'app-edit-product-details',

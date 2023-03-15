@@ -9,15 +9,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { customerStoresSelector } from 'src/app/customer/store/selectors';
 import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
 import { productsSelector } from '../store/selectors';
+import { Router } from '@angular/router';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import { CustomerStore } from 'src/app/_services/customer-store.service';
-import { Product } from 'src/app/_services/product.service';
 
 import {
-  ProductTransaction,
-  Transaction,
   TransactionDto,
   TransactionService,
 } from 'src/app/_services/transaction.service';
@@ -27,8 +24,10 @@ import * as ProductTransactionActions from '../add-to-cart-product/store/actions
 
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
-import { Router } from '@angular/router';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+import { CustomerStore } from 'src/app/_models/customer-store';
+import { Product } from 'src/app/_models/product';
+import { ProductTransaction } from 'src/app/_models/transaction';
 
 export class ProductCartTransaction {
   public productName: string;

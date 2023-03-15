@@ -6,10 +6,8 @@ import { catchError, map, of, switchMap } from 'rxjs';
 
 import * as PaymentMethodActions from './actions';
 
-import {
-  PaymentMethod,
-  PaymentMethodService,
-} from 'src/app/_services/payment-method.service';
+import { PaymentMethodService } from 'src/app/_services/payment-method.service';
+import { PaymentMethod } from 'src/app/_models/payment-method';
 
 @Injectable()
 export class PaymentMethodsEffects {

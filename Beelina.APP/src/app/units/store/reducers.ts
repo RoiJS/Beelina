@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
+import { ProductUnit } from 'src/app/_models/product-unit';
 
-import { ProductUnit } from 'src/app/_services/product-unit.service';
 import { IProductUnitState } from '../types/product-unit-state.interface';
 
 import * as ProductUnitActions from './actions';

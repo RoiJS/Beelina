@@ -6,13 +6,8 @@ import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { map, take } from 'rxjs';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
-import { Entity } from '../_models/entity.model';
 
-import { IBaseError } from '../_interfaces/errors/ibase.error';
 import { ProductNotExistsError } from '../_models/errors/product-not-exists.error';
-
-import { IBaseConnection, IModelNode } from './payment-method.service';
-import { ProductUnit } from './product-unit.service';
 
 import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
 
@@ -20,10 +15,14 @@ import {
   endCursorSelector,
   filterKeywordSelector,
 } from '../product/store/selectors';
-import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 
 import { CheckProductCodeInformationResult } from '../_models/results/check-product-code-information-result';
 import { ProductInformationResult } from '../_models/results/product-information-result';
+
+import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
+import { IProductInput } from '../_interfaces/inputs/iproduct.input';
+import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
+import { Product } from '../_models/product';
 
 const GET_PRODUCTS_METHODS = gql`
   query ($cursor: String, $filterKeyword: String) {
@@ -118,50 +117,6 @@ const CHECK_PRODUCT_CODE = gql`
     }
   }
 `;
-
-export interface IProductPayload {
-  id: number;
-  name: string;
-}
-
-export interface IProductOutput {
-  product: IProductPayload;
-  errors: Array<IBaseError>;
-}
-
-export interface IProductInput {
-  id: number;
-  name: string;
-  code: string;
-  description: string;
-  stockQuantity: number;
-  pricePerUnit: number;
-  productUnitInput: IProductUnitInput;
-}
-
-export interface IProductUnitInput {
-  id: number;
-  name: string;
-}
-
-export class Product extends Entity implements IModelNode {
-  public name: string;
-  public code: string;
-  public description: string;
-  public stockQuantity: number;
-  public pricePerUnit: number;
-  public price: number;
-  public productUnit: ProductUnit;
-
-  get priceFormatted(): string {
-    return NumberFormatter.formatCurrency(this.price);
-  }
-
-  constructor() {
-    super();
-    this.productUnit = new ProductUnit();
-  }
-}
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {

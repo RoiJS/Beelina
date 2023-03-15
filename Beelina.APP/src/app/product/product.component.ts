@@ -12,8 +12,7 @@ import { BaseDataSource } from '../customer/customer.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
 
 import { DialogService } from '../shared/ui/dialog/dialog.service';
-import { Product, ProductService } from '../_services/product.service';
-import { ProductTransaction } from '../_services/transaction.service';
+import { ProductService } from '../_services/product.service';
 
 import { ButtonOptions } from '../_enum/button-options.enum';
 
@@ -22,6 +21,8 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import * as ProductActions from './store/actions';
 import { isLoadingSelector, productsSelector } from './store/selectors';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
+import { ProductTransaction } from '../_models/transaction';
+import { Product } from '../_models/product';
 
 @Component({
   selector: 'app-product',

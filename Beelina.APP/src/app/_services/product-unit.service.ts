@@ -6,8 +6,8 @@ import { map, take } from 'rxjs';
 
 import { endCursorSelector } from '../units/store/selectors';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
-import { Entity } from '../_models/entity.model';
-import { IBaseConnection, IModelNode } from './payment-method.service';
+import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
+import { ProductUnit } from '../_models/product-unit';
 
 const GET_PAYMENT_METHODS = gql`
   query ($cursor: String) {
@@ -31,14 +31,6 @@ const GET_PAYMENT_METHODS = gql`
     }
   }
 `;
-
-export class ProductUnit extends Entity implements IModelNode {
-  public name: string;
-
-  constructor() {
-    super();
-  }
-}
 
 @Injectable({ providedIn: 'root' })
 export class ProductUnitService {

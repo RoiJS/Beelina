@@ -1,7 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { mutableOn } from 'ngrx-etc';
-
-import { ProductTransaction } from 'src/app/_services/transaction.service';
+import { ProductTransaction } from 'src/app/_models/transaction';
 
 import * as ProductTransactionActions from './actions';
 import { IProductTransactionState } from './types/product-transaction-state.interface';
