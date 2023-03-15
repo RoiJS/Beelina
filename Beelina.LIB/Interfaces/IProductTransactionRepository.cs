@@ -7,5 +7,6 @@ namespace Beelina.LIB.Interfaces
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
         Task<List<ProductTransaction>> GetProductTransactions(int transactionId);
+        Task<List<TransactionTopProduct>> GetTopProducts();
     }
 }

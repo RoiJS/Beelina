@@ -13,6 +13,26 @@ namespace Beelina.LIB.BusinessLogic
         {
         }
 
+        public async Task<TransactionSales> GetSales(string fromDate, string toDate)
+        {
+            var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
+                                    join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                    on t.Id equals pt.TransactionId
+
+                                    select new
+                                    {
+                                        Transaction = t,
+                                        ProductTransaction = pt
+                                    });
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                transactionSales = transactionSales.Where(t => t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate) && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate));
+            }
+
+            return new TransactionSales { Sales = await transactionSales.SumAsync(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity) };
+        }
+
         public async Task<List<Transaction>> GetTransactionByDate(string transactionDate)
         {
             var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions

@@ -42,5 +42,17 @@ namespace Beelina.API.Types.Query
 
             return transactionFromRepo;
         }
+
+        [Authorize]
+        public async Task<List<TransactionTopProduct>> GetTopProducts([Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository)
+        {
+            return await productTransactionRepository.GetTopProducts();
+        }
+
+        [Authorize]
+        public async Task<TransactionSales> GetTransactionSales([Service] ITransactionRepository<Transaction> transactionRepository, string fromDate, string toDate)
+        {
+            return await transactionRepository.GetSales(fromDate, toDate);
+        }
     }
 }

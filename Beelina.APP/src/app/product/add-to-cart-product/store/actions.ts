@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 
 export const selectProduct = createAction(
   '[Transaction] Select Product',
-  props<{ productId: number; quantity: number }>()
+  props<{ productId: number; price: number; quantity: number }>()
 );
 
 export const setSaveOrderLoadingState = createAction(

@@ -20,6 +20,22 @@ namespace Beelina.LIB.Models
             }
         }
 
+        public float Balance
+        {
+            get
+            {
+                return (float)ProductTransactions.Where(p => p.Status == PaymentStatusEnum.Unpaid).Sum(s => s.Quantity * s.Price);
+            }
+        }
+
+        public float Total
+        {
+            get
+            {
+                return (float)ProductTransactions.Sum(s => s.Quantity * s.Price);
+            }
+        }
+
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }
         public int? UpdatedById { get; set; }

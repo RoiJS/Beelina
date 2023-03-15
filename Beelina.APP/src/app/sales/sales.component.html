@@ -1,2 +1,104 @@
-<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate"></app-tool-bar>
-<p>sales works!</p>
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate"> </app-tool-bar>
+<app-loader-layout [busy]="false">
+  <div class="page-container">
+    <div class="page-container__page-divider">
+      <label>Sales</label><br />
+      <span style="font-size: 12px; color: #707070"
+        >This page displays sales amount based on the current filter date.</span
+      >
+    </div>
+    <div class="sales-date-filter-container">
+      <div
+        class="sales-date-filter-container__filter-options"
+        [ngClass]="{
+          'sales-date-filter-container__filter-options--active':
+            currentFilterOption === 1
+        }"
+        (click)="setFilterOption(1)"
+      >
+        Daily
+      </div>
+      <div
+        class="sales-date-filter-container__filter-options"
+        [ngClass]="{
+          'sales-date-filter-container__filter-options--active':
+            currentFilterOption === 2
+        }"
+        (click)="setFilterOption(2)"
+      >
+        Weekly
+      </div>
+      <div
+        class="sales-date-filter-container__filter-options"
+        [ngClass]="{
+          'sales-date-filter-container__filter-options--active':
+            currentFilterOption === 3
+        }"
+        (click)="setFilterOption(3)"
+      >
+        Monthly
+      </div>
+    </div>
+    <div [formGroup]="filterForm">
+      <div *ngIf="currentFilterOption === 1">
+        <mat-form-field
+          class="transaction-date"
+          style="width: 100%"
+          appearance="fill"
+        >
+          <mat-label>Pick Date:</mat-label>
+          <input
+            matInput
+            (dateChange)="dateChange($event)"
+            [matDatepicker]="picker"
+            formControlName="day"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="currentFilterOption === 2">
+        <mat-form-field style="width: 100%" appearance="fill">
+          <mat-label>Choose week:</mat-label>
+          <mat-select
+            formControlName="week"
+            (selectionChange)="weekChange($event)"
+          >
+            <mat-option
+              *ngFor="let week of weekOptions; index as i"
+              [value]="i"
+              >{{ week }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="currentFilterOption === 3">
+        <mat-form-field style="width: 100%" appearance="fill">
+          <mat-label>Choose month:</mat-label>
+          <mat-select
+            formControlName="month"
+            (selectionChange)="monthChange($event)"
+          >
+            <mat-option
+              *ngFor="let month of monthlyOptions; index as i"
+              [value]="i"
+              >{{ month }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div
+      class="panel"
+      style="padding: 25px; display: flex; justify-content: space-between"
+    >
+      <label style="font-size: 15px">Sales Amount: </label>
+      <span style="font-size: 30px; color: #d69213">{{ sales }}</span>
+    </div>
+  </div>
+</app-loader-layout>

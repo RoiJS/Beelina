@@ -70,5 +70,22 @@ namespace Beelina.API.Types.Mutations
 
             return transactionFromRepo;
         }
+
+        [Authorize]
+        public async Task<Transaction> MarkTransactionAsPaid(
+            [Service] ITransactionRepository<Transaction> transactionRepository,
+            [Service] ICurrentUserService currentUserService,
+            int transactionId)
+        {
+            var transactionFromRepo = await transactionRepository.GetEntity(transactionId).Includes(t => t.ProductTransactions).ToObjectAsync();
+
+            transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+            transactionFromRepo.ProductTransactions.ForEach(p => p.Status = LIB.Enums.PaymentStatusEnum.Paid);
+
+            await transactionRepository.SaveChanges();
+
+            return transactionFromRepo;
+        }
     }
 }

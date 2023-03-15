@@ -1,7 +1,7 @@
 @import "../../app-variables";
 
 .login-main-container {
-  height: 100%;
+  height: calc(100% - 30px);
   background: $primary-gradient;
   padding: 15px;
   display: flex;

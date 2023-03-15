@@ -84,7 +84,7 @@ export class EditProductDetailsComponent implements OnInit {
         this._productForm.get('code').setValue(product.code);
         this._productForm.get('description').setValue(product.description);
         this._productForm.get('stockQuantity').setValue(product.stockQuantity);
-        this._productForm.get('pricePerUnit').setValue(product.pricePerUnit);
+        this._productForm.get('pricePerUnit').setValue(product.price);
         this._productForm.get('productUnit').setValue(product.productUnit.name);
       });
 

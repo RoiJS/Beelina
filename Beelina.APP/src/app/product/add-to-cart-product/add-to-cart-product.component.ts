@@ -97,6 +97,7 @@ export class AddToCartProductComponent implements OnInit {
     this.store.dispatch(
       ProductTransactionActions.selectProduct({
         productId: this._product.id,
+        price: this._product.price,
         quantity: currentValue,
       })
     );

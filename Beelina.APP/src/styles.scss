@@ -123,7 +123,7 @@ body {
     width: 100%;
     margin-top: 10px;
     margin-bottom: 10px;
-    Label {
+    label {
       font-size: 17px;
       color: $primary;
       font-weight: bold;
@@ -301,6 +301,7 @@ button[color="primary"] {
   display: flex !important;
 }
 
-.transaction-date.unpaid {
+.transaction-date.unpaid,
+.product-transaction-list div.unpaid {
   color: red;
 }

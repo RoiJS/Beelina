@@ -16,6 +16,7 @@ import { Product } from './product.service';
 
 import { PaymenStatusEnum } from '../_enum/payment-status.enum';
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
+import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 
 const REGISTER_TRANSACTION_MUTATION = gql`
   mutation ($transactionInput: TransactionInput!) {
@@ -57,6 +58,8 @@ const GET_TRANSACTION = gql`
       storeId
       transactionDate
       hasUnpaidProductTransaction
+      total
+      balance
       store {
         name
       }
@@ -65,6 +68,7 @@ const GET_TRANSACTION = gql`
         transactionId
         productId
         quantity
+        price
         status
         product {
           id
@@ -72,6 +76,35 @@ const GET_TRANSACTION = gql`
           price
         }
       }
+    }
+  }
+`;
+
+const MARK_TRANSACTION_AS_PAID = gql`
+  mutation ($transactionId: Int!) {
+    markTransactionAsPaid(input: { transactionId: $transactionId }) {
+      transaction {
+        id
+      }
+    }
+  }
+`;
+
+const GET_TOP_PRODUCTS = gql`
+  query {
+    topProducts {
+      id
+      code
+      name
+      count
+    }
+  }
+`;
+
+const GET_TRANSACTION_SALES = gql`
+  query ($fromDate: String!, $toDate: String!) {
+    transactionSales(fromDate: $fromDate, toDate: $toDate) {
+      sales
     }
   }
 `;
@@ -96,6 +129,7 @@ export interface IProductTransactionInput {
   id: number;
   productId: number;
   quantity: number;
+  price: number;
   currentQuantity: number;
 }
 
@@ -105,6 +139,15 @@ export class ProductTransaction extends Entity implements IModelNode {
   public currentQuantity: number;
   public status: PaymenStatusEnum;
   public product: Product;
+  public price: number;
+
+  get isPaid(): boolean {
+    return this.status === PaymenStatusEnum.Paid;
+  }
+
+  get priceFormatted(): string {
+    return NumberFormatter.formatCurrency(this.price);
+  }
 }
 
 export class Transaction extends Entity implements IModelNode {
@@ -113,6 +156,20 @@ export class Transaction extends Entity implements IModelNode {
   public store: CustomerStore;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
+  public balance: number;
+  public total: number;
+
+  get transactionDateFormatted(): string {
+    return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
+  }
+
+  get totalFormatted(): string {
+    return NumberFormatter.formatCurrency(this.total);
+  }
+
+  get balanceFormatted(): string {
+    return NumberFormatter.formatCurrency(this.balance);
+  }
 
   constructor() {
     super();
@@ -129,11 +186,27 @@ export class TransactionHistoryDate {
   }
 }
 
+export class TransactionSales {
+  public sales: number;
+}
+
 export class TransactionDto {
   public id: number = 0;
   public storeId: number;
   public transactionDate: string;
   public productTransactions: Array<ProductTransaction>;
+}
+
+export interface IMarkTransactionAsPaidPayLoad {
+  id: number;
+  name: string;
+}
+
+export class TransactionTopProduct {
+  public id: number;
+  public code: string;
+  public name: string;
+  public count: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -150,6 +223,7 @@ export class TransactionService {
           id: 0,
           productId: p.productId,
           quantity: p.quantity,
+          price: p.price,
           currentQuantity: 0,
         };
 
@@ -235,8 +309,11 @@ export class TransactionService {
 
             const transaction = new Transaction();
             transaction.id = transactionFromRepo.id;
+            transaction.transactionDate = transactionFromRepo.transactionDate;
             transaction.storeId = transactionFromRepo.storeId;
             transaction.store = transactionFromRepo.store;
+            transaction.balance = transactionFromRepo.balance;
+            transaction.total = transactionFromRepo.total;
             transaction.hasUnpaidProductTransaction =
               transactionFromRepo.hasUnpaidProductTransaction;
             transaction.productTransactions =
@@ -244,6 +321,7 @@ export class TransactionService {
                 const productTransaction = new ProductTransaction();
                 productTransaction.id = pt.id;
                 productTransaction.quantity = pt.quantity;
+                productTransaction.price = pt.price;
                 productTransaction.status = pt.status;
                 productTransaction.product = new Product();
                 productTransaction.product.id = pt.product.id;
@@ -282,6 +360,85 @@ export class TransactionService {
             });
 
             return dates;
+          }
+        )
+      );
+  }
+
+  getTopProducts() {
+    return this.apollo
+      .watchQuery({
+        query: GET_TOP_PRODUCTS,
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              topProducts: Array<TransactionTopProduct>;
+            }>
+          ) => {
+            const dates = result.data.topProducts.map((t) => {
+              const topProducts = new TransactionTopProduct();
+              topProducts.id = t.id;
+              topProducts.code = t.code;
+              topProducts.name = t.name;
+              topProducts.count = t.count;
+              return topProducts;
+            });
+
+            return dates;
+          }
+        )
+      );
+  }
+
+  getTransactionSales(fromDate: string = '', toDate: string = '') {
+    return this.apollo
+      .watchQuery({
+        query: GET_TRANSACTION_SALES,
+        variables: { fromDate, toDate },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              transactionSales: TransactionSales;
+            }>
+          ) => {
+            return result.data.transactionSales;
+          }
+        )
+      );
+  }
+
+  markTransactionAsPaid(transactionId: number) {
+    return this.apollo
+      .mutate({
+        mutation: MARK_TRANSACTION_AS_PAID,
+        variables: {
+          transactionId,
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{
+              markTransactionAsPaid: ITransactionOutput;
+            }>
+          ) => {
+            const output = result.data.markTransactionAsPaid;
+            const payload = output.transaction;
+            const errors = output.errors;
+
+            if (payload) {
+              return payload;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return null;
           }
         )
       );

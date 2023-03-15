@@ -2,6 +2,14 @@
 
 <app-loader-layout [busy]="false">
   <div class="page-container" style="height: 100%">
+    <div class="page-container__page-divider">
+      <label>Transactions</label><br />
+      <span style="font-size: 12px; color: #707070"
+        >This shows the list of customers that have transactions for the
+        selected date.</span
+      >
+    </div>
+
     <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
       <div *cdkVirtualFor="let item of transactions">
         <div

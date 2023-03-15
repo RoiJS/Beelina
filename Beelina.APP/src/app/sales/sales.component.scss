@@ -1,0 +1,21 @@
+@import "../../app-variables";
+
+.sales-date-filter-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+
+  &__filter-options {
+    background-color: #b3c3c3;
+    color: $white;
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 15px;
+
+    &--active {
+      background-color: $primary;
+    }
+  }
+}

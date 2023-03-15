@@ -6,6 +6,14 @@
 
 <app-loader-layout [busy]="false">
   <div class="page-container" style="height: 100%">
+    <div class="page-container__page-divider">
+      <label>Transaction History</label><br />
+      <span style="font-size: 12px; color: #707070"
+        >This shows the list of dates where there are transactions
+        recorded.</span
+      >
+    </div>
+
     <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
       <div *cdkVirtualFor="let item of transactionHistoryDates">
         <div

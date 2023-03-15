@@ -1,4 +1,45 @@
-<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate"></app-tool-bar>
-<div>
-  <p>top products works!</p>
-</div>
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate">
+  <button mat-icon-button class="toolbar-option">
+    <mat-icon matBadgeColor="warn">search</mat-icon>
+  </button>
+</app-tool-bar>
+
+<app-loader-layout [busy]="false">
+  <div class="page-container" style="height: 100%">
+    <div class="page-container__page-divider">
+      <label>Top Products</label><br />
+      <span style="font-size: 12px; color: #707070"
+        >This shows the list of products that are frequently purchase by our
+        customers.</span
+      >
+    </div>
+
+    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
+      <div *cdkVirtualFor="let item of topProducts">
+        <div
+          matRipple
+          class="list-container__item-section"
+          style="display: flex; justify-content: space-between"
+        >
+          <span
+            ><span style="font-weight: bold">({{ item.code }})</span> -
+            {{ item.name }}</span
+          >
+          <span
+            style="
+              padding: 2px;
+              background-color: #4fa94f;
+              color: white;
+              border-radius: 15px;
+              width: 40px;
+              display: block;
+              text-align: center;
+              font-weight: bold;
+            "
+            >{{ item.count }}</span
+          >
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+</app-loader-layout>

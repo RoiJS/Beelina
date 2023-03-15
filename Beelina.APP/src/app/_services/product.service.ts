@@ -76,6 +76,7 @@ const GET_PRODUCT_STORE = gql`
         description
         stockQuantity
         pricePerUnit
+        price
         productUnit {
           name
         }

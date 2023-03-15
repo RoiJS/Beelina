@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import {
   Transaction,
   TransactionService,
@@ -14,11 +18,14 @@ import {
 export class TransactionDetailsComponent implements OnInit {
   private _transactionId: number;
   private _transaction: Transaction;
-  private _totalAmount: number = 0;
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private transactionService: TransactionService
+    private dialogService: DialogService,
+    private router: Router,
+    private snackBarService: MatSnackBar,
+    private transactionService: TransactionService,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
@@ -28,19 +35,55 @@ export class TransactionDetailsComponent implements OnInit {
       .getTransaction(this._transactionId)
       .subscribe((transaction: Transaction) => {
         this._transaction = transaction;
-        console.log(transaction);
-        this._totalAmount = this._transaction.productTransactions.reduce(
-          (t, n) => t + n.product.price * n.quantity,
-          0
-        );
+      });
+  }
+
+  markTransactionAsPaid() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.CONFIRM'
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result == ButtonOptions.YES) {
+          this.transactionService
+            .markTransactionAsPaid(this._transactionId)
+            .subscribe({
+              next: () => {
+                this.snackBarService.open(
+                  this.translateService.instant(
+                    'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.SUCCESS_MESSAGE'
+                  ),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                  {
+                    duration: 5000,
+                  }
+                );
+
+                this.router.navigate(['transaction-history']);
+              },
+
+              error: () => {
+                this.snackBarService.open(
+                  this.translateService.instant(
+                    'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.ERROR_MESSAGE'
+                  ),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                  {
+                    duration: 5000,
+                  }
+                );
+              },
+            });
+        }
       });
   }
 
   get transaction(): Transaction {
     return this._transaction;
-  }
-
-  get totalAmount(): string {
-    return NumberFormatter.formatCurrency(this._totalAmount);
   }
 }

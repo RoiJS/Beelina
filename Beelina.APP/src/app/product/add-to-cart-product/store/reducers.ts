@@ -23,6 +23,7 @@ export const reducers = createReducer(
 
     const productTransaction = new ProductTransaction();
     productTransaction.productId = action.productId;
+    productTransaction.price = action.price;
     productTransaction.quantity = action.quantity;
 
     if (productIdx < 0) {
