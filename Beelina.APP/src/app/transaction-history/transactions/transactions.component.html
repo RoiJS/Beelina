@@ -1,22 +1,24 @@
 <app-tool-bar [title]="transationDate"> </app-tool-bar>
 
 <app-loader-layout [busy]="false">
-  <div class="page-container" style="height: 100%">
+  <div class="page-container">
     <div class="page-container__page-divider">
-      <label>Transactions</label><br />
-      <span style="font-size: 12px; color: #707070"
-        >This shows the list of customers that have transactions for the
-        selected date.</span
-      >
+      <label>{{ "TRANSACTION_PAGE.TITLE" | translate }}</label
+      ><br />
+      <span class="page-information-description">{{
+        "TRANSACTION_PAGE.DESCRIPTION" | translate
+      }}</span>
     </div>
 
-    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
+    <cdk-virtual-scroll-viewport
+      itemSize="60"
+      class="list-container transaction-list-container"
+    >
       <div *cdkVirtualFor="let item of transactions">
         <div
           matRipple
-          class="transaction-date list-container__item-section"
+          class="transaction-date list-container__item-section transaction-list-container__item-section"
           [ngClass]="{ unpaid: item.hasUnpaidProductTransaction }"
-          style="display: flex; justify-content: space-between"
           (click)="goToTransaction(item.id)"
         >
           <span>{{ item.store.name }}</span>

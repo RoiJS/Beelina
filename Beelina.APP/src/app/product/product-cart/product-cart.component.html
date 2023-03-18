@@ -1,7 +1,7 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate"> </app-tool-bar>
 <app-loader-layout [busy]="false">
   <div class="page-container">
-    <div class="panel" style="height: 100%">
+    <div class="panel product-cart-container">
       <div class="panel__details-group-panel">
         <div class="panel__header-section">
           {{
@@ -9,32 +9,15 @@
           }}
         </div>
         <div class="panel__body-section">
-          <mat-list
-            role="list"
-            style="max-height: 200px; overflow: auto; margin-bottom: 15px"
-          >
+          <mat-list role="list" class="product-transaction-list-container">
             <mat-list-item
-              style="height: 35px"
+              class="product-transaction-list-container__list-item-section"
               *ngFor="let item of productCartTransactions"
               role="listitem"
             >
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: space-between;
-                  width: 100%;
-                  font-size: 14px;
-                "
-              >
+              <div class="list-item">
                 <span>{{ item.productName }}</span>
-                <div
-                  style="
-                    width: 85px;
-                    display: flex;
-                    justify-content: space-between;
-                  "
-                >
+                <div class="list-item__product-price-information">
                   <span>{{ item.priceFormatted }}</span>
                   <span>X</span>
                   <span>{{ item.quantity }}</span>
@@ -43,23 +26,19 @@
             </mat-list-item>
           </mat-list>
           <div
+            class="product-transaction-total-amount-information-container"
             *ngIf="productCartTransactions.length > 0"
-            style="
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-              width: 100%;
-              font-size: 15px;
-              font-weight: bold;
-            "
           >
-            <span>TOTAL</span>
+            <span>{{ "GENERAL_TEXTS.TOTAL" | translate }}</span>
             <span>{{ totalAmount }}</span>
           </div>
         </div>
       </div>
 
-      <div [formGroup]="orderForm" class="panel__details-group-panel">
+      <div
+        [formGroup]="orderForm"
+        class="panel__details-group-panel product-transaction-information-container"
+      >
         <div class="panel__body-section">
           <mat-form-field appearance="fill">
             <mat-label
@@ -127,17 +106,12 @@
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
         </div>
-        <div class="panel__footer-section">
-          <div>
-            <button
-              style="width: 100%"
-              mat-raised-button
-              color="primary"
-              (click)="confirm()"
-            >
-              Confirm
-            </button>
-          </div>
+        <div
+          class="panel__footer-section product-transaction-information-container__button-options-section"
+        >
+          <button mat-raised-button color="primary" (click)="confirm()">
+            {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+          </button>
         </div>
       </div>
     </div>

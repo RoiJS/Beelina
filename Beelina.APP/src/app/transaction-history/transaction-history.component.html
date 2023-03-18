@@ -5,22 +5,24 @@
 </app-tool-bar>
 
 <app-loader-layout [busy]="false">
-  <div class="page-container" style="height: 100%">
+  <div class="page-container">
     <div class="page-container__page-divider">
-      <label>Transaction History</label><br />
-      <span style="font-size: 12px; color: #707070"
-        >This shows the list of dates where there are transactions
-        recorded.</span
-      >
+      <label>{{ "TRANSACTION_HISTORY_PAGE.TITLE" | translate }}</label
+      ><br />
+      <span class="page-information-description">{{
+        "TRANSACTION_HISTORY_PAGE.DESCRIPTION" | translate
+      }}</span>
     </div>
 
-    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
+    <cdk-virtual-scroll-viewport
+      itemSize="60"
+      class="list-container transaction-history-list-container"
+    >
       <div *cdkVirtualFor="let item of transactionHistoryDates">
         <div
           matRipple
-          class="transaction-date list-container__item-section"
+          class="transaction-date list-container__item-section transaction-history-list-container__item-section"
           [ngClass]="{ unpaid: !item.allTransactionsPaid }"
-          style="display: flex; justify-content: space-between"
           (click)="goToTransactionDate(item.transactionDate)"
         >
           <span>{{ item.transactionDateFormatted }}</span>

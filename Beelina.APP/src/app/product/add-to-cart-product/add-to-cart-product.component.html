@@ -1,97 +1,40 @@
-<!-- <mat-nav-list>
-  <a href="https://keep.google.com/" mat-list-item>
-    <span matListItemTitle>Google Keep</span>
-    <span matLine>Add to a note</span>
-  </a>
-
-  <a href="https://docs.google.com/" mat-list-item>
-    <span matListItemTitle>Google Docs</span>
-    <span matLine>Embed in a document</span>
-  </a>
-
-  <a href="https://plus.google.com/" mat-list-item>
-    <span matListItemTitle>Google Plus</span>
-    <span matLine>Share with your friends</span>
-  </a>
-
-  <a href="https://hangouts.google.com/" mat-list-item>
-    <span matListItemTitle>Google Hangouts</span>
-    <span matLine>Show to your coworkers</span>
-  </a>
-</mat-nav-list> -->
-
-<div
-  class="add-to-cart-container"
-  style="height: 60vh; display: flex; flex-direction: column"
->
-  <div
-    class="add-to-cart-container__header"
-    style="
-      font-size: 16px;
-      padding: 15px;
-      background-color: #d89c2a;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-    "
-  >
-    <span>Product</span>
+<div class="add-to-cart-container">
+  <div class="add-to-cart-container__header">
+    <span>{{ "ADD_TO_CART_PAGE.TITLE" | translate }}</span>
     <mat-icon (click)="onCancel()">cancel</mat-icon>
   </div>
-  <div class="add-to-cart-container__body" style="flex: 1; padding: 15px">
-    <div
-      style="
-        display: flex;
-        justify-content: space-around;
-        flex-direction: column;
-        margin-bottom: 30px;
-      "
-    >
-      <div style="align-self: center">
-        <mat-icon
-          style="height: 100px; width: 100px; font-size: 7em; color: #d89c2a"
-          >card_giftcard</mat-icon
-        >
+  <div class="add-to-cart-container__body">
+    <div class="product-information-container">
+      <div class="product-information-container__image-section">
+        <mat-icon>card_giftcard</mat-icon>
       </div>
-      <div
-        style="
-          align-self: center;
-          display: flex;
-          flex-direction: column;
-          height: 160px;
-          justify-content: space-between;
-          text-align: center;
-        "
-      >
-        <span style="font-size: 17px; font-weight: bold">{{
-          product?.name
-        }}</span>
-        <span>{{ product?.description }}</span>
-        <span
-          ><span style="font-size: 17px">{{ product?.priceFormatted }}</span
-          ><br /><span>per {{ product?.productUnit.name }}</span></span
+      <div class="product-information-container__details">
+        <span class="product-name">{{ product?.name }}</span>
+        <span class="product-description">{{ product?.description }}</span>
+        <span class="product-price">
+          <span>{{ product?.priceFormatted }}</span
+          ><br />
+          <span>per {{ product?.productUnit.name }}</span></span
         >
-        <span style="font-size: 17px"
-          >Stock Left: {{ product?.stockQuantity }}</span
+        <span class="product-stock"
+          >{{
+            "ADD_TO_CART_PAGE.PRODUCT_INFORMATION_CONTAINER.STOCK_LEFT"
+              | translate
+          }}: {{ product?.stockQuantity }}</span
         >
       </div>
     </div>
-    <div style="display: flex; justify-content: space-around">
-      <div [formGroup]="itemCounterForm" style="display: flex; gap: 12px">
+    <div class="product-item-options-container">
+      <div
+        class="product-item-options-container__options"
+        [formGroup]="itemCounterForm"
+      >
         <button mat-fab color="default" (click)="deductItem()">
           <mat-icon>remove_circle_outline</mat-icon>
         </button>
         <input
-          style="
-            box-sizing: border-box;
-            padding: 12px;
-            font-size: 25px;
-            border-radius: 22px;
-            text-align: center;
-            width: 125px;
-          "
           type="number"
-          class="txt-search-field"
+          class="txt-search-field stock-number-input"
           readonly
           max="100"
           formControlName="itemCounter"
@@ -102,26 +45,13 @@
       </div>
     </div>
   </div>
-  <div
-    class="add-to-cart-container__footer"
-    style="display: flex; padding: 15px"
-  >
-    <div style="display: flex; gap: 12px; width: 100%">
-      <button
-        mat-raised-button
-        style="width: 50%"
-        color="primary"
-        (click)="onConfirm()"
-      >
-        Confirm
+  <div class="add-to-cart-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
       </button>
-      <button
-        mat-raised-button
-        style="width: 50%"
-        color="default"
-        (click)="onCancel()"
-      >
-        Cancel
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CANCEL" | translate }}
       </button>
     </div>
   </div>

@@ -1,0 +1,46 @@
+@import "../../../app-variables";
+
+.product-cart-container {
+  height: 100%;
+
+  .product-transaction-list-container {
+    max-height: 200px;
+    overflow: auto;
+    margin-bottom: 15px;
+
+    &__list-item-section {
+      height: 35px;
+
+      .list-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 14px;
+
+        &__product-price-information {
+          width: 85px;
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+
+  .product-transaction-total-amount-information-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .product-transaction-information-container {
+    &__button-options-section {
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

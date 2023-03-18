@@ -1,7 +1,17 @@
 {
   "GENERAL_TEXTS": {
     "BEELINA": "Beelina",
-    "CLOSE": "Close"
+    "CLOSE": "Close",
+    "DAILY": "Daily",
+    "WEEKLY": "Weekly",
+    "MONTHLY": "Monthly",
+    "CONFIRM": "Confirm",
+    "CANCEL": "Cancel",
+    "TOTAL": "Total",
+    "PAID": "Paid",
+    "UNPAID": "Unpaid",
+    "BALANCE": "Balance",
+    "MARK_AS_PAID": " Mark as paid"
   },
 
   "MAIN_MENU": {
@@ -47,6 +57,7 @@
 
   "CUSTOMERS_PAGE": {
     "TITLE": "Customer",
+    "DESCRIPTION": "This is where customer information can be managed.",
     "SEARCH_TEXT_FIELD": {
       "PLACEHOLDER": "Search customer name..."
     },
@@ -107,6 +118,7 @@
       "ERROR_MESSAGE": "Saving new customer failed. Please again later."
     }
   },
+
   "PRODUCT_CART_PAGE": {
     "TITLE": "Order Summary",
     "FORM_CONTROL_SECTION": {
@@ -132,6 +144,7 @@
       "ERROR_MESSAGE": "Saving order failed. Please again later."
     }
   },
+
   "ADD_PRODUCT_DETAILS_PAGE": {
     "TITLE": "Add Product",
     "FORM_CONTROL_SECTION": {
@@ -221,12 +234,26 @@
     }
   },
 
+  "ADD_TO_CART_PAGE": {
+    "TITLE": "Product",
+    "PRODUCT_INFORMATION_CONTAINER": {
+      "STOCK_LEFT": "Stock Left"
+    }
+  },
+
   "TRANSACTION_HISTORY_PAGE": {
-    "TITLE": "Transactions"
+    "TITLE": "Transactions",
+    "DESCRIPTION": "This shows the list of dates where there are transactions recorded."
+  },
+
+  "TRANSACTION_PAGE": {
+    "TITLE": "Transactions",
+    "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
   },
 
   "TRANSACTION_DETAILS_PAGE": {
     "TITLE": "Transactions Details",
+    "DETAILS_SECTION": {},
     "MARK_TRANSACTION_AS_PAID_DIALOG": {
       "TITLE": "Mark as Paid",
       "CONFIRM": "Are you sure to mark this transaction as paid?",
@@ -236,11 +263,21 @@
   },
 
   "TOP_PRODUCTS_PAGE": {
-    "TITLE": "Top Products"
+    "TITLE": "Top Products",
+    "DESCRIPTION": "This is where customer information can be managed."
   },
 
   "SALES_PAGE": {
-    "TITLE": "Sales"
+    "TITLE": "Sales",
+    "DESCRIPTION": "This shows the list of products that are frequently purchase by our customers.",
+    "FILTER_OPTIONS_PANEL": {
+      "PICK_DATE": "Pick Date",
+      "PICK_WEEK": "Pick Week",
+      "PICK_MONTH": "Pick Month"
+    },
+    "SALES_PANEL": {
+      "LABEL": "Sales Amount"
+    }
   },
 
   "SIDE_DRAWER_SECTION": {

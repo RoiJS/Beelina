@@ -1,80 +1,48 @@
 <app-tool-bar [title]="transaction?.store?.name"> </app-tool-bar>
 
 <app-loader-layout [busy]="false">
-  <div class="page-container" style="height: 100%">
-    <div class="panel" style="height: 100%">
+  <div class="page-container">
+    <div class="panel transaction-details-panel">
       <div
-        class="panel__details-group-panel"
-        style="display: flex; flex-direction: column; height: 90vh"
+        class="panel__details-group-panel transaction-details-panel__details-group-panel"
       >
         <div class="panel__header-section">
           {{
             "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE" | translate
           }}
         </div>
-        <div style="flex: 1" class="panel__body-section">
-          <mat-list
-            role="list"
-            style="max-height: 200px; overflow: auto; margin-bottom: 15px"
-            class="product-transaction-list"
-          >
+        <div
+          class="panel__body-section transaction-details-panel__body-section"
+        >
+          <mat-list role="list" class="product-transaction-list">
             <mat-list-item
               *ngFor="let item of transaction?.productTransactions"
               role="listitem"
             >
               <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: space-between;
-                  width: 100%;
-                  font-size: 14px;
-                "
                 [ngClass]="{ unpaid: !item?.isPaid }"
+                class="product-transaction-list__item-section"
               >
-                <div
-                  style="
-                    width: 150px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-self: center;
-                  "
-                >
+                <div class="product-transaction-information">
                   <span>{{ item.product?.name }}</span>
                   <span>X</span>
                   <span>{{ item.quantity }}</span>
                 </div>
 
-                <div style="align-self: center">
+                <div class="product-transaction-information-price">
                   <span>{{ item?.priceFormatted }}</span>
                 </div>
 
-                <div style="align-self: center; text-align: center">
+                <div class="product-transaction-information-status">
                   <span
-                    style="
-                      padding: 2px;
-                      background-color: #20c920;
-                      color: white;
-                      border-radius: 15px;
-                      width: 50px;
-                      display: block;
-                      font-size: 12px;
-                    "
+                    class="product-transaction-information-status--paid"
                     *ngIf="item?.isPaid"
-                    >PAID</span
+                    >{{ "GENERAL_TEXTS.PAID" | translate }}</span
                   >
                   <span
-                    style="
-                      padding: 2px;
-                      background-color: #e02d00;
-                      color: white;
-                      border-radius: 15px;
-                      width: 50px;
-                      display: block;
-                      font-size: 12px;
-                    "
+                    class="product-transaction-information-status--unpaid"
                     *ngIf="!item?.isPaid"
-                    >UNPAID</span
+                    >{{ "GENERAL_TEXTS.UNPAID" | translate }}</span
                   >
                 </div>
               </div>
@@ -84,45 +52,32 @@
           <mat-divider></mat-divider>
           <br />
           <div
+            class="product-transaction-amount-information"
             *ngIf="transaction?.productTransactions?.length > 0"
-            style="
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-              width: 100%;
-              font-size: 15px;
-              font-weight: bold;
-            "
           >
-            <span>BALANCE</span>
+            <span>{{ "GENERAL_TEXTS.BALANCE" | translate }}</span>
             <span>{{ transaction.balanceFormatted }}</span>
           </div>
           <br />
           <div
+            class="product-transaction-amount-information"
             *ngIf="transaction?.productTransactions?.length > 0"
-            style="
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-              width: 100%;
-              font-size: 15px;
-              font-weight: bold;
-            "
           >
-            <span>TOTAL</span>
+            <span>{{ "GENERAL_TEXTS.TOTAL" | translate }}</span>
             <span>{{ transaction.totalFormatted }}</span>
           </div>
         </div>
 
-        <div class="panel__footer-section">
+        <div
+          class="panel__footer-section transaction-details-panel__footer-section"
+        >
           <button
             mat-raised-button
             color="primary"
-            style="width: 100%"
             (click)="markTransactionAsPaid()"
             [disabled]="!transaction?.hasUnpaidProductTransaction"
           >
-            Mark as paid
+            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
           </button>
         </div>
       </div>

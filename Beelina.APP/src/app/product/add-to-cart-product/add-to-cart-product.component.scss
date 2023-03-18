@@ -1,0 +1,92 @@
+@import "../../../app-variables";
+
+.add-to-cart-container {
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    font-size: 16px;
+    padding: 15px;
+    background-color: $primary;
+    color: $white;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__body {
+    flex: 1;
+    padding: 15px;
+
+    .product-information-container {
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      margin-bottom: 30px;
+
+      &__image-section {
+        align-self: center;
+
+        mat-icon {
+          height: 100px;
+          width: 100px;
+          font-size: 7em;
+          color: $primary;
+        }
+      }
+
+      &__details {
+        align-self: center;
+        display: flex;
+        flex-direction: column;
+        height: 160px;
+        justify-content: space-between;
+        text-align: center;
+
+        .product-name {
+          font-size: 17px;
+          font-weight: bold;
+        }
+
+        .product-price > span,
+        .product-stock {
+          font-size: 17px;
+        }
+      }
+    }
+
+    .product-item-options-container {
+      display: flex;
+      justify-content: space-around;
+
+      &__options {
+        display: flex;
+        gap: 12px;
+
+        .stock-number-input {
+          box-sizing: border- box;
+          padding: 12px;
+          font-size: 25px;
+          border-radius: 22px;
+          text-align: center;
+          width: 125px;
+        }
+      }
+    }
+  }
+
+  &__footer {
+    display: flex;
+    padding: 15px;
+
+    .button-container {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+
+      button {
+        width: 50%;
+      }
+    }
+  }
+}

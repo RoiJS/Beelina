@@ -19,3 +19,24 @@
     }
   }
 }
+
+.sales-date-filter-options {
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.sales-information-panel {
+  padding: 25px;
+  display: flex;
+  justify-content: space-between;
+
+  label {
+    font-size: 15px;
+  }
+
+  span {
+    font-size: 30px;
+    color: $primary;
+  }
+}
