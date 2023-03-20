@@ -15,6 +15,12 @@ export const initialState: IProductTransactionState = {
 
 export const reducers = createReducer(
   initialState,
+  mutableOn(
+    ProductTransactionActions.initializeProductTransactionsSuccess,
+    (state, action) => {
+      state.productTransactions = action.productTransactions;
+    }
+  ),
   mutableOn(ProductTransactionActions.selectProduct, (state, action) => {
     const productIdx = state.productTransactions.findIndex(
       (p) => p.productId === action.productId
@@ -22,6 +28,7 @@ export const reducers = createReducer(
 
     const productTransaction = new ProductTransaction();
     productTransaction.productId = action.productId;
+    productTransaction.productName = action.name;
     productTransaction.price = action.price;
     productTransaction.quantity = action.quantity;
 

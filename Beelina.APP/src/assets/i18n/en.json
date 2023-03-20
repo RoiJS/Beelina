@@ -269,7 +269,7 @@
 
   "SALES_PAGE": {
     "TITLE": "Sales",
-    "DESCRIPTION": "This shows the list of products that are frequently purchase by our customers.",
+    "DESCRIPTION": "This shows the amount of sales that the system recorded based on the date filter.",
     "FILTER_OPTIONS_PANEL": {
       "PICK_DATE": "Pick Date",
       "PICK_WEEK": "Pick Week",

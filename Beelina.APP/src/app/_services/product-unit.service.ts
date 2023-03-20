@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApolloQueryResult } from '@apollo/client';
+import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 import { Apollo, gql } from 'apollo-angular';
 import { map, take } from 'rxjs';

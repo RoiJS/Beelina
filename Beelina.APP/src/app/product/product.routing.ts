@@ -40,6 +40,5 @@ export const routes: Routes = [
       import('./product-cart/product-cart.module').then(
         (m) => m.ProductCartModule
       ),
-    canLoad: [CartGuard],
   },
 ];

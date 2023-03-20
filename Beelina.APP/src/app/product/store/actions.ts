@@ -27,4 +27,9 @@ export const setSearchProductAction = createAction(
   props<{ keyword: string }>()
 );
 
+export const setProductDeductionAction = createAction(
+  '[Product] Set Product Deduction',
+  props<{ deduction: number, productId: number }>()
+);
+
 export const resetProductState = createAction('[Product] Reset Product State');

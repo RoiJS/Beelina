@@ -17,6 +17,8 @@ import * as CustomerStoresReducers from '../customer/store/reducers';
 import { ProductEffects } from './store/effects';
 import { ProductUnitEffects } from '../units/store/effects';
 import { CustomerEffects } from '../customer/store/effects';
+import { ProductTransactionsEffects } from './add-to-cart-product/store/effects';
+
 import { CartGuard } from '../_guards/cart.guard';
 
 @NgModule({
@@ -34,6 +36,7 @@ import { CartGuard } from '../_guards/cart.guard';
       ProductEffects,
       ProductUnitEffects,
       CustomerEffects,
+      ProductTransactionsEffects,
     ]),
   ],
   declarations: [

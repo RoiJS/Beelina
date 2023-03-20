@@ -12,22 +12,22 @@
           <mat-list role="list" class="product-transaction-list-container">
             <mat-list-item
               class="product-transaction-list-container__list-item-section"
-              *ngFor="let item of productCartTransactions"
+              *ngFor="let item of productTransactions"
               role="listitem"
             >
               <div class="list-item">
-                <span>{{ item.productName }}</span>
+                <span>{{ item?.productName }}</span>
                 <div class="list-item__product-price-information">
-                  <span>{{ item.priceFormatted }}</span>
+                  <span>{{ item?.priceFormatted }}</span>
                   <span>X</span>
-                  <span>{{ item.quantity }}</span>
+                  <span>{{ item?.quantity }}</span>
                 </div>
               </div>
             </mat-list-item>
           </mat-list>
           <div
             class="product-transaction-total-amount-information-container"
-            *ngIf="productCartTransactions.length > 0"
+            *ngIf="productTransactions.length > 0"
           >
             <span>{{ "GENERAL_TEXTS.TOTAL" | translate }}</span>
             <span>{{ totalAmount }}</span>

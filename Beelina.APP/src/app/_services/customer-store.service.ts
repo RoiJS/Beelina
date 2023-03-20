@@ -3,7 +3,7 @@ import { map, take } from 'rxjs';
 
 import { Store } from '@ngrx/store';
 
-import { ApolloQueryResult } from '@apollo/client';
+import { ApolloQueryResult } from '@apollo/client/core';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';

@@ -19,6 +19,8 @@ import { ButtonOptions } from '../_enum/button-options.enum';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
 import * as ProductActions from './store/actions';
+import * as ProductTransactionActions from './add-to-cart-product/store/actions';
+
 import { isLoadingSelector, productsSelector } from './store/selectors';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
 import { ProductTransaction } from '../_models/transaction';
@@ -47,6 +49,10 @@ export class ProductComponent implements OnInit {
     private translateService: TranslateService
   ) {
     this.store.dispatch(ProductActions.resetProductState());
+    this.store.dispatch(
+      ProductTransactionActions.initializeProductTransactions()
+    );
+
     this._dataSource = new ProductDataSource(this.store);
 
     this._searchForm = this.formBuilder.group({

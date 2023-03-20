@@ -6,6 +6,7 @@ import { Product } from './product';
 
 export class ProductTransaction extends Entity implements IModelNode {
   public productId: number;
+  public productName: string;
   public quantity: number;
   public currentQuantity: number;
   public status: PaymenStatusEnum;

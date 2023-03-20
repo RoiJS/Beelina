@@ -10,8 +10,11 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 
 import { ProductService } from 'src/app/_services/product.service';
+import { StorageService } from 'src/app/_services/storage.service';
+
 import { productTransactionsSelector } from './store/selectors';
 import * as ProductTransactionActions from './store/actions';
+import * as ProductActions from './../store/actions';
 
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
@@ -31,7 +34,8 @@ export class AddToCartProductComponent implements OnInit {
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: { id: number },
     private formBuilder: FormBuilder,
     private store: Store<AppStateInterface>,
-    private productService: ProductService
+    private productService: ProductService,
+    private storageService: StorageService
   ) {
     this._itemCounterForm = this.formBuilder.group({
       itemCounter: [0, Validators.maxLength(100)],
@@ -52,6 +56,10 @@ export class AddToCartProductComponent implements OnInit {
         this.store
           .pipe(select(productTransactionsSelector))
           .subscribe((productTransactions: Array<ProductTransaction>) => {
+            this.storageService.storeString(
+              'productTransactions',
+              JSON.stringify(productTransactions)
+            );
             this._productTransaction = productTransactions.find(
               (p) => p.productId === data.id
             );
@@ -81,7 +89,7 @@ export class AddToCartProductComponent implements OnInit {
     let currentValue = this._itemCounterForm.get('itemCounter').value;
     currentValue -= 1;
 
-    if (currentValue > 0) {
+    if (currentValue >= 0) {
       this._itemCounterForm.get('itemCounter').setValue(currentValue);
     }
   }
@@ -101,6 +109,14 @@ export class AddToCartProductComponent implements OnInit {
         productId: this._product.id,
         price: this._product.price,
         quantity: currentValue,
+        name: this._product.name,
+      })
+    );
+
+    this.store.dispatch(
+      ProductActions.setProductDeductionAction({
+        deduction: currentValue,
+        productId: this._product.id,
       })
     );
   }

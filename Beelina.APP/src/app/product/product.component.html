@@ -40,8 +40,8 @@
         <div matRipple class="product-item list-container__card-item">
           <div class="list-container__card-item-header product-item__header">
             <mat-icon
-              matBadge="0"
-              matBadgeHidden="true"
+              [matBadge]="item.deductedStock"
+              [matBadgeHidden]="item.deductedStock === 0"
               matBadgeColor="warn"
               (click)="addItemToCart(item.id)"
               >add_shopping_cart</mat-icon

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApolloQueryResult } from '@apollo/client';
+import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
@@ -23,6 +23,8 @@ import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 import { IProductInput } from '../_interfaces/inputs/iproduct.input';
 import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
 import { Product } from '../_models/product';
+import { ProductTransaction } from '../_models/transaction';
+import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
 
 const GET_PRODUCTS_METHODS = gql`
   query ($cursor: String, $filterKeyword: String) {
@@ -127,7 +129,8 @@ export class ProductService {
 
   getProducts() {
     let cursor = null,
-      filterKeyword = '';
+      filterKeyword = '',
+      productTransactionItems = Array<ProductTransaction>();
 
     this.store
       .select(endCursorSelector)
@@ -139,6 +142,13 @@ export class ProductService {
       .pipe(take(1))
       .subscribe(
         (currentFilterKeyword) => (filterKeyword = currentFilterKeyword)
+      );
+
+    this.store
+      .select(productTransactionsSelector)
+      .pipe(take(1))
+      .subscribe(
+        (productTransactions) => (productTransactionItems = productTransactions)
       );
 
     return this.apollo
@@ -166,6 +176,10 @@ export class ProductService {
             product.pricePerUnit = productDto.pricePerUnit;
             product.price = productDto.price;
             product.productUnit = productDto.productUnit;
+            product.deductedStock =
+              -productTransactionItems.find(
+                (pt) => pt.productId === productDto.id
+              )?.quantity | 0;
             return product;
           });
 

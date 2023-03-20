@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
+import { mutableOn } from 'ngrx-etc';
 import { Product } from 'src/app/_models/product';
 
 import { IProductState } from '../types/product-state.interface';
@@ -49,5 +50,22 @@ export const reducers = createReducer(
   })),
   on(ProductActions.resetProductState, (state, action) => ({
     ...initialState,
-  }))
+  })),
+  mutableOn(ProductActions.setProductDeductionAction, (state, action) => {
+    const productIdx = state.products.findIndex(
+      (p) => p.id === action.productId
+    );
+    const product = state.products[productIdx];
+    const updatedProduct = new Product();
+    updatedProduct.id = product.id;
+    updatedProduct.name = product.name;
+    updatedProduct.description = product.description;
+    updatedProduct.stockQuantity = product.stockQuantity;
+    updatedProduct.pricePerUnit = product.pricePerUnit;
+    updatedProduct.price = product.price;
+    updatedProduct.productUnit = product.productUnit;
+    updatedProduct.deductedStock = -action.deduction;
+
+    state.products[productIdx] = updatedProduct;
+  })
 );

@@ -35,11 +35,11 @@ export class ProductCartTransaction {
   public price: number;
 
   get totalFormatted(): string {
-    return NumberFormatter.formatCurrency(this.total);
+    return NumberFormatter.formatCurrency(this?.total);
   }
 
   get priceFormatted(): string {
-    return NumberFormatter.formatCurrency(this.price);
+    return NumberFormatter.formatCurrency(this?.price);
   }
 
   get total(): number {
@@ -60,7 +60,8 @@ export class ProductCartComponent implements OnInit, OnDestroy {
   private _selectedCustomer: CustomerStore;
   private _products: Array<Product>;
   private _productTransactions: Array<ProductTransaction>;
-  private _productCartTransactions: Array<ProductCartTransaction>;
+  private _productCartTransactions: Array<ProductCartTransaction> =
+    new Array<ProductCartTransaction>();
   private _totalAmount: number = 0;
 
   constructor(
@@ -82,6 +83,9 @@ export class ProductCartComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(CustomerActions.getAllCustomerStoreAction());
+    this.store.dispatch(
+      ProductTransactionActions.initializeProductTransactions()
+    );
 
     this._subscription.add(
       this.store
@@ -93,38 +97,14 @@ export class ProductCartComponent implements OnInit, OnDestroy {
 
     this._subscription.add(
       this.store
-        .pipe(select(productsSelector))
-        .subscribe((products: Array<Product>) => {
-          this._products = products;
+        .pipe(select(productTransactionsSelector))
+        .subscribe((productTransactions: Array<ProductTransaction>) => {
+          this._productTransactions = productTransactions;
 
-          this.store
-            .pipe(select(productTransactionsSelector))
-            .subscribe((productTransactions: Array<ProductTransaction>) => {
-              this._productTransactions = productTransactions;
-
-              this._productCartTransactions = this._productTransactions.map(
-                (productTransaction: ProductTransaction) => {
-                  const product = this._products.find(
-                    (p) => p.id === productTransaction.productId
-                  );
-
-                  const productCartTransaction = new ProductCartTransaction();
-
-                  if (!product) return productCartTransaction;
-
-                  productCartTransaction.productName = product.name;
-                  productCartTransaction.quantity = productTransaction.quantity;
-                  productCartTransaction.price = product.price;
-
-                  return productCartTransaction;
-                }
-              );
-
-              this._totalAmount = this._productCartTransactions.reduce(
-                (t, n) => t + n.price * n.quantity,
-                0
-              );
-            });
+          this._totalAmount = this._productTransactions.reduce(
+            (t, n) => t + n.price * n.quantity,
+            0
+          );
         })
     );
 
@@ -233,6 +213,10 @@ export class ProductCartComponent implements OnInit, OnDestroy {
 
   get productCartTransactions(): Array<ProductCartTransaction> {
     return this._productCartTransactions;
+  }
+
+  get productTransactions(): Array<ProductTransaction> {
+    return this._productTransactions;
   }
 
   get customerStoreFilterOptions(): Observable<Array<CustomerStore>> {

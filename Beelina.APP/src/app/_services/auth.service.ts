@@ -5,7 +5,7 @@ import { Apollo, gql, MutationResult, Query } from 'apollo-angular';
 
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, Observable } from 'rxjs';
-import { ApolloQueryResult } from '@apollo/client';
+import { ApolloQueryResult } from '@apollo/client/core';
 
 import { RoutingService } from './routing.service';
 import { StorageService } from './storage.service';
