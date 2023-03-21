@@ -8,11 +8,11 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { customerStoresSelector } from 'src/app/customer/store/selectors';
 import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
-import { productsSelector } from '../store/selectors';
 import { Router } from '@angular/router';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { StorageService } from 'src/app/_services/storage.service';
 
 import {
   TransactionDto,
@@ -71,7 +71,8 @@ export class ProductCartComponent implements OnInit, OnDestroy {
     private store: Store<AppStateInterface>,
     private transactionService: TransactionService,
     private translateService: TranslateService,
-    private snackBarService: MatSnackBar
+    private snackBarService: MatSnackBar,
+    private storageService: StorageService
   ) {
     this._orderForm = this.formBuilder.group({
       name: ['', Validators.required],
@@ -127,6 +128,41 @@ export class ProductCartComponent implements OnInit, OnDestroy {
           .setValue(this._selectedCustomer.paymentMethod.name);
       }
     });
+  }
+
+  clear() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.CONFIRM'
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.snackBarService.open(
+            this.translateService.instant(
+              'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.SUCCESS_MESSAGE'
+            ),
+            this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+            {
+              duration: 5000,
+            }
+          );
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: false,
+            })
+          );
+          this.storageService.remove('productTransactions');
+          this.store.dispatch(
+            ProductTransactionActions.resetProductTransactionState()
+          );
+          this.router.navigate(['/product-catalogue']);
+        }
+      });
   }
 
   confirm() {

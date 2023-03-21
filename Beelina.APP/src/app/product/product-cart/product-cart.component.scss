@@ -38,6 +38,10 @@
 
   .product-transaction-information-container {
     &__button-options-section {
+      padding: 15px;
+      display: flex;
+      gap: 10px;
+
       button {
         width: 100%;
       }

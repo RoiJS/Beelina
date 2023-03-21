@@ -6,6 +6,7 @@
     "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
     "CONFIRM": "Confirm",
+    "CLEAR": "Clear",
     "CANCEL": "Cancel",
     "TOTAL": "Total",
     "PAID": "Paid",
@@ -146,6 +147,11 @@
       "CONFIRM": "Are you sure to save new order?",
       "SUCCESS_MESSAGE": "New order has been saved!",
       "ERROR_MESSAGE": "Saving order failed. Please again later."
+    },
+    "CLEAR_ORDER_DIALOG": {
+      "TITLE": "Clear order",
+      "CONFIRM": "Are you sure to save clear order?",
+      "SUCCESS_MESSAGE": "Order has been cleared"
     }
   },
 
