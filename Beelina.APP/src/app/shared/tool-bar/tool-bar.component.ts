@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import {
   AfterContentChecked,
   Component,
@@ -18,12 +19,13 @@ export class ToolBarComponent
   implements OnInit, OnDestroy, AfterContentChecked
 {
   @Input() title = '';
+  @Input() showBackButton = true;
 
   private _isHandset = false;
 
   private isHandSetSubscription: Subscription | undefined;
 
-  constructor(private uiService: UIService) {}
+  constructor(private uiService: UIService, private location: Location) {}
 
   ngOnInit(): void {}
 
@@ -37,12 +39,20 @@ export class ToolBarComponent
     this.uiService.toggleDrawer();
   }
 
+  onGoBack() {
+    this.location.back();
+  }
+
   ngAfterContentChecked() {
     this.isHandSetSubscription = this.uiService.isHandset.subscribe(
       (result: boolean) => {
         this._isHandset = result;
       }
     );
+  }
+
+  get canGoBack() {
+    return this.showBackButton;
   }
 
   get isHandset(): boolean {
