@@ -109,3 +109,14 @@ mat-tree-node[aria-level="1"] {
 .side-drawer-menu-tree div[role="group"] > .mat-tree-node {
   padding-left: 20px;
 }
+
+.mobile-view-supported-info-container {
+  height: 100%;
+  padding: 0px;
+  display: flex;
+  justify-content: space-around;
+
+  &__description {
+    align-self: center;
+  }
+}

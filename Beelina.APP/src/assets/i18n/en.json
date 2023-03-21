@@ -33,6 +33,10 @@
     }
   },
 
+  "MAIN_PAGE": {
+    "DESCRIPTION": "This application is only supported in mobile view at the moment."
+  },
+
   "AUTH_PAGE": {
     "TITLE": "Login",
     "AUTH_FORM": {
