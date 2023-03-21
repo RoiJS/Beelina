@@ -7,7 +7,9 @@ import {
 } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 
-const uri = 'https://localhost:9153/graphql/'; // <-- add the URL of the GraphQL server here
+import { environment } from 'src/environments/environment';
+
+const uri = environment.beelinaAPIEndPoint; // <-- add the URL of the GraphQL server here
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   const defaultOptions: DefaultOptions = {
