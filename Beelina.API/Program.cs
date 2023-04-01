@@ -10,9 +10,9 @@ using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +66,7 @@ services.AddGraphQLServer()
         .AddType<StoreInformationResult>()
         .AddType<ProductInformationResult>()
         .AddType<CheckProductCodeInformationResult>()
+        .AddType<SyncDatabaseResult>()
         .AddType<StoreNotExistsError>()
         .AddType<ProductCodeExistsError>()
         .AddType<ProductNotExistsError>()
@@ -184,5 +185,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGraphQL("/graphql");
+
+app.MapGet("/", async ([Service] IClientRepository<Client> clientRepository) => await clientRepository.GetCompanyInfoByName("BeelinaDeveloper"));
 
 app.Run();
