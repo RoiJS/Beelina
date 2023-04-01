@@ -1,8 +1,11 @@
-﻿using Beelina.LIB.Enums;
+﻿using Beelina.LIB.DbContexts;
+using Beelina.LIB.Enums;
+using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Beelina.API.Types.Mutations
@@ -39,6 +42,12 @@ namespace Beelina.API.Types.Mutations
             var createdClient = await clientRepository.RegisterClient(clientToCreate);
 
             return createdClient;
+        }
+
+        public async Task<ISyncDatabasePayload> SyncDatabase([Service] BeelinaClientDataContext _context)
+        {
+            await _context.Database.MigrateAsync();
+            return new SyncDatabaseResult() { DatabaseSynced = true };
         }
     }
 }
