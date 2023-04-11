@@ -182,4 +182,8 @@ export class SalesComponent implements OnInit {
   get filterForm(): FormGroup {
     return this._filterForm;
   }
+
+  get maxDate(): Date {
+    return new Date();
+  }
 }

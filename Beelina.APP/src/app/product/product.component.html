@@ -46,7 +46,6 @@
               [matBadge]="item.deductedStock"
               [matBadgeHidden]="item.deductedStock === 0"
               matBadgeColor="warn"
-              (click)="addItemToCart(item.id)"
               >add_shopping_cart</mat-icon
             >
             <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
@@ -60,10 +59,16 @@
             </mat-menu>
           </div>
           <mat-divider></mat-divider>
-          <div class="list-container__card-item-body product-item__body">
+          <div
+            (click)="addItemToCart(item.id)"
+            class="list-container__card-item-body product-item__body"
+          >
             <mat-icon>card_giftcard</mat-icon>
           </div>
-          <div class="list-container__card-item-footer product-item__footer">
+          <div
+            (click)="addItemToCart(item.id)"
+            class="list-container__card-item-footer product-item__footer"
+          >
             <div class="product-info">
               <span class="product-info__label">Name: </span
               ><span>{{ item.name }}</span>

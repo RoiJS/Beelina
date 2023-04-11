@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Apollo, gql, MutationResult, Query } from 'apollo-angular';
+import { Apollo, gql, MutationResult } from 'apollo-angular';
+import { Store } from '@ngrx/store';
 
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, Observable } from 'rxjs';
@@ -17,6 +18,9 @@ import { ILoginInput } from '../_interfaces/inputs/ilogin.input';
 import { IAuthenticationOutput } from '../_interfaces/outputs/ilogin.output';
 import { IClientInformationQueryPayload } from '../_interfaces/payloads/iclient-information-query.payload';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
+import { AppStateInterface } from '../_interfaces/app-state.interface';
+
+import * as LoginActions from '../auth/store/actions';
 
 const GET_CLIENT_INFORMATION_QUERY = gql`
   query ($clientName: String!) {
@@ -86,7 +90,8 @@ export class AuthService {
     private apollo: Apollo,
     private http: HttpClient,
     private routingService: RoutingService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private store: Store<AppStateInterface>
   ) {}
 
   get user() {
@@ -221,6 +226,8 @@ export class AuthService {
     this.storageService.remove('userData');
     this.storageService.remove('authToken');
     this.storageService.remove('app-secret-token');
+
+    this.store.dispatch(LoginActions.reserLoginCredentials());
 
     if (this._tokenExpirationTimer) {
       clearTimeout(this._tokenExpirationTimer);

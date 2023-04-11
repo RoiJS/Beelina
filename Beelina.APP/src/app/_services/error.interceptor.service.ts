@@ -46,15 +46,24 @@ export class ErrorInterceptorService implements HttpInterceptor {
         // Header request contains Token-Expired,
         // we will send request to refresh the token
         // attempt to resend the request.
-        if (exception.status === 500 && exception.statusText === 'OK') {
-          return this.authService.refresh().pipe(
-            switchMap(() => {
-              return this.updateHeader(req);
-            }),
-            switchMap((newRequest) => {
-              return next.handle(newRequest);
-            })
-          );
+        const errors = exception.error.errors;
+
+        if (errors && errors.length > 0) {
+          const errorCode = errors[0].extensions.code;
+
+          if (
+            exception.status === 500 &&
+            errorCode === 'AUTH_NOT_AUTHENTICATED'
+          ) {
+            return this.authService.refresh().pipe(
+              switchMap(() => {
+                return this.updateHeader(req);
+              }),
+              switchMap((newRequest) => {
+                return next.handle(newRequest);
+              })
+            );
+          }
         }
 
         let serverError = null;

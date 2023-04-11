@@ -59,7 +59,7 @@ export class EditProductDetailsComponent implements OnInit {
         ],
         name: ['', Validators.required],
         description: ['', Validators.required],
-        stockQuantity: [null, Validators.required],
+        stockQuantity: [null, [Validators.required, Validators.min(1)]],
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
       },

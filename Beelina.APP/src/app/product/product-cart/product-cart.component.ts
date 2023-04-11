@@ -202,9 +202,11 @@ export class ProductCartComponent implements OnInit, OnDestroy {
                     state: false,
                   })
                 );
+                this.storageService.remove('productTransactions');
                 this.store.dispatch(
                   ProductTransactionActions.resetProductTransactionState()
                 );
+
                 this.router.navigate(['/product-catalogue']);
               },
 
@@ -261,5 +263,9 @@ export class ProductCartComponent implements OnInit, OnDestroy {
 
   get totalAmount(): string {
     return NumberFormatter.formatCurrency(this._totalAmount);
+  }
+
+  get minDate(): Date {
+    return new Date();
   }
 }

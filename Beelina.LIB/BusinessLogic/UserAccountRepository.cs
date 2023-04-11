@@ -42,8 +42,9 @@ namespace Beelina.LIB.BusinessLogic
         public async Task<UserAccount> Login(string username, string password)
         {
             var account = await _beelinaRepository.ClientDbContext.UserAccounts
+                .Where(x => x.Username == username)
                 .Includes(a => a.RefreshTokens)
-                .FirstOrDefaultAsync(x => x.Username == username);
+                .FirstOrDefaultAsync();
 
             if (account == null)
             {

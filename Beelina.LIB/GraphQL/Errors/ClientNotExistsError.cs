@@ -11,7 +11,7 @@ namespace Beelina.LIB.GraphQL.Errors
 
         public ClientNotExistsError(string clientName)
         {
-            Message = $"The client {clientName} does not exists!";
+            Message = $"The company {clientName} does not exists!";
         }
     }
 }

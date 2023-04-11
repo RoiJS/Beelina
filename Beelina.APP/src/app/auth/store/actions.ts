@@ -15,3 +15,7 @@ export const getLoginError = createAction(
   '[Auth] Login Failed',
   props<{ error: string }>()
 );
+
+export const reserLoginCredentials = createAction(
+  '[Auth] Reset Login Credentials'
+);
