@@ -10,9 +10,13 @@ import { customerStoresSelector } from 'src/app/customer/store/selectors';
 import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
 import { Router } from '@angular/router';
 
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { StorageService } from 'src/app/_services/storage.service';
+
+import { AddToCartProductComponent } from '../add-to-cart-product/add-to-cart-product.component';
 
 import {
   TransactionDto,
@@ -65,6 +69,7 @@ export class ProductCartComponent implements OnInit, OnDestroy {
   private _totalAmount: number = 0;
 
   constructor(
+    private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -101,6 +106,10 @@ export class ProductCartComponent implements OnInit, OnDestroy {
         .pipe(select(productTransactionsSelector))
         .subscribe((productTransactions: Array<ProductTransaction>) => {
           this._productTransactions = productTransactions;
+
+          if (this._productTransactions.length === 0) {
+            this.router.navigate(['/product-catalogue/product-list']);
+          }
 
           this._totalAmount = this._productTransactions.reduce(
             (t, n) => t + n.price * n.quantity,
@@ -163,6 +172,12 @@ export class ProductCartComponent implements OnInit, OnDestroy {
           this.router.navigate(['/product-catalogue']);
         }
       });
+  }
+
+  addItemToCart(id: number) {
+    this.bottomSheet.open(AddToCartProductComponent, {
+      data: { id },
+    });
   }
 
   confirm() {

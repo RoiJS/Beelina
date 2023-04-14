@@ -19,9 +19,13 @@
         font-size: 14px;
 
         &__product-price-information {
-          width: 85px;
+          width: 120px;
           display: flex;
           justify-content: space-between;
+        }
+
+        &__edit-product {
+          font-size: 17px;
         }
       }
     }

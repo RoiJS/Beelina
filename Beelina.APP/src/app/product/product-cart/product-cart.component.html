@@ -21,6 +21,12 @@
                   <span>{{ item?.priceFormatted }}</span>
                   <span>X</span>
                   <span>{{ item?.quantity }}</span>
+                  <mat-icon
+                    (click)="addItemToCart(item.productId)"
+                    matRipple
+                    class="list-item__edit-product"
+                    >edit</mat-icon
+                  >
                 </div>
               </div>
             </mat-list-item>
