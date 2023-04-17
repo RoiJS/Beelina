@@ -4,6 +4,7 @@ using Beelina.LIB.BusinessLogic;
 using Beelina.LIB.DbContexts;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
+using Beelina.LIB.Helpers.Class;
 using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ReserbizAPP.LIB.Helpers.Class;
 using System.Security.Claims;
 using System.Text;
 
@@ -31,6 +33,8 @@ services.AddScoped<IDataContextHelper, DataContextHelper>();
 services.AddScoped(typeof(IBeelinaRepository<>), typeof(BeelinaRepository<>));
 services.AddScoped(typeof(IUserAccountRepository<UserAccount>), typeof(UserAccountRepository));
 services.AddScoped(typeof(IClientRepository<Client>), typeof(ClientRepository));
+services.AddScoped(typeof(IClientDbManagerRepository<IEntity>), typeof(ClientDbManagerRepository));
+services.AddScoped(typeof(IDataSeedRepository<IEntity>), typeof(DataSeedRepository));
 services.AddScoped(typeof(ICurrentUserService), typeof(CurrentUserService));
 services.AddScoped(typeof(IProductUnitRepository<ProductUnit>), typeof(ProductUnitRepository));
 services.AddScoped(typeof(IProductRepository<Product>), typeof(ProductRepository));
@@ -74,6 +78,13 @@ services.AddGraphQLServer()
 
 // Register IOptions pattern for AppSettings section
 services.Configure<ApplicationSettings>(configuration.GetSection("AppSettings"));
+
+// Register IOptions pattern for EmailServerSettings section
+services.Configure<EmailServerSettings>(configuration.GetSection("EmailServerSettings"));
+
+// Register IOptions pattern for AppHostInfo section
+services.Configure<AppHostInfo>(configuration.GetSection("AppHostInfo"));
+
 // Register IOptions pattern for DbUserAccountDefaultsSettings section
 services.Configure<DbUserAccountDefaultsSettings>(configuration.GetSection("DbUserAccountDefaultsSettings"));
 

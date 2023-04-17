@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Beelina.LIB.Dtos;
 using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Models;
@@ -21,6 +22,13 @@ namespace Beelina.API.Helpers.MapperProfile
             CreateMap<Client, ClientInformationResult>();
             CreateMap<Store, StoreInformationResult>();
             CreateMap<Product, ProductInformationResult>();
+
+            CreateMap<Client, ClientForListDto>();
+            CreateMap<Client, ClientDetailsDto>();
+            CreateMap<ClientForUpdateDto, Client>();
+            CreateMap<UserAccountDto, Account>();
+            CreateMap<Account, UserAccountDto>();
+            CreateMap<ClientDto, Client>();
         }
     }
 }
