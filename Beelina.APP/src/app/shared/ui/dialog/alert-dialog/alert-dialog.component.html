@@ -5,7 +5,7 @@
   </div>
   <mat-divider></mat-divider>
   <div class="dialog-container__message">
-    <p>{{ data.message }}</p>
+    <p [innerHTML]="data.message"></p>
   </div>
   <div class="dialog-container__alert-buttons">
     <button mat-button mat-raised-button color="primary" (click)="onConfirm()">

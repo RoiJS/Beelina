@@ -29,6 +29,17 @@
         }
       }
     }
+
+    &__button-section {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+
+      button {
+        width: 100px;
+        align-self: end;
+      }
+    }
   }
 
   .product-transaction-total-amount-information-container {
@@ -44,6 +55,7 @@
     &__button-options-section {
       padding: 15px;
       display: flex;
+      flex-direction: column;
       gap: 10px;
 
       button {

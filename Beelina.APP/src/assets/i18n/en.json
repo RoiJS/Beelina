@@ -20,6 +20,7 @@
     "CUSTOMERS": "Customers",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
+    "DRAFT_TRANSACTIONS": "Draft Transactions",
     "TRANSACTION_HISTORY": "Transaction History",
     "LOGOUT": "Logout"
   },
@@ -140,18 +141,33 @@
       },
       "DATE_CONTROL": {
         "LABEL": "Due Date"
+      },
+      "BUTTON_OPTIONS": {
+        "CONFIRM": "Confirm",
+        "DRAFT": "Draft",
+        "ADD_ITEM": "Add Item +"
       }
     },
-    "SAVE_NEW_ORDER_DIALOG": {
+    "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
       "TITLE": "Save new order",
       "CONFIRM": "Are you sure to save new order?",
       "SUCCESS_MESSAGE": "New order has been saved!",
       "ERROR_MESSAGE": "Saving order failed. Please again later."
     },
+    "SAVE_NEW_DRAFT_ORDER_DIALOG": {
+      "TITLE": "Save as draft order",
+      "CONFIRM": "Are you sure to save new draft order?",
+      "SUCCESS_MESSAGE": "New draft order has been saved!",
+      "ERROR_MESSAGE": "Saving draft order failed. Please again later."
+    },
     "CLEAR_ORDER_DIALOG": {
       "TITLE": "Clear order",
       "CONFIRM": "Are you sure to save clear order?",
       "SUCCESS_MESSAGE": "Order has been cleared"
+    },
+    "INSUFFICIENT_PRODUCT_QUANTITY_DIALOG": {
+      "TITLE": "Insufficient Item Stocks",
+      "MESSAGE": "Following Items have insufficient stocks available: </br></br>"
     }
   },
 
@@ -256,6 +272,11 @@
     "DESCRIPTION": "This shows the list of dates where there are transactions recorded."
   },
 
+  "DRAFT_TRANSACTIONS_PAGE": {
+    "TITLE": "Draft Transactions",
+    "DESCRIPTION": "This shows available dates that have draft transactions."
+  },
+
   "TRANSACTION_PAGE": {
     "TITLE": "Transactions",
     "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
@@ -295,6 +316,21 @@
       "VERSION": "Version",
       "COPYRIGHT": "Copyright 2022.",
       "ALL_RIGHTS_RESERVED": "All rights reserved"
+    }
+  },
+
+  "TEXT_ORDER_DIALOG": {
+    "TTTLE": "Text Order",
+    "DESCRIPTION": "Set orders by pasting texts following the format below:",
+    "FORM_CONTROL_SECTION": {
+      "TEXT_ORDER_CONTROL": {
+        "LABEL": "Enter Text Order:",
+        "HINT_LABEL_1": "[Product Code] x [Quantity]",
+        "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 x 20"
+      },
+      "BUTTON_OPTIONS": {
+        "SET_ORDER": "Set Order"
+      }
     }
   }
 }

@@ -29,7 +29,12 @@ export const setSearchProductAction = createAction(
 
 export const setProductDeductionAction = createAction(
   '[Product] Set Product Deduction',
-  props<{ deduction: number, productId: number }>()
+  props<{ deduction: number; productId: number }>()
+);
+
+export const analyzeTextOrders = createAction(
+  '[Product] Analyze Text Orders',
+  props<{ textOrders: string }>()
 );
 
 export const resetProductState = createAction('[Product] Reset Product State');

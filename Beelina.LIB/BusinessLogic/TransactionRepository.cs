@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,8 @@ namespace Beelina.LIB.BusinessLogic
                                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                                     on t.Id equals pt.TransactionId
 
+                                    where t.Status == TransactionStatusEnum.Confirmed
+
                                     select new
                                     {
                                         Transaction = t,
@@ -33,23 +36,25 @@ namespace Beelina.LIB.BusinessLogic
             return new TransactionSales { Sales = await transactionSales.SumAsync(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity) };
         }
 
-        public async Task<List<Transaction>> GetTransactionByDate(string transactionDate)
+        public async Task<List<Transaction>> GetTransactionByDate(TransactionStatusEnum status, string transactionDate)
         {
             var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
                                         .Include(t => t.Store)
                                         .Include(t => t.ProductTransactions)
-                                        .Where(t => t.TransactionDate.Date == Convert.ToDateTime(transactionDate))
+                                        .Where(t => t.TransactionDate.Date == Convert.ToDateTime(transactionDate) && t.Status == status)
                                         .ToListAsync();
 
             return transactionsFromRepo;
         }
 
-        public async Task<List<TransactionHistoryDate>> GetTransactonDates(string transactionDate)
+        public async Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string transactionDate)
         {
             var transactions = await (
                     from t in _beelinaRepository.ClientDbContext.Transactions
                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                     on t.Id equals pt.TransactionId
+
+                    where t.Status == status
 
                     select new
                     {
@@ -61,7 +66,7 @@ namespace Beelina.LIB.BusinessLogic
             var transactionHistoryDates = (from t in transactions
                                            group t by t.Transactions.TransactionDate into g
 
-                                           select new TransactionHistoryDate
+                                           select new TransactionDateInformation
                                            {
                                                TransactionDate = g.Key,
                                                AllTransactionsPaid = Convert.ToBoolean(g.Max(s => s.ProductTransactions.Status))

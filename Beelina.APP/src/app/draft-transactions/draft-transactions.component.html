@@ -1,0 +1,33 @@
+<app-tool-bar
+  [title]="'GENERAL_TEXTS.BEELINA' | translate"
+  [showBackButton]="false"
+>
+</app-tool-bar>
+
+<app-loader-layout [busy]="false">
+  <div class="page-container">
+    <div class="page-container__page-divider">
+      <label>{{ "DRAFT_TRANSACTIONS_PAGE.TITLE" | translate }}</label
+      ><br />
+      <span class="page-information-description">{{
+        "DRAFT_TRANSACTIONS_PAGE.DESCRIPTION" | translate
+      }}</span>
+    </div>
+
+    <cdk-virtual-scroll-viewport
+      itemSize="60"
+      class="list-container"
+    >
+      <div *cdkVirtualFor="let item of draftTransactionDates">
+        <div
+          matRipple
+          class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
+          (click)="goToTransactionDate(item.transactionDate)"
+        >
+          <span>{{ item.transactionDateFormatted }}</span>
+          <mat-icon>keyboard_arrow_right</mat-icon>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+</app-loader-layout>

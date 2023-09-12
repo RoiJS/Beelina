@@ -10,7 +10,7 @@ namespace Beelina.API.Types.Query
     public class ClientQuery
     {
         public async Task<IClientInformationPayload> GetClientInformation(
-            [Service] IClientRepository<Client> clientRepository, 
+            [Service] IClientRepository<Client> clientRepository,
             [Service] IMapper mapper,
             string clientName)
         {

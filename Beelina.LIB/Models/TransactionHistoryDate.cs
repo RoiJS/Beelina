@@ -3,7 +3,7 @@ using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
 {
-    public class TransactionHistoryDate
+    public class TransactionDateInformation
     {
         public DateTime TransactionDate { get; set; }
 

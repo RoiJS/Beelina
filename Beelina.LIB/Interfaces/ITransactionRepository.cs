@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Models;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Models;
 
 namespace Beelina.LIB.Interfaces
 {
@@ -7,9 +8,9 @@ namespace Beelina.LIB.Interfaces
     {
         Task<Transaction> RegisterTransaction(Transaction transaction);
 
-        Task<List<TransactionHistoryDate>> GetTransactonDates(string transactionDate);
+        Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status,string transactionDate);
 
-        Task<List<Transaction>> GetTransactionByDate(string transactionDate);
+        Task<List<Transaction>> GetTransactionByDate(TransactionStatusEnum status,string transactionDate);
         
         Task<TransactionSales> GetSales(string fromDate, string toDate);
     }

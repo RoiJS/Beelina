@@ -16,6 +16,11 @@ export const routes: Routes = [
     title: 'PRODUCTS_CATALOGUE_PAGE.TITLE',
   },
   {
+    path: 'product-list/:transactionId',
+    component: ProductComponent,
+    title: 'PRODUCTS_CATALOGUE_PAGE.TITLE',
+  },
+  {
     path: 'add-product',
     loadChildren: () =>
       import('./add-product-details/add-product-details.module').then(

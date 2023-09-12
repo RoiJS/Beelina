@@ -1,18 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { BaseDataSource } from '../customer/customer.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
+import { TextOrderComponent } from './text-order/text-order.component';
 
 import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { ProductService } from '../_services/product.service';
+import { StorageService } from '../_services/storage.service';
 
 import { ButtonOptions } from '../_enum/button-options.enum';
 
@@ -31,14 +33,18 @@ import { Product } from '../_models/product';
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.scss'],
 })
-export class ProductComponent implements OnInit {
+export class ProductComponent implements OnInit, OnDestroy {
   private _dataSource: ProductDataSource;
   private _searchForm: FormGroup;
   private _itemCounter: number;
+  private _productTransactions: Array<ProductTransaction>;
+  private _transactionId: number;
+  private _subscription: Subscription = new Subscription();
 
   $isLoading: Observable<boolean>;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
     private bottomSheet: MatBottomSheet,
@@ -46,8 +52,12 @@ export class ProductComponent implements OnInit {
     private router: Router,
     private store: Store<AppStateInterface>,
     private snackBarService: MatSnackBar,
+    private storageService: StorageService,
     private translateService: TranslateService
   ) {
+    this._transactionId =
+      +this.activatedRoute.snapshot.paramMap.get('transactionId');
+
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
       ProductTransactionActions.initializeProductTransactions()
@@ -61,14 +71,28 @@ export class ProductComponent implements OnInit {
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
 
-    this.store
-      .pipe(select(productTransactionsSelector))
-      .subscribe((productTransactions: Array<ProductTransaction>) => {
-        this._itemCounter = productTransactions.length;
-      });
+    this._subscription.add(
+      this.store
+        .pipe(select(productTransactionsSelector))
+        .subscribe((productTransactions: Array<ProductTransaction>) => {
+          this._productTransactions = productTransactions;
+          this._itemCounter = this._productTransactions.length;
+
+          if (this._transactionId === 0) {
+            this.storageService.storeString(
+              'productTransactions',
+              JSON.stringify(this._productTransactions)
+            );
+          }
+        })
+    );
   }
 
   ngOnInit() {}
+
+  ngOnDestroy() {
+    this._subscription.unsubscribe();
+  }
 
   goToCart() {
     this.router.navigate([`product-catalogue/product-cart`]);
@@ -125,10 +149,14 @@ export class ProductComponent implements OnInit {
     this.router.navigate(['product-catalogue/add-product']);
   }
 
-  addItemToCart(id: number) {
+  addItemToCart(productId: number) {
     this.bottomSheet.open(AddToCartProductComponent, {
-      data: { id },
+      data: { productId, productTransactions: this._productTransactions },
     });
+  }
+
+  openTextOrderDialog() {
+    this.bottomSheet.open(TextOrderComponent);
   }
 
   onSearch() {

@@ -1,0 +1,23 @@
+.text-order-container {
+  height: 55vh;
+
+  .panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel__body-section {
+    flex: 1;
+
+    mat-hint {
+      font-size: 11px;
+    }
+  }
+
+  .panel__footer-section {
+    button {
+      width: 100%;
+    }
+  }
+}

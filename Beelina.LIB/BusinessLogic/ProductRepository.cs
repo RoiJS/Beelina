@@ -36,5 +36,11 @@ namespace Beelina.LIB.BusinessLogic
             return productFromRepo;
         }
 
+        public async Task<Product> GetProductByCode(string productCode)
+        {
+            var productFromRepo = await _beelinaRepository.ClientDbContext.Products.Where((p) => p.Code == productCode).FirstOrDefaultAsync();
+            return productFromRepo;
+        }
+
     }
 }

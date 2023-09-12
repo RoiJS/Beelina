@@ -25,6 +25,9 @@ import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
 import { Product } from '../_models/product';
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
+import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
+import { InsufficientProductQuantity } from '../_models/insufficient-product-quantity';
+import { IProductTransactionQueryPayload } from '../_interfaces/payloads/iproduct-transaction-query.payload';
 
 const GET_PRODUCTS_METHODS = gql`
   query ($cursor: String, $filterKeyword: String) {
@@ -116,6 +119,33 @@ const CHECK_PRODUCT_CODE = gql`
       ... on CheckProductCodeInformationResult {
         exists
       }
+    }
+  }
+`;
+
+const VALIDATE_PRODUCT_QUANTITIES = gql`
+  query ($productTransactionsInputs: [ProductTransactionInput!]!) {
+    validateProductionTransactionsQuantities(
+      productTransactionsInputs: $productTransactionsInputs
+    ) {
+      productId
+      productName
+      productCode
+      selectedQuantity
+      currentQuantity
+    }
+  }
+`;
+
+const ANALYZE_TEXT_ORDERS = gql`
+  query ($textOrders: String!) {
+    analyzeTextOrders(textOrders: $textOrders) {
+      id
+      productId
+      productName
+      quantity
+      price
+      currentQuantity
     }
   }
 `;
@@ -320,6 +350,91 @@ export class ProductService {
               )).exists;
 
             return false;
+          }
+        )
+      );
+  }
+
+  validateProductionTransactionsQuantities(
+    productTransactions: Array<ProductTransaction>
+  ) {
+    const productTransactionsInputs = productTransactions.map((p) => {
+      return {
+        id: p.id,
+        productId: p.productId,
+        quantity: p.quantity,
+        price: p.price,
+        currentQuantity: p.currentQuantity,
+      };
+    });
+
+    return this.apollo
+      .watchQuery({
+        query: VALIDATE_PRODUCT_QUANTITIES,
+        variables: {
+          productTransactionsInputs,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              validateProductionTransactionsQuantities: Array<IValidateProductQuantitiesQueryPayload>;
+            }>
+          ) => {
+            const data = <Array<InsufficientProductQuantity>>(
+              result.data.validateProductionTransactionsQuantities
+            );
+
+            const insufficientProductQuantities: Array<InsufficientProductQuantity> =
+              data.map((i) => {
+                return <InsufficientProductQuantity>{
+                  productId: i.productId,
+                  productName: i.productName,
+                  productCode: i.productCode,
+                  currentQuantity: i.currentQuantity,
+                  selectedQuantity: i.selectedQuantity,
+                };
+              });
+
+            return insufficientProductQuantities;
+          }
+        )
+      );
+  }
+
+  analyzeTextOrders(textOrders: string) {
+    return this.apollo
+      .watchQuery({
+        query: ANALYZE_TEXT_ORDERS,
+        variables: {
+          textOrders,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              analyzeTextOrders: Array<IProductTransactionQueryPayload>;
+            }>
+          ) => {
+            const data = <Array<IProductTransactionQueryPayload>>(
+              result.data.analyzeTextOrders
+            );
+
+            const productTransactions: Array<ProductTransaction> = data.map(
+              (product) => {
+                return <ProductTransaction>{
+                  productId: product.productId,
+                  productName: product.productName,
+                  price: product.price,
+                  quantity: product.quantity,
+                  currentQuantity: product.currentQuantity,
+                };
+              }
+            );
+
+            return productTransactions;
           }
         )
       );

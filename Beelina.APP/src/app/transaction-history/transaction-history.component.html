@@ -2,9 +2,9 @@
   [title]="'GENERAL_TEXTS.BEELINA' | translate"
   [showBackButton]="false"
 >
-  <button mat-icon-button class="toolbar-option">
+  <!-- <button mat-icon-button class="toolbar-option">
     <mat-icon matBadgeColor="warn">search</mat-icon>
-  </button>
+  </button> -->
 </app-tool-bar>
 
 <app-loader-layout [busy]="false">
@@ -19,12 +19,12 @@
 
     <cdk-virtual-scroll-viewport
       itemSize="60"
-      class="list-container transaction-history-list-container"
+      class="list-container"
     >
       <div *cdkVirtualFor="let item of transactionHistoryDates">
         <div
           matRipple
-          class="transaction-date list-container__item-section transaction-history-list-container__item-section"
+          class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
           [ngClass]="{ unpaid: !item.allTransactionsPaid }"
           (click)="goToTransactionDate(item.transactionDate)"
         >

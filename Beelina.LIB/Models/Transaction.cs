@@ -9,6 +9,7 @@ namespace Beelina.LIB.Models
         public int StoreId { get; set; }
         public DateTime TransactionDate { get; set; }
         public Store Store { get; set; }
+        public TransactionStatusEnum Status { get; set; }
 
         public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
 

@@ -8,5 +8,6 @@ namespace Beelina.LIB.Interfaces
         Task<Product> RegisterProduct(Product product);
         Task<Product> UpdateProduct(Product product);
         Task<Product> GetProductByUniqueCode(int productId, string productCode);
+        Task<Product> GetProductByCode(string productCode);
     }
 }

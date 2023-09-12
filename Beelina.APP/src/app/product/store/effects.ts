@@ -3,10 +3,14 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { catchError, map, of, switchMap } from 'rxjs';
+
 import { Product } from 'src/app/_models/product';
+import { ProductTransaction } from 'src/app/_models/transaction';
+
 import { ProductService } from 'src/app/_services/product.service';
 
 import * as ProductActions from './actions';
+import * as ProductTransactionActions from '../add-to-cart-product/store/actions';
 
 @Injectable()
 export class ProductEffects {
@@ -28,6 +32,30 @@ export class ProductEffects {
               });
             }
           ),
+          catchError((error) =>
+            of(
+              ProductActions.getProductsActionError({
+                error: error.message,
+              })
+            )
+          )
+        );
+      })
+    )
+  );
+
+  analyzeTextOrders$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.analyzeTextOrders),
+      switchMap((action: { textOrders: string }) => {
+        return this.productService.analyzeTextOrders(action.textOrders).pipe(
+          map((productTransactions: Array<ProductTransaction>) => {
+            return ProductTransactionActions.initializeProductTransactionsSuccess(
+              {
+                productTransactions,
+              }
+            );
+          }),
           catchError((error) =>
             of(
               ProductActions.getProductsActionError({

@@ -20,6 +20,7 @@ import { CustomerEffects } from '../customer/store/effects';
 import { ProductTransactionsEffects } from './add-to-cart-product/store/effects';
 
 import { CartGuard } from '../_guards/cart.guard';
+import { TextOrderComponent } from './text-order/text-order.component';
 
 @NgModule({
   imports: [
@@ -43,6 +44,7 @@ import { CartGuard } from '../_guards/cart.guard';
     ProductComponent,
     TopProductsComponent,
     AddToCartProductComponent,
+    TextOrderComponent,
   ],
   providers: [CartGuard],
 })

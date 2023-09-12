@@ -30,11 +30,15 @@ export class SidedrawerService {
         icon: 'history',
       },
       {
+        name: 'MAIN_MENU.DRAFT_TRANSACTIONS',
+        url: '/draft-transactions',
+        icon: 'archive',
+      },
+      {
         name: 'MAIN_MENU.CUSTOMERS',
         url: '/customers/customer-list',
         icon: 'people',
       },
-
       {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',

@@ -15,7 +15,6 @@ namespace Beelina.LIB.Dtos
         [Required]
         [EmailAddress]
         public string EmailAddress { get; set; }
-        [Required]
         public string ContactNumber { get; set; }
         public bool AutoSendEmail { get; set; }
     }

@@ -28,21 +28,24 @@ export class AddToCartProductComponent implements OnInit {
   private _product: Product;
   private _productTransaction: ProductTransaction;
   private _itemCounterForm: FormGroup;
+  private _productTransactions: Array<ProductTransaction>;
 
   constructor(
     private _bottomSheetRef: MatBottomSheetRef<AddToCartProductComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA) public data: { id: number },
+    @Inject(MAT_BOTTOM_SHEET_DATA)
+    public data: { productId: number; productTransactions: Array<ProductTransaction> },
     private formBuilder: FormBuilder,
     private store: Store<AppStateInterface>,
-    private productService: ProductService,
-    private storageService: StorageService
+    private productService: ProductService
   ) {
+    this._productTransactions = data.productTransactions;
+
     this._itemCounterForm = this.formBuilder.group({
       itemCounter: [0, Validators.maxLength(100)],
     });
 
     this.productService
-      .getProduct(data.id)
+      .getProduct(data.productId)
       .subscribe((result: ProductInformationResult) => {
         this._product = new Product();
         this._product.id = result.id;
@@ -53,23 +56,15 @@ export class AddToCartProductComponent implements OnInit {
         this._product.price = result.pricePerUnit;
         this._product.productUnit.name = result.productUnit.name;
 
-        this.store
-          .pipe(select(productTransactionsSelector))
-          .subscribe((productTransactions: Array<ProductTransaction>) => {
-            this.storageService.storeString(
-              'productTransactions',
-              JSON.stringify(productTransactions)
-            );
-            this._productTransaction = productTransactions.find(
-              (p) => p.productId === data.id
-            );
+        this._productTransaction = this._productTransactions.find(
+          (p) => p.productId === data.productId
+        );
 
-            if (this._productTransaction) {
-              this._itemCounterForm
-                .get('itemCounter')
-                .setValue(this._productTransaction.quantity);
-            }
-          });
+        if (this._productTransaction) {
+          this._itemCounterForm
+            .get('itemCounter')
+            .setValue(this._productTransaction.quantity);
+        }
       });
   }
 

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
@@ -43,30 +44,35 @@ namespace Beelina.API.Types.Mutations
 
             await transactionRepository.RegisterTransaction(transactionFromRepo);
 
-            foreach (var productTransaction in transactionInput.ProductTransactionInputs)
+            // Quantities will only be deducted on the inventory if the transaction has been confirmed.
+            if (transactionInput.Status == TransactionStatusEnum.Confirmed)
             {
-                var productFromRepo = await productRepository.GetEntity(productTransaction.ProductId).ToObjectAsync();
-
-                if (productFromRepo != null)
+                foreach (var productTransaction in transactionInput.ProductTransactionInputs)
                 {
-                    if (productTransaction.DiffQuantity != 0)
+                    var productFromRepo = await productRepository.GetEntity(productTransaction.ProductId).ToObjectAsync();
+
+                    if (productFromRepo != null)
                     {
-                        productFromRepo.StockQuantity += productTransaction.DiffQuantity;
+                        if (productTransaction.DiffQuantity != 0)
+                        {
+                            productFromRepo.StockQuantity += productTransaction.DiffQuantity;
+                            await productRepository.SaveChanges();
+                        }
+                    }
+                }
+
+                foreach (var deletedProductTransaction in deletedProductTransactions)
+                {
+                    var productFromRepo = await productRepository.GetEntity(deletedProductTransaction.ProductId).ToObjectAsync();
+
+                    if (productFromRepo != null)
+                    {
+                        productFromRepo.StockQuantity += deletedProductTransaction.Quantity;
                         await productRepository.SaveChanges();
                     }
                 }
             }
 
-            foreach (var deletedProductTransaction in deletedProductTransactions)
-            {
-                var productFromRepo = await productRepository.GetEntity(deletedProductTransaction.ProductId).ToObjectAsync();
-
-                if (productFromRepo != null)
-                {
-                    productFromRepo.StockQuantity += deletedProductTransaction.Quantity;
-                    await productRepository.SaveChanges();
-                }
-            }
 
             return transactionFromRepo;
         }

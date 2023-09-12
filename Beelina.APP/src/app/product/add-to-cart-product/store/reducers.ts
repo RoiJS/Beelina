@@ -4,12 +4,14 @@ import { ProductTransaction } from 'src/app/_models/transaction';
 
 import * as ProductTransactionActions from './actions';
 import { IProductTransactionState } from './types/product-transaction-state.interface';
+import { Transaction } from 'src/app/_services/transaction.service';
 
 export const initialState: IProductTransactionState = {
   isLoading: false,
   isUpdateLoading: false,
   error: null,
   currentIdx: 0,
+  transaction: new Transaction(),
   productTransactions: new Array<ProductTransaction>(),
 };
 
@@ -31,10 +33,11 @@ export const reducers = createReducer(
     productTransaction.productName = action.name;
     productTransaction.price = action.price;
     productTransaction.quantity = action.quantity;
+    productTransaction.currentQuantity = 0;
 
     if (productIdx < 0) {
       let newIdx = state.currentIdx - 1;
-      productTransaction.id = newIdx;
+      productTransaction.id = 0;
       state.currentIdx = newIdx;
       state.productTransactions.push(productTransaction);
     } else {
@@ -53,6 +56,19 @@ export const reducers = createReducer(
     ProductTransactionActions.resetProductTransactionState,
     (state, action) => {
       state.productTransactions = initialState.productTransactions;
+    }
+  ),
+  mutableOn(
+    ProductTransactionActions.resetTransactionState,
+    (state, action) => {
+      state.transaction = initialState.transaction;
+    }
+  ),
+  mutableOn(
+    ProductTransactionActions.initializeTransactionDetails,
+    (state, action) => {
+      state.transaction = action.transaction;
+      state.productTransactions = action.transaction.productTransactions;
     }
   )
 );

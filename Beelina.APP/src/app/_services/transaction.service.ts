@@ -12,6 +12,8 @@ import { CustomerStore } from '../_models/customer-store';
 
 import { IModelNode } from '../_interfaces/imodel-node';
 
+import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
+
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 import { ITransactionInput } from '../_interfaces/inputs/itransaction.input';
@@ -28,18 +30,26 @@ const REGISTER_TRANSACTION_MUTATION = gql`
   }
 `;
 
-const GET_TRANSACTION_HISTORY_DATES = gql`
+const GET_APPROVED_TRANSACTION_HISTORY_DATES = gql`
   query ($transactionDate: String!) {
-    transactionDates(transactionDate: $transactionDate) {
+    approvedTransactionDates(transactionDate: $transactionDate) {
       transactionDate
       allTransactionsPaid
     }
   }
 `;
 
-const GET_TRANSACTIONS_BY_DATE = gql`
+const GET_DRAFT_TRANSACTION_HISTORY_DATES = gql`
   query ($transactionDate: String!) {
-    transactionsByDate(transactionDate: $transactionDate) {
+    draftTransactionDates(transactionDate: $transactionDate) {
+      transactionDate
+    }
+  }
+`;
+
+const GET_APPROVED_TRANSACTIONS_BY_DATE = gql`
+  query ($transactionDate: String!, $status: TransactionStatusEnum!) {
+    transactionsByDate(transactionDate: $transactionDate, status: $status) {
       id
       storeId
       transactionDate
@@ -61,7 +71,12 @@ const GET_TRANSACTION = gql`
       total
       balance
       store {
+        id
         name
+        address
+        paymentMethod {
+          name
+        }
       }
       productTransactions {
         id
@@ -70,6 +85,7 @@ const GET_TRANSACTION = gql`
         quantity
         price
         status
+        currentQuantity
         product {
           id
           name
@@ -136,7 +152,7 @@ export class Transaction extends Entity implements IModelNode {
   }
 }
 
-export class TransactionHistoryDate {
+export class TransactionDateInformation {
   public transactionDate: Date;
   public allTransactionsPaid: boolean;
 
@@ -152,6 +168,7 @@ export class TransactionSales {
 export class TransactionDto {
   public id: number = 0;
   public storeId: number;
+  public status: TransactionStatusEnum;
   public transactionDate: string;
   public productTransactions: Array<ProductTransaction>;
 }
@@ -176,14 +193,15 @@ export class TransactionService {
     const transactionInput: ITransactionInput = {
       id: transaction.id,
       storeId: transaction.storeId,
+      status: transaction.status,
       transactionDate: transaction.transactionDate,
       productTransactionInputs: transaction.productTransactions.map((p) => {
         const productTransaction: IProductTransactionInput = {
-          id: 0,
+          id: p.id,
           productId: p.productId,
           quantity: p.quantity,
           price: p.price,
-          currentQuantity: 0,
+          currentQuantity: p.currentQuantity,
         };
 
         return productTransaction;
@@ -220,12 +238,16 @@ export class TransactionService {
       );
   }
 
-  getTransactionsByDate(transactionDate: string) {
+  getTransactionsByDate(
+    transactionDate: string,
+    status: TransactionStatusEnum
+  ) {
     return this.apollo
       .watchQuery({
-        query: GET_TRANSACTIONS_BY_DATE,
+        query: GET_APPROVED_TRANSACTIONS_BY_DATE,
         variables: {
           transactionDate,
+          status,
         },
       })
       .valueChanges.pipe(
@@ -280,8 +302,12 @@ export class TransactionService {
                 const productTransaction = new ProductTransaction();
                 productTransaction.id = pt.id;
                 productTransaction.quantity = pt.quantity;
+                productTransaction.currentQuantity = pt.currentQuantity;
                 productTransaction.price = pt.price;
                 productTransaction.status = pt.status;
+                productTransaction.productName = pt.product.name;
+                productTransaction.productId = pt.product.id;
+
                 productTransaction.product = new Product();
                 productTransaction.product.id = pt.product.id;
                 productTransaction.product.name = pt.product.name;
@@ -295,10 +321,10 @@ export class TransactionService {
       );
   }
 
-  getTransactioHistoryDates(transactionDate: string = '') {
+  getApprovedTransactioHistoryDates(transactionDate: string = '') {
     return this.apollo
       .watchQuery({
-        query: GET_TRANSACTION_HISTORY_DATES,
+        query: GET_APPROVED_TRANSACTION_HISTORY_DATES,
         variables: {
           transactionDate,
         },
@@ -307,14 +333,41 @@ export class TransactionService {
         map(
           (
             result: ApolloQueryResult<{
-              transactionDates: Array<TransactionHistoryDate>;
+              approvedTransactionDates: Array<TransactionDateInformation>;
             }>
           ) => {
-            const dates = result.data.transactionDates.map((t) => {
-              const transactionHistoryDate = new TransactionHistoryDate();
+            const dates = result.data.approvedTransactionDates.map((t) => {
+              const transactionHistoryDate = new TransactionDateInformation();
               transactionHistoryDate.transactionDate = t.transactionDate;
               transactionHistoryDate.allTransactionsPaid =
                 t.allTransactionsPaid;
+              return transactionHistoryDate;
+            });
+
+            return dates;
+          }
+        )
+      );
+  }
+
+  getDraftTransactioHistoryDates(transactionDate: string = '') {
+    return this.apollo
+      .watchQuery({
+        query: GET_DRAFT_TRANSACTION_HISTORY_DATES,
+        variables: {
+          transactionDate,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              draftTransactionDates: Array<TransactionDateInformation>;
+            }>
+          ) => {
+            const dates = result.data.draftTransactionDates.map((t) => {
+              const transactionHistoryDate = new TransactionDateInformation();
+              transactionHistoryDate.transactionDate = t.transactionDate;
               return transactionHistoryDate;
             });
 

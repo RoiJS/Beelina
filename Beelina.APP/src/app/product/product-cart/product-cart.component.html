@@ -22,7 +22,7 @@
                   <span>X</span>
                   <span>{{ item?.quantity }}</span>
                   <mat-icon
-                    (click)="addItemToCart(item.productId)"
+                    (click)="updateItemToCart(item.productId)"
                     matRipple
                     class="list-item__edit-product"
                     >edit</mat-icon
@@ -31,6 +31,21 @@
               </div>
             </mat-list-item>
           </mat-list>
+          <div
+            *ngIf="isDraftTransaction"
+            class="product-transaction-list-container__button-section"
+          >
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="addINewtemToCart()"
+            >
+              {{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.ADD_ITEM"
+                  | translate
+              }}
+            </button>
+          </div>
           <div
             class="product-transaction-total-amount-information-container"
             *ngIf="productTransactions.length > 0"
@@ -119,9 +134,20 @@
           <button mat-raised-button color="primary" (click)="confirm()">
             {{ "GENERAL_TEXTS.CONFIRM" | translate }}
           </button>
-          <button mat-raised-button color="default" (click)="clear()">
-            {{ "GENERAL_TEXTS.CLEAR" | translate }}
+          <button
+            *ngIf="!isDraftTransaction"
+            mat-raised-button
+            color="default"
+            (click)="saveAsDraft()"
+          >
+            {{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
+                | translate
+            }}
           </button>
+          <!-- <button mat-raised-button color="default" (click)="clear()">
+            {{ "GENERAL_TEXTS.CLEAR" | translate }}
+          </button> -->
         </div>
       </div>
     </div>

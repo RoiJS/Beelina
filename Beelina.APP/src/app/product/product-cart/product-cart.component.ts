@@ -1,3 +1,4 @@
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,31 +8,41 @@ import { map, Observable, startWith, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { customerStoresSelector } from 'src/app/customer/store/selectors';
-import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
-import { Router } from '@angular/router';
+import {
+  productTransactionsSelector,
+  transactionsSelector,
+} from '../add-to-cart-product/store/selectors';
 
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { StorageService } from 'src/app/_services/storage.service';
+import { ProductService } from 'src/app/_services/product.service';
 
 import { AddToCartProductComponent } from '../add-to-cart-product/add-to-cart-product.component';
+import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
 import {
+  Transaction,
   TransactionDto,
   TransactionService,
 } from 'src/app/_services/transaction.service';
 
 import * as CustomerActions from '../../customer/store/actions';
+import * as ProductActions from '../store/actions';
 import * as ProductTransactionActions from '../add-to-cart-product/store/actions';
 
-import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
-import { ButtonOptions } from 'src/app/_enum/button-options.enum';
-import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 import { CustomerStore } from 'src/app/_models/customer-store';
+
+import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
+import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+
+import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
+import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 
 export class ProductCartTransaction {
   public productName: string;
@@ -67,8 +78,11 @@ export class ProductCartComponent implements OnInit, OnDestroy {
   private _productCartTransactions: Array<ProductCartTransaction> =
     new Array<ProductCartTransaction>();
   private _totalAmount: number = 0;
+  private _transaction: Transaction;
+  private _transactionId: number = 0;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
@@ -77,7 +91,8 @@ export class ProductCartComponent implements OnInit, OnDestroy {
     private transactionService: TransactionService,
     private translateService: TranslateService,
     private snackBarService: MatSnackBar,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private productService: ProductService
   ) {
     this._orderForm = this.formBuilder.group({
       name: ['', Validators.required],
@@ -88,10 +103,22 @@ export class ProductCartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (this._transactionId > 0) {
+      this.store.dispatch(
+        ProductTransactionActions.getProductTransactionsFromServer({
+          transactionId: this._transactionId,
+        })
+      );
+    } else {
+      this.store.dispatch(
+        ProductTransactionActions.initializeProductTransactions()
+      );
+    }
+
+    this.store.dispatch(ProductActions.getProductsAction());
     this.store.dispatch(CustomerActions.getAllCustomerStoreAction());
-    this.store.dispatch(
-      ProductTransactionActions.initializeProductTransactions()
-    );
 
     this._subscription.add(
       this.store
@@ -107,7 +134,17 @@ export class ProductCartComponent implements OnInit, OnDestroy {
         .subscribe((productTransactions: Array<ProductTransaction>) => {
           this._productTransactions = productTransactions;
 
-          if (this._productTransactions.length === 0) {
+          if (this._transactionId === 0) {
+            this.storageService.storeString(
+              'productTransactions',
+              JSON.stringify(this._productTransactions)
+            );
+          }
+
+          if (
+            this._productTransactions.length === 0 &&
+            this._transactionId === 0
+          ) {
             this.router.navigate(['/product-catalogue/product-list']);
           }
 
@@ -115,6 +152,28 @@ export class ProductCartComponent implements OnInit, OnDestroy {
             (t, n) => t + n.price * n.quantity,
             0
           );
+        })
+    );
+
+    this._subscription.add(
+      this.store
+        .pipe(select(transactionsSelector))
+        .subscribe((transaction: Transaction) => {
+          this._transaction = transaction;
+
+          if (this._transaction.store) {
+            this._orderForm.get('name').setValue(this._transaction.store.name);
+            this._selectedCustomer = this._transaction.store;
+            this._orderForm
+              .get('address')
+              .setValue(this._transaction.store.address);
+            this._orderForm
+              .get('paymentMethod')
+              .setValue(this._transaction.store.paymentMethod.name);
+            this._orderForm
+              .get('dueDate')
+              .setValue(this._transaction.transactionDate);
+          }
         })
     );
 
@@ -139,52 +198,47 @@ export class ProductCartComponent implements OnInit, OnDestroy {
     });
   }
 
-  clear() {
-    this.dialogService
-      .openConfirmation(
-        this.translateService.instant(
-          'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.TITLE'
-        ),
-        this.translateService.instant(
-          'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.CONFIRM'
-        )
-      )
-      .subscribe((result: ButtonOptions) => {
-        if (result === ButtonOptions.YES) {
-          this.snackBarService.open(
-            this.translateService.instant(
-              'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.SUCCESS_MESSAGE'
-            ),
-            this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-            {
-              duration: 5000,
-            }
-          );
-          this.store.dispatch(
-            ProductTransactionActions.setSaveOrderLoadingState({
-              state: false,
-            })
-          );
-          this.storageService.remove('productTransactions');
-          this.store.dispatch(
-            ProductTransactionActions.resetProductTransactionState()
-          );
-          this.router.navigate(['/product-catalogue']);
-        }
-      });
-  }
+  // clear() {
+  //   this.dialogService
+  //     .openConfirmation(
+  //       this.translateService.instant(
+  //         'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.TITLE'
+  //       ),
+  //       this.translateService.instant(
+  //         'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.CONFIRM'
+  //       )
+  //     )
+  //     .subscribe((result: ButtonOptions) => {
+  //       if (result === ButtonOptions.YES) {
+  //         this.snackBarService.open(
+  //           this.translateService.instant(
+  //             'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.SUCCESS_MESSAGE'
+  //           ),
+  //           this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+  //           {
+  //             duration: 5000,
+  //           }
+  //         );
+  //         this.store.dispatch(
+  //           ProductTransactionActions.setSaveOrderLoadingState({
+  //             state: false,
+  //           })
+  //         );
+  //         this.storageService.remove('productTransactions');
+  //         this.store.dispatch(
+  //           ProductTransactionActions.resetProductTransactionState()
+  //         );
+  //         this.router.navigate(['/product-catalogue']);
+  //       }
+  //     });
+  // }
 
-  addItemToCart(id: number) {
-    this.bottomSheet.open(AddToCartProductComponent, {
-      data: { id },
-    });
-  }
-
-  confirm() {
+  saveAsDraft() {
     this._orderForm.markAllAsTouched();
     if (this._orderForm.valid) {
       const transaction = new TransactionDto();
       transaction.storeId = this._selectedCustomer.id;
+      transaction.status = TransactionStatusEnum.DRAFT;
       transaction.transactionDate = DateFormatter.format(
         this._orderForm.get('dueDate').value
       );
@@ -193,10 +247,10 @@ export class ProductCartComponent implements OnInit, OnDestroy {
       this.dialogService
         .openConfirmation(
           this.translateService.instant(
-            'PRODUCT_CART_PAGE.SAVE_NEW_ORDER_DIALOG.TITLE'
+            'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.TITLE'
           ),
           this.translateService.instant(
-            'PRODUCT_CART_PAGE.SAVE_NEW_ORDER_DIALOG.CONFIRM'
+            'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.CONFIRM'
           )
         )
         .subscribe((result: ButtonOptions) => {
@@ -205,7 +259,7 @@ export class ProductCartComponent implements OnInit, OnDestroy {
               next: () => {
                 this.snackBarService.open(
                   this.translateService.instant(
-                    'PRODUCT_CART_PAGE.SAVE_NEW_ORDER_DIALOG.SUCCESS_MESSAGE'
+                    'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.SUCCESS_MESSAGE'
                   ),
                   this.translateService.instant('GENERAL_TEXTS.CLOSE'),
                   {
@@ -228,7 +282,7 @@ export class ProductCartComponent implements OnInit, OnDestroy {
               error: () => {
                 this.snackBarService.open(
                   this.translateService.instant(
-                    'PRODUCT_CART_PAGE.SAVE_NEW_ORDER_DIALOG.ERROR_MESSAGE'
+                    'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.ERROR_MESSAGE'
                   ),
                   this.translateService.instant('GENERAL_TEXTS.CLOSE'),
                   {
@@ -248,9 +302,125 @@ export class ProductCartComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateItemToCart(productId: number) {
+    this.bottomSheet.open(AddToCartProductComponent, {
+      data: { productId, productTransactions: this._productTransactions },
+    });
+  }
+
+  confirm() {
+    this.productService
+      .validateProductionTransactionsQuantities(this._productTransactions)
+      .subscribe(
+        (insufficientProductQuantities: Array<InsufficientProductQuantity>) => {
+          if (insufficientProductQuantities.length > 0) {
+            console.log(insufficientProductQuantities);
+
+            let errorMessage = this.translateService.instant(
+              'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
+            );
+
+            insufficientProductQuantities.forEach((i) => {
+              errorMessage += `* <strong>(${i.productCode})</strong> ${i.productName} <br>`;
+            });
+
+            this.dialogService.openAlert(
+              this.translateService.instant(
+                'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.TITLE'
+              ),
+              errorMessage
+            );
+
+            return;
+          }
+
+          this._orderForm.markAllAsTouched();
+          if (this._orderForm.valid) {
+            const transaction = new TransactionDto();
+            transaction.id = this._transactionId;
+            transaction.storeId = this._selectedCustomer.id;
+            transaction.status = TransactionStatusEnum.CONFIRMED;
+            transaction.transactionDate = DateFormatter.format(
+              this._orderForm.get('dueDate').value
+            );
+            transaction.productTransactions = this._productTransactions;
+
+            this.dialogService
+              .openConfirmation(
+                this.translateService.instant(
+                  'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.TITLE'
+                ),
+                this.translateService.instant(
+                  'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.CONFIRM'
+                )
+              )
+              .subscribe((result: ButtonOptions) => {
+                if (result === ButtonOptions.YES) {
+                  this.transactionService
+                    .registerTransaction(transaction)
+                    .subscribe({
+                      next: () => {
+                        this.snackBarService.open(
+                          this.translateService.instant(
+                            'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
+                          ),
+                          this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                          {
+                            duration: 5000,
+                          }
+                        );
+                        this.store.dispatch(
+                          ProductTransactionActions.setSaveOrderLoadingState({
+                            state: false,
+                          })
+                        );
+                        this.storageService.remove('productTransactions');
+                        this.store.dispatch(
+                          ProductTransactionActions.resetProductTransactionState()
+                        );
+
+                        if (this._transactionId === 0) {
+                          this.router.navigate(['/product-catalogue']);
+                        } else {
+                          this.router.navigate(['/draft-transactions']);
+                        }
+                      },
+
+                      error: () => {
+                        this.snackBarService.open(
+                          this.translateService.instant(
+                            'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
+                          ),
+                          this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                          {
+                            duration: 5000,
+                          }
+                        );
+
+                        this.store.dispatch(
+                          ProductTransactionActions.setSaveOrderLoadingState({
+                            state: false,
+                          })
+                        );
+                      },
+                    });
+                }
+              });
+          }
+        }
+      );
+  }
+
+  addINewtemToCart() {
+    this.bottomSheet.open(SelectNewProductComponent, {
+      data: { productTransactions: this._productTransactions },
+    });
+  }
+
   ngOnDestroy() {
     this._subscription.unsubscribe();
     this.store.dispatch(CustomerActions.resetCustomerState());
+    this.store.dispatch(ProductTransactionActions.resetTransactionState());
   }
 
   private _filter(value: string): Array<CustomerStore> {
@@ -282,5 +452,9 @@ export class ProductCartComponent implements OnInit, OnDestroy {
 
   get minDate(): Date {
     return new Date();
+  }
+
+  get isDraftTransaction(): boolean {
+    return this._transactionId > 0;
   }
 }

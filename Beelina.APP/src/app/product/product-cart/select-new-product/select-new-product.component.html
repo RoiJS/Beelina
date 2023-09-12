@@ -1,0 +1,73 @@
+<div class="select-new-product-container">
+  <div class="select-new-product-container__header">
+    <span>{{ "ADD_TO_CART_PAGE.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="select-new-product-container__body">
+    <app-loader-layout [busy]="$isLoading | async">
+      <div class="page-container">
+        <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+          <div class="search-field-container">
+            <input
+              type="text"
+              class="txt-search-field"
+              formControlName="filterKeyword"
+              placeholder="{{
+                'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+                  | translate
+              }}"
+            />
+            <button type="submit" mat-fab color="primary">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
+        </form>
+
+        <cdk-virtual-scroll-viewport
+          itemSize="60"
+          orientation="vertical"
+          class="list-container product-list"
+        >
+          <div *cdkVirtualFor="let item of dataSource">
+            <div matRipple class="product-item list-container__card-item">
+              <div
+                class="list-container__card-item-header product-item__header"
+              >
+                <mat-icon
+                  [matBadge]="item.deductedStock"
+                  [matBadgeHidden]="item.deductedStock === 0"
+                  matBadgeColor="warn"
+                  >add_shopping_cart</mat-icon
+                >
+              </div>
+              <mat-divider></mat-divider>
+              <div
+                (click)="addItemToCart(item.id)"
+                class="list-container__card-item-body product-item__body"
+              >
+                <mat-icon>card_giftcard</mat-icon>
+              </div>
+              <div
+                (click)="addItemToCart(item.id)"
+                class="list-container__card-item-footer product-item__footer"
+              >
+                <div class="product-info">
+                  <span class="product-info__label">Name: </span
+                  ><span>{{ item.name }}</span>
+                </div>
+                <div class="product-info">
+                  <span class="product-info__label">Stock: </span
+                  ><span>{{ item.stockQuantity }}</span>
+                </div>
+                <div class="product-info">
+                  <span class="product-info__label">Price: </span
+                  ><span>{{ item.priceFormatted }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </cdk-virtual-scroll-viewport>
+      </div>
+    </app-loader-layout>
+  </div>
+</div>

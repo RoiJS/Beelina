@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
+
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 import {
   Transaction,
@@ -26,7 +28,10 @@ export class TransactionsComponent implements OnInit {
     this._transactionDate = this.activatedRoute.snapshot.paramMap.get('date');
 
     this.transactionService
-      .getTransactionsByDate(this._transactionDate)
+      .getTransactionsByDate(
+        this._transactionDate,
+        TransactionStatusEnum.CONFIRMED
+      )
       .subscribe((transactions: Array<Transaction>) => {
         this._transactions = transactions;
       });

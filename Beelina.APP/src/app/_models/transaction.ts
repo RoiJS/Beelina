@@ -9,9 +9,9 @@ export class ProductTransaction extends Entity implements IModelNode {
   public productName: string;
   public quantity: number;
   public currentQuantity: number;
+  public price: number;
   public status: PaymenStatusEnum;
   public product: Product;
-  public price: number;
 
   get isPaid(): boolean {
     return this.status === PaymenStatusEnum.Paid;

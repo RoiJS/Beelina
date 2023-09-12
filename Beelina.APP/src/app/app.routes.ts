@@ -38,4 +38,12 @@ export const routes: Routes = [
       ),
     canLoad: [AuthGuard],
   },
+  {
+    path: 'draft-transactions',
+    loadChildren: () =>
+      import('./draft-transactions/draft-transactions.module').then(
+        (m) => m.DraftTransactionsModule
+      ),
+    canLoad: [AuthGuard],
+  },
 ];

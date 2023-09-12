@@ -10,14 +10,11 @@
       }}</span>
     </div>
 
-    <cdk-virtual-scroll-viewport
-      itemSize="60"
-      class="list-container transaction-list-container"
-    >
+    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
       <div *cdkVirtualFor="let item of transactions">
         <div
           matRipple
-          class="transaction-date list-container__item-section transaction-list-container__item-section"
+          class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
           [ngClass]="{ unpaid: item.hasUnpaidProductTransaction }"
           (click)="goToTransaction(item.id)"
         >

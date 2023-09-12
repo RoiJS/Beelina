@@ -239,6 +239,10 @@ app-tool-bar {
     margin: 8px 0;
     border-radius: 5px;
     box-shadow: 1px 1px 2px #cfcfcf;
+
+    &--justify-content-space-between {
+      justify-content: space-between;
+    }
   }
 
   &__card-item {

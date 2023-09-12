@@ -2,16 +2,20 @@ import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
-import { of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 
 import * as ProductTransactionActions from './actions';
 
 import { StorageService } from 'src/app/_services/storage.service';
 import { ProductTransaction } from 'src/app/_models/transaction';
+import {
+  Transaction,
+  TransactionService,
+} from 'src/app/_services/transaction.service';
 
 @Injectable()
 export class ProductTransactionsEffects {
-  productTransactions$ = createEffect(() =>
+  productTransactionsFromLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductTransactionActions.initializeProductTransactions),
       switchMap(() => {
@@ -29,6 +33,7 @@ export class ProductTransactionsEffects {
               productTransaction.productName = p.productName;
               productTransaction.price = p.price;
               productTransaction.quantity = p.quantity;
+              productTransaction.currentQuantity = p.currentQuantity;
               return productTransaction;
             }),
           })
@@ -36,8 +41,26 @@ export class ProductTransactionsEffects {
       })
     )
   );
+
+  productTransactionsFromServer$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductTransactionActions.getProductTransactionsFromServer),
+      switchMap((action: { transactionId: number }) => {
+        return this.transactionService
+          .getTransaction(action.transactionId)
+          .pipe(
+            map((transaction: Transaction) => {
+              return ProductTransactionActions.initializeTransactionDetails({
+                transaction,
+              });
+            })
+          );
+      })
+    )
+  );
   constructor(
     private actions$: Actions,
+    private transactionService: TransactionService,
     private storageService: StorageService
   ) {}
 }
