@@ -1,6 +1,6 @@
 <app-tool-bar [title]="transaction?.store?.name"> </app-tool-bar>
 
-<app-loader-layout [busy]="false">
+<app-loader-layout [busy]="isLoading">
   <div class="page-container">
     <div class="panel transaction-details-panel">
       <div

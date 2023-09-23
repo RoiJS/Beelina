@@ -30,7 +30,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { DialogModule } from './ui/dialog/dialog.module';
 
+import { EmptyEntitiesPlaceholderComponent } from './ui/empty-entities-placeholder/empty-entities-placeholder.component';
 import { LoaderLayoutComponent } from './ui/loader-layout/loader-layout.component';
+import { ListContainerComponent } from './ui/list-container/list-container.component';
 import { FloatingButtonComponent } from './ui/floating-button/floating-button.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 
@@ -74,6 +76,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
     ToolBarComponent,
     LoaderLayoutComponent,
     FloatingButtonComponent,
+    EmptyEntitiesPlaceholderComponent,
+    ListContainerComponent
   ],
   exports: [
     CommonModule,
@@ -110,6 +114,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
     ToolBarComponent,
     LoaderLayoutComponent,
     FloatingButtonComponent,
+    EmptyEntitiesPlaceholderComponent,
+    ListContainerComponent
   ],
 })
 export class SharedModule {}

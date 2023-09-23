@@ -26,27 +26,33 @@
         </button>
       </div>
     </form>
-    <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
-      <div *cdkVirtualFor="let item of dataSource">
-        <div class="list-container__item-section">
-          <div class="list-container__icon-section">
-            <mat-icon>store</mat-icon>
-          </div>
-          <div class="list-container__details-section">
-            <label class="main-label">{{ item.name }}</label>
-            <label>{{ item.address }}</label>
-          </div>
-          <div class="list-container__options-section">
-            <button mat-button (click)="deleteStore(item.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
-            <button mat-button (click)="openDetails(item.id)">
-              <mat-icon>border_color</mat-icon>
-            </button>
+
+    <app-list-container
+      [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
+      [count]="dataSource.fetchPageCount"
+    >
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container">
+        <div *cdkVirtualFor="let item of dataSource">
+          <div class="list-container__item-section">
+            <div class="list-container__icon-section">
+              <mat-icon>store</mat-icon>
+            </div>
+            <div class="list-container__details-section">
+              <label class="main-label">{{ item.name }}</label>
+              <label>{{ item.address }}</label>
+            </div>
+            <div class="list-container__options-section">
+              <button mat-button (click)="deleteStore(item.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <button mat-button (click)="openDetails(item.id)">
+                <mat-icon>border_color</mat-icon>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </cdk-virtual-scroll-viewport>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
   </div>
 
   <app-floating-button

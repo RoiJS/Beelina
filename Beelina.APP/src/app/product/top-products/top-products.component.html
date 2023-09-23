@@ -7,7 +7,7 @@
   </button>
 </app-tool-bar>
 
-<app-loader-layout [busy]="false">
+<app-loader-layout [busy]="isLoading">
   <div class="page-container">
     <div class="page-container__page-divider">
       <label>{{ "TOP_PRODUCTS_PAGE.TITLE" | translate }}</label
@@ -17,21 +17,26 @@
       }}</span>
     </div>
 
-    <cdk-virtual-scroll-viewport
-      itemSize="60"
-      class="list-container top-products-list-container"
+    <app-list-container
+      [templateType]="emptyEntityTemplateEnum.TOP_PRODUCTS"
+      [count]="topProducts?.length"
     >
-      <div *cdkVirtualFor="let item of topProducts">
-        <div
-          matRipple
-          class="list-container__item-section top-products-list-container__item-section"
-        >
-          <span class="product-information"
-            ><span>({{ item.code }})</span> - {{ item.name }}</span
+      <cdk-virtual-scroll-viewport
+        itemSize="60"
+        class="list-container top-products-list-container"
+      >
+        <div *cdkVirtualFor="let item of topProducts">
+          <div
+            matRipple
+            class="list-container__item-section top-products-list-container__item-section"
           >
-          <span class="product-number-of-transaction">{{ item.count }}</span>
+            <span class="product-information"
+              ><span>({{ item.code }})</span> - {{ item.name }}</span
+            >
+            <span class="product-number-of-transaction">{{ item.count }}</span>
+          </div>
         </div>
-      </div>
-    </cdk-virtual-scroll-viewport>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
   </div>
 </app-loader-layout>

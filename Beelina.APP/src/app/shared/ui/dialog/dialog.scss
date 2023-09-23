@@ -3,6 +3,7 @@
 .dialog-container {
   display: flex;
   flex-direction: column;
+  min-width: 250px;
 
   &__title {
     display: flex;

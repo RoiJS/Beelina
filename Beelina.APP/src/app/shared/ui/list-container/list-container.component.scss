@@ -1,0 +1,10 @@
+.list-container-component {
+  height: 100%;
+
+  &__empty-list-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 70%;
+  }
+}

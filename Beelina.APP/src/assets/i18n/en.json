@@ -249,8 +249,9 @@
 
   "PRODUCTS_CATALOGUE_PAGE": {
     "TITLE": "Product Catalogue",
+    "DESCRIPTION": "This is where product information is being managed. User can choose items and add them to cart.",
     "SEARCH_TEXT_FIELD": {
-      "PLACEHOLDER": "Search product name..."
+      "PLACEHOLDER": "Search product name or code..."
     },
     "DELETE_PRODUCT_DIALOG": {
       "TITLE": "Delete product",
@@ -295,7 +296,7 @@
 
   "TOP_PRODUCTS_PAGE": {
     "TITLE": "Top Products",
-    "DESCRIPTION": "This is where customer information can be managed."
+    "DESCRIPTION": "This shows statistics of the most frequently transacted products."
   },
 
   "SALES_PAGE": {

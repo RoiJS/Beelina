@@ -8,13 +8,17 @@ import {
   Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
+import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
 
 @Component({
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss'],
 })
-export class TransactionsComponent implements OnInit {
+export class TransactionsComponent
+  extends MainSharedComponent
+  implements OnInit
+{
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
 
@@ -22,17 +26,20 @@ export class TransactionsComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private transactionService: TransactionService
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit() {
     this._transactionDate = this.activatedRoute.snapshot.paramMap.get('date');
-
+    this._isLoading = true;
     this.transactionService
       .getTransactionsByDate(
         this._transactionDate,
         TransactionStatusEnum.CONFIRMED
       )
       .subscribe((transactions: Array<Transaction>) => {
+        this._isLoading = false;
         this._transactions = transactions;
       });
   }

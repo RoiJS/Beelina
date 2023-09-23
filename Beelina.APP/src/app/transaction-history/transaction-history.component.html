@@ -7,7 +7,7 @@
   </button> -->
 </app-tool-bar>
 
-<app-loader-layout [busy]="false">
+<app-loader-layout [busy]="isLoading">
   <div class="page-container">
     <div class="page-container__page-divider">
       <label>{{ "TRANSACTION_HISTORY_PAGE.TITLE" | translate }}</label
@@ -17,21 +17,23 @@
       }}</span>
     </div>
 
-    <cdk-virtual-scroll-viewport
-      itemSize="60"
-      class="list-container"
+    <app-list-container
+      [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
+      [count]="transactionHistoryDates?.length"
     >
-      <div *cdkVirtualFor="let item of transactionHistoryDates">
-        <div
-          matRipple
-          class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
-          [ngClass]="{ unpaid: !item.allTransactionsPaid }"
-          (click)="goToTransactionDate(item.transactionDate)"
-        >
-          <span>{{ item.transactionDateFormatted }}</span>
-          <mat-icon>keyboard_arrow_right</mat-icon>
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container">
+        <div *cdkVirtualFor="let item of transactionHistoryDates">
+          <div
+            matRipple
+            class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
+            [ngClass]="{ unpaid: !item.allTransactionsPaid }"
+            (click)="goToTransactionDate(item.transactionDate)"
+          >
+            <span>{{ item.transactionDateFormatted }}</span>
+            <mat-icon>keyboard_arrow_right</mat-icon>
+          </div>
         </div>
-      </div>
-    </cdk-virtual-scroll-viewport>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
   </div>
 </app-loader-layout>

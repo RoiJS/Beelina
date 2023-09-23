@@ -9,12 +9,11 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 
 import { ProductNotExistsError } from '../_models/errors/product-not-exists.error';
 
-import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
-
 import {
   endCursorSelector,
   filterKeywordSelector,
 } from '../product/store/selectors';
+import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
 
 import { CheckProductCodeInformationResult } from '../_models/results/check-product-code-information-result';
 import { ProductInformationResult } from '../_models/results/product-information-result';
@@ -24,14 +23,23 @@ import { IProductInput } from '../_interfaces/inputs/iproduct.input';
 import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
 import { Product } from '../_models/product';
 import { ProductTransaction } from '../_models/transaction';
-import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
-import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
 import { InsufficientProductQuantity } from '../_models/insufficient-product-quantity';
+
+import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
+import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
 import { IProductTransactionQueryPayload } from '../_interfaces/payloads/iproduct-transaction-query.payload';
 
 const GET_PRODUCTS_METHODS = gql`
   query ($cursor: String, $filterKeyword: String) {
-    products(after: $cursor, where: { name: { contains: $filterKeyword } }) {
+    products(
+      after: $cursor
+      where: {
+        or: [
+          { name: { contains: $filterKeyword } }
+          { code: { contains: $filterKeyword } }
+        ]
+      }
+    ) {
       edges {
         cursor
         node {

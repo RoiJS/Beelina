@@ -9,13 +9,17 @@ import {
   Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
+import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
 
 @Component({
   selector: 'app-transaction-details',
   templateUrl: './transaction-details.component.html',
   styleUrls: ['./transaction-details.component.scss'],
 })
-export class TransactionDetailsComponent implements OnInit {
+export class TransactionDetailsComponent
+  extends MainSharedComponent
+  implements OnInit
+{
   private _transactionId: number;
   private _transaction: Transaction;
 
@@ -26,14 +30,17 @@ export class TransactionDetailsComponent implements OnInit {
     private snackBarService: MatSnackBar,
     private transactionService: TransactionService,
     private translateService: TranslateService
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit() {
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
-
+    this._isLoading = true;
     this.transactionService
       .getTransaction(this._transactionId)
       .subscribe((transaction: Transaction) => {
+        this._isLoading = false;
         this._transaction = transaction;
       });
   }

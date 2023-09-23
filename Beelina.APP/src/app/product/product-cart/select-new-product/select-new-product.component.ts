@@ -14,7 +14,7 @@ import * as ProductActions from '../../store/actions';
 import { isLoadingSelector } from '../../store/selectors';
 import { ProductTransaction } from 'src/app/_models/transaction';
 
-import { ProductDataSource } from '../../product.component';
+import { ProductDataSource } from 'src/app/_models/datasources/product.datasource';
 import { AddToCartProductComponent } from '../../add-to-cart-product/add-to-cart-product.component';
 
 @Component({
@@ -35,7 +35,7 @@ export class SelectNewProductComponent implements OnInit {
     public data: { productTransactions: Array<ProductTransaction> },
     private bottomSheet: MatBottomSheet,
     private formBuilder: FormBuilder,
-    private store: Store<AppStateInterface>,
+    private store: Store<AppStateInterface>
   ) {
     this._productTransactions = data.productTransactions;
 

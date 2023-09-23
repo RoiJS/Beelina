@@ -1,6 +1,6 @@
 <app-tool-bar [title]="transationDate"> </app-tool-bar>
 
-<app-loader-layout [busy]="false">
+<app-loader-layout [busy]="isLoading">
   <div class="page-container">
     <div class="page-container__page-divider">
       <label>{{ "TRANSACTION_PAGE.TITLE" | translate }}</label

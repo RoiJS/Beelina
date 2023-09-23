@@ -41,33 +41,21 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { Product } from 'src/app/_models/product';
+import { ProductCartTransaction } from 'src/app/_models/product-cart-transaction.model';
+
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
-
-export class ProductCartTransaction {
-  public productName: string;
-  public quantity: number;
-  public price: number;
-
-  get totalFormatted(): string {
-    return NumberFormatter.formatCurrency(this?.total);
-  }
-
-  get priceFormatted(): string {
-    return NumberFormatter.formatCurrency(this?.price);
-  }
-
-  get total(): number {
-    return this.quantity * this.price;
-  }
-}
+import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
 
 @Component({
   selector: 'app-product-cart',
   templateUrl: './product-cart.component.html',
   styleUrls: ['./product-cart.component.scss'],
 })
-export class ProductCartComponent implements OnInit, OnDestroy {
+export class ProductCartComponent
+  extends MainSharedComponent
+  implements OnInit, OnDestroy
+{
   private _orderForm: FormGroup;
   private _customerStoreOptions: Array<CustomerStore> = [];
   private _customerStoreFilterOptions: Observable<Array<CustomerStore>>;
@@ -94,6 +82,7 @@ export class ProductCartComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private productService: ProductService
   ) {
+    super();
     this._orderForm = this.formBuilder.group({
       name: ['', Validators.required],
       address: [''],
@@ -106,11 +95,13 @@ export class ProductCartComponent implements OnInit, OnDestroy {
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
 
     if (this._transactionId > 0) {
+      this._isLoading = true;
       this.store.dispatch(
         ProductTransactionActions.getProductTransactionsFromServer({
           transactionId: this._transactionId,
         })
       );
+      this._isLoading = false;
     } else {
       this.store.dispatch(
         ProductTransactionActions.initializeProductTransactions()
@@ -314,8 +305,6 @@ export class ProductCartComponent implements OnInit, OnDestroy {
       .subscribe(
         (insufficientProductQuantities: Array<InsufficientProductQuantity>) => {
           if (insufficientProductQuantities.length > 0) {
-            console.log(insufficientProductQuantities);
-
             let errorMessage = this.translateService.instant(
               'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
             );

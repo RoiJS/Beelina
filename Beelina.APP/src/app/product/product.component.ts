@@ -8,7 +8,6 @@ import { Observable, Subscription } from 'rxjs';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { BaseDataSource } from '../customer/customer.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
 import { TextOrderComponent } from './text-order/text-order.component';
 
@@ -23,17 +22,22 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import * as ProductActions from './store/actions';
 import * as ProductTransactionActions from './add-to-cart-product/store/actions';
 
-import { isLoadingSelector, productsSelector } from './store/selectors';
+import { isLoadingSelector } from './store/selectors';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
 import { ProductTransaction } from '../_models/transaction';
-import { Product } from '../_models/product';
+
+import { ProductDataSource } from '../_models/datasources/product.datasource';
+import { MainSharedComponent } from '../shared/components/main-shared/main-shared.component';
 
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.scss'],
 })
-export class ProductComponent implements OnInit, OnDestroy {
+export class ProductComponent
+  extends MainSharedComponent
+  implements OnInit, OnDestroy
+{
   private _dataSource: ProductDataSource;
   private _searchForm: FormGroup;
   private _itemCounter: number;
@@ -55,6 +59,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private translateService: TranslateService
   ) {
+    super();
     this._transactionId =
       +this.activatedRoute.snapshot.paramMap.get('transactionId');
 
@@ -178,25 +183,5 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   get dataSource(): ProductDataSource {
     return this._dataSource;
-  }
-}
-
-export class ProductDataSource extends BaseDataSource<Product> {
-  constructor(override store: Store<AppStateInterface>) {
-    super(store);
-
-    this.store.dispatch(ProductActions.getProductsAction());
-
-    this._subscription.add(
-      this.store
-        .pipe(select(productsSelector))
-        .subscribe((products: Array<Product>) => {
-          this._dataStream.next(products);
-        })
-    );
-  }
-
-  override fetchData() {
-    this.store.dispatch(ProductActions.getProductsAction());
   }
 }

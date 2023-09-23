@@ -8,6 +8,7 @@ import {
   TransactionSales,
   TransactionService,
 } from '../_services/transaction.service';
+import { MainSharedComponent } from '../shared/components/main-shared/main-shared.component';
 
 export enum DateFilterEnum {
   Daily = 1,
@@ -20,7 +21,7 @@ export enum DateFilterEnum {
   templateUrl: './sales.component.html',
   styleUrls: ['./sales.component.scss'],
 })
-export class SalesComponent implements OnInit {
+export class SalesComponent extends MainSharedComponent implements OnInit {
   private _sales: number = 0;
   private _currentFilterOption: DateFilterEnum = DateFilterEnum.Monthly;
   private _weekOptions: Array<string>;
@@ -45,6 +46,7 @@ export class SalesComponent implements OnInit {
     private formBuilder: FormBuilder,
     private transactionService: TransactionService
   ) {
+    super();
     const currentYear = new Date().getFullYear();
     const numberOfWeeks = this.weeksInYear(currentYear);
 
@@ -69,9 +71,11 @@ export class SalesComponent implements OnInit {
 
   getTransactionSales(filterOption: DateFilterEnum) {
     const dateFilters = this.getDateRange(filterOption);
+    this._isLoading = true;
     this.transactionService
       .getTransactionSales(dateFilters.fromDate, dateFilters.toDate)
       .subscribe((transactionSales: TransactionSales) => {
+        this._isLoading = false;
         this._sales = transactionSales.sales;
       });
   }

@@ -25,6 +25,15 @@
 </app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container">
+
+    <div class="page-container__page-divider">
+      <label>{{ "PRODUCTS_CATALOGUE_PAGE.TITLE" | translate }}</label
+      ><br />
+      <span class="page-information-description">{{
+        "PRODUCTS_CATALOGUE_PAGE.DESCRIPTION" | translate
+      }}</span>
+    </div>
+
     <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
       <div class="search-field-container">
         <input
@@ -41,57 +50,64 @@
       </div>
     </form>
 
-    <cdk-virtual-scroll-viewport
-      itemSize="60"
-      orientation="vertical"
-      class="list-container product-list"
+    <app-list-container
+      [templateType]="emptyEntityTemplateEnum.PRODUCTS"
+      [count]="dataSource.fetchPageCount"
     >
-      <div *cdkVirtualFor="let item of dataSource">
-        <div matRipple class="product-item list-container__card-item">
-          <div class="list-container__card-item-header product-item__header">
-            <mat-icon
-              [matBadge]="item.deductedStock"
-              [matBadgeHidden]="item.deductedStock === 0"
-              matBadgeColor="warn"
-              >add_shopping_cart</mat-icon
+      <cdk-virtual-scroll-viewport
+        itemSize="60"
+        orientation="vertical"
+        class="list-container product-list"
+      >
+        <div *cdkVirtualFor="let item of dataSource">
+          <div matRipple class="product-item list-container__card-item">
+            <div class="list-container__card-item-header product-item__header">
+              <mat-icon
+                [matBadge]="item.deductedStock"
+                [matBadgeHidden]="item.deductedStock === 0"
+                matBadgeColor="warn"
+                >add_shopping_cart</mat-icon
+              >
+              <mat-icon matRipple [matMenuTriggerFor]="menu"
+                >more_vert</mat-icon
+              >
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="editProduct(item.id)">
+                  <mat-icon>border_color</mat-icon> Edit
+                </button>
+                <button mat-menu-item (click)="deleteProduct(item.id)">
+                  <mat-icon>delete</mat-icon> Delete
+                </button>
+              </mat-menu>
+            </div>
+            <mat-divider></mat-divider>
+            <div
+              (click)="addItemToCart(item.id)"
+              class="list-container__card-item-body product-item__body"
             >
-            <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="editProduct(item.id)">
-                <mat-icon>border_color</mat-icon> Edit
-              </button>
-              <button mat-menu-item (click)="deleteProduct(item.id)">
-                <mat-icon>delete</mat-icon> Delete
-              </button>
-            </mat-menu>
-          </div>
-          <mat-divider></mat-divider>
-          <div
-            (click)="addItemToCart(item.id)"
-            class="list-container__card-item-body product-item__body"
-          >
-            <mat-icon>card_giftcard</mat-icon>
-          </div>
-          <div
-            (click)="addItemToCart(item.id)"
-            class="list-container__card-item-footer product-item__footer"
-          >
-            <div class="product-info">
-              <span class="product-info__label">Name: </span
-              ><span>{{ item.name }}</span>
+              <mat-icon>card_giftcard</mat-icon>
             </div>
-            <div class="product-info">
-              <span class="product-info__label">Stock: </span
-              ><span>{{ item.stockQuantity }}</span>
-            </div>
-            <div class="product-info">
-              <span class="product-info__label">Price: </span
-              ><span>{{ item.priceFormatted }}</span>
+            <div
+              (click)="addItemToCart(item.id)"
+              class="list-container__card-item-footer product-item__footer"
+            >
+              <div class="product-info">
+                <span class="product-info__label">Name: </span
+                ><span>{{ item.name }}</span>
+              </div>
+              <div class="product-info">
+                <span class="product-info__label">Stock: </span
+                ><span>{{ item.stockQuantity }}</span>
+              </div>
+              <div class="product-info">
+                <span class="product-info__label">Price: </span
+                ><span>{{ item.priceFormatted }}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </cdk-virtual-scroll-viewport>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
   </div>
 
   <app-floating-button

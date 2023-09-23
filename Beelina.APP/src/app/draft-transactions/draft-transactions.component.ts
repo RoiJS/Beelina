@@ -6,27 +6,34 @@ import {
 import { Router } from '@angular/router';
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 
+import { MainSharedComponent } from '../shared/components/main-shared/main-shared.component';
+
 @Component({
   selector: 'app-draft-transactions',
   templateUrl: './draft-transactions.component.html',
   styleUrls: ['./draft-transactions.component.scss'],
 })
-export class DraftTransactionsComponent implements OnInit {
+export class DraftTransactionsComponent
+  extends MainSharedComponent
+  implements OnInit
+{
   private _draftTransactionDates: Array<TransactionDateInformation>;
 
   constructor(
     private router: Router,
     private transactionService: TransactionService
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit() {
+    this._isLoading = true;
     this.transactionService
       .getDraftTransactioHistoryDates()
-      .subscribe(
-        (draftTransactionDates: Array<TransactionDateInformation>) => {
-          this._draftTransactionDates = draftTransactionDates;
-        }
-      );
+      .subscribe((draftTransactionDates: Array<TransactionDateInformation>) => {
+        this._isLoading = false;
+        this._draftTransactionDates = draftTransactionDates;
+      });
   }
 
   goToTransactionDate(transactionDate: Date) {
