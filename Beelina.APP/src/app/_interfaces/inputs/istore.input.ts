@@ -5,4 +5,5 @@ export interface IStoreInput {
   name: string;
   address: string;
   paymentMethodInput: IPaymentMethodInput;
+  barangayInput: IPaymentMethodInput;
 }

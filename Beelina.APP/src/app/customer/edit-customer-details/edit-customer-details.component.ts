@@ -8,16 +8,21 @@ import { map, Observable, startWith, Subscription } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
+
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { CustomerStoreService } from 'src/app/_services/customer-store.service';
 
-import * as PaymentMethodActions from '../../payment-methods/store/actions';
+import * as BarangayActions from '../../barangays/store/actions';
 import * as CustomerStoresActions from '../store/actions';
+import * as PaymentMethodActions from '../../payment-methods/store/actions';
 
+import { barangaysSelector } from 'src/app/barangays/store/selectors';
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
 import { isUpdateLoadingSelector } from '../store/selectors';
 
 import { StoreInformationResult } from 'src/app/_models/results/store-information-result';
+
+import { Barangay } from 'src/app/_models/barangay';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 import { CustomerStore } from 'src/app/_models/customer-store';
 
@@ -28,9 +33,15 @@ import { CustomerStore } from 'src/app/_models/customer-store';
 })
 export class EditCustomerDetailsComponent implements OnInit {
   private _customerForm: FormGroup;
+
   private _paymentMethodOptions: Array<PaymentMethod> = [];
   private _paymentMethodFilterOptions: Observable<Array<PaymentMethod>>;
   private _paymentMethodOptionsSubscription: Subscription;
+
+  private _barangayOptions: Array<Barangay> = [];
+  private _barangayFilterOptions: Observable<Array<Barangay>>;
+  private _barangayOptionsSubscription: Subscription;
+
   private _storeId: number;
   $isLoading: Observable<boolean>;
 
@@ -48,6 +59,7 @@ export class EditCustomerDetailsComponent implements OnInit {
       name: ['', Validators.required],
       address: ['', Validators.required],
       paymentMethod: ['', Validators.required],
+      barangay: ['', Validators.required],
     });
 
     this.$isLoading = this.store.pipe(select(isUpdateLoadingSelector));
@@ -55,6 +67,7 @@ export class EditCustomerDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.store.dispatch(PaymentMethodActions.getPaymentMethodsAction());
+    this.store.dispatch(BarangayActions.getBarangaysAction());
 
     this._storeId = +this.activatedRoute.snapshot.paramMap.get('id');
     this.customerStoreService
@@ -65,6 +78,9 @@ export class EditCustomerDetailsComponent implements OnInit {
         this._customerForm
           .get('paymentMethod')
           .setValue(customerStore.paymentMethod.name);
+        this._customerForm
+          .get('barangay')
+          .setValue(customerStore.barangay.name);
       });
 
     this._paymentMethodOptionsSubscription = this.store
@@ -77,12 +93,26 @@ export class EditCustomerDetailsComponent implements OnInit {
       .get('paymentMethod')
       .valueChanges.pipe(
         startWith(''),
-        map((value) => this._filter(value || ''))
+        map((value) => this._filterPaymentMethods(value || ''))
+      );
+
+    this._barangayOptionsSubscription = this.store
+      .pipe(select(barangaysSelector))
+      .subscribe((barangays: Array<Barangay>) => {
+        this._barangayOptions = barangays;
+      });
+
+    this._barangayFilterOptions = this._customerForm
+      .get('barangay')
+      .valueChanges.pipe(
+        startWith(''),
+        map((value) => this._filterBarangays(value || ''))
       );
   }
 
   ngOnDestroy(): void {
     this._paymentMethodOptionsSubscription.unsubscribe();
+    this._barangayOptionsSubscription.unsubscribe();
     this.store.dispatch(CustomerStoresActions.resetCustomerState());
   }
 
@@ -93,6 +123,7 @@ export class EditCustomerDetailsComponent implements OnInit {
     customerStore.address = this._customerForm.get('address').value;
     customerStore.paymentMethod.name =
       this._customerForm.get('paymentMethod').value;
+    customerStore.barangay.name = this._customerForm.get('barangay').value;
 
     this._customerForm.markAllAsTouched();
 
@@ -152,10 +183,18 @@ export class EditCustomerDetailsComponent implements OnInit {
     }
   }
 
-  private _filter(value: string): Array<PaymentMethod> {
+  private _filterPaymentMethods(value: string): Array<PaymentMethod> {
     const filterValue = value?.toLowerCase();
 
     return this._paymentMethodOptions.filter((option) =>
+      option.name?.toLowerCase().includes(filterValue)
+    );
+  }
+
+  private _filterBarangays(value: string): Array<Barangay> {
+    const filterValue = value?.toLowerCase();
+
+    return this._barangayOptions.filter((option) =>
       option.name?.toLowerCase().includes(filterValue)
     );
   }
@@ -166,5 +205,9 @@ export class EditCustomerDetailsComponent implements OnInit {
 
   get paymentMethodFilterOptions(): Observable<Array<PaymentMethod>> {
     return this._paymentMethodFilterOptions;
+  }
+
+  get barangayFilterOptions(): Observable<Array<Barangay>> {
+    return this._barangayFilterOptions;
   }
 }

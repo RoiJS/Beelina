@@ -62,6 +62,29 @@
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input
+              type="text"
+              matInput
+              formControlName="barangay"
+              [matAutocomplete]="barangayAuto"
+            />
+
+            <mat-autocomplete #barangayAuto="matAutocomplete">
+              <mat-option
+                *ngFor="let option of barangayFilterOptions | async"
+                [value]="option.name"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
         </div>
       </div>
     </div>

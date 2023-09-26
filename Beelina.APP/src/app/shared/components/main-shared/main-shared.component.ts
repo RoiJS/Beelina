@@ -5,7 +5,7 @@ import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enu
 @Component({
   selector: 'app-main-shared',
   templateUrl: './main-shared.component.html',
-  styleUrls: ['./main-shared.component.css'],
+  styleUrls: ['./main-shared.component.scss'],
 })
 export class MainSharedComponent {
   protected _isLoading = false;

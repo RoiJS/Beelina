@@ -90,6 +90,10 @@
       "PAYMENT_METHOD_CONTROL": {
         "LABEL": "Payment Method",
         "HINT": "Please specify payment method"
+      },
+      "BARANGAY_CONTROL": {
+        "LABEL": "Barangay",
+        "HINT": "Please specify from which barangay"
       }
     },
     "EDIT_CUSTOMER_DIALOG": {
@@ -115,6 +119,10 @@
       "PAYMENT_METHOD_CONTROL": {
         "LABEL": "Payment Method",
         "HINT": "Please specify payment method"
+      },
+      "BARANGAY_CONTROL": {
+        "LABEL": "Barangay",
+        "HINT": "Please specify from which barangay"
       }
     },
     "SAVE_NEW_CUSTOMER_DIALOG": {
@@ -129,6 +137,10 @@
     "TITLE": "Order Summary",
     "FORM_CONTROL_SECTION": {
       "HEADER_TITLE": "Order Summary",
+      "BARANGAY_CONTROL": {
+        "LABEL": "Barangay",
+        "HINT": "Please select barangay"
+      },
       "NAME_CONTROL": {
         "LABEL": "Name",
         "HINT": "Please select customer name"

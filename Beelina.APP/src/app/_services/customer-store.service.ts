@@ -64,6 +64,10 @@ const GET_ALL_CUSTOMER_STORES = gql`
         id
         name
       }
+      barangay {
+        id
+        name
+      }
     }
   }
 `;
@@ -77,6 +81,9 @@ const GET_CUSTOMER_STORE = gql`
         name
         address
         paymentMethod {
+          name
+        }
+        barangay {
           name
         }
       }
@@ -112,6 +119,10 @@ export class CustomerStoreService {
       paymentMethodInput: {
         id: store.paymentMethod.id,
         name: store.paymentMethod.name,
+      },
+      barangayInput: {
+        id: store.barangay.id,
+        name: store.barangay.name,
       },
     };
 
@@ -204,6 +215,7 @@ export class CustomerStoreService {
               customer.name = c.name;
               customer.address = c.address;
               customer.paymentMethod = c.paymentMethod;
+              customer.barangay = c.barangay;
               return customer;
             });
 

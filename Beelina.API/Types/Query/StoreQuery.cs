@@ -22,13 +22,17 @@ namespace Beelina.API.Types.Query
         [Authorize]
         public async Task<IList<Store>> GetAllStores([Service] IStoreRepository<Store> storeRepository)
         {
-            return await storeRepository.GetAllEntities().Includes(c => c.PaymentMethod).ToListObjectAsync();
+            return await storeRepository.GetAllEntities()
+                            .Includes(
+                                c => c.PaymentMethod, 
+                                c => c.Barangay
+                            ).ToListObjectAsync();
         }
 
         [Authorize]
         public async Task<IStorePayload> GetStore([Service] IStoreRepository<Store> storeRepository, [Service] IMapper mapper, int storeId)
         {
-            var storeFromRepo = await storeRepository.GetEntity(storeId).Includes(s => s.PaymentMethod).ToObjectAsync();
+            var storeFromRepo = await storeRepository.GetEntity(storeId).Includes(s => s.PaymentMethod, s => s.Barangay).ToObjectAsync();
 
             var storeResult = mapper.Map<StoreInformationResult>(storeFromRepo);
 

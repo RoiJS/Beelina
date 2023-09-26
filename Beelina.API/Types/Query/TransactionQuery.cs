@@ -52,8 +52,11 @@ namespace Beelina.API.Types.Query
         {
             var transactionFromRepo = await transactionRepository
                             .GetEntity(transactionId)
-                            .Includes(t => t.Store)
-                            .Includes(t => t.Store.PaymentMethod)
+                            .Includes(
+                                t => t.Store,
+                                t => t.Store.Barangay,
+                                t => t.Store.PaymentMethod
+                            )
                             .ToObjectAsync();
 
             transactionFromRepo.ProductTransactions = await productTransactionRepository.GetProductTransactions(transactionId);

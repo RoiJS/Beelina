@@ -1,7 +1,7 @@
 import { IBaseStateConnection } from 'src/app/_interfaces/states/ibase-connection.state';
 import { IBaseState } from 'src/app/_interfaces/states/ibase.state';
-import { Product } from 'src/app/_models/product';
+import { Barangay } from 'src/app/_models/barangay';
 
-export interface IProductState extends IBaseState, IBaseStateConnection {
-  products: Array<Product>;
+export interface IBarangayState extends IBaseState, IBaseStateConnection {
+  barangays: Array<Barangay>;
 }

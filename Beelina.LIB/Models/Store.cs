@@ -8,8 +8,10 @@ namespace Beelina.LIB.Models
         public string Name { get; set; }
         public string Address { get; set; }
         public int PaymentMethodId { get; set; }
+        public int BarangayId { get; set; }
 
         public PaymentMethod PaymentMethod { get; set; }
+        public Barangay Barangay { get; set; }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

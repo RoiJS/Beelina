@@ -6,5 +6,6 @@
         public string Name { get; set; }
         public string Address { get; set; }
         public PaymentMethodInput PaymentMethodInput { get; set; }
+        public BarangayInput BarangayInput { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace Beelina.API.Types.Mutations
         [Authorize]
         [Error(typeof(StoreErrorFactory))]
         public async Task<Store> UpdateStore(
+            [Service] IBarangayRepository<Barangay> barangayRepository,
             [Service] IPaymentMethodRepository<PaymentMethod> paymentMethodRepository,
             [Service] IStoreRepository<Store> storeRepository,
             [Service] IMapper mapper,
@@ -22,6 +23,7 @@ namespace Beelina.API.Types.Mutations
         {
             var storeFromRepo = await storeRepository.GetEntity(storeInput.Id).ToObjectAsync();
             var paymentMethodFromRepo = await paymentMethodRepository.GetPaymentMethodByName(storeInput.PaymentMethodInput.Name);
+            var barangayFromRepo = await barangayRepository.GetBarangayByName(storeInput.BarangayInput.Name);
 
             storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
@@ -45,7 +47,19 @@ namespace Beelina.API.Types.Mutations
                 await paymentMethodRepository.AddEntity(paymentMethodFromRepo);
             }
 
+            // Create new barangay if not exists.
+            if (barangayFromRepo == null)
+            {
+                barangayFromRepo = new Barangay
+                {
+                    Name = storeInput.BarangayInput.Name
+                };
+
+                await barangayRepository.AddEntity(barangayFromRepo);
+            }
+
             storeFromRepo.PaymentMethodId = paymentMethodFromRepo.Id;
+            storeFromRepo.BarangayId = barangayFromRepo.Id;
 
             await storeRepository.UpdateStore(storeFromRepo);
 

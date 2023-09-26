@@ -43,12 +43,35 @@
               type="text"
               matInput
               formControlName="paymentMethod"
-              [matAutocomplete]="auto"
+              [matAutocomplete]="paymentMethodAuto"
             />
 
-            <mat-autocomplete #auto="matAutocomplete">
+            <mat-autocomplete #paymentMethodAuto="matAutocomplete">
               <mat-option
                 *ngFor="let option of paymentMethodFilterOptions | async"
+                [value]="option.name"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
+                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <input
+              type="text"
+              matInput
+              formControlName="barangay"
+              [matAutocomplete]="barangayAuto"
+            />
+
+            <mat-autocomplete #barangayAuto="matAutocomplete">
+              <mat-option
+                *ngFor="let option of barangayFilterOptions | async"
                 [value]="option.name"
               >
                 {{ option.name }}

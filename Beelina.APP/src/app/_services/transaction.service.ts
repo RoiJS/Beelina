@@ -77,6 +77,9 @@ const GET_TRANSACTION = gql`
         paymentMethod {
           name
         }
+        barangay {
+          name
+        }
       }
       productTransactions {
         id
