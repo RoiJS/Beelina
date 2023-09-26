@@ -1,4 +1,4 @@
-import { IBaseState } from 'src/app/payment-methods/types/payment-method-state.interface';
+import { IBaseState } from 'src/app/_interfaces/states/ibase.state';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { Transaction } from 'src/app/_services/transaction.service';
 

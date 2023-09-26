@@ -43,6 +43,7 @@ services.AddScoped(typeof(IRefreshTokenRepository<RefreshToken>), typeof(Refresh
 services.AddScoped(typeof(IStoreRepository<Store>), typeof(StoreRepository));
 services.AddScoped(typeof(ITransactionRepository<Transaction>), typeof(TransactionRepository));
 services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), typeof(ProductTransactionRepository));
+services.AddScoped(typeof(IBarangayRepository<Barangay>), typeof(BarangayRepository));
 services.AddTransient<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
 
 // GraphQL Services
@@ -59,6 +60,7 @@ services.AddGraphQLServer()
         .AddType<ProductQuery>()
         .AddType<ProductUnitQuery>()
         .AddType<StoreQuery>()
+        .AddType<BarangayQuery>()
         .AddType<PaymentMethodQuery>()
         .AddType<TransactionQuery>()
         .AddType<UserAccountMutation>()

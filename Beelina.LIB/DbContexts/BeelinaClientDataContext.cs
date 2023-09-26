@@ -25,6 +25,7 @@ namespace Beelina.LIB.DbContexts
         public DbSet<Store> Stores { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<ProductTransaction> ProductTransactions { get; set; }
+        public DbSet<Barangay> Barangays { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         #endregion

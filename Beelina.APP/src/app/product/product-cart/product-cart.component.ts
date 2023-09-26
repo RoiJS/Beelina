@@ -7,6 +7,7 @@ import { select, Store } from '@ngrx/store';
 import { map, Observable, startWith, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
+import { barangaysSelector } from 'src/app/barangays/store/selectors';
 import { customerStoresSelector } from 'src/app/customer/store/selectors';
 import {
   productTransactionsSelector,
@@ -29,6 +30,7 @@ import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
 
+import * as BarangayActions from '../../barangays/store/actions';
 import * as CustomerActions from '../../customer/store/actions';
 import * as ProductActions from '../store/actions';
 import * as ProductTransactionActions from '../add-to-cart-product/store/actions';
@@ -43,6 +45,7 @@ import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { Product } from 'src/app/_models/product';
 import { ProductCartTransaction } from 'src/app/_models/product-cart-transaction.model';
 
+import { Barangay } from 'src/app/_models/barangay';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
@@ -59,9 +62,14 @@ export class ProductCartComponent
   private _orderForm: FormGroup;
   private _customerStoreOptions: Array<CustomerStore> = [];
   private _customerStoreFilterOptions: Observable<Array<CustomerStore>>;
+
+  private _barangayOptions: Array<Barangay> = [];
+  private _barangayFilterOptions: Observable<Array<Barangay>>;
+
   private _subscription: Subscription = new Subscription();
   private _selectedCustomer: CustomerStore;
-  private _products: Array<Product>;
+  private _selectedBarangay: Barangay;
+
   private _productTransactions: Array<ProductTransaction>;
   private _productCartTransactions: Array<ProductCartTransaction> =
     new Array<ProductCartTransaction>();
@@ -84,6 +92,7 @@ export class ProductCartComponent
   ) {
     super();
     this._orderForm = this.formBuilder.group({
+      barangay: ['', Validators.required],
       name: ['', Validators.required],
       address: [''],
       paymentMethod: [''],
@@ -92,6 +101,15 @@ export class ProductCartComponent
   }
 
   ngOnInit() {
+    const barangayControl = this._orderForm.get('barangay');
+    const nameControl = this._orderForm.get('name');
+    const addressControl = this._orderForm.get('address');
+    const paymentMethodControl = this._orderForm.get('paymentMethod');
+
+    nameControl.disable();
+    addressControl.disable();
+    paymentMethodControl.disable();
+
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
 
     if (this._transactionId > 0) {
@@ -109,6 +127,7 @@ export class ProductCartComponent
     }
 
     this.store.dispatch(ProductActions.getProductsAction());
+    this.store.dispatch(BarangayActions.getAllBarangayAction());
     this.store.dispatch(CustomerActions.getAllCustomerStoreAction());
 
     this._subscription.add(
@@ -116,6 +135,14 @@ export class ProductCartComponent
         .pipe(select(customerStoresSelector))
         .subscribe((customerStores: Array<CustomerStore>) => {
           this._customerStoreOptions = customerStores;
+        })
+    );
+
+    this._subscription.add(
+      this.store
+        .pipe(select(barangaysSelector))
+        .subscribe((barangays: Array<Barangay>) => {
+          this._barangayOptions = barangays;
         })
     );
 
@@ -153,6 +180,9 @@ export class ProductCartComponent
           this._transaction = transaction;
 
           if (this._transaction.store) {
+            this._orderForm
+              .get('barangay')
+              .setValue(this._transaction.store.barangay.name);
             this._orderForm.get('name').setValue(this._transaction.store.name);
             this._selectedCustomer = this._transaction.store;
             this._orderForm
@@ -168,25 +198,56 @@ export class ProductCartComponent
         })
     );
 
-    this._customerStoreFilterOptions = this._orderForm
-      .get('name')
-      .valueChanges.pipe(
-        startWith(''),
-        map((value) => this._filter(value || ''))
-      );
+    this._customerStoreFilterOptions = nameControl.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filterCustomers(value || ''))
+    );
 
-    this._orderForm.get('name').valueChanges.subscribe((value) => {
-      this._selectedCustomer = this._customerStoreOptions.find(
-        (c) => c.name === value
-      );
+    this._subscription.add(
+      barangayControl.valueChanges.subscribe((value) => {
+        nameControl.setValue('');
 
-      if (this._selectedCustomer) {
-        this._orderForm.get('address').setValue(this._selectedCustomer.address);
-        this._orderForm
-          .get('paymentMethod')
-          .setValue(this._selectedCustomer.paymentMethod.name);
-      }
-    });
+        this._selectedBarangay = this._barangayOptions.find(
+          (c) => c.name === value
+        );
+
+        if (this._selectedBarangay) {
+          nameControl.enable();
+        } else {
+          nameControl.disable();
+        }
+      })
+    );
+
+    this._barangayFilterOptions = barangayControl.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filterBarangays(value || ''))
+    );
+
+    this._subscription.add(
+      nameControl.valueChanges.subscribe((value) => {
+        this._selectedCustomer = this._customerStoreOptions.find(
+          (c) => c.name === value
+        );
+
+        addressControl.setValue('');
+        paymentMethodControl.setValue('');
+
+        if (this._selectedCustomer) {
+          this._orderForm
+            .get('address')
+            .setValue(this._selectedCustomer.address);
+          this._orderForm
+            .get('paymentMethod')
+            .setValue(this._selectedCustomer.paymentMethod.name);
+          addressControl.enable();
+          paymentMethodControl.enable();
+        } else {
+          addressControl.disable();
+          paymentMethodControl.disable();
+        }
+      })
+    );
   }
 
   // clear() {
@@ -409,12 +470,24 @@ export class ProductCartComponent
   ngOnDestroy() {
     this._subscription.unsubscribe();
     this.store.dispatch(CustomerActions.resetCustomerState());
+    this.store.dispatch(BarangayActions.resetBarangayState());
     this.store.dispatch(ProductTransactionActions.resetTransactionState());
   }
 
-  private _filter(value: string): Array<CustomerStore> {
+  private _filterCustomers(value: string): Array<CustomerStore> {
     const filterValue = value?.toLowerCase();
-    return this._customerStoreOptions.filter((option) =>
+    const currentBarangay = this._orderForm.get('barangay').value.toLowerCase();
+    return this._customerStoreOptions.filter((option) => {
+      return (
+        option.barangay?.name.toLowerCase().includes(currentBarangay) &&
+        option.name?.toLowerCase().includes(filterValue)
+      );
+    });
+  }
+
+  private _filterBarangays(value: string): Array<Barangay> {
+    const filterValue = value?.toLowerCase();
+    return this._barangayOptions.filter((option) =>
       option.name?.toLowerCase().includes(filterValue)
     );
   }
@@ -435,6 +508,10 @@ export class ProductCartComponent
     return this._customerStoreFilterOptions;
   }
 
+  get barangayFilterOptions(): Observable<Array<Barangay>> {
+    return this._barangayFilterOptions;
+  }
+
   get totalAmount(): string {
     return NumberFormatter.formatCurrency(this._totalAmount);
   }
@@ -445,5 +522,9 @@ export class ProductCartComponent
 
   get isDraftTransaction(): boolean {
     return this._transactionId > 0;
+  }
+
+  get barangayOptions(): Array<Barangay> {
+    return this._barangayOptions;
   }
 }

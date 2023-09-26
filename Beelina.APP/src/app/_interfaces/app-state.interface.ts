@@ -1,4 +1,5 @@
 import { ILoginAuthCredentialsState } from '../auth/types/login-state.interface';
+import { IBarangayState } from '../barangays/types/barangay.interface';
 import { ICustomerStoreState } from '../customer/types/payment-method-state.interface';
 import { IPaymentMethodState } from '../payment-methods/types/payment-method-state.interface';
 import { IProductTransactionState } from '../product/add-to-cart-product/store/types/product-transaction-state.interface';
@@ -8,6 +9,7 @@ import { IProductUnitState } from '../units/types/product-unit-state.interface';
 export interface AppStateInterface {
   authCredentials: ILoginAuthCredentialsState;
   paymentMethods: IPaymentMethodState;
+  barangays: IBarangayState;
   productUnits: IProductUnitState;
   products: IProductState;
   customerStores: ICustomerStoreState;
