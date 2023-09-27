@@ -72,8 +72,8 @@ namespace Beelina.LIB.BusinessLogic
 
             if (lastDemoDatabase != null)
             {
-                // demoDBNameId = Convert.ToInt32(lastDemoDatabase.DBName.Substring(4));
-                demoDBNameId = Convert.ToInt32(lastDemoDatabase.DBName.Split("_")[2].Substring(4));
+                demoDBNameId = Convert.ToInt32(lastDemoDatabase.DBName.Substring(4));
+                // demoDBNameId = Convert.ToInt32(lastDemoDatabase.DBName.Split("_")[2].Substring(4));
                 demoDBNameId += 1;
             }
 

@@ -99,24 +99,7 @@ namespace Beelina.LIB.BusinessLogic
         //         _context.SaveChanges();
         //     }
         // }
-
-        private async Task SendRequestToGenerateAccountStatements(Client client, UserAccount account)
-        {
-            try
-            {
-                var url = String.Format("{0}{1}/{2}", _appHostInfo.Value.Domain, _appSettings.Value.AppSettingsURL.AutoGenerateAccountStatementsForNewDatabaseURL, account.Id);
-                var httpClient = new RestClient(url);
-                httpClient.Options.MaxTimeout = -1;
-                var httpRequest = new RestRequest(url, Method.Post);
-                httpRequest.AddHeader("App-Secret-Token", client.DBHashName);
-                httpRequest.AddHeader("Content-Type", "application/json");
-                await httpClient.ExecuteAsync(httpRequest);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to auto generate statement of accounts. Error Message: {ex.InnerException.Message}");
-            }
-        }
+        
         private string GenerateUsername(Account account)
         {
             var username = String.Format("{0}{1}", account.FirstName.ToLower().Substring(0, 2), account.LastName.ToLower().Substring(0, 2));
