@@ -8,6 +8,7 @@
     "CONFIRM": "Confirm",
     "CLEAR": "Clear",
     "CANCEL": "Cancel",
+    "RESET": "Reset",
     "TOTAL": "Total",
     "PAID": "Paid",
     "UNPAID": "Unpaid",
@@ -277,6 +278,23 @@
     "TITLE": "Product",
     "PRODUCT_INFORMATION_CONTAINER": {
       "STOCK_LEFT": "Stock Left"
+    }
+  },
+
+  "TRANSACTION_FILTER_AND_SORT_DIALOG": {
+    "TITLE": "Filter Settings",
+    "DESCRIPTION": "",
+    "FORM_CONTROL_SECTION": {
+      "DATE_RANGE_CONTROL": {
+        "LABEL": "Enter a date range",
+        "START_DATE_PLACEHOLDER": "Start Date",
+        "END_DATE_PLACEHOLDER": "End Date"
+      },
+      "DATE_ORDER_CONTROL": {
+        "LABEL": "Date Order",
+        "ASCENDING_OPTION": "Ascending",
+        "DESCENDING_OPTION": "Descending"
+      }
     }
   },
 

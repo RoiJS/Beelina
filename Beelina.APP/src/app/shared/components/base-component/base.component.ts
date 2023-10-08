@@ -3,11 +3,11 @@ import { Component } from '@angular/core';
 import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enum';
 
 @Component({
-  selector: 'app-main-shared',
-  templateUrl: './main-shared.component.html',
-  styleUrls: ['./main-shared.component.scss'],
+  selector: 'app-base-component',
+  templateUrl: './base.component.html',
+  styleUrls: ['./base.component.scss'],
 })
-export class MainSharedComponent {
+export class BaseComponent {
   protected _isLoading = false;
   protected _emptyTemplateType = EmptyEntityTemplateEnum;
 

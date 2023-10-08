@@ -19,7 +19,7 @@ import { ButtonOptions } from '../_enum/button-options.enum';
 
 import { CustomerStoreDataSource } from '../_models/datasources/customer-store.datasource';
 
-import { MainSharedComponent } from '../shared/components/main-shared/main-shared.component';
+import { BaseComponent } from '../shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-customer',
@@ -27,7 +27,7 @@ import { MainSharedComponent } from '../shared/components/main-shared/main-share
   styleUrls: ['./customer.component.scss'],
 })
 export class CustomerComponent
-  extends MainSharedComponent
+  extends BaseComponent
   implements OnInit, OnDestroy
 {
   private _dataSource: CustomerStoreDataSource;

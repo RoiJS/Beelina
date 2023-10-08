@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
-import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-transaction-details',
@@ -17,7 +17,7 @@ import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-
   styleUrls: ['./transaction-details.component.scss'],
 })
 export class TransactionDetailsComponent
-  extends MainSharedComponent
+  extends BaseComponent
   implements OnInit
 {
   private _transactionId: number;

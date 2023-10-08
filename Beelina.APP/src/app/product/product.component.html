@@ -52,10 +52,10 @@
 
     <app-list-container
       [templateType]="emptyEntityTemplateEnum.PRODUCTS"
-      [count]="dataSource.fetchPageCount"
+      [count]="dataSource.itemCount"
     >
       <cdk-virtual-scroll-viewport
-        itemSize="60"
+        itemSize="30"
         orientation="vertical"
         class="list-container product-list"
       >

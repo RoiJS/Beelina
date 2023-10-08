@@ -4,7 +4,7 @@ import {
   TransactionService,
   TransactionTopProduct,
 } from 'src/app/_services/transaction.service';
-import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-top-products',
@@ -12,7 +12,7 @@ import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-
   styleUrls: ['./top-products.component.scss'],
 })
 export class TopProductsComponent
-  extends MainSharedComponent
+  extends BaseComponent
   implements OnInit
 {
   private _topProducts: Array<TransactionTopProduct>;

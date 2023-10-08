@@ -8,7 +8,7 @@ import {
   TransactionSales,
   TransactionService,
 } from '../_services/transaction.service';
-import { MainSharedComponent } from '../shared/components/main-shared/main-shared.component';
+import { BaseComponent } from '../shared/components/base-component/base.component';
 
 export enum DateFilterEnum {
   Daily = 1,
@@ -21,7 +21,7 @@ export enum DateFilterEnum {
   templateUrl: './sales.component.html',
   styleUrls: ['./sales.component.scss'],
 })
-export class SalesComponent extends MainSharedComponent implements OnInit {
+export class SalesComponent extends BaseComponent implements OnInit {
   private _sales: number = 0;
   private _currentFilterOption: DateFilterEnum = DateFilterEnum.Monthly;
   private _weekOptions: Array<string>;

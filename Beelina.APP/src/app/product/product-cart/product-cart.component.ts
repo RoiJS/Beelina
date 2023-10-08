@@ -48,7 +48,7 @@ import { ProductCartTransaction } from 'src/app/_models/product-cart-transaction
 import { Barangay } from 'src/app/_models/barangay';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
-import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-product-cart',
@@ -56,7 +56,7 @@ import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-
   styleUrls: ['./product-cart.component.scss'],
 })
 export class ProductCartComponent
-  extends MainSharedComponent
+  extends BaseComponent
   implements OnInit, OnDestroy
 {
   private _orderForm: FormGroup;

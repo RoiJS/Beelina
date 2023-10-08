@@ -1,12 +1,23 @@
 import { NgModule } from '@angular/core';
 
-import { TransactionHistoryComponent } from './transaction-history.component';
-import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+
+import { SharedModule } from '../shared/shared.module';
+import { TransactionHistoryComponent } from './transaction-history.component';
+
+import { TransactionDatesEffects } from '../transaction-history/store/effects';
+
+import * as TransactionDatesReducers from '../transaction-history/store/reducers';
 
 @NgModule({
   imports: [
     SharedModule,
+    StoreModule.forFeature(
+      'transactionDates',
+      TransactionDatesReducers.reducers
+    ),
     RouterModule.forChild([
       {
         path: '',
@@ -20,6 +31,9 @@ import { RouterModule } from '@angular/router';
             (m) => m.TransactionsModule
           ),
       },
+    ]),
+    EffectsModule.forFeature([
+      TransactionDatesEffects,
     ]),
   ],
   declarations: [TransactionHistoryComponent],

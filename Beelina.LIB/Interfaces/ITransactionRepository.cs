@@ -8,7 +8,7 @@ namespace Beelina.LIB.Interfaces
     {
         Task<Transaction> RegisterTransaction(Transaction transaction);
 
-        Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status,string transactionDate);
+        Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum statuse, string fromDate, string toDate);
 
         Task<List<Transaction>> GetTransactionByDate(TransactionStatusEnum status,string transactionDate);
         

@@ -1,12 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  TransactionDateInformation,
-  TransactionService,
-} from '../_services/transaction.service';
 import { Router } from '@angular/router';
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 
-import { MainSharedComponent } from '../shared/components/main-shared/main-shared.component';
+import { AppStateInterface } from '../_interfaces/app-state.interface';
+import { IFilterAndSortTransactions } from '../_interfaces/services/ifilter-and-sort-transactions.interface';
+import { TransactionDatesDataSource } from '../_models/datasources/transaction-dates.datasource';
+
+import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
+
+import * as TransactionDateStoreActions from '../transaction-history/store/actions';
+import { isLoadingSelector } from '../transaction-history/store/selectors';
+
+import { FilterAndSortTransactionsService } from '../_services/filter-and-sort-transactions.service';
+
+import { BaseComponent } from '../shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-draft-transactions',
@@ -14,26 +26,40 @@ import { MainSharedComponent } from '../shared/components/main-shared/main-share
   styleUrls: ['./draft-transactions.component.scss'],
 })
 export class DraftTransactionsComponent
-  extends MainSharedComponent
-  implements OnInit
+  extends BaseComponent
+  implements OnInit, IFilterAndSortTransactions
 {
-  private _draftTransactionDates: Array<TransactionDateInformation>;
+  $isLoading: Observable<boolean>;
 
   constructor(
     private router: Router,
-    private transactionService: TransactionService
+    private store: Store<AppStateInterface>,
+    private bottomSheet: MatBottomSheet,
+    private filterAndSortTransactionsService: FilterAndSortTransactionsService
   ) {
     super();
+
+    this.filterAndSortTransactionsService
+      .setBottomSheet(this.bottomSheet)
+      .setProps(
+        'dateStart_draftTransactionPage',
+        'dateEnd_draftTransactionPage',
+        'sortOrder_draftTransactionPage'
+      )
+      .setDataSource(
+        new TransactionDatesDataSource(this.store, TransactionStatusEnum.DRAFT)
+      );
+
+    this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
-  ngOnInit() {
-    this._isLoading = true;
-    this.transactionService
-      .getDraftTransactioHistoryDates()
-      .subscribe((draftTransactionDates: Array<TransactionDateInformation>) => {
-        this._isLoading = false;
-        this._draftTransactionDates = draftTransactionDates;
-      });
+  ngOnInit() {}
+
+  ngOnDestroy() {
+    this.store.dispatch(
+      TransactionDateStoreActions.resetTransactionDatesState()
+    );
+    this.filterAndSortTransactionsService.destroy();
   }
 
   goToTransactionDate(transactionDate: Date) {
@@ -41,7 +67,15 @@ export class DraftTransactionsComponent
     this.router.navigate([`draft-transactions/transactions/${date}`]);
   }
 
-  get draftTransactionDates(): Array<TransactionDateInformation> {
-    return this._draftTransactionDates;
+  openFilter() {
+    this.filterAndSortTransactionsService.openFilter();
+  }
+
+  get dataSource(): TransactionDatesDataSource {
+    return this.filterAndSortTransactionsService.dataSource;
+  }
+
+  get isFilterActive(): boolean {
+    return this.filterAndSortTransactionsService.isFilterActive;
   }
 }

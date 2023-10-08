@@ -4,6 +4,7 @@ import { ICustomerStoreState } from '../customer/types/payment-method-state.inte
 import { IPaymentMethodState } from '../payment-methods/types/payment-method-state.interface';
 import { IProductTransactionState } from '../product/add-to-cart-product/store/types/product-transaction-state.interface';
 import { IProductState } from '../product/types/product-state.interface';
+import { ITransactionDateState } from '../transaction-history/types/transaction-dates-state.interface';
 import { IProductUnitState } from '../units/types/product-unit-state.interface';
 
 export interface AppStateInterface {
@@ -13,5 +14,6 @@ export interface AppStateInterface {
   productUnits: IProductUnitState;
   products: IProductState;
   customerStores: ICustomerStoreState;
+  transactionDates: ITransactionDateState;
   productTransactions: IProductTransactionState;
 }
