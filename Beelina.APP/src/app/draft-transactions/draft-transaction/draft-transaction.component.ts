@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
-import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-shared.component';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-draft-transaction',
@@ -15,7 +15,7 @@ import { MainSharedComponent } from 'src/app/shared/components/main-shared/main-
   styleUrls: ['./draft-transaction.component.scss'],
 })
 export class DraftTransactionComponent
-  extends MainSharedComponent
+  extends BaseComponent
   implements OnInit
 {
   private _transactionDate: string;

@@ -47,7 +47,7 @@ namespace Beelina.LIB.BusinessLogic
             return transactionsFromRepo;
         }
 
-        public async Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string transactionDate)
+        public async Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate)
         {
             var transactions = await (
                     from t in _beelinaRepository.ClientDbContext.Transactions
@@ -72,9 +72,17 @@ namespace Beelina.LIB.BusinessLogic
                                                AllTransactionsPaid = Convert.ToBoolean(g.Max(s => s.ProductTransactions.Status))
                                            });
 
-            if (!String.IsNullOrEmpty(transactionDate))
+            if (!String.IsNullOrEmpty(fromDate) || !String.IsNullOrEmpty(toDate))
             {
-                transactionHistoryDates = transactionHistoryDates.Where(t => t.TransactionDate == Convert.ToDateTime(transactionDate));
+                if (!String.IsNullOrEmpty(fromDate))
+                {
+                    transactionHistoryDates = transactionHistoryDates.Where(t => t.TransactionDate >= Convert.ToDateTime(fromDate));
+                }
+
+                if (!String.IsNullOrEmpty(toDate))
+                {
+                    transactionHistoryDates = transactionHistoryDates.Where(t => t.TransactionDate <= Convert.ToDateTime(toDate));
+                }
             }
             return transactionHistoryDates.ToList();
         }

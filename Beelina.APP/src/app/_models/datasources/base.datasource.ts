@@ -49,7 +49,7 @@ export class BaseDataSource<T> extends DataSource<T | undefined> {
     throw new Error('Not implemented!');
   }
 
-  get fetchPageCount(): number {
-    return this._fetchPage.length;
+  get itemCount(): number {
+    return this._dataStream.value.length;
   }
 }

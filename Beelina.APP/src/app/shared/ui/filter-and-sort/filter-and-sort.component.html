@@ -1,0 +1,59 @@
+<div class="filter-and-sort-container">
+  <div class="filter-and-sort-container__header">
+    <span>{{ "TRANSACTION_FILTER_AND_SORT_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="filter-and-sort-container__body" [formGroup]="filterForm">
+    <mat-form-field appearance="fill">
+      <mat-label
+        >{{
+          "TRANSACTION_FILTER_AND_SORT_DIALOG.FORM_CONTROL_SECTION.DATE_RANGE_CONTROL.LABEL"
+            | translate
+        }}:</mat-label
+      >
+      <mat-date-range-input [rangePicker]="picker">
+        <input
+          matStartDate
+          formControlName="dateFrom"
+          placeholder="Start Date"
+        />
+        <input matEndDate formControlName="dateTo" placeholder="End Date" />
+      </mat-date-range-input>
+      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label
+        >{{
+          "TRANSACTION_FILTER_AND_SORT_DIALOG.FORM_CONTROL_SECTION.DATE_ORDER_CONTROL.LABEL"
+            | translate
+        }}:</mat-label
+      >
+      <mat-select formControlName="sortOrder">
+        <mat-option [value]="'ASC'">
+          {{
+            "TRANSACTION_FILTER_AND_SORT_DIALOG.FORM_CONTROL_SECTION.DATE_ORDER_CONTROL.ASCENDING_OPTION"
+              | translate
+          }}
+        </mat-option>
+        <mat-option [value]="'DESC'">
+          {{
+            "TRANSACTION_FILTER_AND_SORT_DIALOG.FORM_CONTROL_SECTION.DATE_ORDER_CONTROL.DESCENDING_OPTION"
+              | translate
+          }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="filter-and-sort-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onReset()">
+        {{ "GENERAL_TEXTS.RESET" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -205,9 +205,13 @@ body {
 
 /*#region PAGE TOOLBAR CLASSES*/
 app-tool-bar {
-  button.toolbar-option mat-icon {
+  mat-icon {
     font-size: 2em;
     color: $white;
+  }
+
+  mat-icon.icon-active {
+    color: $active;
   }
 }
 /*#endregion*/

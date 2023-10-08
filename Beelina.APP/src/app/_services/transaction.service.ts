@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
+import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { map } from 'rxjs';
+import { map, take } from 'rxjs';
 
 import { Entity } from '../_models/entity.model';
 import { Product } from '../_models/product';
@@ -16,9 +17,19 @@ import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
-import { ITransactionInput } from '../_interfaces/inputs/itransaction.input';
 import { IProductTransactionInput } from '../_interfaces/inputs/iproduct-transaction.input';
+import { ITransactionInput } from '../_interfaces/inputs/itransaction.input';
 import { ITransactionOutput } from '../_interfaces/outputs/itransaction.output';
+
+import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
+import { AppStateInterface } from '../_interfaces/app-state.interface';
+import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
+import {
+  endCursorSelector,
+  fromDateSelector,
+  sortOrderSelector,
+  toDateSelector,
+} from '../transaction-history/store/selectors';
 
 const REGISTER_TRANSACTION_MUTATION = gql`
   mutation ($transactionInput: TransactionInput!) {
@@ -30,19 +41,38 @@ const REGISTER_TRANSACTION_MUTATION = gql`
   }
 `;
 
-const GET_APPROVED_TRANSACTION_HISTORY_DATES = gql`
-  query ($transactionDate: String!) {
-    approvedTransactionDates(transactionDate: $transactionDate) {
-      transactionDate
-      allTransactionsPaid
-    }
-  }
-`;
-
-const GET_DRAFT_TRANSACTION_HISTORY_DATES = gql`
-  query ($transactionDate: String!) {
-    draftTransactionDates(transactionDate: $transactionDate) {
-      transactionDate
+const GET_TRANSACTION_DATES = gql`
+  query (
+    $cursor: String
+    $sortOrder: SortEnumType
+    $transactionStatus: TransactionStatusEnum!
+    $fromDate: String
+    $toDate: String
+  ) {
+    transactionDates(
+      after: $cursor
+      order: [{ transactionDate: $sortOrder }]
+      transactionStatus: $transactionStatus
+      fromDate: $fromDate
+      toDate: $toDate
+    ) {
+      edges {
+        cursor
+        node {
+          transactionDate
+          allTransactionsPaid
+        }
+      }
+      nodes {
+        transactionDate
+        allTransactionsPaid
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
     }
   }
 `;
@@ -190,7 +220,10 @@ export class TransactionTopProduct {
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
-  constructor(private apollo: Apollo) {}
+  constructor(
+    private apollo: Apollo,
+    private store: Store<AppStateInterface>
+  ) {}
 
   registerTransaction(transaction: TransactionDto) {
     const transactionInput: ITransactionInput = {
@@ -324,57 +357,77 @@ export class TransactionService {
       );
   }
 
-  getApprovedTransactioHistoryDates(transactionDate: string = '') {
+  getTransactioDates(transactionStatus: TransactionStatusEnum) {
+    let cursor = null,
+      sortOrder = SortOrderOptionsEnum.ASCENDING,
+      fromDate = null,
+      toDate = null;
+
+    this.store
+      .select(endCursorSelector)
+      .pipe(take(1))
+      .subscribe((currentCursor) => (cursor = currentCursor));
+
+    this.store
+      .select(sortOrderSelector)
+      .pipe(take(1))
+      .subscribe((currentSortOrder) => (sortOrder = currentSortOrder));
+
+    this.store
+      .select(fromDateSelector)
+      .pipe(take(1))
+      .subscribe((currentFromDate) => (fromDate = currentFromDate));
+
+    this.store
+      .select(toDateSelector)
+      .pipe(take(1))
+      .subscribe((currentToDate) => (toDate = currentToDate));
+
     return this.apollo
       .watchQuery({
-        query: GET_APPROVED_TRANSACTION_HISTORY_DATES,
+        query: GET_TRANSACTION_DATES,
         variables: {
-          transactionDate,
+          cursor,
+          sortOrder,
+          transactionStatus,
+          fromDate,
+          toDate,
         },
       })
       .valueChanges.pipe(
         map(
           (
             result: ApolloQueryResult<{
-              approvedTransactionDates: Array<TransactionDateInformation>;
+              transactionDates: IBaseConnection;
             }>
           ) => {
-            const dates = result.data.approvedTransactionDates.map((t) => {
-              const transactionHistoryDate = new TransactionDateInformation();
-              transactionHistoryDate.transactionDate = t.transactionDate;
-              transactionHistoryDate.allTransactionsPaid =
-                t.allTransactionsPaid;
-              return transactionHistoryDate;
-            });
+            const data = result.data.transactionDates;
+            const errors = result.errors;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+            const transactionDates = <Array<TransactionDateInformation>>(
+              data.nodes.map((t: TransactionDateInformation) => {
+                const transactionHistoryDate = new TransactionDateInformation();
+                transactionHistoryDate.transactionDate = t.transactionDate;
+                transactionHistoryDate.allTransactionsPaid =
+                  t.allTransactionsPaid;
+                return transactionHistoryDate;
+              })
+            );
 
-            return dates;
-          }
-        )
-      );
-  }
+            if (transactionDates) {
+              return {
+                endCursor,
+                hasNextPage,
+                transactionDates,
+              };
+            }
 
-  getDraftTransactioHistoryDates(transactionDate: string = '') {
-    return this.apollo
-      .watchQuery({
-        query: GET_DRAFT_TRANSACTION_HISTORY_DATES,
-        variables: {
-          transactionDate,
-        },
-      })
-      .valueChanges.pipe(
-        map(
-          (
-            result: ApolloQueryResult<{
-              draftTransactionDates: Array<TransactionDateInformation>;
-            }>
-          ) => {
-            const dates = result.data.draftTransactionDates.map((t) => {
-              const transactionHistoryDate = new TransactionDateInformation();
-              transactionHistoryDate.transactionDate = t.transactionDate;
-              return transactionHistoryDate;
-            });
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
 
-            return dates;
+            return null;
           }
         )
       );

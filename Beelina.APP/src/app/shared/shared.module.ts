@@ -1,40 +1,41 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LayoutModule } from '@angular/cdk/layout';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatTreeModule } from '@angular/material/tree';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatGridListModule } from '@angular/material/grid-list';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
-import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTreeModule } from '@angular/material/tree';
 
 import { DialogModule } from './ui/dialog/dialog.module';
 
-import { EmptyEntitiesPlaceholderComponent } from './ui/empty-entities-placeholder/empty-entities-placeholder.component';
-import { LoaderLayoutComponent } from './ui/loader-layout/loader-layout.component';
-import { ListContainerComponent } from './ui/list-container/list-container.component';
-import { FloatingButtonComponent } from './ui/floating-button/floating-button.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
+import { EmptyEntitiesPlaceholderComponent } from './ui/empty-entities-placeholder/empty-entities-placeholder.component';
+import { FilterAndSortComponent } from './ui/filter-and-sort/filter-and-sort.component';
+import { FloatingButtonComponent } from './ui/floating-button/floating-button.component';
+import { ListContainerComponent } from './ui/list-container/list-container.component';
+import { LoaderLayoutComponent } from './ui/loader-layout/loader-layout.component';
 
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 
@@ -77,7 +78,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
     LoaderLayoutComponent,
     FloatingButtonComponent,
     EmptyEntitiesPlaceholderComponent,
-    ListContainerComponent
+    ListContainerComponent,
+    FilterAndSortComponent,
   ],
   exports: [
     CommonModule,
@@ -115,7 +117,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
     LoaderLayoutComponent,
     FloatingButtonComponent,
     EmptyEntitiesPlaceholderComponent,
-    ListContainerComponent
+    ListContainerComponent,
+    FilterAndSortComponent
   ],
 })
 export class SharedModule {}

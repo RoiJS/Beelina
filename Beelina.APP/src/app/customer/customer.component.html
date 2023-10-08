@@ -29,7 +29,7 @@
 
     <app-list-container
       [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
-      [count]="dataSource.fetchPageCount"
+      [count]="dataSource.itemCount"
     >
       <cdk-virtual-scroll-viewport itemSize="10" class="list-container">
         <div *cdkVirtualFor="let item of dataSource">

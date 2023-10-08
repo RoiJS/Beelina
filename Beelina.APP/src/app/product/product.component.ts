@@ -27,7 +27,7 @@ import { productTransactionsSelector } from './add-to-cart-product/store/selecto
 import { ProductTransaction } from '../_models/transaction';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
-import { MainSharedComponent } from '../shared/components/main-shared/main-shared.component';
+import { BaseComponent } from '../shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-product',
@@ -35,7 +35,7 @@ import { MainSharedComponent } from '../shared/components/main-shared/main-share
   styleUrls: ['./product.component.scss'],
 })
 export class ProductComponent
-  extends MainSharedComponent
+  extends BaseComponent
   implements OnInit, OnDestroy
 {
   private _dataSource: ProductDataSource;

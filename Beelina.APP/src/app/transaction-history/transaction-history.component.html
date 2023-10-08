@@ -2,12 +2,18 @@
   [title]="'GENERAL_TEXTS.BEELINA' | translate"
   [showBackButton]="false"
 >
-  <!-- <button mat-icon-button class="toolbar-option">
-    <mat-icon matBadgeColor="warn">search</mat-icon>
-  </button> -->
+  <button mat-icon-button class="toolbar-option" (click)="openFilter()">
+    <mat-icon
+      [ngClass]="{
+        'icon-active': isFilterActive
+      }"
+      matBadgeColor="warn"
+      >search</mat-icon
+    >
+  </button>
 </app-tool-bar>
 
-<app-loader-layout [busy]="isLoading">
+<app-loader-layout [busy]="$isLoading | async">
   <div class="page-container">
     <div class="page-container__page-divider">
       <label>{{ "TRANSACTION_HISTORY_PAGE.TITLE" | translate }}</label
@@ -19,10 +25,10 @@
 
     <app-list-container
       [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
-      [count]="transactionHistoryDates?.length"
+      [count]="dataSource.itemCount"
     >
       <cdk-virtual-scroll-viewport itemSize="10" class="list-container">
-        <div *cdkVirtualFor="let item of transactionHistoryDates">
+        <div *cdkVirtualFor="let item of dataSource">
           <div
             matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
