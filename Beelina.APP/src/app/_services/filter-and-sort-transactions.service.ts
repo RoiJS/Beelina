@@ -3,8 +3,8 @@ import { Subscription } from 'rxjs';
 import { StorageService } from './storage.service';
 
 import {
-    MatBottomSheet,
-    MatBottomSheetRef,
+  MatBottomSheet,
+  MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
 import { Store } from '@ngrx/store';
 
@@ -14,9 +14,9 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import * as TransactionDateStoreActions from '../transaction-history/store/actions';
 import * as TransactionHistoryStoreActions from '../transaction-history/store/actions';
 import {
-    fromDateSelector,
-    sortOrderSelector,
-    toDateSelector,
+  fromDateSelector,
+  sortOrderSelector,
+  toDateSelector,
 } from '../transaction-history/store/selectors';
 
 import { TransactionDatesDataSource } from '../_models/datasources/transaction-dates.datasource';
@@ -53,6 +53,8 @@ export class FilterAndSortTransactionsService {
     this.dateFromProp = dateFromProp;
     this.dateToProp = dateToProp;
     this.sortOrderProp = sortOrderProp;
+
+    this.subscription = new Subscription();
 
     const defaultSortOrder =
       this.storageService.getString(this.sortOrderProp) ||
@@ -109,37 +111,33 @@ export class FilterAndSortTransactionsService {
       },
     });
 
-    this.subscription.add(
-      this._dialogRef
-        .afterDismissed()
-        .subscribe(
-          (data: {
-            dateFrom: string;
-            dateTo: string;
-            sortOrder: SortOrderOptionsEnum;
-          }) => {
-            this.store.dispatch(
-              TransactionDateStoreActions.setSortAndfilterTransactionDatesAction(
-                {
-                  dateStart: data.dateFrom,
-                  dateEnd: data.dateTo,
-                  sortOrder: data.sortOrder,
-                }
-              )
-            );
+    this._dialogRef
+      .afterDismissed()
+      .subscribe(
+        (data: {
+          dateFrom: string;
+          dateTo: string;
+          sortOrder: SortOrderOptionsEnum;
+        }) => {
+          this.store.dispatch(
+            TransactionDateStoreActions.setSortAndfilterTransactionDatesAction({
+              dateStart: data.dateFrom,
+              dateEnd: data.dateTo,
+              sortOrder: data.sortOrder,
+            })
+          );
 
-            this.storageService.storeString(this.dateFromProp, data.dateFrom);
-            this.storageService.storeString(this.dateToProp, data.dateTo);
-            this.storageService.storeString(this.sortOrderProp, data.sortOrder);
+          this.storageService.storeString(this.dateFromProp, data.dateFrom);
+          this.storageService.storeString(this.dateToProp, data.dateTo);
+          this.storageService.storeString(this.sortOrderProp, data.sortOrder);
 
-            this.store.dispatch(
-              TransactionDateStoreActions.resetTransactionDatesListState()
-            );
+          this.store.dispatch(
+            TransactionDateStoreActions.resetTransactionDatesListState()
+          );
 
-            this._dataSource.fetchData();
-          }
-        )
-    );
+          this._dataSource.fetchData();
+        }
+      );
   }
 
   destroy() {
