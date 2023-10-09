@@ -208,6 +208,7 @@ export class ProductService {
           const products: Array<Product> = productsDto.map((productDto) => {
             const product = new Product();
             product.id = productDto.id;
+            product.code = productDto.code;
             product.name = productDto.name;
             product.description = productDto.description;
             product.stockQuantity = productDto.stockQuantity;

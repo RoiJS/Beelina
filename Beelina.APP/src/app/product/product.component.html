@@ -25,7 +25,6 @@
 </app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container">
-
     <div class="page-container__page-divider">
       <label>{{ "PRODUCTS_CATALOGUE_PAGE.TITLE" | translate }}</label
       ><br />
@@ -91,6 +90,10 @@
               (click)="addItemToCart(item.id)"
               class="list-container__card-item-footer product-item__footer"
             >
+              <div class="product-info">
+                <span class="product-info__label">Code: </span
+                ><span>{{ item.code }}</span>
+              </div>
               <div class="product-info">
                 <span class="product-info__label">Name: </span
                 ><span>{{ item.name }}</span>
