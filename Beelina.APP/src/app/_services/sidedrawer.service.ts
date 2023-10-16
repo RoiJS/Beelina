@@ -35,9 +35,9 @@ export class SidedrawerService {
         icon: 'archive',
       },
       {
-        name: 'MAIN_MENU.CUSTOMERS',
-        url: '/customers/customer-list',
-        icon: 'people',
+        name: 'MAIN_MENU.BARANGAYS',
+        url: '/barangays',
+        icon: 'place',
       },
       {
         name: 'MAIN_MENU.LOGOUT',

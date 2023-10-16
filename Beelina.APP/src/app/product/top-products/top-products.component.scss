@@ -1,6 +1,8 @@
 @import "../../../app-variables";
 
 .top-products-list-container {
+  height: 80vh;
+
   &__item-section {
     display: flex;
     justify-content: space-between;

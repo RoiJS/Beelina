@@ -68,10 +68,12 @@ namespace Beelina.API.Types.Mutations
 
         [Authorize]
         [Error(typeof(StoreErrorFactory))]
-        public async Task<Store> DeleteStore([Service] IStoreRepository<Store> storeRepository, int storeId)
+        public async Task<Store> DeleteStore([Service] IStoreRepository<Store> storeRepository, [Service] ICurrentUserService currentUserService, int storeId)
         {
             var storeFromRepo = await storeRepository.GetEntity(storeId).ToObjectAsync();
 
+            storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+            
             if (storeFromRepo == null)
                 throw new StoreNotExistsException(storeId);
 

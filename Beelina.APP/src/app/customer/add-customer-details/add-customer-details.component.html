@@ -62,21 +62,7 @@
                   | translate
               }}:</mat-label
             >
-            <input
-              type="text"
-              matInput
-              formControlName="barangay"
-              [matAutocomplete]="barangayAuto"
-            />
-
-            <mat-autocomplete #barangayAuto="matAutocomplete">
-              <mat-option
-                *ngFor="let option of barangayFilterOptions | async"
-                [value]="option.name"
-              >
-                {{ option.name }}
-              </mat-option>
-            </mat-autocomplete>
+            <input type="text" matInput formControlName="barangay" />
           </mat-form-field>
         </div>
       </div>

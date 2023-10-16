@@ -116,7 +116,7 @@ namespace Beelina.API.Types.Query
                 ProductName = productFromRepo.Name,
                 Price = productFromRepo.Price,
                 Quantity = productQuantity,
-                CurrentQuantity = productFromRepo.StockQuantity,
+                CurrentQuantity = 0,
               };
 
               productTransactionsDto.Add(productTransaction);

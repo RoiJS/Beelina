@@ -7,5 +7,7 @@ namespace Beelina.LIB.Interfaces
     {
         Task<Store> RegisterStore(Store store);
         Task<Store> UpdateStore(Store store);
+        Task<List<Store>> GetStoresByBarangay(string barangayName);
+        Task<List<Store>> GetAllStores();
     }
 }

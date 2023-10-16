@@ -237,7 +237,7 @@ export class TransactionService {
           productId: p.productId,
           quantity: p.quantity,
           price: p.price,
-          currentQuantity: p.currentQuantity,
+          currentQuantity: (transaction.id > 0 ? 0 : p.currentQuantity),
         };
 
         return productTransaction;

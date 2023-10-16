@@ -13,6 +13,16 @@ namespace Beelina.LIB.Models
         public PaymentMethod PaymentMethod { get; set; }
         public Barangay Barangay { get; set; }
 
+        public List<Transaction> Transactions { get; set; } = new List<Transaction>();
+
+        public bool IsDeletable
+        {
+            get
+            {
+                return Transactions.Count == 0;
+            }
+        }
+
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }
         public int? UpdatedById { get; set; }

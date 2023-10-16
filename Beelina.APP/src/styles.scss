@@ -118,6 +118,7 @@ body {
   background: $background-gradient;
   height: 91%;
   padding: 10px;
+  overflow: auto;
 
   &__page-divider {
     width: 100%;
@@ -275,11 +276,21 @@ app-tool-bar {
     display: flex;
     flex-direction: column;
     flex: 1;
+    justify-content: space-around;
 
     .main-label {
       font-weight: bold;
       color: $primary;
       font-size: 15px;
+    }
+  }
+
+  &__options-section {
+    display: flex;
+    justify-content: space-between;
+
+    .option {
+      align-self: center;
     }
   }
 }

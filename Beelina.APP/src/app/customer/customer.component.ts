@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
 import * as CustomerStoreActions from '../customer/store/actions';
+import * as BarangaysActions from '../barangays/store/actions';
 import { isLoadingSelector } from './store/selectors';
 
 import { CustomerStoreService } from '../_services/customer-store.service';
@@ -33,9 +34,12 @@ export class CustomerComponent
   private _dataSource: CustomerStoreDataSource;
   private _searchForm: FormGroup;
 
+  private _barangay: string;
+
   $isLoading: Observable<boolean>;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private customerStoreService: CustomerStoreService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
@@ -45,7 +49,8 @@ export class CustomerComponent
     private translateService: TranslateService
   ) {
     super();
-    this._dataSource = new CustomerStoreDataSource(this.store);
+    this._barangay = this.activatedRoute.snapshot.paramMap.get('barangay');
+    this._dataSource = new CustomerStoreDataSource(this.store, this._barangay);
 
     this._searchForm = this.formBuilder.group({
       filterKeyword: [''],
@@ -58,10 +63,11 @@ export class CustomerComponent
 
   ngOnDestroy() {
     this.store.dispatch(CustomerStoreActions.resetCustomerState());
+    this.store.dispatch(BarangaysActions.resetBarangayState());
   }
 
   openDetails(id: number) {
-    this.router.navigate([`customers/edit-customer/${id}`]);
+    this.router.navigate([`barangays/${this._barangay}/edit-customer/${id}`]);
   }
 
   deleteStore(storeId: number) {
@@ -110,7 +116,7 @@ export class CustomerComponent
   }
 
   addCustomer() {
-    this.router.navigate(['customers/add-customer']);
+    this.router.navigate([`/barangays/${this._barangay}/add-customer`]);
   }
 
   onSearch() {
@@ -119,7 +125,11 @@ export class CustomerComponent
     this.store.dispatch(
       CustomerStoreActions.setSearchCustomersAction({ keyword: filterKeyword })
     );
-    this.store.dispatch(CustomerStoreActions.getCustomerStoreAction());
+    this.store.dispatch(CustomerStoreActions.getCustomerStorePerBarangayAction({barangayName: this._barangay}));
+  }
+
+  onGoBack() {
+    this.router.navigate([`/barangays`]);
   }
 
   get dataSource(): CustomerStoreDataSource {
@@ -128,5 +138,9 @@ export class CustomerComponent
 
   get searchForm(): FormGroup {
     return this._searchForm;
+  }
+
+  get barangay(): string {
+    return this._barangay;
   }
 }

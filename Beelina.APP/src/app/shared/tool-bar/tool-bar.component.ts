@@ -2,9 +2,11 @@ import { Location } from '@angular/common';
 import {
   AfterContentChecked,
   Component,
+  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
+  Output,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -20,6 +22,8 @@ export class ToolBarComponent
 {
   @Input() title = '';
   @Input() showBackButton = true;
+  @Input() overrideBackAction = false;
+  @Output() onGoBackOverride = new EventEmitter<void>();
 
   private _isHandset = false;
 
@@ -40,7 +44,11 @@ export class ToolBarComponent
   }
 
   onGoBack() {
-    this.location.back();
+    if (this.overrideBackAction) {
+      this.onGoBackOverride.emit();
+    } else {
+      this.location.back();
+    }
   }
 
   ngAfterContentChecked() {

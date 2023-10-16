@@ -2,29 +2,27 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { select, Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { map, Observable, startWith, Subscription } from 'rxjs';
+import { Observable, Subscription, map, startWith } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { CustomerStoreService } from 'src/app/_services/customer-store.service';
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 
 import * as BarangayActions from '../../barangays/store/actions';
-import * as CustomerStoresActions from '../store/actions';
 import * as PaymentMethodActions from '../../payment-methods/store/actions';
+import * as CustomerStoresActions from '../store/actions';
 
-import { barangaysSelector } from 'src/app/barangays/store/selectors';
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
 import { isUpdateLoadingSelector } from '../store/selectors';
 
 import { StoreInformationResult } from 'src/app/_models/results/store-information-result';
 
-import { Barangay } from 'src/app/_models/barangay';
-import { PaymentMethod } from 'src/app/_models/payment-method';
 import { CustomerStore } from 'src/app/_models/customer-store';
+import { PaymentMethod } from 'src/app/_models/payment-method';
 
 @Component({
   selector: 'app-edit-customer',
@@ -38,12 +36,9 @@ export class EditCustomerDetailsComponent implements OnInit {
   private _paymentMethodFilterOptions: Observable<Array<PaymentMethod>>;
   private _paymentMethodOptionsSubscription: Subscription;
 
-  private _barangayOptions: Array<Barangay> = [];
-  private _barangayFilterOptions: Observable<Array<Barangay>>;
-  private _barangayOptionsSubscription: Subscription;
-
   private _storeId: number;
   $isLoading: Observable<boolean>;
+  private _barangay: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -66,6 +61,10 @@ export class EditCustomerDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this._barangay = this.activatedRoute.snapshot.paramMap.get('barangay');
+    const barangayControl = this._customerForm.get('barangay');
+    barangayControl.disable();
+
     this.store.dispatch(PaymentMethodActions.getPaymentMethodsAction());
     this.store.dispatch(BarangayActions.getBarangaysAction());
 
@@ -95,24 +94,10 @@ export class EditCustomerDetailsComponent implements OnInit {
         startWith(''),
         map((value) => this._filterPaymentMethods(value || ''))
       );
-
-    this._barangayOptionsSubscription = this.store
-      .pipe(select(barangaysSelector))
-      .subscribe((barangays: Array<Barangay>) => {
-        this._barangayOptions = barangays;
-      });
-
-    this._barangayFilterOptions = this._customerForm
-      .get('barangay')
-      .valueChanges.pipe(
-        startWith(''),
-        map((value) => this._filterBarangays(value || ''))
-      );
   }
 
   ngOnDestroy(): void {
     this._paymentMethodOptionsSubscription.unsubscribe();
-    this._barangayOptionsSubscription.unsubscribe();
     this.store.dispatch(CustomerStoresActions.resetCustomerState());
   }
 
@@ -163,7 +148,7 @@ export class EditCustomerDetailsComponent implements OnInit {
                       state: false,
                     })
                   );
-                  this.router.navigate(['/customers']);
+                  this.router.navigate([`/barangays/${this._barangay}`]);
                 },
 
                 error: () => {
@@ -191,23 +176,11 @@ export class EditCustomerDetailsComponent implements OnInit {
     );
   }
 
-  private _filterBarangays(value: string): Array<Barangay> {
-    const filterValue = value?.toLowerCase();
-
-    return this._barangayOptions.filter((option) =>
-      option.name?.toLowerCase().includes(filterValue)
-    );
-  }
-
   get customerForm(): FormGroup {
     return this._customerForm;
   }
 
   get paymentMethodFilterOptions(): Observable<Array<PaymentMethod>> {
     return this._paymentMethodFilterOptions;
-  }
-
-  get barangayFilterOptions(): Observable<Array<Barangay>> {
-    return this._barangayFilterOptions;
   }
 }

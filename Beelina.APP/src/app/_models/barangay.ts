@@ -6,5 +6,7 @@ export class Barangay extends Entity implements IModelNode {
 
   constructor() {
     super();
+    this.id = 0;
+    this.name = '';
   }
 }

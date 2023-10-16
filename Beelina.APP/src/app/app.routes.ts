@@ -19,9 +19,9 @@ export const routes: Routes = [
     canLoad: [AuthGuard],
   },
   {
-    path: 'customers',
+    path: 'barangays',
     loadChildren: () =>
-      import('./customer/customer.module').then((m) => m.CustomerModule),
+      import('./barangays/barangays.module').then((m) => m.BarangaysModule),
     canLoad: [AuthGuard],
   },
   {

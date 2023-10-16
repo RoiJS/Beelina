@@ -27,7 +27,7 @@
       [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
       [count]="dataSource.itemCount"
     >
-      <cdk-virtual-scroll-viewport itemSize="10" class="list-container">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container transaction-history-list">
         <div *cdkVirtualFor="let item of dataSource">
           <div
             matRipple

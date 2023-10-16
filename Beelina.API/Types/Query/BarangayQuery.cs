@@ -10,6 +10,7 @@ namespace Beelina.API.Types.Query
         [Authorize]
         [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
         [UseProjection]
+        [UseFiltering]
         public async Task<IList<Barangay>> GetBarangays([Service] IBarangayRepository<Barangay> barangayRepository)
         {
             return await GetBarangaysAsync(barangayRepository);
@@ -23,7 +24,10 @@ namespace Beelina.API.Types.Query
 
         private async Task<IList<Barangay>> GetBarangaysAsync(IBarangayRepository<Barangay> barangayRepository)
         {
-            return await barangayRepository.GetAllEntities().ToListObjectAsync();
+            return await barangayRepository
+                .GetAllEntities()
+                .Includes(b => b.Stores.Where(s => !s.IsDelete))
+                .ToListObjectAsync();
         }
     }
 }

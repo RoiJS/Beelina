@@ -3,29 +3,27 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { select, Store } from '@ngrx/store';
 
-import { map, Observable, startWith, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, Observable, startWith, Subscription } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { CustomerStoreService } from 'src/app/_services/customer-store.service';
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
-import { barangaysSelector } from 'src/app/barangays/store/selectors';
 
-import { isUpdateLoadingSelector } from '../store/selectors';
-import * as PaymentMethodActions from '../../payment-methods/store/actions';
 import * as BarangayActions from '../../barangays/store/actions';
 import * as CustomerStoresActions from '../../customer/store/actions';
+import * as PaymentMethodActions from '../../payment-methods/store/actions';
+import { isUpdateLoadingSelector } from '../store/selectors';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
-import { Barangay } from 'src/app/_models/barangay';
-import { PaymentMethod } from 'src/app/_models/payment-method';
 import { CustomerStore } from 'src/app/_models/customer-store';
+import { PaymentMethod } from 'src/app/_models/payment-method';
 
 @Component({
   selector: 'app-add-customer-details',
@@ -39,13 +37,12 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
   private _paymentMethodFilterOptions: Observable<Array<PaymentMethod>>;
   private _paymentMethodOptionsSubscription: Subscription;
 
-  private _barangayOptions: Array<Barangay> = [];
-  private _barangayFilterOptions: Observable<Array<Barangay>>;
-  private _barangayOptionsSubscription: Subscription;
+  private _barangay: string;
 
   $isLoading: Observable<boolean>;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private store: Store<AppStateInterface>,
     private dialogService: DialogService,
     private customerStoreService: CustomerStoreService,
@@ -65,6 +62,12 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const barangayControl = this._customerForm.get('barangay');
+    this._barangay = this.activatedRoute.snapshot.paramMap.get('barangay');
+
+    barangayControl.setValue(this._barangay);
+    barangayControl.disable();
+
     this.store.dispatch(PaymentMethodActions.getPaymentMethodsAction());
     this.store.dispatch(BarangayActions.getBarangaysAction());
 
@@ -73,19 +76,6 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
       .subscribe((paymentMethods: Array<PaymentMethod>) => {
         this._paymentMethodOptions = paymentMethods;
       });
-
-    this._barangayOptionsSubscription = this.store
-      .pipe(select(barangaysSelector))
-      .subscribe((barangays: Array<Barangay>) => {
-        this._barangayOptions = barangays;
-      });
-
-    this._barangayFilterOptions = this._customerForm
-      .get('barangay')
-      .valueChanges.pipe(
-        startWith(''),
-        map((value) => this._filterBarangays(value || ''))
-      );
 
     this._paymentMethodFilterOptions = this._customerForm
       .get('paymentMethod')
@@ -97,7 +87,6 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._paymentMethodOptionsSubscription.unsubscribe();
-    this._barangayOptionsSubscription.unsubscribe();
     this.store.dispatch(CustomerStoresActions.resetCustomerState());
   }
 
@@ -146,7 +135,7 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
                       state: false,
                     })
                   );
-                  this.router.navigate(['/customers']);
+                  this.router.navigate([`/barangays/${this._barangay}`]);
                 },
 
                 error: () => {
@@ -180,23 +169,11 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private _filterBarangays(value: string): Array<Barangay> {
-    const filterValue = value?.toLowerCase();
-
-    return this._barangayOptions.filter((option) =>
-      option.name?.toLowerCase().includes(filterValue)
-    );
-  }
-
   get customerForm(): FormGroup {
     return this._customerForm;
   }
 
   get paymentMethodFilterOptions(): Observable<Array<PaymentMethod>> {
     return this._paymentMethodFilterOptions;
-  }
-
-  get barangayFilterOptions(): Observable<Array<Barangay>> {
-    return this._barangayFilterOptions;
   }
 }
