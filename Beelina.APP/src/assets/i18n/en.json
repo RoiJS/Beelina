@@ -13,12 +13,16 @@
     "PAID": "Paid",
     "UNPAID": "Unpaid",
     "BALANCE": "Balance",
-    "MARK_AS_PAID": " Mark as paid"
+    "MARK_AS_PAID": " Mark as paid",
+    "EDIT": "Edit",
+    "REMOVE": "Remove",
+    "STORES": "Stores"
   },
 
   "MAIN_MENU": {
     "SALES": "Sales",
     "CUSTOMERS": "Customers",
+    "BARANGAYS": "Barangays",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
     "DRAFT_TRANSACTIONS": "Draft Transactions",
@@ -76,6 +80,45 @@
     }
   },
 
+  "BARANGAYS_PAGE": {
+    "TITLE": "Barangays",
+    "DESCRIPTION": "This is where barangays information can be managed.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search barangay name..."
+    },
+    "DELETE_BARANGAY_DIALOG": {
+      "TITLE": "Delete barangay",
+      "CONFIRM": "Are you sure to delete selected barangay?",
+      "SUCCESS_MESSAGE": "Selected barangay has been successfully removed.",
+      "ERROR_MESSAGE": "Removing barangay failed. Please again later."
+    },
+    "ADD_BARANGAY_DIALOG": {
+      "FORM_CONTROL_SECTION": {
+        "HEADER_TITLE": "Add New Barangay",
+        "NAME_CONTROL": {
+          "LABEL": "Name",
+          "HINT": "Please enter barangay name"
+        }
+      },
+      "TITLE": "Add Barangay",
+      "CONFIRM": "Are you sure to add new barangay?",
+      "SUCCESS_MESSAGE": "New barangay has been successfully added!",
+      "ERROR_MESSAGE": "Adding new barangay failed. Please again later."
+    },
+    "UPDATE_BARANGAY_DIALOG": {
+      "FORM_CONTROL_SECTION": {
+        "NAME_CONTROL": {
+          "LABEL": "Name",
+          "HINT": "Please enter barangay name"
+        }
+      },
+      "TITLE": "Update Barangay",
+      "CONFIRM": "Are you sure to update barangay?",
+      "SUCCESS_MESSAGE": "Selected barangay has been successfully updated!",
+      "ERROR_MESSAGE": "Updating barangay failed. Please again later."
+    }
+  },
+
   "EDIT_CUSTOMER_DETAILS_PAGE": {
     "TITLE": "Edit Customer",
     "FORM_CONTROL_SECTION": {
@@ -93,8 +136,8 @@
         "HINT": "Please specify payment method"
       },
       "BARANGAY_CONTROL": {
-        "LABEL": "Barangay",
-        "HINT": "Please specify from which barangay"
+        "LABEL": "Barangay/Branch",
+        "HINT": "Please specify from which barangay/branch"
       }
     },
     "EDIT_CUSTOMER_DIALOG": {
@@ -122,8 +165,8 @@
         "HINT": "Please specify payment method"
       },
       "BARANGAY_CONTROL": {
-        "LABEL": "Barangay",
-        "HINT": "Please specify from which barangay"
+        "LABEL": "Barangay/Branch",
+        "HINT": "Please specify from which barangay/branch"
       }
     },
     "SAVE_NEW_CUSTOMER_DIALOG": {
@@ -139,8 +182,8 @@
     "FORM_CONTROL_SECTION": {
       "HEADER_TITLE": "Order Summary",
       "BARANGAY_CONTROL": {
-        "LABEL": "Barangay",
-        "HINT": "Please select barangay"
+        "LABEL": "Barangay/Branch",
+        "HINT": "Please select barangay/branch"
       },
       "NAME_CONTROL": {
         "LABEL": "Name",

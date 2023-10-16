@@ -54,6 +54,38 @@ const GET_CUSTOMER_STORES = gql`
   }
 `;
 
+const GET_CUSTOMER_STORES_PER_BARANGAY = gql`
+  query ($barangayName: String!, $cursor: String, $filterKeyword: String) {
+    storesByBarangay(
+      after: $cursor
+      barangayName: $barangayName
+      where: { name: { contains: $filterKeyword } }
+    ) {
+      edges {
+        cursor
+        node {
+          name
+        }
+      }
+      nodes {
+        id
+        name
+        address
+        transactions {
+          id
+        }
+        isDeletable
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+`;
+
 const GET_ALL_CUSTOMER_STORES = gql`
   query {
     allStores {
@@ -111,6 +143,12 @@ export class CustomerStoreService {
     private store: Store<AppStateInterface>
   ) {}
 
+  /**
+   * Updates the store information.
+   *
+   * @param {CustomerStore} store - The store object containing the updated information.
+   * @return {Observable<IStoreOutput | null>} An observable that emits the updated store or null if there was an error.
+   */
   updateStoreInformation(store: CustomerStore) {
     const storeInput: IStoreInput = {
       id: store.id,
@@ -198,6 +236,66 @@ export class CustomerStoreService {
 
           return null;
         })
+      );
+  }
+
+  /**
+   * Retrieves the customer stores per barangay.
+   *
+   * @param {string} barangayName - The name of the barangay.
+   * @return {Observable<any>} An observable that emits the customer stores per barangay.
+   */
+  getCustomerStoresPerBarangay(barangayName: string) {
+    let cursor = null,
+      filterKeyword = '';
+
+    this.store
+      .select(endCursorSelector)
+      .pipe(take(1))
+      .subscribe((currentCursor) => (cursor = currentCursor));
+
+    this.store
+      .select(filterKeywordSelector)
+      .pipe(take(1))
+      .subscribe(
+        (currentFilterKeyword) => (filterKeyword = currentFilterKeyword)
+      );
+
+    return this.apollo
+      .watchQuery({
+        query: GET_CUSTOMER_STORES_PER_BARANGAY,
+        variables: {
+          cursor,
+          filterKeyword,
+          barangayName,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{ storesByBarangay: IBaseConnection }>
+          ) => {
+            const data = result.data.storesByBarangay;
+            const errors = result.errors;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+            const customerStores = <Array<CustomerStore>>data.nodes;
+
+            if (customerStores) {
+              return {
+                endCursor,
+                hasNextPage,
+                customerStores,
+              };
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return null;
+          }
+        )
       );
   }
 

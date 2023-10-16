@@ -14,7 +14,10 @@
       [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
       [count]="transactions?.length"
     >
-      <cdk-virtual-scroll-viewport itemSize="60" class="list-container">
+      <cdk-virtual-scroll-viewport
+        itemSize="60"
+        class="list-container draft-transaction-list"
+      >
         <div *cdkVirtualFor="let item of transactions">
           <div
             matRipple

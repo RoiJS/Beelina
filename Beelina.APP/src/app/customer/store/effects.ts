@@ -40,6 +40,38 @@ export class CustomerEffects {
     )
   );
 
+  getCustomersPerBarangay$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CustomerActions.getCustomerStorePerBarangayAction),
+      switchMap((action: { barangayName: string }) => {
+        return this.customerStoreService
+          .getCustomerStoresPerBarangay(action.barangayName)
+          .pipe(
+            map(
+              (data: {
+                endCursor: string;
+                hasNextPage: boolean;
+                customerStores: Array<CustomerStore>;
+              }) => {
+                return CustomerActions.getCustomerStoreActionSuccess({
+                  customers: data.customerStores,
+                  endCursor: data.endCursor,
+                  hasNextPage: data.hasNextPage,
+                });
+              }
+            ),
+            catchError((error) =>
+              of(
+                CustomerActions.getCustomerStoreActionError({
+                  error: error.message,
+                })
+              )
+            )
+          );
+      })
+    )
+  );
+
   getAllCustomers$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CustomerActions.getAllCustomerStoreAction),

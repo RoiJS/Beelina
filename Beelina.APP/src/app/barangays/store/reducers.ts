@@ -46,5 +46,14 @@ export const reducers = createReducer(
   ),
   on(BarangayActions.resetBarangayState, (state, action) => ({
     ...initialState,
+  })),
+  on(BarangayActions.setSearchBarangaysAction, (state, action) => ({
+    ...state,
+    filterKeyword: action.keyword,
+  })),
+  on(BarangayActions.resetBarangayList, (state, action) => ({
+    ...state,
+    barangays: initialState.barangays,
+    endCursor: initialState.endCursor,
   }))
 );

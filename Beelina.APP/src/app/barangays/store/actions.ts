@@ -27,3 +27,12 @@ export const getBarangaysActionError = createAction(
 export const resetBarangayState = createAction(
   '[Barangay] Reset Barangay State'
 );
+
+export const resetBarangayList = createAction(
+  '[Barangay] Reset Barangay List'
+);
+
+export const setSearchBarangaysAction = createAction(
+  '[Barangay] Search Barangays',
+  props<{ keyword: string }>()
+);

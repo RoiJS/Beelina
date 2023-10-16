@@ -1,9 +1,14 @@
 @import "../../../../app-variables";
 
 .select-new-product-container {
-  height: 90vh;
+
+  height: 80vh;
   display: flex;
   flex-direction: column;
+
+  .product-list {
+    height: 60vh;
+  }
 
   &__header {
     font-size: 16px;
@@ -20,7 +25,7 @@
 }
 
 .product-item {
-  height: 15em;
+  height: 19em;
 
   &__header {
     color: $white;
@@ -31,7 +36,7 @@
   }
 
   &__body {
-    padding: 1em;
+    padding: 0.5em 1em;
     display: flex;
     justify-content: space-around;
     flex: 1;
@@ -43,10 +48,14 @@
       align-self: center;
       color: #d89c2a;
     }
+
+    img {
+      width: 105px;
+    }
   }
 
   &__footer {
-    padding: 1em;
+    padding: 0 1em 1em 1em;
 
     .product-info {
       overflow: hidden;

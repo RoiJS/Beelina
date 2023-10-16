@@ -3,6 +3,11 @@ import { CustomerStore } from 'src/app/_models/customer-store';
 
 export const getCustomerStoreAction = createAction('[Customer] Get Customers');
 
+export const getCustomerStorePerBarangayAction = createAction(
+  '[Customer] Get Customers Per Barangay',
+  props<{ barangayName: string }>()
+);
+
 export const getAllCustomerStoreAction = createAction(
   '[Customer] Get All Customers'
 );

@@ -28,3 +28,8 @@ export const errorSelector = createSelector(
   selectFeature,
   (state) => state.error
 );
+
+export const filterKeywordSelector = createSelector(
+  selectFeature,
+  (state) => state.filterKeyword
+);

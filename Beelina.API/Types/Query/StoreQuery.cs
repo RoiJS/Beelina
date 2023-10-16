@@ -16,7 +16,16 @@ namespace Beelina.API.Types.Query
         [UseFiltering]
         public async Task<IList<Store>> GetStores([Service] IStoreRepository<Store> storeRepository)
         {
-            return await storeRepository.GetAllEntities().ToListObjectAsync();
+            return await storeRepository.GetAllStores();
+        }
+
+        [Authorize]
+        [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
+        [UseProjection]
+        [UseFiltering]
+        public async Task<IList<Store>> GetStoresByBarangay([Service] IStoreRepository<Store> storeRepository, string barangayName)
+        {
+            return await storeRepository.GetStoresByBarangay(barangayName);
         }
 
         [Authorize]
@@ -24,7 +33,7 @@ namespace Beelina.API.Types.Query
         {
             return await storeRepository.GetAllEntities()
                             .Includes(
-                                c => c.PaymentMethod, 
+                                c => c.PaymentMethod,
                                 c => c.Barangay
                             ).ToListObjectAsync();
         }

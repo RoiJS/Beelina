@@ -45,12 +45,16 @@
                 (click)="addItemToCart(item.id)"
                 class="list-container__card-item-body product-item__body"
               >
-                <mat-icon>card_giftcard</mat-icon>
+                <img src="../../assets/icons/box-product.png" />
               </div>
               <div
                 (click)="addItemToCart(item.id)"
                 class="list-container__card-item-footer product-item__footer"
               >
+                <div class="product-info">
+                  <span class="product-info__label">Code: </span
+                  ><span>{{ item.code }}</span>
+                </div>
                 <div class="product-info">
                   <span class="product-info__label">Name: </span
                   ><span>{{ item.name }}</span>
