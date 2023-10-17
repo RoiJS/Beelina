@@ -66,6 +66,7 @@ const GET_TRANSACTION_DATES = gql`
       nodes {
         transactionDate
         allTransactionsPaid
+        numberOfUnPaidTransactions
       }
       pageInfo {
         endCursor
@@ -188,6 +189,7 @@ export class Transaction extends Entity implements IModelNode {
 export class TransactionDateInformation {
   public transactionDate: Date;
   public allTransactionsPaid: boolean;
+  public numberOfUnPaidTransactions: number;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
@@ -237,7 +239,7 @@ export class TransactionService {
           productId: p.productId,
           quantity: p.quantity,
           price: p.price,
-          currentQuantity: (transaction.id > 0 ? 0 : p.currentQuantity),
+          currentQuantity: transaction.id > 0 ? 0 : p.currentQuantity,
         };
 
         return productTransaction;
@@ -409,6 +411,8 @@ export class TransactionService {
               data.nodes.map((t: TransactionDateInformation) => {
                 const transactionHistoryDate = new TransactionDateInformation();
                 transactionHistoryDate.transactionDate = t.transactionDate;
+                transactionHistoryDate.numberOfUnPaidTransactions =
+                  t.numberOfUnPaidTransactions;
                 transactionHistoryDate.allTransactionsPaid =
                   t.allTransactionsPaid;
                 return transactionHistoryDate;

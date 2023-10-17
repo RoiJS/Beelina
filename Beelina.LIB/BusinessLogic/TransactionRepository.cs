@@ -63,13 +63,25 @@ namespace Beelina.LIB.BusinessLogic
                     }
                 ).ToListAsync();
 
-            var transactionHistoryDates = (from t in transactions
-                                           group t by t.Transactions.TransactionDate into g
+
+            var unpaidTransactionHistoryDates = (from t in transactions
+                                                 group t by new { t.Transactions.TransactionDate, t.ProductTransactions.TransactionId } into g
+
+                                                 select new TransactionDateInformation
+                                                 {
+                                                     TransactionDate = g.Key.TransactionDate,
+                                                     NumberOfUnPaidTransactions = Convert.ToInt32(g.Min(s => s.ProductTransactions.Status)),
+                                                     AllTransactionsPaid = Convert.ToBoolean(g.Min(s => s.ProductTransactions.Status))
+                                                 });
+
+            var transactionHistoryDates = (from t in unpaidTransactionHistoryDates
+                                           group t by new { t.TransactionDate } into g
 
                                            select new TransactionDateInformation
                                            {
-                                               TransactionDate = g.Key,
-                                               AllTransactionsPaid = Convert.ToBoolean(g.Max(s => s.ProductTransactions.Status))
+                                               TransactionDate = g.Key.TransactionDate,
+                                               NumberOfUnPaidTransactions = g.Count(s => s.NumberOfUnPaidTransactions == 0),
+                                               AllTransactionsPaid = Convert.ToBoolean(g.Min(s => s.AllTransactionsPaid))
                                            });
 
             if (!String.IsNullOrEmpty(fromDate) || !String.IsNullOrEmpty(toDate))

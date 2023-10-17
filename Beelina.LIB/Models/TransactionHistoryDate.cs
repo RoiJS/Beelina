@@ -6,7 +6,7 @@ namespace Beelina.LIB.Models
     public class TransactionDateInformation
     {
         public DateTime TransactionDate { get; set; }
-
+        public int NumberOfUnPaidTransactions { get; set; }
         public bool AllTransactionsPaid { get; set; }
     }
 }
