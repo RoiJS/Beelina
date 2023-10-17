@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { select, Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,20 +10,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
 import { TextOrderComponent } from './text-order/text-order.component';
 
-import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { ProductService } from '../_services/product.service';
 import { StorageService } from '../_services/storage.service';
+import { DialogService } from '../shared/ui/dialog/dialog.service';
 
 import { ButtonOptions } from '../_enum/button-options.enum';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
-import * as ProductActions from './store/actions';
 import * as ProductTransactionActions from './add-to-cart-product/store/actions';
+import * as ProductActions from './store/actions';
 
-import { isLoadingSelector } from './store/selectors';
-import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
 import { ProductTransaction } from '../_models/transaction';
+import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
+import { isLoadingSelector } from './store/selectors';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { BaseComponent } from '../shared/components/base-component/base.component';
@@ -39,18 +38,14 @@ export class ProductComponent
   implements OnInit, OnDestroy
 {
   private _dataSource: ProductDataSource;
-  private _searchForm: FormGroup;
   private _itemCounter: number;
   private _productTransactions: Array<ProductTransaction>;
   private _transactionId: number;
   private _subscription: Subscription = new Subscription();
 
-  $isLoading: Observable<boolean>;
-
   constructor(
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
-    private formBuilder: FormBuilder,
     private bottomSheet: MatBottomSheet,
     private productService: ProductService,
     private router: Router,
@@ -69,10 +64,6 @@ export class ProductComponent
     );
 
     this._dataSource = new ProductDataSource(this.store);
-
-    this._searchForm = this.formBuilder.group({
-      filterKeyword: [''],
-    });
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
 
@@ -164,8 +155,7 @@ export class ProductComponent
     this.bottomSheet.open(TextOrderComponent);
   }
 
-  onSearch() {
-    const filterKeyword = this._searchForm.get('filterKeyword').value;
+  onSearch(filterKeyword: string) {
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
       ProductActions.setSearchProductAction({ keyword: filterKeyword })
@@ -175,10 +165,6 @@ export class ProductComponent
 
   get itemCounter(): number {
     return this._itemCounter;
-  }
-
-  get searchForm(): FormGroup {
-    return this._searchForm;
   }
 
   get dataSource(): ProductDataSource {

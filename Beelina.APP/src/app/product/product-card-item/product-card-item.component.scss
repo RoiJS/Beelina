@@ -1,0 +1,46 @@
+@import "../../../app-variables";
+
+.product-item {
+  height: 18em;
+
+  &__header {
+    color: $white;
+    display: flex;
+    justify-content: space-between;
+    background-color: $primary;
+    padding: 15px 10px 6px;
+  }
+
+  &__body {
+    padding: 0.5em 1em;
+    display: flex;
+    justify-content: space-around;
+    flex: 1;
+
+    mat-icon {
+      height: 55px;
+      width: 85px;
+      font-size: 6em;
+      align-self: center;
+      color: #d89c2a;
+    }
+
+    img {
+      width: 90px;
+    }
+  }
+
+  &__footer {
+    padding: 0 1em 1em 1em;
+
+    .product-info {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      &__label {
+        font-weight: bold;
+      }
+    }
+  }
+}

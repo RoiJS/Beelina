@@ -3,9 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-
-import { Observable } from 'rxjs';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
@@ -32,17 +29,12 @@ export class CustomerComponent
   implements OnInit, OnDestroy
 {
   private _dataSource: CustomerStoreDataSource;
-  private _searchForm: FormGroup;
-
   private _barangay: string;
-
-  $isLoading: Observable<boolean>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private customerStoreService: CustomerStoreService,
     private dialogService: DialogService,
-    private formBuilder: FormBuilder,
     private router: Router,
     private store: Store<AppStateInterface>,
     private snackBarService: MatSnackBar,
@@ -51,10 +43,6 @@ export class CustomerComponent
     super();
     this._barangay = this.activatedRoute.snapshot.paramMap.get('barangay');
     this._dataSource = new CustomerStoreDataSource(this.store, this._barangay);
-
-    this._searchForm = this.formBuilder.group({
-      filterKeyword: [''],
-    });
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
@@ -119,13 +107,16 @@ export class CustomerComponent
     this.router.navigate([`/barangays/${this._barangay}/add-customer`]);
   }
 
-  onSearch() {
-    const filterKeyword = this._searchForm.get('filterKeyword').value;
+  onSearch(filterKeyword: string) {
     this.store.dispatch(CustomerStoreActions.resetCustomerState());
     this.store.dispatch(
       CustomerStoreActions.setSearchCustomersAction({ keyword: filterKeyword })
     );
-    this.store.dispatch(CustomerStoreActions.getCustomerStorePerBarangayAction({barangayName: this._barangay}));
+    this.store.dispatch(
+      CustomerStoreActions.getCustomerStorePerBarangayAction({
+        barangayName: this._barangay,
+      })
+    );
   }
 
   onGoBack() {
@@ -134,10 +125,6 @@ export class CustomerComponent
 
   get dataSource(): CustomerStoreDataSource {
     return this._dataSource;
-  }
-
-  get searchForm(): FormGroup {
-    return this._searchForm;
   }
 
   get barangay(): string {

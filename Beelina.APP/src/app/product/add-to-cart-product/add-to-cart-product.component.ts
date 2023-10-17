@@ -4,15 +4,13 @@ import {
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA,
 } from '@angular/material/bottom-sheet';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 
 import { ProductService } from 'src/app/_services/product.service';
-import { StorageService } from 'src/app/_services/storage.service';
 
-import { productTransactionsSelector } from './store/selectors';
 import * as ProductTransactionActions from './store/actions';
 import * as ProductActions from './../store/actions';
 
@@ -33,7 +31,10 @@ export class AddToCartProductComponent implements OnInit {
   constructor(
     private _bottomSheetRef: MatBottomSheetRef<AddToCartProductComponent>,
     @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: { productId: number; productTransactions: Array<ProductTransaction> },
+    public data: {
+      productId: number;
+      productTransactions: Array<ProductTransaction>;
+    },
     private formBuilder: FormBuilder,
     private store: Store<AppStateInterface>,
     private productService: ProductService

@@ -1,0 +1,13 @@
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+  <div class="search-field-container">
+    <input
+      type="text"
+      class="txt-search-field"
+      formControlName="filterKeyword"
+      [placeholder]="placeHolder"
+    />
+    <button type="submit" mat-fab color="primary">
+      <mat-icon>search</mat-icon>
+    </button>
+  </div>
+</form>

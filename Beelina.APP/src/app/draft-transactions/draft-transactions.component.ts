@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { Observable } from 'rxjs';
 
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
@@ -29,8 +28,6 @@ export class DraftTransactionsComponent
   extends BaseComponent
   implements OnInit, IFilterAndSortTransactions
 {
-  $isLoading: Observable<boolean>;
-
   constructor(
     private router: Router,
     private store: Store<AppStateInterface>,

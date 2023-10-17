@@ -31,6 +31,8 @@ mat-tree-node[aria-level="1"] {
 .active {
   background: $primary-gradient;
   color: white;
+  border-bottom-right-radius: 50px;
+  border-top-right-radius: 50px;
 }
 
 /*#endregion*/

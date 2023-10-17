@@ -27,8 +27,6 @@ export class TransactionHistoryComponent
   extends BaseComponent
   implements OnDestroy, IFilterAndSortTransactions
 {
-  $isLoading: Observable<boolean>;
-
   /**
    * Constructor for the class.
    *
