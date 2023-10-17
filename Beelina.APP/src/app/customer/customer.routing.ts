@@ -15,7 +15,7 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'edit-customer/:id',
+    path: ':id',
     loadChildren: () =>
       import('./edit-customer-details/edit-customer-details.module').then(
         (m) => m.EditCustomerModule

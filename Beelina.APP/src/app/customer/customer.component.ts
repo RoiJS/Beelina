@@ -55,7 +55,7 @@ export class CustomerComponent
   }
 
   openDetails(id: number) {
-    this.router.navigate([`barangays/${this._barangay}/edit-customer/${id}`]);
+    this.router.navigate([`barangays/${this._barangay}/${id}`]);
   }
 
   deleteStore(storeId: number) {

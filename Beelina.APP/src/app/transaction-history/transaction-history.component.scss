@@ -1,3 +1,21 @@
+@import "../../app-variables";
+
 .transaction-history-list {
   height: 80vh;
+
+  &__unpaid-transactions-count-container {
+    display: flex;
+    justify-content: space-between;
+
+    .unpaid-transactions-counter {
+      background-color: #f35252;
+      color: $white;
+      width: 20px;
+      border-radius: 100%;
+      text-align: center;
+      height: 20px;
+      font-size: 10px;
+      align-self: center;
+    }
+  }
 }
