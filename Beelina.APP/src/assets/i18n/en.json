@@ -309,6 +309,12 @@
     "SEARCH_TEXT_FIELD": {
       "PLACEHOLDER": "Search product name or code..."
     },
+    "PRODUCT_CARD_ITEM": {
+      "NAME": "Name",
+      "CODE": "Code",
+      "STOCK": "Stock",
+      "PRICE": "Price"
+    },
     "DELETE_PRODUCT_DIALOG": {
       "TITLE": "Delete product",
       "CONFIRM": "Are you sure to delete selected product?",

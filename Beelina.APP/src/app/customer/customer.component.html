@@ -12,21 +12,13 @@
         "CUSTOMERS_PAGE.DESCRIPTION" | translate
       }}</span>
     </div>
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-      <div class="search-field-container">
-        <input
-          type="text"
-          class="txt-search-field"
-          formControlName="filterKeyword"
-          placeholder="{{
-            'CUSTOMERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER' | translate
-          }}"
-        />
-        <button type="submit" mat-fab color="primary">
-          <mat-icon>search</mat-icon>
-        </button>
-      </div>
-    </form>
+
+    <app-search-field
+      (onSearch)="onSearch($event)"
+      [placeHolderTextIdentifier]="
+        'CUSTOMERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "
+    ></app-search-field>
 
     <app-list-container
       [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
@@ -37,11 +29,17 @@
         class="list-container customer-list"
       >
         <div *cdkVirtualFor="let item of dataSource">
-          <div class="list-container__item-section">
-            <div class="list-container__icon-section">
+          <div matRipple class="list-container__item-section">
+            <div
+              class="list-container__icon-section"
+              (click)="openDetails(item.id)"
+            >
               <mat-icon>store</mat-icon>
             </div>
-            <div class="list-container__details-section">
+            <div
+              class="list-container__details-section"
+              (click)="openDetails(item.id)"
+            >
               <label class="main-label">{{ item.name }}</label>
               <label>{{ item.address }}</label>
             </div>

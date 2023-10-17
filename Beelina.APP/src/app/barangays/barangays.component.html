@@ -11,21 +11,12 @@
         "BARANGAYS_PAGE.DESCRIPTION" | translate
       }}</span>
     </div>
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-      <div class="search-field-container">
-        <input
-          type="text"
-          class="txt-search-field"
-          formControlName="filterKeyword"
-          placeholder="{{
-            'BARANGAYS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER' | translate
-          }}"
-        />
-        <button type="submit" mat-fab color="primary">
-          <mat-icon>search</mat-icon>
-        </button>
-      </div>
-    </form>
+    <app-search-field
+      (onSearch)="onSearch($event)"
+      [placeHolderTextIdentifier]="
+        'BARANGAYS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "
+    ></app-search-field>
 
     <app-list-container
       [templateType]="emptyEntityTemplateEnum.CUSTOMERS"

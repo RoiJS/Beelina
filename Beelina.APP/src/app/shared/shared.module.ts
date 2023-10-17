@@ -38,6 +38,8 @@ import { ListContainerComponent } from './ui/list-container/list-container.compo
 import { LoaderLayoutComponent } from './ui/loader-layout/loader-layout.component';
 
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
+import { SearchFieldComponent } from './ui/search-field/search-field.component';
+import { ProductCardItemComponent } from '../product/product-card-item/product-card-item.component';
 
 @NgModule({
   imports: [
@@ -80,6 +82,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
     EmptyEntitiesPlaceholderComponent,
     ListContainerComponent,
     FilterAndSortComponent,
+    SearchFieldComponent,
+    ProductCardItemComponent,
   ],
   exports: [
     CommonModule,
@@ -118,7 +122,9 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
     FloatingButtonComponent,
     EmptyEntitiesPlaceholderComponent,
     ListContainerComponent,
-    FilterAndSortComponent
+    FilterAndSortComponent,
+    SearchFieldComponent,
+    ProductCardItemComponent,
   ],
 })
 export class SharedModule {}

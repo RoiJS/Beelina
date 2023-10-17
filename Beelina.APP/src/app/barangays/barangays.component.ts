@@ -1,11 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { BarangaysDataSource } from '../_models/datasources/barangays.datasource';
@@ -28,17 +26,13 @@ export class BarangaysComponent
   extends BaseComponent
   implements OnInit, OnDestroy
 {
-  private _searchForm: FormGroup;
   private _dataSource: BarangaysDataSource;
-
-  $isLoading: Observable<boolean>;
   private _manageBarangayDialogRef: any;
 
   constructor(
     private barangayService: BarangayService,
     private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
-    private formBuilder: FormBuilder,
     private router: Router,
     private snackBarService: MatSnackBar,
     private store: Store<AppStateInterface>,
@@ -46,11 +40,6 @@ export class BarangaysComponent
   ) {
     super();
     this._dataSource = new BarangaysDataSource(this.store);
-
-    this._searchForm = this.formBuilder.group({
-      filterKeyword: [''],
-    });
-
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
@@ -60,8 +49,7 @@ export class BarangaysComponent
     this.store.dispatch(BarangaysStoreActions.resetBarangayState());
   }
 
-  onSearch() {
-    const filterKeyword = this._searchForm.get('filterKeyword').value;
+  onSearch(filterKeyword: string) {
     this.store.dispatch(BarangaysStoreActions.resetBarangayState());
     this.store.dispatch(
       BarangaysStoreActions.setSearchBarangaysAction({ keyword: filterKeyword })
@@ -146,9 +134,5 @@ export class BarangaysComponent
 
   get dataSource(): BarangaysDataSource {
     return this._dataSource;
-  }
-
-  get searchForm(): FormGroup {
-    return this._searchForm;
   }
 }

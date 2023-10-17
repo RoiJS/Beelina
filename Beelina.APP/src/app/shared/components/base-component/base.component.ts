@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enum';
 
@@ -10,6 +11,7 @@ import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enu
 export class BaseComponent {
   protected _isLoading = false;
   protected _emptyTemplateType = EmptyEntityTemplateEnum;
+  protected $isLoading: Observable<boolean>;
 
   constructor() {}
 

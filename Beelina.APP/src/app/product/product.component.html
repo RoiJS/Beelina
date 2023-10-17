@@ -33,21 +33,12 @@
       }}</span>
     </div>
 
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-      <div class="search-field-container">
-        <input
-          type="text"
-          class="txt-search-field"
-          formControlName="filterKeyword"
-          placeholder="{{
-            'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER' | translate
-          }}"
-        />
-        <button type="submit" mat-fab color="primary">
-          <mat-icon>search</mat-icon>
-        </button>
-      </div>
-    </form>
+    <app-search-field
+      (onSearch)="onSearch($event)"
+      [placeHolderTextIdentifier]="
+        'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "
+    ></app-search-field>
 
     <app-list-container
       [templateType]="emptyEntityTemplateEnum.PRODUCTS"
@@ -59,55 +50,13 @@
         class="list-container product-list"
       >
         <div *cdkVirtualFor="let item of dataSource">
-          <div matRipple class="product-item list-container__card-item">
-            <div class="list-container__card-item-header product-item__header">
-              <mat-icon
-                [matBadge]="item.deductedStock"
-                [matBadgeHidden]="item.deductedStock === 0"
-                matBadgeColor="warn"
-                >add_shopping_cart</mat-icon
-              >
-              <mat-icon matRipple [matMenuTriggerFor]="menu"
-                >more_vert</mat-icon
-              >
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="editProduct(item.id)">
-                  <mat-icon>border_color</mat-icon> Edit
-                </button>
-                <button mat-menu-item (click)="deleteProduct(item.id)">
-                  <mat-icon>delete</mat-icon> Delete
-                </button>
-              </mat-menu>
-            </div>
-            <mat-divider></mat-divider>
-            <div
-              (click)="addItemToCart(item.id)"
-              class="list-container__card-item-body product-item__body"
-            >
-              <img src="../../assets/icons/box-product.png" />
-            </div>
-            <div
-              (click)="addItemToCart(item.id)"
-              class="list-container__card-item-footer product-item__footer"
-            >
-              <div class="product-info">
-                <span class="product-info__label">Code: </span
-                ><span>{{ item.code }}</span>
-              </div>
-              <div class="product-info">
-                <span class="product-info__label">Name: </span
-                ><span>{{ item.name }}</span>
-              </div>
-              <div class="product-info">
-                <span class="product-info__label">Stock: </span
-                ><span>{{ item.stockQuantity }}</span>
-              </div>
-              <div class="product-info">
-                <span class="product-info__label">Price: </span
-                ><span>{{ item.priceFormatted }}</span>
-              </div>
-            </div>
-          </div>
+          <app-product-card-item
+            [productItem]="item"
+            [allowManageItem]="true"
+            (editItem)="editProduct($event)"
+            (deleteItem)="deleteProduct($event)"
+            (addItem)="addItemToCart($event)"
+          ></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>

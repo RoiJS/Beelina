@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import {
   MAT_BOTTOM_SHEET_DATA,
   MatBottomSheet,
@@ -10,9 +10,9 @@ import { Observable } from 'rxjs';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
+import { ProductTransaction } from 'src/app/_models/transaction';
 import * as ProductActions from '../../store/actions';
 import { isLoadingSelector } from '../../store/selectors';
-import { ProductTransaction } from 'src/app/_models/transaction';
 
 import { ProductDataSource } from 'src/app/_models/datasources/product.datasource';
 import { AddToCartProductComponent } from '../../add-to-cart-product/add-to-cart-product.component';
@@ -25,7 +25,6 @@ import { AddToCartProductComponent } from '../../add-to-cart-product/add-to-cart
 export class SelectNewProductComponent implements OnInit {
   private _dataSource: ProductDataSource;
   private _productTransactions: Array<ProductTransaction>;
-  private _searchForm: FormGroup;
 
   $isLoading: Observable<boolean>;
 
@@ -34,17 +33,12 @@ export class SelectNewProductComponent implements OnInit {
     @Inject(MAT_BOTTOM_SHEET_DATA)
     public data: { productTransactions: Array<ProductTransaction> },
     private bottomSheet: MatBottomSheet,
-    private formBuilder: FormBuilder,
     private store: Store<AppStateInterface>
   ) {
     this._productTransactions = data.productTransactions;
 
     this.store.dispatch(ProductActions.resetProductState());
     this._dataSource = new ProductDataSource(this.store);
-
-    this._searchForm = this.formBuilder.group({
-      filterKeyword: [''],
-    });
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
@@ -57,8 +51,7 @@ export class SelectNewProductComponent implements OnInit {
     });
   }
 
-  onSearch() {
-    const filterKeyword = this._searchForm.get('filterKeyword').value;
+  onSearch(filterKeyword: string) {
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
       ProductActions.setSearchProductAction({ keyword: filterKeyword })
@@ -68,10 +61,6 @@ export class SelectNewProductComponent implements OnInit {
 
   onCancel() {
     this._bottomSheetRef.dismiss();
-  }
-
-  get searchForm(): FormGroup {
-    return this._searchForm;
   }
 
   get dataSource(): ProductDataSource {

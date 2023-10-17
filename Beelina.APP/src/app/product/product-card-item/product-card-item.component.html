@@ -1,0 +1,64 @@
+<div matRipple class="product-item list-container__card-item">
+  <div class="list-container__card-item-header product-item__header">
+    <mat-icon
+      [matBadge]="productItem.deductedStock"
+      [matBadgeHidden]="productItem.deductedStock === 0"
+      matBadgeColor="warn"
+      >add_shopping_cart</mat-icon
+    >
+    <div *ngIf="allowManageItem">
+      <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="editProduct(productItem.id)">
+          <mat-icon>border_color</mat-icon>
+          {{ "GENERAL_TEXTS.EDIT" | translate }}
+        </button>
+        <button mat-menu-item (click)="deleteProduct(productItem.id)">
+          <mat-icon>delete</mat-icon> {{ "GENERAL_TEXTS.REMOVE" | translate }}
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+  <div
+    (click)="addItemToCart(productItem.id)"
+    class="list-container__card-item-body product-item__body"
+  >
+    <img src="../../assets/icons/box-product.png" />
+  </div>
+  <div
+    (click)="addItemToCart(productItem.id)"
+    class="list-container__card-item-footer product-item__footer"
+  >
+    <div class="product-info">
+      <span class="product-info__label"
+        >{{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE" | translate
+        }}: </span
+      ><span>{{ productItem.code }}</span>
+    </div>
+    <div class="product-info">
+      <span class="product-info__label"
+        >{{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.NAME"
+            | translate
+            | translate
+        }}: </span
+      ><span>{{ productItem.name }}</span>
+    </div>
+    <div class="product-info">
+      <span class="product-info__label"
+        >{{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.STOCK" | translate
+        }}: </span
+      ><span>{{ productItem.stockQuantity }}</span>
+    </div>
+    <div class="product-info">
+      <span class="product-info__label"
+        >{{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.PRICE" | translate
+        }}: </span
+      ><span>{{ productItem.priceFormatted }}</span>
+    </div>
+  </div>
+</div>
