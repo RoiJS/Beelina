@@ -1,4 +1,4 @@
-name: Continuous integration for Reserbiz Backend
+name: Continuous integration for Beelina Backend
 
 on:
   push:

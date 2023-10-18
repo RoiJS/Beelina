@@ -1,4 +1,4 @@
-name: Continuous integration for Reserbiz Application
+name: Continuous integration for Beelina Application
 
 on:
   push:
