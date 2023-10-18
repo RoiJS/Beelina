@@ -1,0 +1,28 @@
+name: Continuous integration for Reserbiz Application
+
+on:
+  push:
+    branches: [master, development]
+    paths: [.github/workflows/**, Beelina.APP/**]
+
+  pull_request:
+    branches: [master, development]
+    paths: [.github/workflows/**, Beelina.APP/**]
+
+jobs:
+  build:
+    name: Build and test Beelina Application
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./Beelina.APP
+
+      - name: Build Beelina Application
+        run: ng build
+        working-directory: ./Beelina.APP
