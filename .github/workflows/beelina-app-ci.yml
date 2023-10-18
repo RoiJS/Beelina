@@ -23,6 +23,9 @@ jobs:
         run: npm ci
         working-directory: ./Beelina.APP
 
+      - name: Install Angular CLI Globallly
+        run: npm install -g @angular/cli
+
       - name: Build Beelina Application
         run: ng build
         working-directory: ./Beelina.APP
