@@ -6,23 +6,19 @@ on:
     paths:
       [
         .github/workflows/**,
-        ReserbizAPP.API/**,
-        ReserbizAPP.Hangfire/**,
-        ReserbizAPP.LIB/**,
-        ReserbizAPP.Tests/**,
-        ReserbizAPP.IntegrationTests/**,
+        Beelina.API/**,
+        Beelina.LIB/**,
+        Beelina.UnitTest/**,
       ]
 
   pull_request:
     branches: [master, development]
     paths:
-      [
+       [
         .github/workflows/**,
-        ReserbizAPP.API/**,
-        ReserbizAPP.Hangfire/**,
-        ReserbizAPP.LIB/**,
-        ReserbizAPP.Tests/**,
-        ReserbizAPP.IntegrationTests/**,
+        Beelina.API/**,
+        Beelina.LIB/**,
+        Beelina.UnitTest/**,
       ]
 
 jobs:
@@ -39,22 +35,22 @@ jobs:
         with:
           dotnet-version: 6.0.402
 
-      - name: Install SQL Server
-        uses: Particular/install-sql-server-action@v1.0.0
-        with:
-          connection-string-env-var: SQL_SERVER_CONNECTION_STRING
+      # - name: Install SQL Server
+      #   uses: Particular/install-sql-server-action@v1.0.0
+      #   with:
+      #     connection-string-env-var: SQL_SERVER_CONNECTION_STRING
           
       - name: Clean Solution
-        run: dotnet clean ReSerBiz.sln --configuration Release && dotnet nuget locals all --clear
+        run: dotnet clean Beelina.sln --configuration Release && dotnet nuget locals all --clear
 
-      - name: Set Environment Variable
-        run: |
-          echo "ASPNETCORE_ENVIRONMENT=IntegrationTest" >> $env:GITHUB_ENV
+      # - name: Set Environment Variable
+      #   run: |
+      #     echo "ASPNETCORE_ENVIRONMENT=IntegrationTest" >> $env:GITHUB_ENV
 
-      - name: Set up integration test databases
-        shell: pwsh
-        run: sqlcmd -i script.sql
-        working-directory: ./ReserbizAPP.IntegrationTests
+      # - name: Set up integration test databases
+      #   shell: pwsh
+      #   run: sqlcmd -i script.sql
+      #   working-directory: ./ReserbizAPP.IntegrationTests
 
       - name: Restore dependencies
         run: dotnet restore
@@ -63,8 +59,8 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Run Unit Test
-        run: dotnet test ReserbizAPP.Tests --no-build --verbosity normal
+        run: dotnet test Beelina.UnitTest --no-build --verbosity normal
 
-      - name: Run Integration Test
-        run: dotnet test
-        working-directory: ./ReserbizAPP.IntegrationTests
+      # - name: Run Integration Test
+      #   run: dotnet test
+      #   working-directory: ./ReserbizAPP.IntegrationTests
