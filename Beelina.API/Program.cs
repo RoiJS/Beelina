@@ -44,6 +44,7 @@ services.AddScoped(typeof(IStoreRepository<Store>), typeof(StoreRepository));
 services.AddScoped(typeof(ITransactionRepository<Transaction>), typeof(TransactionRepository));
 services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), typeof(ProductTransactionRepository));
 services.AddScoped(typeof(IBarangayRepository<Barangay>), typeof(BarangayRepository));
+services.AddScoped(typeof(IReportRepository<Report>), typeof(ReportRepository));
 services.AddTransient<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
 
 // GraphQL Services
@@ -60,6 +61,7 @@ services.AddGraphQLServer()
         .AddType<ProductQuery>()
         .AddType<ProductUnitQuery>()
         .AddType<StoreQuery>()
+        .AddType<ReportsQuery>()
         .AddType<BarangayQuery>()
         .AddType<PaymentMethodQuery>()
         .AddType<TransactionQuery>()
@@ -73,11 +75,13 @@ services.AddGraphQLServer()
         .AddType<StoreInformationResult>()
         .AddType<ProductInformationResult>()
         .AddType<CheckProductCodeInformationResult>()
+        .AddType<ReportInformationResult>()
         .AddType<SyncDatabaseResult>()
         .AddType<StoreNotExistsError>()
         .AddType<BarangayNotExistsError>()
         .AddType<ProductCodeExistsError>()
         .AddType<ProductNotExistsError>()
+        .AddType<ReportNotExistsError>()
         .AddType<ClientNotExistsError>();
 
 // Register IOptions pattern for AppSettings section

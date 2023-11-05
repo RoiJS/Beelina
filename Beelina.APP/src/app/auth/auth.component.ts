@@ -3,25 +3,27 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
-import * as LoginActions from './store/actions';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
+
 import { authCredentialsSelector, errorSelector } from './store/selectors';
 
-import { AuthService } from '../_services/auth.service';
+import * as LoginActions from './store/actions';
 import { AppVersionService } from '../_services/app-version.service';
+import { AuthService } from '../_services/auth.service';
 import { StorageService } from '../_services/storage.service';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
-import { ClientInformationResult } from '../_models/results/client-information-result.result';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { ClientInformationResult } from '../_models/results/client-information-result.result';
+import { BaseComponent } from '../shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-auth-module',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent extends BaseComponent implements OnInit {
   private _authForm: FormGroup;
 
   constructor(
@@ -34,6 +36,7 @@ export class AuthComponent implements OnInit {
     private store: Store<AppStateInterface>,
     private translateService: TranslateService
   ) {
+    super();
     this._authForm = this.formBuilder.group({
       company: ['', Validators.required],
       username: ['', Validators.required],
@@ -47,7 +50,7 @@ export class AuthComponent implements OnInit {
     const company = this.authForm.get('company').value;
 
     if (this._authForm.valid) {
-
+      this._isLoading = true;
       this.store.dispatch(LoginActions.reserLoginCredentials());
 
       this.authService.checkCompany(company).subscribe({
@@ -64,8 +67,9 @@ export class AuthComponent implements OnInit {
           this.store.dispatch(LoginActions.loginAction({ username, password }));
 
           this.store.pipe(select(authCredentialsSelector)).subscribe((auth) => {
+            this._isLoading = false;
             if (auth.accessToken) {
-              this.router.navigate(['/product-catalogue'], {
+              this.router.navigate(['/sales'], {
                 replaceUrl: true,
               });
             }
@@ -109,5 +113,23 @@ export class AuthComponent implements OnInit {
 
   get appVersion(): string {
     return this.appVersionService.appVersion;
+  }
+
+  get companyFieldPlaceHolder(): string {
+    return this.translateService.instant(
+      'AUTH_PAGE.AUTH_FORM.COMPANY_FIELD.HINT'
+    );
+  }
+
+  get usernameFieldPlaceHolder(): string {
+    return this.translateService.instant(
+      'AUTH_PAGE.AUTH_FORM.USERNAME_FIELD.HINT'
+    );
+  }
+
+  get passwordFieldPlaceHolder(): string {
+    return this.translateService.instant(
+      'AUTH_PAGE.AUTH_FORM.PASSWORD_FIELD.HINT'
+    );
   }
 }

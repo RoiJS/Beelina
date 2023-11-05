@@ -56,7 +56,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Barangays", (string)null);
+                    b.ToTable("Barangays");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.PaymentMethod", b =>
@@ -90,7 +90,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentMethods", (string)null);
+                    b.ToTable("PaymentMethods");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
@@ -161,7 +161,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
@@ -231,7 +231,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductTransactions", (string)null);
+                    b.ToTable("ProductTransactions");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductUnit", b =>
@@ -268,7 +268,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductUnits", (string)null);
+                    b.ToTable("ProductUnits");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -310,7 +310,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -377,7 +377,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Stores", (string)null);
+                    b.ToTable("Stores");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
@@ -439,7 +439,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserAccount", b =>
@@ -517,7 +517,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("UserAccounts", (string)null);
+                    b.ToTable("UserAccounts");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserPermission", b =>
@@ -559,7 +559,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserPermission", (string)null);
+                    b.ToTable("UserPermission");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
@@ -663,7 +663,7 @@ namespace Beelina.LIB.Migrations
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.Barangay", "Barangay")
-                        .WithMany()
+                        .WithMany("Stores")
                         .HasForeignKey("BarangayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -725,7 +725,7 @@ namespace Beelina.LIB.Migrations
                         .HasConstraintName("FK_Transaction_DeletedById_Accounts_AccountId");
 
                     b.HasOne("Beelina.LIB.Models.Store", "Store")
-                        .WithMany()
+                        .WithMany("Transactions")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -786,6 +786,16 @@ namespace Beelina.LIB.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.Barangay", b =>
+                {
+                    b.Navigation("Stores");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>

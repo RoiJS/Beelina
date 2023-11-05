@@ -3,8 +3,8 @@
   [title]="'GENERAL_TEXTS.BEELINA' | translate"
 ></app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
-  <div class="page-container">
-    <div class="page-container__page-divider">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
       <label>{{ "BARANGAYS_PAGE.TITLE" | translate }}</label
       ><br />
       <span class="page-information-description">{{
@@ -29,10 +29,12 @@
         <div *cdkVirtualFor="let item of dataSource">
           <div class="list-container__item-section" matRipple>
             <div
-              class="list-container__icon-section"
+              class="list-container__icon-section list-container__icon-section--right-space"
               (click)="goToCustomers(item.name)"
             >
-              <mat-icon>place</mat-icon>
+              <div class="list-container__icon-section--icon-container">
+                <mat-icon>place</mat-icon>
+              </div>
             </div>
             <div
               class="list-container__details-section"

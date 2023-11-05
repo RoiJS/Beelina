@@ -11,10 +11,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
   templateUrl: './top-products.component.html',
   styleUrls: ['./top-products.component.scss'],
 })
-export class TopProductsComponent
-  extends BaseComponent
-  implements OnInit
-{
+export class TopProductsComponent extends BaseComponent implements OnInit {
   private _topProducts: Array<TransactionTopProduct>;
 
   constructor(private transactionService: TransactionService) {
@@ -23,12 +20,14 @@ export class TopProductsComponent
 
   ngOnInit() {
     this._isLoading = true;
-    this.transactionService
-      .getTopProducts()
-      .subscribe((topProducts: Array<TransactionTopProduct>) => {
-        this._isLoading = false;
-        this._topProducts = topProducts;
-      });
+    setTimeout(() => {
+      this.transactionService
+        .getTopProducts()
+        .subscribe((topProducts: Array<TransactionTopProduct>) => {
+          this._isLoading = false;
+          this._topProducts = topProducts;
+        });
+    }, 1000);
   }
 
   get topProducts(): Array<TransactionTopProduct> {

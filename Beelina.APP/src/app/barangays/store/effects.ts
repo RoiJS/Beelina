@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, delay, map, of, switchMap } from 'rxjs';
 
 import * as BarangayActions from './actions';
 
@@ -17,6 +17,7 @@ export class BarangaysEffects {
       ofType(BarangayActions.getBarangaysAction),
       switchMap(() => {
         return this.barangayService.getBarangays().pipe(
+          delay(1000),
           map(
             (data: {
               endCursor: string;

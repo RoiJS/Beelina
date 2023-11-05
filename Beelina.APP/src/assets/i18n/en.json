@@ -27,6 +27,7 @@
     "PRODUCTS_CATALOGUE": "Products Catalogue",
     "DRAFT_TRANSACTIONS": "Draft Transactions",
     "TRANSACTION_HISTORY": "Transaction History",
+    "REPORTS": "Reports",
     "LOGOUT": "Logout"
   },
 
@@ -46,15 +47,20 @@
 
   "AUTH_PAGE": {
     "TITLE": "Login",
+    "MAIN_LABEL": "Login to your Account",
+    "SUB_LABEL": "Get started with our app and enjoy the experience.",
     "AUTH_FORM": {
       "COMPANY_FIELD": {
-        "LABEL": "Company"
+        "LABEL": "Company",
+        "HINT": "Enter valid company name..."
       },
       "USERNAME_FIELD": {
-        "LABEL": "Username"
+        "LABEL": "Username",
+        "HINT": "Enter valid username..."
       },
       "PASSWORD_FIELD": {
-        "LABEL": "Password"
+        "LABEL": "Password",
+        "HINT": "Enter valid password..."
       },
       "LOGIN_BUTTON": {
         "LABEL": "Login"
@@ -411,6 +417,44 @@
       "BUTTON_OPTIONS": {
         "SET_ORDER": "Set Order"
       }
+    }
+  },
+
+  "REPORTS_PAGE": {
+    "TITLE": "Reports",
+    "DESCRIPTION": "This page contains the list of different type of reports that user can use for data analysis.",
+    "REPORTS_INFORMATION": {
+      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_NAME": "Daily Summarize Transactions",
+      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "This report can generate a summary of transactions on a given date. This helps user to analyze and gives an insight of their daily transactions."
+    }
+  },
+
+  "REPORT_DETAILS_PAGE": {
+    "TITLE": "Report Filter Settings",
+    "CONTROL_INFORMATION": {
+      "DATE_RANGE_CONTROL": {
+        "LABEL": "Enter a date range",
+        "START_DATE_PLACEHOLDER": "Start Date",
+        "END_DATE_PLACEHOLDER": "End Date"
+      },
+      "DATE_PICKER_CONTROL": {
+        "LABEL": "Enter a date",
+        "DATE_PLACEHOLDER": "Date"
+      },
+      "SORT_ORDER_CONTROL": {
+        "LABEL": "Sort Order",
+        "ASCENDING_OPTION": "Ascending",
+        "DESCENDING_OPTION": "Descending"
+      }
+    },
+    "BUTTON_OPTIONS": {
+      "GENERATE_EXCEL_FILE": "Generate Report"
+    },
+    "GENERATE_REPORT_DIALOG": {
+      "TITLE": "Generate Report",
+      "CONFIRM": "This will generate report in an excel file format and will be sent to your email address. Do you want to  proceeed?",
+      "SUCCESS_MESSAGE": "Report has been successfully generated. The report will be sent to your email. Please check your email. Thank you!",
+      "ERROR_MESSAGE": "Generating report failed. Please try again later."
     }
   }
 }

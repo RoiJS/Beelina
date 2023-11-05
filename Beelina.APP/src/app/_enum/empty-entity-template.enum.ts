@@ -3,4 +3,5 @@ export enum EmptyEntityTemplateEnum {
   TRANSACTIONS = 'TRANSACTIONS',
   PRODUCTS = 'PRODUCTS',
   TOP_PRODUCTS = 'TOP_PRODUCTS',
+  REPORTS = 'REPORTS',
 }

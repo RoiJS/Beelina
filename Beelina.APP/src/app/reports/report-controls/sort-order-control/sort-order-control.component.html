@@ -1,0 +1,23 @@
+<div [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label
+      >{{
+        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.SORT_ORDER_CONTROL.LABEL" | translate
+      }}:</mat-label
+    >
+    <mat-select formControlName="sortOrder">
+      <mat-option [value]="'ASC'">
+        {{
+          "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.SORT_ORDER_CONTROL.ASCENDING_OPTION"
+            | translate
+        }}
+      </mat-option>
+      <mat-option [value]="'DESC'">
+        {{
+          "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.SORT_ORDER_CONTROL.DESCENDING_OPTION"
+            | translate
+        }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

@@ -2,24 +2,25 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { select, Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { map, Observable, startWith, Subscription } from 'rxjs';
+import { Observable, Subscription, map, startWith } from 'rxjs';
 
-import { productUnitsSelector } from 'src/app/units/store/selectors';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
+import { productUnitsSelector } from 'src/app/units/store/selectors';
 
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { ProductService } from 'src/app/_services/product.service';
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { isUpdateLoadingSelector } from '../store/selectors';
+
+import { Product } from 'src/app/_models/product';
+import { ProductUnit } from 'src/app/_models/product-unit';
+import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
+import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
-import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
-import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
-import { ProductUnit } from 'src/app/_models/product-unit';
-import { Product } from 'src/app/_models/product';
 
 @Component({
   selector: 'app-edit-product-details',

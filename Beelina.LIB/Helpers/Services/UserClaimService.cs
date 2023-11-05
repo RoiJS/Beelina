@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Helpers.Extensions;
+﻿using Beelina.LIB.Helpers.Constants;
+using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using System.Security.Claims;
 
@@ -15,9 +16,26 @@ namespace Beelina.LIB.Helpers.Services
 
         public int CurrentUserId
         {
-            get {
+            get
+            {
                 var userId = Convert.ToInt32(_claimsPrincipal.Identity.GetUserClaim(ClaimTypes.NameIdentifier));
                 return userId;
+            }
+        }
+
+        public string CurrrentUserEmailAddress
+        {
+            get
+            {
+                return Convert.ToString(_claimsPrincipal.Identity.GetUserClaim(BeelinaClaimTypes.EmailAddress));
+            }
+        }
+
+        public string CurrrentName
+        {
+            get
+            {
+                return Convert.ToString(_claimsPrincipal.Identity.GetUserClaim(BeelinaClaimTypes.FirstName));
             }
         }
     }

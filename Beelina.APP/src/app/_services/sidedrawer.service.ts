@@ -40,6 +40,11 @@ export class SidedrawerService {
         icon: 'place',
       },
       {
+        name: 'MAIN_MENU.REPORTS',
+        url: '/reports',
+        icon: 'bar_chart',
+      },
+      {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',
         icon: 'remove_circle_outline',

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
 
 namespace Beelina.LIB.Helpers.Extensions
 {
@@ -84,6 +85,27 @@ namespace Beelina.LIB.Helpers.Extensions
         public static DateTime ToLocalTimeZone(this DateTime dateTime)
         {
             return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dateTime.ToUniversalTime(), TimeZoneInfo.Local.Id);
+        }
+
+        /// <summary>
+        /// Adds spaces before capital letters in a pascal case string.
+        /// </summary>
+        /// <param name="input">The input string to be processed.</param>
+        /// <returns>The processed string with spaces added.</returns>
+        public static string AddSpacesToPascal(this string input)
+        {
+            StringBuilder result = new();
+
+            foreach (char character in input)
+            {
+                if (char.IsUpper(character) && result.Length > 0)
+                {
+                    result.Append(' '); // Add space before capital letters (excluding the first one).
+                }
+                result.Append(character);
+            }
+
+            return result.ToString();
         }
     }
 }
