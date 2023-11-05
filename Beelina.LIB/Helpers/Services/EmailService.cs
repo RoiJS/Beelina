@@ -1,45 +1,81 @@
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
 
-namespace ReserbizAPP.LIB.Helpers.Services {
-    public class EmailService {
+namespace ReserbizAPP.LIB.Helpers.Services
+{
+    public class EmailService
+    {
         private readonly string _smtp;
         private readonly string _smtpServerPassword;
         private readonly string _smtpServerAddress;
         private readonly int _smtpPort;
 
-        public EmailService (string smtp, string smtpServerAddress, string smtpServerPassword, int smtpPort) {
+        private byte[] _fileAttachmentStream { get; set; }
+        private string _fileName { get; set; }
+
+        public EmailService(string smtp, string smtpServerAddress, string smtpServerPassword, int smtpPort)
+        {
             _smtpPort = smtpPort;
             _smtpServerAddress = smtpServerAddress;
             _smtpServerPassword = smtpServerPassword;
             _smtp = smtp;
         }
 
-        public void Send (string senderEmail, string receiverEmail, string subject, string htmlBody, string bcc = "") {
-            try {
-                MailMessage mail = new MailMessage ();
-                mail.IsBodyHtml = true;
-                MailAddress fromAddress = new MailAddress (senderEmail);
+        public void SetFileAttachment(byte[] fileAttachment, string fileName)
+        {
+            _fileAttachmentStream = fileAttachment;
+            _fileName = fileName;
+        }
+
+        public void Send(string senderEmail, string receiverEmail, string subject, string htmlBody, string bcc = "")
+        {
+            var fileattachmentStream = new MemoryStream(_fileAttachmentStream);
+            var mail = new MailMessage()
+            {
+                IsBodyHtml = true
+            };
+            try
+            {
+                MailAddress fromAddress = new(senderEmail);
                 mail.From = fromAddress;
-                mail.To.Add (receiverEmail);
+                mail.To.Add(receiverEmail);
                 mail.Subject = subject;
                 mail.Body = htmlBody;
 
-                if (!String.IsNullOrEmpty (bcc)) {
-                    mail.Bcc.Add (bcc);
+                if (!String.IsNullOrEmpty(bcc))
+                {
+                    mail.Bcc.Add(bcc);
                 }
 
-                SmtpClient smtpClient = new SmtpClient (_smtp);
-                smtpClient.Port = _smtpPort;
-                smtpClient.EnableSsl = false;
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtpClient.Credentials = new NetworkCredential (_smtpServerAddress, _smtpServerPassword);
+                if (_fileAttachmentStream is not null)
+                {
+                    Attachment attachment = new(fileattachmentStream, new ContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    {
+                        Name = _fileName
+                    };
+                    mail.Attachments.Add(attachment);
+                }
 
-                smtpClient.Send (mail);
-                mail.Dispose ();
-            } catch (Exception ex) {
+                SmtpClient smtpClient = new(_smtp)
+                {
+                    Port = _smtpPort,
+                    EnableSsl = true,
+                    UseDefaultCredentials = false,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Credentials = new NetworkCredential(_smtpServerAddress, _smtpServerPassword)
+                };
+
+                smtpClient.Send(mail);
+            }
+            catch (Exception ex)
+            {
                 throw ex;
+            }
+            finally
+            {
+                mail.Dispose(); // Dispose of the email and attachment
+                fileattachmentStream.Dispose(); // Dispose of the memory stream
             }
         }
     }

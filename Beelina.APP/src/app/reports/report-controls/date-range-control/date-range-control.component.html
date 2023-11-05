@@ -1,0 +1,16 @@
+<div [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label
+      >{{
+        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.DATE_RANGE_CONTROL.LABEL" | translate
+      }}:</mat-label
+    >
+    <mat-date-range-input [rangePicker]="picker">
+      <input matStartDate placeholder="Start Date" formControlName="dateFrom" />
+      <input matEndDate placeholder="End Date" formControlName="dateTo" />
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
+</div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, delay, map, of, switchMap } from 'rxjs';
 
 import * as TransactionDatesActions from './actions';
 import {
@@ -19,6 +19,7 @@ export class TransactionDatesEffects {
         return this.transactionService
           .getTransactioDates(action.transactionStatus)
           .pipe(
+            delay(1000),
             map(
               (data: {
                 endCursor: string;

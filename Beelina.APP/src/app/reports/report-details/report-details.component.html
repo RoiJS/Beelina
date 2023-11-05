@@ -1,0 +1,34 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate"> </app-tool-bar>
+<app-loader-layout [busy]="isLoading">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ reportName }}</label
+      ><br />
+      <span class="page-information-description">{{ reportDescription }}</span>
+    </div>
+
+    <div class="panel">
+      <div class="panel__details-group-panel">
+        <div class="panel__header-section">
+          {{ "REPORT_DETAILS_PAGE.TITLE" | translate }}
+        </div>
+      </div>
+      <div class="panel__body-section">
+        <!-- This is the container for the report details component -->
+        <div #container></div>
+      </div>
+      <div class="panel__footer-section">
+        <button
+          mat-raised-button
+          color="primary"
+          style="width: 100%"
+          (click)="generateReport()"
+        >
+          {{
+            "REPORT_DETAILS_PAGE.BUTTON_OPTIONS.GENERATE_EXCEL_FILE" | translate
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

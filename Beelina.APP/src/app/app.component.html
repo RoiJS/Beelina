@@ -25,6 +25,9 @@
           *matTreeNodeDef="let node"
           matTreeNodeToggle
           [class.active]="isPageSelected(node.url, node.fragment)"
+          [class.sidenavbarbackgroundanimation]="
+            isPageSelected(node.url, node.fragment)
+          "
         >
           <mat-icon>{{ node.icon }}</mat-icon> {{ node.name | translate }}
         </mat-tree-node>

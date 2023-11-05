@@ -35,6 +35,15 @@
     <None Update="Templates\EmailTemplates\EmailNotificationRemoveExpiredRefreshTokens.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\EmailTemplates\EmailNotificationReportGeneration.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\ReportsTemplates\DailySummarizeTransactionsReport_Template.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\ReportTemplates\DailySummarizeTransactionsReport_Template.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Beelina.LIB.Models;
 
 namespace Beelina.LIB.Interfaces
 {

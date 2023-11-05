@@ -55,43 +55,106 @@
 
     .login-form {
       align-self: center;
-      box-shadow: 5px 5px 15px #6e6e6e;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      height: 350px;
-      width: 85%;
+      width: 95%;
       border-radius: 10px;
       background: $background-gradient;
 
-      .mat-form-field {
-        width: 100%;
-      }
-
       form {
-        padding: 20px;
-      }
-
-      input {
-        box-sizing: border-box;
+        padding: 65px 20px 20px;
       }
 
       .login-form-buttons {
         display: flex;
         flex-direction: column;
+        width: 100%;
 
         button {
           align-self: end;
           color: $white;
+          width: 100%;
         }
       }
     }
 
-    .login-form input {
-      border-width: 2px;
-      background-color: $white;
-      padding: 10px;
-      font-size: 15px;
+    .form_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 50px 40px 20px 40px;
+      box-shadow: 0px 106px 42px rgba(0, 0, 0, 0.01),
+        0px 59px 36px rgba(0, 0, 0, 0.05), 0px 26px 26px rgba(0, 0, 0, 0.09),
+        0px 7px 15px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1);
+      border-radius: 11px;
+      font-family: "Inter", sans-serif;
+    }
+
+    .title_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $primary;
+    }
+
+    .subtitle {
+      font-size: 0.725rem;
+      max-width: 80%;
+      text-align: center;
+      line-height: 1.1rem;
+      color: #8b8e98;
+    }
+
+    .input_container {
+      width: 100%;
+      height: fit-content;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .icon {
+      width: 20px;
+      position: absolute;
+      z-index: 99;
+      left: 12px;
+      bottom: 9px;
+    }
+
+    .input_label {
+      font-size: 0.75rem;
+      color: #8b8e98;
+      font-weight: 600;
+    }
+
+    .input_field {
+      width: auto;
+      height: 40px;
+      padding: 0 0 0 40px;
+      border-radius: 7px;
+      outline: none;
+      border: 1px solid #e5e5e5;
+      filter: drop-shadow(0px 1px 0px #efefef)
+        drop-shadow(0px 1px 0.5px rgba(239, 239, 239, 0.5));
+      transition: all 0.3s cubic-bezier(0.15, 0.83, 0.66, 1);
+    }
+
+    .input_field:focus {
+      border: 1px solid transparent;
+      box-shadow: 0px 0px 0px 2px $primary;
+      background-color: transparent;
     }
   }
 

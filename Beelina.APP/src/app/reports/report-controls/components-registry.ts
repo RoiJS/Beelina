@@ -1,0 +1,10 @@
+import { DatePickerComponent } from './date-picker/date-picker.component';
+import { DateRangeControlComponent } from './date-range-control/date-range-control.component';
+import { SortOrderControlComponent } from './sort-order-control/sort-order-control.component';
+
+// Define a component registry to map component names to their actual component classes
+export const componentsRegistry: { [key: string]: any } = {
+  DateRangeControl: DateRangeControlComponent,
+  DatePickerControl: DatePickerComponent,
+  SortOrderDropdownControl: SortOrderControlComponent,
+};

@@ -7,5 +7,6 @@ namespace Beelina.LIB.Helpers.Classes
         public GeneralSettings GeneralSettings { get; set; }
         public AppSettingsURL AppSettingsURL { get; set; }
         public ClientDatabaseNotificationSettings ClientDatabaseNotificationSettings { get; set; }
+        public ReportGenerationSettings ReportGenerationSettings { get; set; }
     }
 }

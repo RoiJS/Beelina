@@ -1,77 +1,97 @@
-<div class="login-main-container">
-  <div class="app-logo-container">
-    <div class="main-logo">
-      <img src="../../assets/logo/mainlogo.png" />
-    </div>
-  </div>
-
-  <div class="login-form-container">
-    <div class="lock-icon">
-      <mat-icon>lock</mat-icon>
+<app-loader-layout [busy]="isLoading">
+  <div class="login-main-container">
+    <div class="app-logo-container">
+      <div class="main-logo">
+        <img src="../../assets/logo/mainlogo.png" />
+      </div>
     </div>
 
-    <div class="login-form">
-      <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-        <div class="login-form-fields">
-          <mat-form-field>
-            <mat-label
+    <div class="login-form-container">
+      <div class="lock-icon">
+        <mat-icon class="flip-in-ver-left-animation">lock</mat-icon>
+      </div>
+
+      <div class="login-form">
+        <form
+          [formGroup]="authForm"
+          (ngSubmit)="onSubmit()"
+          class="form_container"
+        >
+          <div class="title_container">
+            <p class="title">
+              {{ "AUTH_PAGE.MAIN_LABEL" | translate }}
+            </p>
+            <span class="subtitle">{{
+              "AUTH_PAGE.SUB_LABEL" | translate
+            }}</span>
+          </div>
+          <div class="input_container">
+            <label class="input_label" for="company_field"
               >{{
                 "AUTH_PAGE.AUTH_FORM.COMPANY_FIELD.LABEL" | translate
-              }}:</mat-label
+              }}:</label
             >
+            <mat-icon class="icon">work_outline</mat-icon>
             <input
-              matInput
-              id="company"
+              [placeholder]="companyFieldPlaceHolder"
+              name="input-name"
               type="text"
+              class="input_field"
+              id="company_field"
               formControlName="company"
             />
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label
+          </div>
+          <div class="input_container">
+            <label class="input_label" for="username_field"
               >{{
                 "AUTH_PAGE.AUTH_FORM.USERNAME_FIELD.LABEL" | translate
               }}
-              :</mat-label
+              :</label
             >
+            <mat-icon class="icon">alternate_email</mat-icon>
             <input
-              matInput
-              id="username"
+              [placeholder]="usernameFieldPlaceHolder"
+              name="input-name"
               type="text"
+              class="input_field"
+              id="username_field"
               formControlName="username"
             />
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label
+          </div>
+          <div class="input_container">
+            <label class="input_label" for="password_field"
               >{{
                 "AUTH_PAGE.AUTH_FORM.PASSWORD_FIELD.LABEL" | translate
               }}
-              :</mat-label
+              :</label
             >
+            <mat-icon class="icon">vpn_key</mat-icon>
             <input
-              matInput
-              id="password"
+              [placeholder]="passwordFieldPlaceHolder"
+              name="input-name"
               type="password"
+              class="input_field"
+              id="password_field"
               formControlName="password"
             />
-          </mat-form-field>
-        </div>
-        <div class="login-form-buttons">
-          <button mat-button mat-raised-button color="primary" type="submit">
-            {{ "AUTH_PAGE.AUTH_FORM.LOGIN_BUTTON.LABEL" | translate }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+          </div>
 
-  <div class="login-footer">
-    <div class="login-footer-copyright-section">
-      <label>{{ appVersion }}</label>
-      <label class="login-footer-copyright-label"
-        ><mat-icon>copyright</mat-icon>{{ copyRightText }}</label
-      >
+          <div class="login-form-buttons">
+            <button mat-button mat-raised-button color="primary" type="submit">
+              {{ "AUTH_PAGE.AUTH_FORM.LOGIN_BUTTON.LABEL" | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="login-footer">
+      <div class="login-footer-copyright-section">
+        <label>{{ appVersion }}</label>
+        <label class="login-footer-copyright-label"
+          ><mat-icon>copyright</mat-icon>{{ copyRightText }}</label
+        >
+      </div>
     </div>
   </div>
-</div>
+</app-loader-layout>
