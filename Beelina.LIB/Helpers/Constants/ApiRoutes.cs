@@ -17,5 +17,10 @@ namespace Beelina.LIB.Helpers.Constants
             public const string SyncDatabaseURL = "/api/clientdbmanager/syncDatabase";
             public const string SyncAllDatabasesURL = "/api/clientdbmanager/syncAllDatabases";
         }
+
+        public static class SystemDbManagerControllerRoutes
+        {
+            public const string SyncDatabaseURL = "/api/systemdbmanager/syncDatabase";
+        }
     }
 }

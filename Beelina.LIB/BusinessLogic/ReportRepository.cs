@@ -83,7 +83,7 @@ namespace Beelina.LIB.BusinessLogic
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                throw;
             }
 
             return reportFromRepo;
