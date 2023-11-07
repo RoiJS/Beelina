@@ -24,6 +24,7 @@ namespace Beelina.API.Helpers.MapperProfile
             CreateMap<Store, StoreInformationResult>();
             CreateMap<Product, ProductInformationResult>();
             CreateMap<Report, ReportInformationResult>();
+            CreateMap<UserAccount, UserAccountInformationResult>();
 
             CreateMap<Client, ClientForListDto>();
             CreateMap<Client, ClientDetailsDto>();

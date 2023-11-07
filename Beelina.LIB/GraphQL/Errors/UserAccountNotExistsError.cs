@@ -1,7 +1,9 @@
-﻿namespace Beelina.LIB.GraphQL.Errors
+﻿using Beelina.LIB.Interfaces;
+
+namespace Beelina.LIB.GraphQL.Errors
 {
     public class UserAccountNotExistsError
-        : BaseError
+        : BaseError, IUserAccountPayload
     {
         public UserAccountNotExistsError()
         {

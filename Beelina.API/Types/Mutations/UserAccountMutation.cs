@@ -34,7 +34,7 @@ namespace Beelina.API.Types.Mutations
 
             var userToCreate = mapper.Map<UserAccount>(userAccountInput);
 
-            var createdUser = await userAccountRepository.Register(userToCreate, userAccountInput.Password);
+            var createdUser = await userAccountRepository.Register(userToCreate, userAccountInput.NewPassword);
 
             return createdUser;
         }
@@ -56,6 +56,14 @@ namespace Beelina.API.Types.Mutations
             userAccountRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
             mapper.Map(userAccountForUpdateInput, userAccountFromRepo);
+
+            // Check if user has new password   
+            if (!String.IsNullOrEmpty(userAccountForUpdateInput.NewPassword))
+            {
+                var encryptedNewPassword = userAccountRepository.GenerateNewPassword(userAccountForUpdateInput.NewPassword);
+                userAccountFromRepo.PasswordHash = encryptedNewPassword.PasswordHash;
+                userAccountFromRepo.PasswordSalt = encryptedNewPassword.PasswordSalt;
+            }
 
             if (!await userAccountRepository.SaveChanges())
                 throw new BaseException("Failed to update user account!");

@@ -52,4 +52,10 @@ export const routes: Routes = [
       import('./reports/reports.module').then((m) => m.ReportsModule),
     canLoad: [AuthGuard],
   },
+  {
+    path: 'profile',
+    loadChildren: () =>
+      import('./profile/profile.module').then((m) => m.ProfileModule),
+    canLoad: [AuthGuard],
+  },
 ];
