@@ -2,12 +2,12 @@ using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.GraphQL.Results
 {
-    public class CheckProductCodeInformationResult : IProductPayload
+    public class CheckUsernameInformationResult : IUserAccountPayload
     {
         public bool Exists { get; set; }
 
 
-        public CheckProductCodeInformationResult(bool exists)
+        public CheckUsernameInformationResult(bool exists)
         {
             Exists = exists;
         }

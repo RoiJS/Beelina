@@ -1,5 +1,4 @@
-﻿using Beelina.LIB.Enums;
-
+﻿
 namespace Beelina.LIB.GraphQL.Types
 {
     public class UserAccountInput
@@ -12,13 +11,13 @@ namespace Beelina.LIB.GraphQL.Types
 
         public string LastName { get; set; }
 
-        public GenderEnum Gender { get; set; }
+        // public GenderEnum Gender { get; set; }
 
         public string Username { get; set; }
 
         public string EmailAddress { get; set; }
 
-        public string Password { get; set; }
+        public string NewPassword { get; set; }
 
         public List<UserPermissionInput> UserPermissions { get; set; }
     }

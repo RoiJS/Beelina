@@ -45,6 +45,11 @@ export class SidedrawerService {
         icon: 'bar_chart',
       },
       {
+        name: 'MAIN_MENU.PROFILE',
+        url: '/profile',
+        icon: 'person_pin',
+      },
+      {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',
         icon: 'remove_circle_outline',

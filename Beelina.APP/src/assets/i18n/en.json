@@ -28,6 +28,7 @@
     "DRAFT_TRANSACTIONS": "Draft Transactions",
     "TRANSACTION_HISTORY": "Transaction History",
     "REPORTS": "Reports",
+    "PROFILE": "Profile",
     "LOGOUT": "Logout"
   },
 
@@ -455,6 +456,51 @@
       "CONFIRM": "This will generate report in an excel file format and will be sent to your email address. Do you want to  proceeed?",
       "SUCCESS_MESSAGE": "Report has been successfully generated. The report will be sent to your email. Please check your email. Thank you!",
       "ERROR_MESSAGE": "Generating report failed. Please try again later."
+    }
+  },
+
+  "PROFILE_PAGE": {
+    "TITLE": "Profile",
+    "DESCRIPTION": "This is where user profile information can be managed.",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Manage Profile",
+      "FIRSTNAME_CONTROL": {
+        "LABEL": "First name",
+        "HINT": "Please enter first name"
+      },
+      "MIDDLENAME_CONTROL": {
+        "LABEL": "Middle name",
+        "HINT": "Please enter middle name"
+      },
+      "LASTNAME_CONTROL": {
+        "LABEL": "Last name",
+        "HINT": "Please enter last name"
+      },
+      "EMAIL_CONTROL": {
+        "LABEL": "Email",
+        "HINT": "Please enter a valid email",
+        "INVALID_EMAIL_ERROR_MESSAGE": "Invalid email format. Please enter a valid email address."
+      },
+      "USERNAME_CONTROL": {
+        "LABEL": "Username",
+        "HINT": "Please enter a valid username",
+        "ALREADY_EXIST_ERROR_MESSAGE": "Username already exists. Please enter a different username"
+      },
+      "NEW_PASSWORD_CONTROL": {
+        "LABEL": "New Password",
+        "HINT": "Please new enter password",
+        "PASSWORD_NOT_STRONG_ERROR_MESSAGE": "Password must be at least 8 characters long and include one letter, one digit, and one special character."
+      },
+      "CONFIRM_PASSWORD_CONTROL": {
+        "LABEL": "Confirm Password",
+        "HINT": "Please enter confirm password"
+      }
+    },
+    "EDIT_PROFILE_DIALOG": {
+      "TITLE": "Update profile",
+      "CONFIRM": "Are you sure to save profile details?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating profile failed. Please again later."
     }
   }
 }

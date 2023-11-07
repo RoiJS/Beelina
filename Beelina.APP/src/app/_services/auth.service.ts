@@ -1,25 +1,31 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { Store } from '@ngrx/store';
+import { Apollo, gql, MutationResult } from 'apollo-angular';
 
-import { map, switchMap, take, tap } from 'rxjs/operators';
-import { BehaviorSubject, of, Observable } from 'rxjs';
 import { ApolloQueryResult } from '@apollo/client/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 
 import { RoutingService } from './routing.service';
 import { StorageService } from './storage.service';
 
-import { User } from '../_models/user.model';
-import { AuthToken } from '../_models/auth-token.model';
 import { GenderEnum } from '../_enum/gender.enum';
+import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ILoginInput } from '../_interfaces/inputs/ilogin.input';
 import { IAuthenticationOutput } from '../_interfaces/outputs/ilogin.output';
 import { IClientInformationQueryPayload } from '../_interfaces/payloads/iclient-information-query.payload';
+import { AuthToken } from '../_models/auth-token.model';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
-import { AppStateInterface } from '../_interfaces/app-state.interface';
+import { User } from '../_models/user.model';
 
+import { ModuleEnum } from '../_enum/module.enum';
+import { PermissionLevelEnum } from '../_enum/permission-level.enum';
+import { IUserAccountInput } from '../_interfaces/inputs/iuser-account.input';
+import { IUpdateAccountOutput } from '../_interfaces/outputs/iupdate-account.output';
+import { IUserAccountInformationQueryPayload } from '../_interfaces/payloads/iuser-account-information-query.payload';
+import { UserAccountNotExistsError } from '../_models/errors/user-account-not-exists.error';
+import { CheckUsernameInformationResult } from '../_models/results/check-usernamee-information-result';
 import * as LoginActions from '../auth/store/actions';
 
 const GET_CLIENT_INFORMATION_QUERY = gql`
@@ -77,6 +83,60 @@ const REFRESH_QUERY = gql`
   }
 `;
 
+const UPDATE_USER_CREDENTIALS = gql`
+  mutation ($userAccountForUpdateInput: UserAccountInput!) {
+    updateUserAccount(
+      input: { userAccountForUpdateInput: $userAccountForUpdateInput }
+    ) {
+      userAccount {
+        id
+        username
+      }
+      errors {
+        __typename
+        ... on UserAccountNotExistsError {
+          message
+        }
+        ... on BaseError {
+          message
+        }
+      }
+    }
+  }
+`;
+
+const GET_USER_INFORMATION = gql`
+  query ($userId: Int!) {
+    userAccount(userId: $userId) {
+      typename: __typename
+      ... on UserAccountInformationResult {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        emailAddress
+        username
+      }
+
+      ... on UserAccountNotExistsError {
+        message
+      }
+    }
+  }
+`;
+
+const CHECK_USERNAME = gql`
+  query ($userId: Int!, $username: String!) {
+    checkUsername(userId: $userId, username: $username) {
+      typename: __typename
+      ... on CheckUsernameInformationResult {
+        exists
+      }
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private _user = new BehaviorSubject<User>(null);
@@ -88,7 +148,6 @@ export class AuthService {
 
   constructor(
     private apollo: Apollo,
-    private http: HttpClient,
     private routingService: RoutingService,
     private storageService: StorageService,
     private store: Store<AppStateInterface>
@@ -240,6 +299,88 @@ export class AuthService {
     this.routingService.replace([redirectUrl]);
   }
 
+  updateAccountInformation(user: User) {
+    const userAccountForUpdateInput: IUserAccountInput = {
+      id: user.id,
+      firstName: user.firstName,
+      middleName: user.middleName,
+      lastName: user.lastName,
+      gender: user.gender,
+      emailAddress: user.emailAddress,
+      username: user.username,
+      newPassword: user.password,
+
+      // For now we will set this as default.
+      // Later we will allow introduce the possibility to manage
+      // user permissions per module.
+      userPermissions: [
+        {
+          moduleId: ModuleEnum.Retail,
+          permissionLevel: PermissionLevelEnum.Administrator,
+        },
+      ],
+    };
+
+    return this.apollo
+      .mutate({
+        mutation: UPDATE_USER_CREDENTIALS,
+        variables: {
+          userAccountForUpdateInput,
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{ updateUserAccount: IUpdateAccountOutput }>
+          ) => {
+            const output = result.data.updateUserAccount;
+            const payload = output.userAccount;
+            const errors = output.errors;
+
+            if (payload) {
+              return payload;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return null;
+          }
+        )
+      );
+  }
+
+  getUserInformation(userId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_USER_INFORMATION,
+        variables: {
+          userId,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              userAccount: IUserAccountInformationQueryPayload;
+            }>
+          ) => {
+            const data = result.data.userAccount;
+
+            if (data.typename === 'UserAccountInformationResult')
+              return result.data.userAccount;
+            if (data.typename === 'UserAccountNotExistsError')
+              throw new Error(
+                (<UserAccountNotExistsError>result.data.userAccount).message
+              );
+
+            return null;
+          }
+        )
+      );
+  }
+
   autoLogin() {
     if (
       !this.storageService.hasKey('authToken') ||
@@ -269,14 +410,13 @@ export class AuthService {
       new Date(authToken._refreshTokenExpirationDate)
     );
 
-    const loadedUser = new User(
-      user.firstName,
-      user.middleName,
-      user.lastName,
-      user.username,
-      user.gender,
-      user.emailAddress
-    );
+    const loadedUser = new User();
+    loadedUser.firstName = user.firstName;
+    loadedUser.middleName = user.middleName;
+    loadedUser.lastName = user.lastName;
+    loadedUser.username = user.username;
+    loadedUser.gender = user.gender;
+    loadedUser.emailAddress = user.emailAddress;
 
     if (tokenInfo.isAuth) {
       this._user.next(loadedUser);
@@ -321,14 +461,13 @@ export class AuthService {
     const authToken = new AuthToken(accessToken, refreshToken, expirationDate);
     const currentUser = this._jwtHelper.decodeToken(authToken.token);
 
-    const user = new User(
-      currentUser.firstName,
-      currentUser.middleName,
-      currentUser.lastName,
-      currentUser.username,
-      parseInt(currentUser.gender),
-      currentUser.emailAddress
-    );
+    const user = new User();
+    user.firstName = currentUser.firstName;
+    user.middleName = currentUser.middleName;
+    user.lastName = currentUser.lastName;
+    user.username = currentUser.username;
+    user.gender = parseInt(currentUser.gender);
+    user.emailAddress = currentUser.emailAddress;
 
     this.storageService.storeString('authToken', JSON.stringify(authToken));
     this.storageService.storeString('userData', JSON.stringify(user));
@@ -348,5 +487,32 @@ export class AuthService {
     );
 
     return parseInt(tokenDecrypted.nameid);
+  }
+
+  checkUsernameExists(userId: number, username: string) {
+    return this.apollo
+      .watchQuery({
+        query: CHECK_USERNAME,
+        variables: {
+          userId,
+          username,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              checkUsername: IUserAccountInformationQueryPayload;
+            }>
+          ) => {
+            const data = result.data.checkUsername;
+            if (data.typename === 'CheckUsernameInformationResult')
+              return (<CheckUsernameInformationResult>result.data.checkUsername)
+                .exists;
+
+            return false;
+          }
+        )
+      );
   }
 }

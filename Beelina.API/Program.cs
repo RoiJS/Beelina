@@ -74,14 +74,16 @@ services.AddGraphQLServer()
         .AddType<ClientInformationResult>()
         .AddType<StoreInformationResult>()
         .AddType<ProductInformationResult>()
-        .AddType<CheckProductCodeInformationResult>()
+        .AddType<CheckUsernameInformationResult>()
         .AddType<ReportInformationResult>()
+        .AddType<UserAccountInformationResult>()
         .AddType<SyncDatabaseResult>()
         .AddType<StoreNotExistsError>()
         .AddType<BarangayNotExistsError>()
         .AddType<ProductCodeExistsError>()
         .AddType<ProductNotExistsError>()
         .AddType<ReportNotExistsError>()
+        .AddType<UserAccountNotExistsError>()
         .AddType<ClientNotExistsError>();
 
 // Register IOptions pattern for AppSettings section
