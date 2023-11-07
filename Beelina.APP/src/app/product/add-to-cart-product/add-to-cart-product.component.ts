@@ -117,6 +117,41 @@ export class AddToCartProductComponent implements OnInit {
     );
   }
 
+  getProductPhoto(name: string) {
+    const products = [
+      {
+        name: 'Absolute Drinking Water',
+        url: '../../../assets/products/AbsoluteDrinkingWater.jpg',
+      },
+      {
+        name: 'Datu Puti Vinegar',
+        url: '../../../assets/products/DatuPutiVinegar.jpg',
+      },
+      {
+        name: 'Lucky Me Chicken Noodles',
+        url: '../../../assets/products/LuckyMeChickenNoodles.jpg',
+      },
+      {
+        name: 'Mega Sardines Green',
+        url: '../../../assets/products/MegaSardinesGreen.jpg',
+      },
+      {
+        name: 'Mega Sardines Red',
+        url: '../../../assets/products/MegaSardinesRed.jpg',
+      },
+      {
+        name: 'Piattos',
+        url: '../../../assets/products/Piattos.jpg',
+      },
+    ];
+
+    const photo =
+      products.find((p) => p.name === name)?.url ||
+      '../../assets/icons/box-product.png';
+
+    return photo;
+  }
+
   get product(): Product {
     return this._product;
   }

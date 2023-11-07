@@ -6,7 +6,7 @@
   <div class="add-to-cart-container__body">
     <div class="product-information-container">
       <div class="product-information-container__image-section">
-        <img src="../../assets/icons/box-product.png" />
+        <img [src]="getProductPhoto(product.name)" />
       </div>
       <div class="product-information-container__details">
         <span class="product-name">{{ product?.name }}</span>

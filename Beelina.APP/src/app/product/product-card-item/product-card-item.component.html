@@ -24,7 +24,7 @@
     (click)="addItemToCart(productItem.id)"
     class="list-container__card-item-body product-item__body"
   >
-    <img src="../../assets/icons/box-product.png" />
+    <img [src]="getProductPhoto(productItem.name)" />
   </div>
   <div
     (click)="addItemToCart(productItem.id)"
