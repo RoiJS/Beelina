@@ -7,10 +7,12 @@ namespace Beelina.LIB.BusinessLogic
     public class ProductTransactionRepository
         : BaseRepository<ProductTransaction>, IProductTransactionRepository<ProductTransaction>
     {
+        private readonly ICurrentUserService currentUserService;
 
-        public ProductTransactionRepository(IBeelinaRepository<ProductTransaction> beelinaRepository)
+        public ProductTransactionRepository(IBeelinaRepository<ProductTransaction> beelinaRepository, ICurrentUserService currentUserService)
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
+            this.currentUserService = currentUserService;
 
         }
 
@@ -28,7 +30,9 @@ namespace Beelina.LIB.BusinessLogic
         {
             var topProductsFromRepo = await _beelinaRepository.ClientDbContext
                                                 .ProductTransactions
+                                                .Include(p => p.Transaction)
                                                 .Include(p => p.Product)
+                                                .Where(p => p.Transaction.CreatedById == currentUserService.CurrentUserId)
                                                 .GroupBy(p => new { p.ProductId, p.Product.Code, p.Product.Name })
                                                 .Select(p => new TransactionTopProduct
                                                 {

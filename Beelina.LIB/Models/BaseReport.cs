@@ -68,6 +68,9 @@ namespace Beelina.LIB.Models
                 spParams.Add(new StoreProcedureParameters { Name = reportParam.Name, Value = control.CurrentValue });
             }
 
+            // Default SP parameter
+            spParams.Add(new StoreProcedureParameters { Name = "userId", Value = UserId.ToString() });
+
             using (DbConnection connection = ReportRepository.BeelinaRepository().Database.GetDbConnection())
             {
                 connection.Open();
