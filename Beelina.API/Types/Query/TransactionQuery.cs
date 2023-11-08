@@ -60,10 +60,11 @@ namespace Beelina.API.Types.Query
 
     public async Task<List<InsufficientProductQuantity>> ValidateProductionTransactionsQuantities(
         [Service] IProductRepository<Product> productRepository,
+        [Service] ICurrentUserService currentUserService,
         List<ProductTransactionInput> productTransactionsInputs)
     {
       var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-      var productsFromRepo = await productRepository.GetAllEntities().ToListObjectAsync();
+      var productsFromRepo = await productRepository.GetProducts(currentUserService.CurrentUserId, 0);
 
       foreach (Product product in productsFromRepo)
       {

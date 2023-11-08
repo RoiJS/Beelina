@@ -8,10 +8,12 @@ namespace Beelina.LIB.BusinessLogic
     public class TransactionRepository
         : BaseRepository<Transaction>, ITransactionRepository<Transaction>
     {
+        private readonly ICurrentUserService currentUserService;
 
-        public TransactionRepository(IBeelinaRepository<Transaction> beelinaRepository)
+        public TransactionRepository(IBeelinaRepository<Transaction> beelinaRepository, ICurrentUserService currentUserService)
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
+            this.currentUserService = currentUserService;
         }
 
         public async Task<TransactionSales> GetSales(string fromDate, string toDate)
@@ -20,7 +22,7 @@ namespace Beelina.LIB.BusinessLogic
                                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                                     on t.Id equals pt.TransactionId
 
-                                    where t.Status == TransactionStatusEnum.Confirmed
+                                    where t.Status == TransactionStatusEnum.Confirmed && t.CreatedById == currentUserService.CurrentUserId
 
                                     select new
                                     {
@@ -54,7 +56,7 @@ namespace Beelina.LIB.BusinessLogic
                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                     on t.Id equals pt.TransactionId
 
-                    where t.Status == status
+                    where t.Status == status && t.CreatedById == currentUserService.CurrentUserId
 
                     select new
                     {

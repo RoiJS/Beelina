@@ -14,31 +14,31 @@ namespace Beelina.API.Types.Query
         [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
         [UseProjection]
         [UseFiltering]
-        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository)
+        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, [Service] ICurrentUserService currentUserService)
         {
-            return await productRepository.GetAllEntities().Includes(p => p.ProductUnit).ToListObjectAsync();
+            return await productRepository.GetProducts(currentUserService.CurrentUserId, 0);
         }
 
         [Authorize]
-        public async Task<IProductPayload> GetProduct([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, int productId)
+        public async Task<IProductPayload> GetProduct([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, [Service] ICurrentUserService currentUserService, int productId)
         {
-            var productFromRepo = await productRepository.GetEntity(productId).Includes(s => s.ProductUnit).ToObjectAsync();
+            var productFromRepo = await productRepository.GetProducts(currentUserService.CurrentUserId, productId);
 
-            var productResult = mapper.Map<ProductInformationResult>(productFromRepo);
-
-            if (productFromRepo == null)
+            if (productFromRepo == null || productFromRepo?.Count == 0)
             {
                 return new ProductNotExistsError(productId);
             }
+
+            var productResult = mapper.Map<ProductInformationResult>(productFromRepo?[0]);
 
             return productResult;
         }
 
         [Authorize]
-        public async Task<IProductPayload> CheckProductCode([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, int productId, string productCode)
+        public async Task<IProductPayload> CheckProductCode([Service] IProductRepository<Product> productRepository, int productId, string productCode)
         {
             var productFromRepo = await productRepository.GetProductByUniqueCode(productId, productCode);
-            return new CheckProductCodeInformationResult((productFromRepo != null));
+            return new CheckProductCodeInformationResult(productFromRepo != null);
         }
     }
 }

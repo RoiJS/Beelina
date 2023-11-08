@@ -16,6 +16,7 @@ namespace Beelina.API.Types.Mutations
             [Service] ITransactionRepository<Transaction> transactionRepository,
             [Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository,
             [Service] IProductRepository<Product> productRepository,
+            [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
             [Service] ICurrentUserService currentUserService,
             [Service] IMapper mapper,
             TransactionInput transactionInput)
@@ -49,26 +50,28 @@ namespace Beelina.API.Types.Mutations
             {
                 foreach (var productTransaction in transactionInput.ProductTransactionInputs)
                 {
-                    var productFromRepo = await productRepository.GetEntity(productTransaction.ProductId).ToObjectAsync();
+                    // var productFromRepo = await productRepository.GetEntity(productTransaction.ProductId).ToObjectAsync();
+                    var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productTransaction.ProductId, currentUserService.CurrentUserId);
 
-                    if (productFromRepo != null)
+                    if (productStockPerPanelFromRepo != null)
                     {
                         if (productTransaction.DiffQuantity != 0)
                         {
-                            productFromRepo.StockQuantity += productTransaction.DiffQuantity;
-                            await productRepository.SaveChanges();
+                            productStockPerPanelFromRepo.StockQuantity += productTransaction.DiffQuantity;
+                            await productStockPerPanelRepository.SaveChanges();
                         }
                     }
                 }
 
                 foreach (var deletedProductTransaction in deletedProductTransactions)
                 {
-                    var productFromRepo = await productRepository.GetEntity(deletedProductTransaction.ProductId).ToObjectAsync();
+                    // var productFromRepo = await productRepository.GetEntity(deletedProductTransaction.ProductId).ToObjectAsync();
+                    var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(deletedProductTransaction.ProductId, currentUserService.CurrentUserId);
 
-                    if (productFromRepo != null)
+                    if (productStockPerPanelFromRepo != null)
                     {
-                        productFromRepo.StockQuantity += deletedProductTransaction.Quantity;
-                        await productRepository.SaveChanges();
+                        productStockPerPanelFromRepo.StockQuantity += deletedProductTransaction.Quantity;
+                        await productStockPerPanelRepository.SaveChanges();
                     }
                 }
             }

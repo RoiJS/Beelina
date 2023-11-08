@@ -1,9 +1,9 @@
 import {
-    AfterViewInit,
-    Component,
-    OnInit,
-    ViewChild,
-    ViewContainerRef,
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
@@ -16,6 +16,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { BaseControlComponent } from '../report-controls/base-control/base-control.component';
 import { componentsRegistry } from '../report-controls/components-registry';
+import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
 @Component({
   selector: 'app-report-details',
@@ -132,8 +133,8 @@ export class ReportDetailsComponent
             'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.CONFIRM'
           )
         )
-        .subscribe((result) => {
-          if (result) {
+        .subscribe((result: ButtonOptions) => {
+          if (result === ButtonOptions.YES) {
             this._isLoading = true;
             this.reportService
               .generateReport(this._reportId, selectedValues)
