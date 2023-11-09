@@ -59,13 +59,13 @@ namespace Beelina.API.Types.Mutations
                     ProductId = productFromRepo.Id,
                     UserAccountId = currentUserService.CurrentUserId,
                     StockQuantity = productInput.StockQuantity,
-                    // PricePerUnit = productInput.PricePerUnit
+                    PricePerUnit = productInput.PricePerUnit
                 };
             }
             else
             {
                 productStockPerPanelFromRepo.StockQuantity = productInput.StockQuantity;
-                // productStockPerPanelFromRepo.PricePerUnit = productInput.PricePerUnit;
+                productStockPerPanelFromRepo.PricePerUnit = productInput.PricePerUnit;
             }
 
             await productStockPerPanelRepository.UpdateProductStockPerPanel(productStockPerPanelFromRepo);

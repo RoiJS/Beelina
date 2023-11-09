@@ -30,8 +30,8 @@ namespace Beelina.LIB.Models.Reports
             {
                 HeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new DailySummarizeTransactionsReportOutputHeader
                 {
-                    InitialStocks = row.Field<decimal>("InitialStocks"),
-                    AfterStocks = row.Field<decimal>("AfterStocks"),
+                    InitialStocksValue = row.Field<decimal>("InitialStocksValue"),
+                    RemainingStocksValue = row.Field<decimal>("RemainingStocksValue"),
                     TotalSales = row.Field<decimal>("TotalSales")
                 }).FirstOrDefault(),
 
@@ -58,8 +58,8 @@ namespace Beelina.LIB.Models.Reports
                 var worksheet = package.Workbook.Worksheets["Sheet1"];
 
                 // You can set worksheet properties and add data here
-                worksheet.Cells["A2"].Value = reportOutput.HeaderOutput.InitialStocks;
-                worksheet.Cells["B2"].Value = reportOutput.HeaderOutput.AfterStocks;
+                worksheet.Cells["A2"].Value = reportOutput.HeaderOutput.InitialStocksValue;
+                worksheet.Cells["B2"].Value = reportOutput.HeaderOutput.RemainingStocksValue;
                 worksheet.Cells["C2"].Value = reportOutput.HeaderOutput.TotalSales;
 
                 var cellNumber = 5;
@@ -141,7 +141,7 @@ namespace Beelina.LIB.Models.Reports
         {
             get
             {
-                return OutletType != null ? Enum.GetName(typeof(OutletTypeEnum), OutletType) : String.Empty;
+                return OutletType != 0 ? Enum.GetName(typeof(OutletTypeEnum), OutletType) : String.Empty;
             }
         }
 
@@ -153,8 +153,8 @@ namespace Beelina.LIB.Models.Reports
 
     public class DailySummarizeTransactionsReportOutputHeader
     {
-        public decimal InitialStocks { get; set; }
-        public decimal AfterStocks { get; set; }
+        public decimal InitialStocksValue { get; set; }
+        public decimal RemainingStocksValue { get; set; }
         public decimal TotalSales { get; set; }
     }
 }
