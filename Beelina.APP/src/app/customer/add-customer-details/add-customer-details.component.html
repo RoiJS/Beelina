@@ -58,6 +58,28 @@
           <mat-form-field appearance="fill">
             <mat-label
               >{{
+                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.LABEL"
+                  | translate
+              }}:</mat-label
+            >
+            <mat-select formControlName="outletType">
+              <mat-option [value]="'KEY_ACCOUNT'">
+                {{
+                  "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT"
+                    | translate
+                }}
+              </mat-option>
+              <mat-option [value]="'GEN_TRADE'">
+                {{
+                  "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE"
+                    | translate
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label
+              >{{
                 "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
                   | translate
               }}:</mat-label
