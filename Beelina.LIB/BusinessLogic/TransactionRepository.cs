@@ -20,9 +20,11 @@ namespace Beelina.LIB.BusinessLogic
         {
             var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
                                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
-                                    on t.Id equals pt.TransactionId
+                                    on new { Id = t.Id, PaidStatus = PaymentStatusEnum.Paid } equals new { Id = pt.TransactionId, PaidStatus = pt.Status }
 
-                                    where t.Status == TransactionStatusEnum.Confirmed && t.CreatedById == currentUserService.CurrentUserId
+                                    where
+                                        t.Status == TransactionStatusEnum.Confirmed
+                                        && t.CreatedById == currentUserService.CurrentUserId
 
                                     select new
                                     {
