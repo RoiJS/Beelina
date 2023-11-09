@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
 {
@@ -7,6 +8,7 @@ namespace Beelina.LIB.Models
     {
         public string Name { get; set; }
         public string Address { get; set; }
+        public OutletTypeEnum? OutletType { get; set; }
         public int PaymentMethodId { get; set; }
         public int BarangayId { get; set; }
 

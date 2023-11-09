@@ -1,4 +1,6 @@
-﻿namespace Beelina.LIB.GraphQL.Types
+﻿using Beelina.LIB.Enums;
+
+namespace Beelina.LIB.GraphQL.Types
 {
     public class StoreInput
     {
@@ -7,5 +9,6 @@
         public string Address { get; set; }
         public PaymentMethodInput PaymentMethodInput { get; set; }
         public BarangayInput BarangayInput { get; set; }
+        public OutletTypeEnum? OutletType { get; set; }
     }
 }

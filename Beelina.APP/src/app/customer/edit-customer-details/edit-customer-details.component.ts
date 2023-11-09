@@ -53,6 +53,7 @@ export class EditCustomerDetailsComponent implements OnInit {
     this._customerForm = this.formBuilder.group({
       name: ['', Validators.required],
       address: ['', Validators.required],
+      outletType: [null],
       paymentMethod: ['', Validators.required],
       barangay: ['', Validators.required],
     });
@@ -74,6 +75,7 @@ export class EditCustomerDetailsComponent implements OnInit {
       .subscribe((customerStore: StoreInformationResult) => {
         this._customerForm.get('name').setValue(customerStore.name);
         this._customerForm.get('address').setValue(customerStore.address);
+        this._customerForm.get('outletType').setValue(customerStore.outletType);
         this._customerForm
           .get('paymentMethod')
           .setValue(customerStore.paymentMethod.name);
@@ -106,6 +108,7 @@ export class EditCustomerDetailsComponent implements OnInit {
     customerStore.id = this._storeId;
     customerStore.name = this._customerForm.get('name').value;
     customerStore.address = this._customerForm.get('address').value;
+    customerStore.outletType = this._customerForm.get('outletType').value;
     customerStore.paymentMethod.name =
       this._customerForm.get('paymentMethod').value;
     customerStore.barangay.name = this._customerForm.get('barangay').value;

@@ -138,6 +138,13 @@
         "LABEL": "Address",
         "HINT": "Please enter customer address"
       },
+      "OUTLET_TYPE_CONTROL": {
+        "LABEL": "Outlet Type",
+        "OPTIONS": {
+          "KEY_ACCOUNT": "Key Account",
+          "GEN_TRADE": "Gen Trade"
+        }
+      },
       "PAYMENT_METHOD_CONTROL": {
         "LABEL": "Payment Method",
         "HINT": "Please specify payment method"
@@ -170,6 +177,13 @@
       "PAYMENT_METHOD_CONTROL": {
         "LABEL": "Payment Method",
         "HINT": "Please specify payment method"
+      },
+      "OUTLET_TYPE_CONTROL": {
+        "LABEL": "Outlet Type",
+        "OPTIONS": {
+          "KEY_ACCOUNT": "Key Account",
+          "GEN_TRADE": "Gen Trade"
+        }
       },
       "BARANGAY_CONTROL": {
         "LABEL": "Barangay/Branch",
