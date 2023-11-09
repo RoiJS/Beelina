@@ -1,4 +1,5 @@
 using Beelina.LIB.BusinessLogic;
+using Beelina.LIB.Enums;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using OfficeOpenXml;
@@ -43,6 +44,8 @@ namespace Beelina.LIB.Models.Reports
                     OrderReceived = row.Field<DateTime>("OrderReceived"),
                     SalesAgentName = row.Field<string>("SalesAgentName"),
                     AreaCovered = row.Field<string>("AreaCovered"),
+                    PaymentMethod = row.Field<string>("PaymentMethod"),
+                    OutletType = row.Field<int>("OutletType"),
                     DateCreated = row.Field<DateTime>("DateCreated"),
                 }).ToList()
             };
@@ -70,6 +73,8 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"E{cellNumber}"].Style.Numberformat.Format = "yyyy-MM-dd";
                     worksheet.Cells[$"F{cellNumber}"].Value = item.SalesAgentName;
                     worksheet.Cells[$"G{cellNumber}"].Value = item.AreaCovered;
+                    worksheet.Cells[$"H{cellNumber}"].Value = item.OutletTypeName;
+                    worksheet.Cells[$"I{cellNumber}"].Value = item.PaymentMethod;
                     // worksheet.Cells[$"I{cellNumber}"].Value = item.DateCreated;
                     // worksheet.Cells[$"I{cellNumber}"].Style.Numberformat.Format = "yyyy-MM-dd";
                     cellNumber++;
@@ -127,8 +132,18 @@ namespace Beelina.LIB.Models.Reports
         public string StoreAddress { get; set; }
         public DateTime OrderReceived { get; set; }
         public string SalesAgentName { get; set; }
+        public int? OutletType { get; set; }
+        public string PaymentMethod { get; set; }
         public string AreaCovered { get; set; }
         public DateTime DateCreated { get; set; }
+
+        public string OutletTypeName
+        {
+            get
+            {
+                return OutletType != null ? Enum.GetName(typeof(OutletTypeEnum), OutletType) : String.Empty;
+            }
+        }
 
         public DailySummarizeTransactionsReportOutputList()
         {
