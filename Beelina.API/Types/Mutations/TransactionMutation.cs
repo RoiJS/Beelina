@@ -50,7 +50,6 @@ namespace Beelina.API.Types.Mutations
             {
                 foreach (var productTransaction in transactionInput.ProductTransactionInputs)
                 {
-                    // var productFromRepo = await productRepository.GetEntity(productTransaction.ProductId).ToObjectAsync();
                     var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productTransaction.ProductId, currentUserService.CurrentUserId);
 
                     if (productStockPerPanelFromRepo != null)
@@ -65,7 +64,6 @@ namespace Beelina.API.Types.Mutations
 
                 foreach (var deletedProductTransaction in deletedProductTransactions)
                 {
-                    // var productFromRepo = await productRepository.GetEntity(deletedProductTransaction.ProductId).ToObjectAsync();
                     var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(deletedProductTransaction.ProductId, currentUserService.CurrentUserId);
 
                     if (productStockPerPanelFromRepo != null)

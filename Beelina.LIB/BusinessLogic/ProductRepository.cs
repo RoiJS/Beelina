@@ -28,7 +28,7 @@ namespace Beelina.LIB.BusinessLogic
                                     from pu in productUnitJoin.DefaultIfEmpty()
 
                                     where p.IsDelete == false
-                                    
+
                                     select new Product
                                     {
                                         Id = p.Id,
@@ -36,7 +36,7 @@ namespace Beelina.LIB.BusinessLogic
                                         Code = p.Code,
                                         Description = p.Description,
                                         StockQuantity = (pp == null ? 0 : pp.StockQuantity),
-                                        PricePerUnit = p.PricePerUnit,
+                                        PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = pu
                                     });

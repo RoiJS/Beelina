@@ -89,7 +89,10 @@ namespace Beelina.API.Types.Query
       return insufficientProductQuantities;
     }
 
-    public async Task<List<ProductTransactionDto>> AnalyzeTextOrders([Service] IProductRepository<Product> productRepository,
+    public async Task<List<ProductTransactionDto>> AnalyzeTextOrders(
+      [Service] IProductRepository<Product> productRepository,
+      [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
+      [Service] ICurrentUserService currentUserService,
         string textOrders)
     {
 
@@ -107,15 +110,16 @@ namespace Beelina.API.Types.Query
             var productCode = textOrderLines[0].Trim();
             var productQuantity = Convert.ToInt32(textOrderLines[1].Trim());
             var productFromRepo = await productRepository.GetProductByCode(productCode);
+            var productPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productFromRepo.Id, currentUserService.CurrentUserId);
 
-            if (productFromRepo != null)
+            if (productFromRepo != null && productPerPanelFromRepo != null)
             {
               var productTransaction = new ProductTransactionDto
               {
                 Id = 0,
                 ProductId = productFromRepo.Id,
                 ProductName = productFromRepo.Name,
-                Price = productFromRepo.Price,
+                Price = productPerPanelFromRepo.Price,
                 Quantity = productQuantity,
                 CurrentQuantity = 0,
               };

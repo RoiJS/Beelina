@@ -35,6 +35,5 @@ namespace Beelina.LIB.BusinessLogic
 
             return productStockPerPanelFromRepo;
         }
-
     }
 }
