@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
+using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.AspNetCore.Authorization;
@@ -18,7 +19,25 @@ namespace Beelina.API.Types.Query
         [Authorize]
         public async Task<IUserAccountPayload> GetUserAccount([Service] IUserAccountRepository<UserAccount> userAccountRepository, [Service] IMapper mapper, int userId)
         {
-            var userAccountFromRepo = await userAccountRepository.GetEntity(userId).ToObjectAsync();
+            var userAccountFromRepo = await userAccountRepository
+                                        .GetEntity(userId)
+                                        .Includes(u => u.UserPermissions)
+                                        .ToObjectAsync();
+
+            var userAccountResult = mapper.Map<UserAccountInformationResult>(userAccountFromRepo);
+
+            if (userAccountFromRepo == null)
+            {
+                return new UserAccountNotExistsError();
+            }
+
+            return userAccountResult;
+        }
+
+        [Authorize]
+        public async Task<IUserAccountPayload> VerifyUserAccount([Service] IUserAccountRepository<UserAccount> userAccountRepository, [Service] IMapper mapper, LoginInput loginInput)
+        {
+            var userAccountFromRepo = await userAccountRepository.Login(loginInput.Username.ToLower(), loginInput.Password);
 
             var userAccountResult = mapper.Map<UserAccountInformationResult>(userAccountFromRepo);
 

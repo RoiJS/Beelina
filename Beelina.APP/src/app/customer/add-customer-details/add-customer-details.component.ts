@@ -127,10 +127,7 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
                     this.translateService.instant(
                       'ADD_CUSTOMER_DETAILS_PAGE.SAVE_NEW_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
                     ),
-                    this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                    {
-                      duration: 5000,
-                    }
+                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
                   );
                   this.store.dispatch(
                     CustomerStoresActions.setUpdateCustomerLoadingState({
@@ -146,9 +143,6 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
                       'ADD_CUSTOMER_DETAILS_PAGE.SAVE_NEW_CUSTOMER_DIALOG.ERROR_MESSAGE'
                     ),
                     this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                    {
-                      duration: 5000,
-                    }
                   );
 
                   this.store.dispatch(

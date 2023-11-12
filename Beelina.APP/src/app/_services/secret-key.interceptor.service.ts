@@ -32,8 +32,8 @@ export class SecretKeyInterceptorService implements HttpInterceptor {
       appSecretToken = this.forgotPasswordService.appSecretToken.getValue();
     }
 
-    if (this.storageService.hasKey('app-secret-token')) {
-      appSecretToken = this.storageService.getString('app-secret-token');
+    if (this.storageService.hasKey('appSecretToken')) {
+      appSecretToken = this.storageService.getString('appSecretToken');
     }
 
     const authReq = req.clone({

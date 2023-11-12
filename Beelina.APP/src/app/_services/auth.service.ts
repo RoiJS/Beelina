@@ -22,10 +22,13 @@ import { User } from '../_models/user.model';
 import { ModuleEnum } from '../_enum/module.enum';
 import { PermissionLevelEnum } from '../_enum/permission-level.enum';
 import { IUserAccountInput } from '../_interfaces/inputs/iuser-account.input';
+import { IUserPermissionInput } from '../_interfaces/inputs/iuser-permission.input';
 import { IUpdateAccountOutput } from '../_interfaces/outputs/iupdate-account.output';
 import { IUserAccountInformationQueryPayload } from '../_interfaces/payloads/iuser-account-information-query.payload';
 import { UserAccountNotExistsError } from '../_models/errors/user-account-not-exists.error';
 import { CheckUsernameInformationResult } from '../_models/results/check-usernamee-information-result';
+import { UserAccountInformationResult } from '../_models/results/user-account-information-result';
+import { UserModulePermission } from '../_models/user-module-permission';
 import * as LoginActions from '../auth/store/actions';
 
 const GET_CLIENT_INFORMATION_QUERY = gql`
@@ -117,6 +120,37 @@ const GET_USER_INFORMATION = gql`
         gender
         emailAddress
         username
+        userPermissions {
+          id
+          moduleId
+          permissionLevel
+        }
+      }
+
+      ... on UserAccountNotExistsError {
+        message
+      }
+    }
+  }
+`;
+
+const VERIFY_USER_ACCOUNT = gql`
+  query ($loginInput: LoginInput!) {
+    verifyUserAccount(loginInput: $loginInput) {
+      typename: __typename
+      ... on UserAccountInformationResult {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        emailAddress
+        username
+        userPermissions {
+          id
+          moduleId
+          permissionLevel
+        }
       }
 
       ... on UserAccountNotExistsError {
@@ -284,7 +318,10 @@ export class AuthService {
 
     this.storageService.remove('userData');
     this.storageService.remove('authToken');
-    this.storageService.remove('app-secret-token');
+    this.storageService.remove('company');
+    this.storageService.remove('appSecretToken');
+    this.storageService.remove('productTransactions');
+    this.storageService.remove('allowManageProductDetails');
 
     this.store.dispatch(LoginActions.reserLoginCredentials());
 
@@ -309,16 +346,13 @@ export class AuthService {
       emailAddress: user.emailAddress,
       username: user.username,
       newPassword: user.password,
-
-      // For now we will set this as default.
-      // Later we will allow introduce the possibility to manage
-      // user permissions per module.
-      userPermissions: [
-        {
-          moduleId: ModuleEnum.Retail,
-          permissionLevel: PermissionLevelEnum.Administrator,
-        },
-      ],
+      userModulePermissions: user.userPermissions.map((p) => {
+        return <IUserPermissionInput>{
+          id: p.id,
+          moduleId: p.moduleId,
+          permissionLevel: p.permissionLevel,
+        };
+      }),
     };
 
     return this.apollo
@@ -381,6 +415,63 @@ export class AuthService {
       );
   }
 
+  verifyUserAccount(username: string, password: string) {
+    const loginInput: ILoginInput = {
+      username,
+      password,
+    };
+    return this.apollo
+      .watchQuery({
+        query: VERIFY_USER_ACCOUNT,
+        variables: {
+          loginInput,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              verifyUserAccount: IUserAccountInformationQueryPayload;
+            }>
+          ) => {
+            const data = result.data.verifyUserAccount;
+            if (data.typename === 'UserAccountInformationResult') {
+              const user = new User();
+              const currentUser = <UserAccountInformationResult>(
+                result.data.verifyUserAccount
+              );
+              user.firstName = currentUser.firstName;
+              user.middleName = currentUser.middleName;
+              user.lastName = currentUser.lastName;
+              user.username = currentUser.username;
+              user.emailAddress = currentUser.emailAddress;
+
+              currentUser.userPermissions.forEach(
+                (permission: UserModulePermission) => {
+                  const userPermission = new UserModulePermission();
+                  userPermission.id = permission.id;
+                  userPermission.moduleId = permission.moduleId;
+                  userPermission.permissionLevel = permission.permissionLevel;
+                  user.userPermissions.push(userPermission);
+                }
+              );
+
+              return user;
+            }
+
+            if (data.typename === 'UserAccountNotExistsError')
+              throw new Error(
+                (<UserAccountNotExistsError>(
+                  result.data.verifyUserAccount
+                )).message
+              );
+
+            return null;
+          }
+        )
+      );
+  }
+
   autoLogin() {
     if (
       !this.storageService.hasKey('authToken') ||
@@ -402,6 +493,7 @@ export class AuthService {
       username: string;
       gender: GenderEnum;
       emailAddress: string;
+      userPermissions: Array<UserModulePermission>;
     } = JSON.parse(<string>this.storageService.getString('userData'));
 
     const tokenInfo = new AuthToken(
@@ -417,6 +509,7 @@ export class AuthService {
     loadedUser.username = user.username;
     loadedUser.gender = user.gender;
     loadedUser.emailAddress = user.emailAddress;
+    loadedUser.userPermissions.push(...user.userPermissions);
 
     if (tokenInfo.isAuth) {
       this._user.next(loadedUser);
@@ -468,6 +561,15 @@ export class AuthService {
     user.username = currentUser.username;
     user.gender = parseInt(currentUser.gender);
     user.emailAddress = currentUser.emailAddress;
+
+    // Keep user permission per module
+    // (1) Retail Module
+    if (currentUser.retailModulePrivilege) {
+      user.setModulePrivilege(
+        ModuleEnum.Retail,
+        <PermissionLevelEnum>currentUser.retailModulePrivilege.toUpperCase()
+      );
+    }
 
     this.storageService.storeString('authToken', JSON.stringify(authToken));
     this.storageService.storeString('userData', JSON.stringify(user));

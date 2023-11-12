@@ -140,10 +140,7 @@ export class EditCustomerDetailsComponent implements OnInit {
                     this.translateService.instant(
                       'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
                     ),
-                    this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                    {
-                      duration: 5000,
-                    }
+                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
                   );
 
                   this.store.dispatch(
@@ -160,9 +157,6 @@ export class EditCustomerDetailsComponent implements OnInit {
                       'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.ERROR_MESSAGE'
                     ),
                     this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                    {
-                      duration: 5000,
-                    }
                   );
                 },
               });

@@ -1,4 +1,7 @@
-<app-tool-bar [title]="'GENERAL_TEXTS.BEELINA' | translate">
+<app-tool-bar
+  [title]="'GENERAL_TEXTS.BEELINA' | translate"
+  [showBackButton]="false"
+>
   <button mat-icon-button class="toolbar-option" (click)="saveProfile()">
     <mat-icon>save</mat-icon>
   </button>

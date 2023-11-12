@@ -341,6 +341,15 @@
       "CONFIRM": "Are you sure to delete selected product?",
       "SUCCESS_MESSAGE": "Selected product has been successfully removed.",
       "ERROR_MESSAGE": "Removing product failed. Please again later."
+    },
+    "MANAGE_PRODUCT_DETAILS": {
+      "ACTIVATE_MANAGE_PRODUCT_DETAILS": "Activate Manage Product",
+      "DEACTIVATE_MANAGE_PRODUCT_DETAILS": "Deactivate Manage Product"
+    },
+    "ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG": {
+      "SUCCESS_MESSAGE": "Manage product details has been successfully activated.",
+      "INVALID_USER_PRIVILEGE_MESSAGE": "User does not have privilege to activate manage product details.",
+      "ERROR_MESSAGE": "Invalid user account! Activating manage product details failed. Please again later."
     }
   },
 
@@ -516,5 +525,9 @@
       "SUCCESS_MESSAGE": "New updates has been saved!",
       "ERROR_MESSAGE": "Updating profile failed. Please again later."
     }
+  },
+
+  "ACCOUNT_VERIFICATION_DIALOG": {
+    "TITLE": "Management Account Verification"
   }
 }

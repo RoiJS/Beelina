@@ -12,6 +12,7 @@ using HotChocolate.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 
@@ -48,7 +49,10 @@ namespace Beelina.API.Types.Mutations
             UserAccountInput userAccountForUpdateInput
             )
         {
-            var userAccountFromRepo = await userAccountRepository.GetEntity(userAccountForUpdateInput.Id).ToObjectAsync();
+            var userAccountFromRepo = await userAccountRepository
+                        .GetEntity(userAccountForUpdateInput.Id)
+                        .Includes(u => u.UserPermissions)
+                        .ToObjectAsync();
 
             if (userAccountFromRepo == null)
                 throw new UserAccountNotExistsException();
@@ -111,7 +115,10 @@ namespace Beelina.API.Types.Mutations
 
             var userFromRepo = await userAccountRepository
                     .GetEntity(userId)
-                    .Includes(a => a.RefreshTokens)
+                    .Includes(
+                        a => a.RefreshTokens,
+                        a => a.UserPermissions
+                    )
                     .ToObjectAsync();
 
             if (userFromRepo == null)
@@ -145,17 +152,23 @@ namespace Beelina.API.Types.Mutations
 
         private string GenerateAccessToken(IOptions<ApplicationSettings> appSettings, UserAccount user)
         {
-            var claims = new[] {
-                new Claim (ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim (ClaimTypes.Name, user.Username),
-                new Claim (BeelinaClaimTypes.FirstName, user.FirstName),
-                new Claim (BeelinaClaimTypes.MiddleName, user.MiddleName),
-                new Claim (BeelinaClaimTypes.LastName, user.LastName),
-                new Claim (BeelinaClaimTypes.Gender, ((int)user.Gender).ToString()),
-                new Claim (BeelinaClaimTypes.Username, user.Username),
-                new Claim (BeelinaClaimTypes.EmailAddress, user.EmailAddress),
-                new Claim (BeelinaClaimTypes.UserType, ((int)PermissionLevelEnum.Administrator).ToString()),
+            var retailModulePrivilege = user.UserPermissions.Where(u => u.ModuleId == ModulesEnum.Retail).FirstOrDefault();
+
+            var claims = new List<Claim> {
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new (ClaimTypes.Name, user.Username),
+                new (BeelinaClaimTypes.FirstName, user.FirstName),
+                new (BeelinaClaimTypes.MiddleName, user.MiddleName),
+                new (BeelinaClaimTypes.LastName, user.LastName),
+                new (BeelinaClaimTypes.Gender, ((int)user.Gender).ToString()),
+                new (BeelinaClaimTypes.Username, user.Username),
+                new (BeelinaClaimTypes.EmailAddress, user.EmailAddress),
             };
+
+            if (retailModulePrivilege is not null)
+            {
+                claims.Add(new(BeelinaClaimTypes.RetailModulePrivilege, Enum.GetName(typeof(PermissionLevelEnum), retailModulePrivilege.PermissionLevel) ?? String.Empty));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Value.GeneralSettings.Token));
 

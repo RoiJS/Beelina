@@ -16,13 +16,14 @@ import * as ProductActions from './../store/actions';
 
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-add-to-cart-product',
   templateUrl: './add-to-cart-product.component.html',
   styleUrls: ['./add-to-cart-product.component.scss'],
 })
-export class AddToCartProductComponent implements OnInit {
+export class AddToCartProductComponent extends BaseComponent implements OnInit {
   private _product: Product;
   private _productTransaction: ProductTransaction;
   private _itemCounterForm: FormGroup;
@@ -39,15 +40,18 @@ export class AddToCartProductComponent implements OnInit {
     private store: Store<AppStateInterface>,
     private productService: ProductService
   ) {
+    super();
     this._productTransactions = data.productTransactions;
 
     this._itemCounterForm = this.formBuilder.group({
       itemCounter: [0, Validators.maxLength(100)],
     });
 
+    this._isLoading = true;
     this.productService
       .getProduct(data.productId)
       .subscribe((result: ProductInformationResult) => {
+        this._isLoading = false;
         this._product = new Product();
         this._product.id = result.id;
         this._product.code = result.code;
@@ -115,41 +119,6 @@ export class AddToCartProductComponent implements OnInit {
         productId: this._product.id,
       })
     );
-  }
-
-  getProductPhoto(name: string) {
-    const products = [
-      {
-        name: 'Absolute Drinking Water',
-        url: '../../../assets/products/AbsoluteDrinkingWater.jpg',
-      },
-      {
-        name: 'Datu Puti Vinegar',
-        url: '../../../assets/products/DatuPutiVinegar.jpg',
-      },
-      {
-        name: 'Lucky Me Chicken Noodles',
-        url: '../../../assets/products/LuckyMeChickenNoodles.jpg',
-      },
-      {
-        name: 'Mega Sardines Green',
-        url: '../../../assets/products/MegaSardinesGreen.jpg',
-      },
-      {
-        name: 'Mega Sardines Red',
-        url: '../../../assets/products/MegaSardinesRed.jpg',
-      },
-      {
-        name: 'Piattos',
-        url: '../../../assets/products/Piattos.jpg',
-      },
-    ];
-
-    const photo =
-      products.find((p) => p.name === name)?.url ||
-      '../../assets/icons/box-product.png';
-
-    return photo;
   }
 
   get product(): Product {

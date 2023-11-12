@@ -19,6 +19,6 @@ namespace Beelina.LIB.GraphQL.Types
 
         public string NewPassword { get; set; }
 
-        public List<UserPermissionInput> UserPermissions { get; set; }
+        public List<UserPermissionInput> UserModulePermissions { get; set; }
     }
 }

@@ -2,9 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import {
+  MatBottomSheet,
+  MatBottomSheetRef,
+} from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
@@ -27,6 +30,14 @@ import { isLoadingSelector } from './store/selectors';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { BaseComponent } from '../shared/components/base-component/base.component';
+import { AuthService } from '../_services/auth.service';
+import { User } from '../_models/user.model';
+import { ModuleEnum } from '../_enum/module.enum';
+import {
+  PermissionLevelEnum,
+  getPermissionLevelEnum,
+} from '../_enum/permission-level.enum';
+import { AccountVerificationComponent } from '../shared/account-verification/account-verification.component';
 
 @Component({
   selector: 'app-product',
@@ -42,9 +53,12 @@ export class ProductComponent
   private _productTransactions: Array<ProductTransaction>;
   private _transactionId: number;
   private _subscription: Subscription = new Subscription();
+  private _allowManageProductDetails = false;
+  private _dialogRef: MatBottomSheetRef<AccountVerificationComponent>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private authService: AuthService,
     private dialogService: DialogService,
     private bottomSheet: MatBottomSheet,
     private productService: ProductService,
@@ -58,6 +72,10 @@ export class ProductComponent
     this._transactionId =
       +this.activatedRoute.snapshot.paramMap.get('transactionId');
 
+    this._allowManageProductDetails = JSON.parse(
+      this.storageService.getString('allowManageProductDetails')
+    );
+
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
       ProductTransactionActions.initializeProductTransactions()
@@ -66,6 +84,7 @@ export class ProductComponent
     this._dataSource = new ProductDataSource(this.store);
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
+    this._currentUser = this.authService.user.value;
 
     this._subscription.add(
       this.store
@@ -88,6 +107,7 @@ export class ProductComponent
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+    this._dialogRef = null;
   }
 
   goToCart() {
@@ -116,10 +136,7 @@ export class ProductComponent
                 this.translateService.instant(
                   'PRODUCTS_CATALOGUE_PAGE.DELETE_PRODUCT_DIALOG.SUCCESS_MESSAGE'
                 ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
+                this.translateService.instant('GENERAL_TEXTS.CLOSE')
               );
               this.store.dispatch(ProductActions.resetProductState());
               this.store.dispatch(ProductActions.getProductsAction());
@@ -130,10 +147,7 @@ export class ProductComponent
                 this.translateService.instant(
                   'PRODUCTS_CATALOGUE_PAGE.DELETE_PRODUCT_DIALOG.ERROR_MESSAGE'
                 ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
+                this.translateService.instant('GENERAL_TEXTS.CLOSE')
               );
             },
           });
@@ -155,6 +169,70 @@ export class ProductComponent
     this.bottomSheet.open(TextOrderComponent);
   }
 
+  deactivateAllowManageProductDetailsDialog() {
+    this._allowManageProductDetails = false;
+    this.storageService.storeString(
+      'allowManageProductDetails',
+      JSON.stringify(this._allowManageProductDetails)
+    );
+  }
+
+  openAllowManageProductDetailsDialog() {
+    const defaultUsername = this.storageService.getString(
+      'allowManageProductDetailsDefaultUsername'
+    );
+    this._dialogRef = this.bottomSheet.open(AccountVerificationComponent, {
+      data: { defaultUsername },
+    });
+
+    this._dialogRef.afterDismissed().subscribe((data: User) => {
+      // We assume that if the returned value from the dialog is undefined,
+      // it means that the user just simplycanceled the dialog.
+      if (data === undefined) return;
+
+      if (data !== null) {
+        const retailModulePrivilege = data.getModulePrivilege(
+          ModuleEnum.Retail
+        );
+        if (
+          retailModulePrivilege &&
+          retailModulePrivilege >
+            getPermissionLevelEnum(PermissionLevelEnum.User)
+        ) {
+          this._allowManageProductDetails = true;
+          this.storageService.storeString(
+            'allowManageProductDetailsDefaultUsername',
+            data.username
+          );
+          this.storageService.storeString(
+            'allowManageProductDetails',
+            JSON.stringify(this._allowManageProductDetails)
+          );
+          this.snackBarService.open(
+            this.translateService.instant(
+              'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.SUCCESS_MESSAGE'
+            ),
+            this.translateService.instant('GENERAL_TEXTS.CLOSE')
+          );
+        } else {
+          this.snackBarService.open(
+            this.translateService.instant(
+              'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.INVALID_USER_PRIVILEGE_MESSAGE'
+            ),
+            this.translateService.instant('GENERAL_TEXTS.CLOSE')
+          );
+        }
+      } else {
+        this.snackBarService.open(
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.ERROR_MESSAGE'
+          ),
+          this.translateService.instant('GENERAL_TEXTS.CLOSE')
+        );
+      }
+    });
+  }
+
   onSearch(filterKeyword: string) {
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
@@ -169,5 +247,13 @@ export class ProductComponent
 
   get dataSource(): ProductDataSource {
     return this._dataSource;
+  }
+
+  get currentUserPermission(): number {
+    return this.modulePrivilege(ModuleEnum.Retail);
+  }
+
+  get allowManageProductDetails(): boolean {
+    return this._allowManageProductDetails;
   }
 }

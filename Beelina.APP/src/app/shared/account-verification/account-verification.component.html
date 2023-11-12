@@ -1,0 +1,37 @@
+<div class="dialog-form-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "ACCOUNT_VERIFICATION_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div
+    class="dialog-form-container__body"
+    [formGroup]="accountVerificationForm"
+  >
+    <mat-form-field appearance="fill">
+      <mat-label
+        >{{
+          "AUTH_PAGE.AUTH_FORM.USERNAME_FIELD.LABEL" | translate
+        }}:</mat-label
+      >
+      <input matInput type="text" formControlName="username" />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label
+        >{{
+          "AUTH_PAGE.AUTH_FORM.PASSWORD_FIELD.LABEL" | translate
+        }}:</mat-label
+      >
+      <input matInput type="password" formControlName="password" />
+    </mat-form-field>
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CLOSE" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

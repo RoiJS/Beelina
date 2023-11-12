@@ -314,9 +314,6 @@ export class ProductCartComponent
                     'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.SUCCESS_MESSAGE'
                   ),
                   this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
                 );
                 this.store.dispatch(
                   ProductTransactionActions.setSaveOrderLoadingState({
@@ -337,9 +334,6 @@ export class ProductCartComponent
                     'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.ERROR_MESSAGE'
                   ),
                   this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
                 );
 
                 this.store.dispatch(
@@ -415,9 +409,6 @@ export class ProductCartComponent
                             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
                           ),
                           this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                          {
-                            duration: 5000,
-                          }
                         );
                         this.store.dispatch(
                           ProductTransactionActions.setSaveOrderLoadingState({
@@ -442,9 +433,6 @@ export class ProductCartComponent
                             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
                           ),
                           this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                          {
-                            duration: 5000,
-                          }
                         );
 
                         this.store.dispatch(

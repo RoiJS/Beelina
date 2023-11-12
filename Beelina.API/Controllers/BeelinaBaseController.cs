@@ -15,13 +15,5 @@ namespace Beelina.API.Controllers
                 return Convert.ToInt32(User.Identity.GetUserClaim(ClaimTypes.NameIdentifier));
             }
         }
-
-        public UserTypeEnum CurrentUserType
-        {
-            get
-            {
-                return ((UserTypeEnum)Convert.ToInt32(User.Identity.GetUserClaim(BeelinaClaimTypes.UserType)));
-            }
-        }
     }
 }

@@ -17,6 +17,11 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
 import { ClientInformationResult } from '../_models/results/client-information-result.result';
 import { BaseComponent } from '../shared/components/base-component/base.component';
+import { ModuleEnum } from '../_enum/module.enum';
+import {
+  getPermissionLevelEnum,
+  PermissionLevelEnum,
+} from '../_enum/permission-level.enum';
 
 @Component({
   selector: 'app-auth-module',
@@ -56,10 +61,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
       this.authService.checkCompany(company).subscribe({
         next: (client: ClientInformationResult) => {
           this.storageService.storeString('company', client.name);
-          this.storageService.storeString(
-            'app-secret-token',
-            client.dBHashName
-          );
+          this.storageService.storeString('appSecretToken', client.dBHashName);
 
           const username = this.authForm.get('username').value;
           const password = this.authForm.get('password').value;
@@ -69,7 +71,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
           this.store.pipe(select(authCredentialsSelector)).subscribe((auth) => {
             this._isLoading = false;
             if (auth.accessToken) {
-              this.router.navigate(['/sales'], {
+              this.router.navigate([this.getDefaultLandingPage()], {
                 replaceUrl: true,
               });
             }
@@ -79,10 +81,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
             if (error) {
               this.snackBarService.open(
                 error,
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
+                this.translateService.instant('GENERAL_TEXTS.CLOSE')
               );
 
               console.error(error);
@@ -90,17 +89,31 @@ export class AuthComponent extends BaseComponent implements OnInit {
           });
         },
         error: (e: ClientNotExistsError) => {
+          this._isLoading = false;
           this.snackBarService.open(
             e.message,
-            this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-            {
-              duration: 5000,
-            }
+            this.translateService.instant('GENERAL_TEXTS.CLOSE')
           );
           console.error(e.message);
         },
       });
     }
+  }
+
+  // Get default landing page based on user permission.
+  // For now, we set default landing page as profile page for Managers and Administrators and
+  // sales page for user account with User Permission.
+  // We will revisit this later on to make this landing page configurable.
+  private getDefaultLandingPage() {
+    let defaultLandingPage = '/sales';
+    const userPermission = this.authService.user.value.getModulePrivilege(
+      ModuleEnum.Retail
+    );
+    if (userPermission > getPermissionLevelEnum(PermissionLevelEnum.User)) {
+      defaultLandingPage = '/profile';
+    }
+
+    return defaultLandingPage;
   }
 
   get authForm(): FormGroup {

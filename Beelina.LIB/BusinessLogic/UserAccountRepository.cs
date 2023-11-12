@@ -43,7 +43,10 @@ namespace Beelina.LIB.BusinessLogic
         {
             var account = await _beelinaRepository.ClientDbContext.UserAccounts
                 .Where(x => x.Username == username)
-                .Includes(a => a.RefreshTokens)
+                .Includes(
+                    a => a.RefreshTokens,
+                    a => a.UserPermissions
+                )
                 .FirstOrDefaultAsync();
 
             if (account == null)
