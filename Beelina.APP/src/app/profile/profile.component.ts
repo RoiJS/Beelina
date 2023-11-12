@@ -4,11 +4,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 import { UserAccountInformationResult } from '../_models/results/user-account-information-result';
+import { UserModulePermission } from '../_models/user-module-permission';
 import { User } from '../_models/user.model';
+import { AuthService } from '../_services/auth.service';
 import { UniqueUsernameValidator } from '../_validators/unique-username.validator';
 import { BaseComponent } from '../shared/components/base-component/base.component';
-import { AuthService } from '../_services/auth.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -17,6 +19,7 @@ import { DialogService } from '../shared/ui/dialog/dialog.service';
 })
 export class ProfileComponent extends BaseComponent implements OnInit {
   private _profileForm: FormGroup;
+  private _userDetails: User;
 
   constructor(
     private authService: AuthService,
@@ -63,6 +66,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
     this.authService
       .getUserInformation(userId)
       .subscribe((data: UserAccountInformationResult) => {
+        this._userDetails = data;
         this._profileForm.get('firstName').setValue(data.firstName);
         this._profileForm.get('middleName').setValue(data.middleName);
         this._profileForm.get('lastName').setValue(data.lastName);
@@ -73,10 +77,24 @@ export class ProfileComponent extends BaseComponent implements OnInit {
 
   ngOnInit() {}
 
+  profileHasChanged(): boolean {
+    return (
+      this._profileForm.get('firstName').value !==
+        this._userDetails.firstName ||
+      this._profileForm.get('middleName').value !==
+        this._userDetails.middleName ||
+      this._profileForm.get('lastName').value !== this._userDetails.lastName ||
+      this._profileForm.get('emailAddress').value !==
+        this._userDetails.emailAddress ||
+      this._profileForm.get('username').value !== this._userDetails.username ||
+      this._profileForm.get('newPassword').value !== ''
+    );
+  }
+
   saveProfile() {
     this._profileForm.markAllAsTouched();
 
-    if (this._profileForm.valid) {
+    if (this._profileForm.valid && this.profileHasChanged()) {
       const user = new User();
       user.id = this.authService.userId;
       user.firstName = this._profileForm.get('firstName').value;
@@ -85,6 +103,14 @@ export class ProfileComponent extends BaseComponent implements OnInit {
       user.emailAddress = this._profileForm.get('emailAddress').value;
       user.username = this._profileForm.get('username').value;
       user.password = this._profileForm.get('newPassword').value;
+
+      user.userPermissions = this._userDetails.userPermissions.map((p) => {
+        return <UserModulePermission>{
+          id: p.id,
+          moduleId: p.moduleId,
+          permissionLevel: p.permissionLevel,
+        };
+      });
 
       this.dialogService
         .openConfirmation(
@@ -98,17 +124,26 @@ export class ProfileComponent extends BaseComponent implements OnInit {
         .subscribe((result: boolean) => {
           if (result) {
             this._isLoading = true;
-            this.authService.updateAccountInformation(user).subscribe(() => {
-              this._isLoading = false;
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'PROFILE_PAGE.EDIT_PROFILE_DIALOG.SUCCESS_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
-              );
+            this.authService.updateAccountInformation(user).subscribe({
+              next: () => {
+                this._isLoading = false;
+                this._userDetails = user;
+                this.snackBarService.open(
+                  this.translateService.instant(
+                    'PROFILE_PAGE.EDIT_PROFILE_DIALOG.SUCCESS_MESSAGE'
+                  ),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
+                );
+              },
+              error: (error) => {
+                this._isLoading = false;
+                this.snackBarService.open(
+                  this.translateService.instant(
+                    'PROFILE_PAGE.EDIT_PROFILE_DIALOG.ERROR_MESSAGE'
+                  ),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
+                );
+              },
             });
           }
         });

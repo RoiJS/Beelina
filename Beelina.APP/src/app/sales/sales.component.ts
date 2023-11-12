@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import moment from 'moment';
+
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 
@@ -23,7 +24,7 @@ export enum DateFilterEnum {
 })
 export class SalesComponent extends BaseComponent implements OnInit {
   private _sales: number = 0;
-  private _currentFilterOption: DateFilterEnum = DateFilterEnum.Monthly;
+  private _currentFilterOption: DateFilterEnum = DateFilterEnum.Daily;
   private _weekOptions: Array<string>;
   private _monthOptions: Array<string> = [
     'January',

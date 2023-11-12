@@ -144,10 +144,7 @@ export class ReportDetailsComponent
                   this.translateService.instant(
                     'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
                   ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
                 );
               });
           }

@@ -23,11 +23,13 @@ import { ProductTransactionsEffects } from './add-to-cart-product/store/effects'
 
 import { CartGuard } from '../_guards/cart.guard';
 import { TextOrderComponent } from './text-order/text-order.component';
+import { AccountVerificationModule } from '../shared/account-verification/account-verification.module';
 
 @NgModule({
   imports: [
     SharedModule,
     ProductRoutingModule,
+    AccountVerificationModule,
     StoreModule.forFeature('barangays', BarangayReducers.reducers),
     StoreModule.forFeature('products', ProductReducers.reducers),
     StoreModule.forFeature('productUnits', ProductUnitReducers.reducers),

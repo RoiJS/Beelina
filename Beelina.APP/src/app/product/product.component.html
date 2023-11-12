@@ -22,6 +22,34 @@
       >shopping_cart</mat-icon
     >
   </button>
+  <mat-icon
+    matRipple
+    [matMenuTriggerFor]="menu"
+    *ngIf="currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)"
+    >more_vert</mat-icon
+  >
+  <mat-menu #menu="matMenu">
+    <button
+      mat-menu-item
+      (click)="openAllowManageProductDetailsDialog()"
+      *ngIf="!allowManageProductDetails"
+    >
+      {{
+        "PRODUCTS_CATALOGUE_PAGE.MANAGE_PRODUCT_DETAILS.ACTIVATE_MANAGE_PRODUCT_DETAILS"
+          | translate
+      }}
+    </button>
+    <button
+      mat-menu-item
+      (click)="deactivateAllowManageProductDetailsDialog()"
+      *ngIf="allowManageProductDetails"
+    >
+      {{
+        "PRODUCTS_CATALOGUE_PAGE.MANAGE_PRODUCT_DETAILS.DEACTIVATE_MANAGE_PRODUCT_DETAILS"
+          | translate
+      }}
+    </button>
+  </mat-menu>
 </app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
@@ -32,7 +60,6 @@
         "PRODUCTS_CATALOGUE_PAGE.DESCRIPTION" | translate
       }}</span>
     </div>
-
     <app-search-field
       (onSearch)="onSearch($event)"
       [placeHolderTextIdentifier]="
@@ -52,7 +79,10 @@
         <div *cdkVirtualFor="let item of dataSource">
           <app-product-card-item
             [productItem]="item"
-            [allowManageItem]="true"
+            [allowManageItem]="
+              currentUserPermission > getPermissionLevel(permissionLevelEnum.User) ||
+              allowManageProductDetails
+            "
             (editItem)="editProduct($event)"
             (deleteItem)="deleteProduct($event)"
             (addItem)="addItemToCart($event)"
@@ -63,6 +93,10 @@
   </div>
 
   <app-floating-button
+    *ngIf="
+      currentUserPermission > getPermissionLevel(permissionLevelEnum.User) ||
+      allowManageProductDetails
+    "
     (tapButton)="addProduct()"
     [icon]="'add'"
   ></app-floating-button>

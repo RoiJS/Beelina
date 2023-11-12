@@ -20,6 +20,7 @@ import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { UIService } from './_services/ui.service';
+import { ModuleEnum } from './_enum/module.enum';
 
 @Component({
   selector: 'app-root',
@@ -46,11 +47,17 @@ export class AppComponent
     protected override uiService: UIService
   ) {
     super(uiService);
-    this.menuDataSource.data = this.sideDrawerService.mainMenu;
     this.translateService.setDefaultLang('en');
   }
 
   override ngOnInit(): void {
+    this.authService.user.subscribe((user) => {
+      this.sideDrawerService.setCurrentUserPrivileges(
+        user?.getModulePrivilege(ModuleEnum.Retail)
+      );
+      this.menuDataSource.data = this.sideDrawerService.getMenus();
+    });
+
     this.initRouterEvents();
   }
 

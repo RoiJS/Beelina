@@ -144,10 +144,7 @@ export class EditProductDetailsComponent implements OnInit {
                   this.translateService.instant(
                     'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.SUCCESS_MESSAGE'
                   ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
                 );
                 this.store.dispatch(
                   ProductActions.setUpdateProductLoadingState({
@@ -162,10 +159,7 @@ export class EditProductDetailsComponent implements OnInit {
                   this.translateService.instant(
                     'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.ERROR_MESSAGE'
                   ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
                 );
 
                 this.store.dispatch(

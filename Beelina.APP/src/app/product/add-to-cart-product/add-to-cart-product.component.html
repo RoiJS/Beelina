@@ -4,46 +4,48 @@
     <mat-icon (click)="onCancel()">cancel</mat-icon>
   </div>
   <div class="add-to-cart-container__body">
-    <div class="product-information-container">
-      <div class="product-information-container__image-section">
-        <img [src]="getProductPhoto(product?.name)" />
+    <app-loader-layout [busy]="isLoading">
+      <div class="product-information-container">
+        <div class="product-information-container__image-section">
+          <img [src]="getProductPhoto(product?.name)" />
+        </div>
+        <div class="product-information-container__details">
+          <span class="product-name">{{ product?.name }}</span>
+          <span class="product-description">{{ product?.description }}</span>
+          <span class="product-price">
+            <span>{{ product?.priceFormatted }}</span
+            ><br />
+            <span>per {{ product?.productUnit.name }}</span></span
+          >
+          <span class="product-stock"
+            >{{
+              "ADD_TO_CART_PAGE.PRODUCT_INFORMATION_CONTAINER.STOCK_LEFT"
+                | translate
+            }}: {{ product?.stockQuantity }}</span
+          >
+        </div>
       </div>
-      <div class="product-information-container__details">
-        <span class="product-name">{{ product?.name }}</span>
-        <span class="product-description">{{ product?.description }}</span>
-        <span class="product-price">
-          <span>{{ product?.priceFormatted }}</span
-          ><br />
-          <span>per {{ product?.productUnit.name }}</span></span
+      <div class="product-item-options-container">
+        <div
+          class="product-item-options-container__options"
+          [formGroup]="itemCounterForm"
         >
-        <span class="product-stock"
-          >{{
-            "ADD_TO_CART_PAGE.PRODUCT_INFORMATION_CONTAINER.STOCK_LEFT"
-              | translate
-          }}: {{ product?.stockQuantity }}</span
-        >
+          <button mat-fab color="default" (click)="deductItem()">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+          <input
+            type="number"
+            class="stock-number-input"
+            readonly
+            max="100"
+            formControlName="itemCounter"
+          />
+          <button mat-fab color="primary" (click)="addItem()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </div>
-    </div>
-    <div class="product-item-options-container">
-      <div
-        class="product-item-options-container__options"
-        [formGroup]="itemCounterForm"
-      >
-        <button mat-fab color="default" (click)="deductItem()">
-          <mat-icon>remove_circle_outline</mat-icon>
-        </button>
-        <input
-          type="number"
-          class="stock-number-input"
-          readonly
-          max="100"
-          formControlName="itemCounter"
-        />
-        <button mat-fab color="primary" (click)="addItem()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-    </div>
+    </app-loader-layout>
   </div>
   <div class="add-to-cart-container__footer">
     <div class="button-container">
