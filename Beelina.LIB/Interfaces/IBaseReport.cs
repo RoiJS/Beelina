@@ -1,5 +1,5 @@
 using System.Data;
-using Beelina.LIB.Models.Reports;
+using Beelina.LIB.Models;
 
 namespace Beelina.LIB.Interfaces
 {

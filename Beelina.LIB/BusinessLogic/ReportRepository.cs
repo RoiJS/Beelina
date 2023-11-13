@@ -42,6 +42,7 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<IList<Report>> GetAllReports()
         {
+            // TODO: Only show reports that the user has access to based on permissions level on retail module.
             var reportsFromRepo = await GetAllEntities().ToListObjectAsync();
             return reportsFromRepo;
         }
