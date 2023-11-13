@@ -24,48 +24,59 @@ export class SidedrawerService {
       PermissionLevelEnum.User
     );
 
+    const administratorPermissionLevel = getPermissionLevelEnum(
+      PermissionLevelEnum.Administrator
+    );
+
     const availableMenus = [
       {
         name: 'MAIN_MENU.SALES',
         url: '/sales',
         icon: 'monetization_on',
         minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.TOP_PRODUCTS',
         url: '/product-catalogue/top-products',
         icon: 'trending_up',
         minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.PRODUCTS_CATALOGUE',
         url: '/product-catalogue/product-list',
         icon: 'add_shopping_cart',
         minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.TRANSACTION_HISTORY',
         url: '/transaction-history',
         icon: 'history',
         minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.DRAFT_TRANSACTIONS',
         url: '/draft-transactions',
         icon: 'archive',
         minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.BARANGAYS',
         url: '/barangays',
         icon: 'place',
         minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.REPORTS',
         url: '/reports',
         icon: 'bar_chart',
         minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.PROFILE',
@@ -80,13 +91,14 @@ export class SidedrawerService {
     ];
 
     // Filter menu based on the current user permission level on the Retail module.
-    // The way in works now, is that if the user has a permission level of 'User', then all the menus will be shown.
-    // If the user has a permission level of 'Manager' or 'Administrator', then only Profile menu will be shown.
+    // The way in works now, is that if the user has a permission level of 'User' or 'Administrator', then all the menus will be shown.
+    // If the user has a permission level of 'Manager', then only Profile menu will be shown.
     // We will later revisit this in the future to properly show menus based on the user's permission level.
     this.mainMenu = availableMenus.filter(
       (m) =>
-        !m.minimumPermissionLevel ||
-        m.minimumPermissionLevel === this._currentUserPermissionLevel
+        (!m.minimumPermissionLevel && !m.maximumPermissionLevel) ||
+        m.minimumPermissionLevel === this._currentUserPermissionLevel ||
+        m.maximumPermissionLevel === this._currentUserPermissionLevel
     );
     return this.mainMenu;
   }

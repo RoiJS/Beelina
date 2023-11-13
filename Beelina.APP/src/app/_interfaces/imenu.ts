@@ -7,4 +7,5 @@ export interface IMenu {
   fragment?: string;
   children?: IMenu[];
   minimumPermissionLevel?: number;
+  maximumPermissionLevel?: number;
 }

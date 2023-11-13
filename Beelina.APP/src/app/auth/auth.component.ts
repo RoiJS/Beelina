@@ -101,15 +101,17 @@ export class AuthComponent extends BaseComponent implements OnInit {
   }
 
   // Get default landing page based on user permission.
-  // For now, we set default landing page as profile page for Managers and Administrators and
-  // sales page for user account with User Permission.
+  // For now, we set default landing page as profile page for Managers and
+  // sales page for user account with User or Administrator Permission.
   // We will revisit this later on to make this landing page configurable.
   private getDefaultLandingPage() {
     let defaultLandingPage = '/sales';
     const userPermission = this.authService.user.value.getModulePrivilege(
       ModuleEnum.Retail
     );
-    if (userPermission > getPermissionLevelEnum(PermissionLevelEnum.User)) {
+    if (
+      userPermission === getPermissionLevelEnum(PermissionLevelEnum.Manager)
+    ) {
       defaultLandingPage = '/profile';
     }
 
