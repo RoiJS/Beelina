@@ -133,21 +133,32 @@ export class ReportDetailsComponent
             'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.CONFIRM'
           )
         )
-        .subscribe((result: ButtonOptions) => {
-          if (result === ButtonOptions.YES) {
-            this._isLoading = true;
-            this.reportService
-              .generateReport(this._reportId, selectedValues)
-              .subscribe(() => {
-                this._isLoading = false;
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
-              });
-          }
+        .subscribe({
+          next: (result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
+              this._isLoading = true;
+              this.reportService
+                .generateReport(this._reportId, selectedValues)
+                .subscribe(() => {
+                  this._isLoading = false;
+                  this.snackBarService.open(
+                    this.translateService.instant(
+                      'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
+                    ),
+                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
+                  );
+                });
+            }
+          },
+          error: () => {
+            this._isLoading = false;
+            this.snackBarService.open(
+              this.translateService.instant(
+                'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
+              ),
+              this.translateService.instant('GENERAL_TEXTS.CLOSE')
+            );
+          },
         });
     }
   }

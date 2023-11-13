@@ -449,7 +449,9 @@
     "DESCRIPTION": "This page contains the list of different type of reports that user can use for data analysis.",
     "REPORTS_INFORMATION": {
       "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_NAME": "Daily Summarize Transactions",
-      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "This report can generate a summary of transactions on a given date. This helps user to analyze and gives an insight of their daily transactions."
+      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "This report can generate a summary of confirmed transactions on a given date. This helps user to analyze and gives an insight of their daily transactions.",
+      "DAILY_DETAILED_TRANSACTIONS_REPORT_NAME": "Daily Detailed Transactions",
+      "DAILY_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate detailed transactions on a given date. This presents transactions in an itemized manner where user can analyze purchased item per transactions. Take note that it only extract details from confirmed transactions."
     }
   },
 
@@ -478,7 +480,7 @@
       "TITLE": "Generate Report",
       "CONFIRM": "This will generate report in an excel file format and will be sent to your email address. Do you want to  proceeed?",
       "SUCCESS_MESSAGE": "Report has been successfully generated. The report will be sent to your email. Please check your email. Thank you!",
-      "ERROR_MESSAGE": "Generating report failed. Please try again later."
+      "ERROR_MESSAGE": "Failed to generate report file. Please try again later."
     }
   },
 

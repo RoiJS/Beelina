@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations.BeelinaData
 {
     [DbContext(typeof(BeelinaDataContext))]
-    partial class BeelinaDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231113063826_UpdatesOnReportParametersReportControlIdColumnIndex")]
+    partial class UpdatesOnReportParametersReportControlIdColumnIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,7 +85,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients", (string)null);
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GeneralInformation", b =>
@@ -117,7 +119,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeneralInformations", (string)null);
+                    b.ToTable("GeneralInformations");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>
@@ -162,7 +164,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("GlobalErrorLogs", (string)null);
+                    b.ToTable("GlobalErrorLogs");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Report", b =>
@@ -214,7 +216,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControl", b =>
@@ -254,7 +256,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportControls", (string)null);
+                    b.ToTable("ReportControls");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControlsRelation", b =>
@@ -301,7 +303,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportControlsRelations", (string)null);
+                    b.ToTable("ReportControlsRelations");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportParameter", b =>
@@ -344,7 +346,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.HasIndex("ReportControlId")
                         .IsUnique();
 
-                    b.ToTable("ReportParameters", (string)null);
+                    b.ToTable("ReportParameters");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>

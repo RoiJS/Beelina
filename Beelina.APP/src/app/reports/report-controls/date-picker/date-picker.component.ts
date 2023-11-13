@@ -19,7 +19,7 @@ export class DatePickerComponent
     super();
 
     this._form = this.formBuilder.group({
-      date: [null, [Validators.required]],
+      date: [new Date(), [Validators.required]],
     });
   }
 

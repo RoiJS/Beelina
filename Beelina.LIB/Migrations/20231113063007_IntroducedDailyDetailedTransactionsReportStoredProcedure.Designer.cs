@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations
 {
     [DbContext(typeof(BeelinaClientDataContext))]
-    partial class BeelinaClientDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231113063007_IntroducedDailyDetailedTransactionsReportStoredProcedure")]
+    partial class IntroducedDailyDetailedTransactionsReportStoredProcedure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,7 +58,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Barangays", (string)null);
+                    b.ToTable("Barangays");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.PaymentMethod", b =>
@@ -90,7 +92,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentMethods", (string)null);
+                    b.ToTable("PaymentMethods");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
@@ -161,7 +163,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockPerPanel", b =>
@@ -228,7 +230,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("ProductStockPerPanels", (string)null);
+                    b.ToTable("ProductStockPerPanels");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
@@ -298,7 +300,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductTransactions", (string)null);
+                    b.ToTable("ProductTransactions");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductUnit", b =>
@@ -335,7 +337,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductUnits", (string)null);
+                    b.ToTable("ProductUnits");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -377,7 +379,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -447,7 +449,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Stores", (string)null);
+                    b.ToTable("Stores");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
@@ -509,7 +511,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserAccount", b =>
@@ -587,7 +589,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("UserAccounts", (string)null);
+                    b.ToTable("UserAccounts");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserPermission", b =>
@@ -629,7 +631,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserPermission", (string)null);
+                    b.ToTable("UserPermission");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>

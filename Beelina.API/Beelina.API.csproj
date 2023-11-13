@@ -41,6 +41,9 @@
     <None Update="Templates\ReportsTemplates\DailySummarizeTransactionsReport_Template.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\ReportTemplates\DailyDetailedTransactionsReport_Template.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\ReportTemplates\DailySummarizeTransactionsReport_Template.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

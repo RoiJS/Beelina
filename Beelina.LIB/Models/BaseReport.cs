@@ -118,9 +118,20 @@ namespace Beelina.LIB.Models
                 );
         }
 
-        protected virtual string GenerateReportEmailContent()
+        protected string GenerateReportEmailContent()
         {
-            throw new NotImplementedException();
+            var template = "";
+            var reportName = Report.ReportClass.AddSpacesToPascal();
+
+            using (var rdFile = new StreamReader(String.Format("{0}/{1}/EmailNotificationReportGeneration.html", AppDomain.CurrentDomain.BaseDirectory, BaseEmailTemplatePath)))
+            {
+                template = rdFile.ReadToEnd();
+            }
+
+            template = template.Replace("#customername", UserFullName);
+            template = template.Replace("#reportname", reportName);
+
+            return template;
         }
     }
 
