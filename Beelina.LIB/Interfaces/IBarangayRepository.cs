@@ -6,5 +6,6 @@ namespace Beelina.LIB.Interfaces
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
         Task<Barangay> GetBarangayByName(string name);
+        Task<List<Barangay>> GetBarangays(int currentUserId);
     }
 }

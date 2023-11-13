@@ -11,23 +11,20 @@ namespace Beelina.API.Types.Query
         [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
         [UseProjection]
         [UseFiltering]
-        public async Task<IList<Barangay>> GetBarangays([Service] IBarangayRepository<Barangay> barangayRepository)
+        public async Task<IList<Barangay>> GetBarangays([Service] IBarangayRepository<Barangay> barangayRepository, [Service] ICurrentUserService currentUserService)
         {
-            return await GetBarangaysAsync(barangayRepository);
+            return await GetBarangaysAsync(barangayRepository, currentUserService.CurrentUserId);
         }
 
         [Authorize]
-        public async Task<IList<Barangay>> GetAllBarangays([Service] IBarangayRepository<Barangay> barangayRepository)
+        public async Task<IList<Barangay>> GetAllBarangays([Service] IBarangayRepository<Barangay> barangayRepository, [Service] ICurrentUserService currentUserService)
         {
-            return await GetBarangaysAsync(barangayRepository);
+            return await GetBarangaysAsync(barangayRepository, currentUserService.CurrentUserId);
         }
 
-        private async Task<IList<Barangay>> GetBarangaysAsync(IBarangayRepository<Barangay> barangayRepository)
+        private async Task<IList<Barangay>> GetBarangaysAsync(IBarangayRepository<Barangay> barangayRepository, int currentUserId)
         {
-            return await barangayRepository
-                .GetAllEntities()
-                .Includes(b => b.Stores.Where(s => !s.IsDelete))
-                .ToListObjectAsync();
+            return await barangayRepository.GetBarangays(currentUserId);
         }
     }
 }
