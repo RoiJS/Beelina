@@ -346,7 +346,7 @@ export class AuthService {
       emailAddress: user.emailAddress,
       username: user.username,
       newPassword: user.password,
-      userModulePermissions: user.userPermissions.map((p) => {
+      userPermissions: user.userPermissions.map((p) => {
         return <IUserPermissionInput>{
           id: p.id,
           moduleId: p.moduleId,

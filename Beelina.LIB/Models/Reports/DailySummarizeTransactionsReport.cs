@@ -26,6 +26,8 @@ namespace Beelina.LIB.Models.Reports
         {
             var reportOutputDataSet = GenerateReportData();
 
+            if (reportOutputDataSet.Tables.Count == 0) return this;
+
             var reportOutput = new DailySummarizeTransactionsReportOutput
             {
                 HeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new DailySummarizeTransactionsReportOutputHeader
@@ -38,7 +40,6 @@ namespace Beelina.LIB.Models.Reports
                 ListOutput = reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new DailySummarizeTransactionsReportOutputList
                 {
                     Collectibles = row.Field<decimal>("Collectibles"),
-                    // DueCollectibles = row.Field<DateTime>("DueCollectibles"),
                     StoreName = row.Field<string>("StoreName"),
                     StoreAddress = row.Field<string>("StoreAddress"),
                     OrderReceived = row.Field<DateTime>("OrderReceived"),

@@ -63,9 +63,10 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"D{cellNumber}"].Value = item.SalesAgentName;
                     worksheet.Cells[$"E{cellNumber}"].Value = item.AreaCovered;
                     worksheet.Cells[$"F{cellNumber}"].Value = item.OutletTypeName;
-                    worksheet.Cells[$"H{cellNumber}"].Value = item.PaymentMethod;
-                    worksheet.Cells[$"I{cellNumber}"].Value = item.ItemCode;
-                    worksheet.Cells[$"J{cellNumber}"].Value = item.ItemName;
+                    worksheet.Cells[$"G{cellNumber}"].Value = item.PaymentMethod;
+                    worksheet.Cells[$"H{cellNumber}"].Value = item.ItemCode;
+                    worksheet.Cells[$"I{cellNumber}"].Value = item.ItemName;
+                    worksheet.Cells[$"J{cellNumber}"].Value = item.PricePerUnit;
                     worksheet.Cells[$"K{cellNumber}"].Value = item.Quantity;
                     worksheet.Cells[$"L{cellNumber}"].Value = item.Amount;
                     worksheet.Cells[$"M{cellNumber}"].Value = item.StatusName;

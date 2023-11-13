@@ -10,5 +10,5 @@ export interface IUserAccountInput {
   emailAddress: string;
   username: string;
   newPassword: string;
-  userModulePermissions: IUserPermissionInput[];
+  userPermissions: IUserPermissionInput[];
 }
