@@ -17,5 +17,17 @@ namespace Beelina.LIB.BusinessLogic
             var barangay = await _beelinaRepository.ClientDbContext.Barangays.Where(p => p.Name == name).FirstOrDefaultAsync();
             return barangay;
         }
+
+        public async Task<List<Barangay>> GetBarangays(int currentUserId)
+        {
+            var barangaysFromRepo = await _beelinaRepository
+                    .ClientDbContext
+                    .Barangays
+                    .Where(b => b.UserAccountId == currentUserId && !b.IsDelete)
+                    .Include(b => b.Stores.Where(s => !s.IsDelete))
+                    .ToListAsync();
+
+            return barangaysFromRepo;
+        }
     }
 }

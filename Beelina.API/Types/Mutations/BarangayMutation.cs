@@ -12,13 +12,17 @@ namespace Beelina.API.Types.Mutations
     public class BarangayMutation
     {
         [Authorize]
-        public async Task<Barangay> UpdateBarangay([Service] IBarangayRepository<Barangay> barangayRepository, [Service] IMapper mapper, BarangayInput barangayInput)
+        public async Task<Barangay> UpdateBarangay(
+                [Service] IBarangayRepository<Barangay> barangayRepository,
+                [Service] IMapper mapper,
+                [Service] ICurrentUserService currentUserService,
+                BarangayInput barangayInput)
         {
             var brangayFromRepo = await barangayRepository.GetEntity(barangayInput.Id).ToObjectAsync();
 
             if (brangayFromRepo is null)
             {
-                var newBarangay = new Barangay { Id = barangayInput.Id, Name = barangayInput.Name };
+                var newBarangay = new Barangay { Id = barangayInput.Id, Name = barangayInput.Name, UserAccountId = currentUserService.CurrentUserId };
                 await barangayRepository.AddEntity(newBarangay);
                 return newBarangay;
             }

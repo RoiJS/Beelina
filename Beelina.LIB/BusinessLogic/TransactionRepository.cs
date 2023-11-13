@@ -20,7 +20,7 @@ namespace Beelina.LIB.BusinessLogic
         {
             var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
                                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
-                                    on new { Id = t.Id, PaidStatus = PaymentStatusEnum.Paid } equals new { Id = pt.TransactionId, PaidStatus = pt.Status }
+                                    on t.Id equals pt.TransactionId
 
                                     where
                                         t.Status == TransactionStatusEnum.Confirmed
@@ -45,7 +45,10 @@ namespace Beelina.LIB.BusinessLogic
             var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
                                         .Include(t => t.Store)
                                         .Include(t => t.ProductTransactions)
-                                        .Where(t => t.TransactionDate.Date == Convert.ToDateTime(transactionDate) && t.Status == status)
+                                        .Where(t =>
+                                            t.TransactionDate.Date == Convert.ToDateTime(transactionDate)
+                                            && t.Status == status
+                                            && t.CreatedById == currentUserService.CurrentUserId)
                                         .ToListAsync();
 
             return transactionsFromRepo;
