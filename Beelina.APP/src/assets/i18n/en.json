@@ -209,6 +209,9 @@
       "DISCOUNT_CONTROL": {
         "LABEL": "Discount (%)"
       },
+      "REGISTERED_DATE_CONTROL": {
+        "LABEL": "Registered Date"
+      },
       "INVOICE_NO_CONTROL": {
         "LABEL": "Invoice No",
         "HINT": "Please enter a unique invoice number"

@@ -39,6 +39,14 @@ namespace Beelina.LIB.Models
             }
         }
 
+        public string DateCreatedFormatted
+        {
+            get
+            {
+                return DateCreated.ToString("MMM dd, yyyy");
+            }
+        }
+
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }
         public int? UpdatedById { get; set; }

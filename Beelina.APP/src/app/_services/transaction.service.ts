@@ -103,6 +103,7 @@ const GET_TRANSACTION = gql`
       hasUnpaidProductTransaction
       total
       balance
+      dateCreatedFormatted
       store {
         id
         name
@@ -172,6 +173,7 @@ export class Transaction extends Entity implements IModelNode {
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
   public total: number;
+  public dateCreatedFormatted: string;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
@@ -350,6 +352,8 @@ export class TransactionService {
             transaction.store = transactionFromRepo.store;
             transaction.balance = transactionFromRepo.balance;
             transaction.total = transactionFromRepo.total;
+            transaction.dateCreatedFormatted =
+              transactionFromRepo.dateCreatedFormatted;
             transaction.hasUnpaidProductTransaction =
               transactionFromRepo.hasUnpaidProductTransaction;
             transaction.productTransactions =
