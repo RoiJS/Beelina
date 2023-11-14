@@ -60,6 +60,7 @@ export class ProductCartComponent
   implements OnInit, OnDestroy
 {
   private _orderForm: FormGroup;
+  private _discountForm: FormGroup;
   private _customerStoreOptions: Array<CustomerStore> = [];
   private _customerStoreFilterOptions: Observable<Array<CustomerStore>>;
 
@@ -98,6 +99,10 @@ export class ProductCartComponent
       address: [''],
       paymentMethod: [''],
       dueDate: [null, Validators.required],
+    });
+
+    this._discountForm = this.formBuilder.group({
+      discount: [0],
     });
   }
 
@@ -184,6 +189,9 @@ export class ProductCartComponent
             this._orderForm
               .get('invoiceNo')
               .setValue(this._transaction.invoiceNo);
+            this._discountForm
+              .get('discount')
+              .setValue(this._transaction.discount);
             this._orderForm
               .get('barangay')
               .setValue(this._transaction.store.barangay.name);
@@ -296,6 +304,7 @@ export class ProductCartComponent
       transaction.storeId = this._selectedCustomer.id;
       transaction.status = TransactionStatusEnum.DRAFT;
       transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+      transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
         this._orderForm.get('dueDate').value
       );
@@ -388,6 +397,7 @@ export class ProductCartComponent
             const transaction = new TransactionDto();
             transaction.id = this._transactionId;
             transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+            transaction.discount = this._discountForm.get('discount').value;
             transaction.storeId = this._selectedCustomer.id;
             transaction.status = TransactionStatusEnum.CONFIRMED;
             transaction.transactionDate = DateFormatter.format(
@@ -490,6 +500,10 @@ export class ProductCartComponent
     return this._orderForm;
   }
 
+  get discountForm(): FormGroup {
+    return this._discountForm;
+  }
+
   get productCartTransactions(): Array<ProductCartTransaction> {
     return this._productCartTransactions;
   }
@@ -506,8 +520,15 @@ export class ProductCartComponent
     return this._barangayFilterOptions;
   }
 
-  get totalAmount(): string {
+  get grossTotalAmount(): string {
     return NumberFormatter.formatCurrency(this._totalAmount);
+  }
+
+  get netTotalAmount(): string {
+    const discount = this._discountForm.get('discount').value;
+    const calculatedNetTotalAmount =
+      this._totalAmount - (discount / 100) * this._totalAmount;
+    return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
   }
 
   get minDate(): Date {

@@ -79,8 +79,27 @@
             class="product-transaction-amount-information"
             *ngIf="transaction?.productTransactions?.length > 0"
           >
-            <span>{{ "GENERAL_TEXTS.TOTAL" | translate }}</span>
-            <span>{{ transaction.totalFormatted }}</span>
+            <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
+            <span>{{ transaction.grossTotalFormatted }}</span>
+          </div>
+          <br />
+          <div
+            class="product-transaction-amount-information"
+            *ngIf="transaction?.productTransactions?.length > 0"
+          >
+            <span>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
+                | translate
+            }}</span>
+            <span>{{ transaction.discount }}</span>
+          </div>
+          <br />
+          <div
+            class="product-transaction-amount-information"
+            *ngIf="transaction?.productTransactions?.length > 0"
+          >
+            <span>{{ "GENERAL_TEXTS.NET_TOTAL" | translate }}</span>
+            <span>{{ transaction.netTotalFormatted }}</span>
           </div>
         </div>
 

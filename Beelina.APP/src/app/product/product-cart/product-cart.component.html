@@ -68,8 +68,30 @@
             class="product-transaction-total-amount-information-container"
             *ngIf="productTransactions.length > 0"
           >
-            <span>{{ "GENERAL_TEXTS.TOTAL" | translate }}</span>
-            <span>{{ totalAmount }}</span>
+            <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
+            <span>{{ grossTotalAmount }}</span>
+          </div>
+          <div
+            class="product-transaction-total-amount-information-container"
+            *ngIf="productTransactions.length > 0"
+            [formGroup]="discountForm"
+          >
+            <span>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
+                | translate
+            }}</span>
+            <input
+              class="product-transaction-total-amount-information-container__input-discount-field"
+              type="number"
+              formControlName="discount"
+            />
+          </div>
+          <div
+            class="product-transaction-total-amount-information-container"
+            *ngIf="productTransactions.length > 0"
+          >
+            <span>{{ "GENERAL_TEXTS.NET_TOTAL" | translate }}</span>
+            <span>{{ netTotalAmount }}</span>
           </div>
         </div>
       </div>
@@ -78,7 +100,7 @@
         [formGroup]="orderForm"
         class="panel__details-group-panel product-transaction-information-container"
       >
-        <div class="panel__body-section">
+        <div class="panel__body-section product-cart-container__body-section">
           <mat-form-field appearance="fill">
             <mat-label
               >{{

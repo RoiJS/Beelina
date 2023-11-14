@@ -13,6 +13,7 @@ namespace Beelina.LIB.Models
 
         public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
         public string InvoiceNo { get; set; }
+        public double Discount { get; set; }
 
         public bool HasUnpaidProductTransaction
         {
