@@ -92,6 +92,7 @@ export class ProductCartComponent
   ) {
     super();
     this._orderForm = this.formBuilder.group({
+      invoiceNo: ['', Validators.required],
       barangay: ['', Validators.required],
       name: ['', Validators.required],
       address: [''],
@@ -180,6 +181,9 @@ export class ProductCartComponent
           this._transaction = transaction;
 
           if (this._transaction.store) {
+            this._orderForm
+              .get('invoiceNo')
+              .setValue(this._transaction.invoiceNo);
             this._orderForm
               .get('barangay')
               .setValue(this._transaction.store.barangay.name);
@@ -291,6 +295,7 @@ export class ProductCartComponent
       const transaction = new TransactionDto();
       transaction.storeId = this._selectedCustomer.id;
       transaction.status = TransactionStatusEnum.DRAFT;
+      transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
       transaction.transactionDate = DateFormatter.format(
         this._orderForm.get('dueDate').value
       );
@@ -313,7 +318,7 @@ export class ProductCartComponent
                   this.translateService.instant(
                     'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.SUCCESS_MESSAGE'
                   ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
                 );
                 this.store.dispatch(
                   ProductTransactionActions.setSaveOrderLoadingState({
@@ -333,7 +338,7 @@ export class ProductCartComponent
                   this.translateService.instant(
                     'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.ERROR_MESSAGE'
                   ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
                 );
 
                 this.store.dispatch(
@@ -382,6 +387,7 @@ export class ProductCartComponent
           if (this._orderForm.valid) {
             const transaction = new TransactionDto();
             transaction.id = this._transactionId;
+            transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
             transaction.storeId = this._selectedCustomer.id;
             transaction.status = TransactionStatusEnum.CONFIRMED;
             transaction.transactionDate = DateFormatter.format(
@@ -408,7 +414,7 @@ export class ProductCartComponent
                           this.translateService.instant(
                             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
                           ),
-                          this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                          this.translateService.instant('GENERAL_TEXTS.CLOSE')
                         );
                         this.store.dispatch(
                           ProductTransactionActions.setSaveOrderLoadingState({
@@ -432,7 +438,7 @@ export class ProductCartComponent
                           this.translateService.instant(
                             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
                           ),
-                          this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                          this.translateService.instant('GENERAL_TEXTS.CLOSE')
                         );
 
                         this.store.dispatch(

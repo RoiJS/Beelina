@@ -1,14 +1,20 @@
 @import "../../../app-variables";
 
 .product-cart-container {
+  &__body-section {
+    padding: 15px 0;
+  }
+
+  &__no-of-items-label {
+    font-weight: 500;
+  }
+
   .product-transaction-list-container {
-    max-height: 200px;
+    max-height: 300px;
     overflow: auto;
     margin-bottom: 15px;
 
     &__list-item-section {
-      height: 35px;
-
       .list-item {
         display: flex;
         flex-direction: row;
@@ -16,10 +22,15 @@
         width: 100%;
         font-size: 14px;
 
+        &__product-details-information {
+          font-weight: 500;
+        }
+
         &__product-price-information {
           width: 120px;
           display: flex;
           justify-content: space-between;
+          align-items: center;
         }
 
         &__edit-product {

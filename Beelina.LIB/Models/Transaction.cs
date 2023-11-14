@@ -12,6 +12,7 @@ namespace Beelina.LIB.Models
         public TransactionStatusEnum Status { get; set; }
 
         public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
+        public string InvoiceNo { get; set; }
 
         public bool HasUnpaidProductTransaction
         {

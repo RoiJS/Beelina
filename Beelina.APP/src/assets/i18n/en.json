@@ -202,6 +202,13 @@
     "TITLE": "Order Summary",
     "FORM_CONTROL_SECTION": {
       "HEADER_TITLE": "Order Summary",
+      "NO_OF_ITEMS": {
+        "LABEL": "No. of Items"
+      },
+      "INVOICE_NO_CONTROL": {
+        "LABEL": "Invoice No.",
+        "HINT": "Please enter a unique invoice number"
+      },
       "BARANGAY_CONTROL": {
         "LABEL": "Barangay/Branch",
         "HINT": "Please select barangay/branch"
