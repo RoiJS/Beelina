@@ -97,6 +97,7 @@ const GET_TRANSACTION = gql`
     transaction(transactionId: $transactionId) {
       id
       storeId
+      invoiceNo
       transactionDate
       hasUnpaidProductTransaction
       total
@@ -122,6 +123,7 @@ const GET_TRANSACTION = gql`
         currentQuantity
         product {
           id
+          code
           name
           price
         }
@@ -161,6 +163,7 @@ const GET_TRANSACTION_SALES = gql`
 
 export class Transaction extends Entity implements IModelNode {
   public storeId: number;
+  public invoiceNo: string;
   public transactionDate: Date;
   public store: CustomerStore;
   public productTransactions: Array<ProductTransaction>;
@@ -202,6 +205,7 @@ export class TransactionSales {
 
 export class TransactionDto {
   public id: number = 0;
+  public invoiceNo: string;
   public storeId: number;
   public status: TransactionStatusEnum;
   public transactionDate: string;
@@ -230,6 +234,7 @@ export class TransactionService {
   registerTransaction(transaction: TransactionDto) {
     const transactionInput: ITransactionInput = {
       id: transaction.id,
+      invoiceNo: transaction.invoiceNo,
       storeId: transaction.storeId,
       status: transaction.status,
       transactionDate: transaction.transactionDate,
@@ -328,6 +333,7 @@ export class TransactionService {
 
             const transaction = new Transaction();
             transaction.id = transactionFromRepo.id;
+            transaction.invoiceNo = transactionFromRepo.invoiceNo;
             transaction.transactionDate = transactionFromRepo.transactionDate;
             transaction.storeId = transactionFromRepo.storeId;
             transaction.store = transactionFromRepo.store;
@@ -348,6 +354,7 @@ export class TransactionService {
 
                 productTransaction.product = new Product();
                 productTransaction.product.id = pt.product.id;
+                productTransaction.product.code = pt.product.code;
                 productTransaction.product.name = pt.product.name;
                 productTransaction.product.price = pt.product.price;
                 return productTransaction;

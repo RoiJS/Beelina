@@ -58,10 +58,11 @@ namespace Beelina.API.Types.Query
       return await transactionRepository.GetSales(fromDate, toDate);
     }
 
+    [Authorize]
     public async Task<List<InsufficientProductQuantity>> ValidateProductionTransactionsQuantities(
-        [Service] IProductRepository<Product> productRepository,
-        [Service] ICurrentUserService currentUserService,
-        List<ProductTransactionInput> productTransactionsInputs)
+            [Service] IProductRepository<Product> productRepository,
+            [Service] ICurrentUserService currentUserService,
+            List<ProductTransactionInput> productTransactionsInputs)
     {
       var insufficientProductQuantities = new List<InsufficientProductQuantity>();
       var productsFromRepo = await productRepository.GetProducts(currentUserService.CurrentUserId, 0);

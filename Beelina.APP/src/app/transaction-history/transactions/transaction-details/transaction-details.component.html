@@ -14,6 +14,16 @@
         <div
           class="panel__body-section transaction-details-panel__body-section"
         >
+          <div class="product-transaction-amount-information">
+            <span>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.INVOICE_NO_CONTROL.LABEL"
+                | translate
+            }}</span>
+            <span>{{ transaction?.invoiceNo }}</span>
+          </div>
+          <br />
+          <mat-divider></mat-divider>
+
           <mat-list role="list" class="product-transaction-list">
             <mat-list-item
               *ngFor="let item of transaction?.productTransactions"
@@ -24,7 +34,14 @@
                 class="product-transaction-list__item-section"
               >
                 <div class="product-transaction-information">
-                  <span>{{ item.product?.name }}</span>
+                  <span>
+                    ({{
+                      "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE"
+                        | translate
+                    }}: {{ item.product?.code }})
+                    <br />
+                    {{ item.product?.name }}
+                  </span>
                   <span>X</span>
                   <span>{{ item.quantity }}</span>
                 </div>
@@ -45,11 +62,10 @@
                     >{{ "GENERAL_TEXTS.UNPAID" | translate }}</span
                   >
                 </div>
+                <mat-divider></mat-divider>
               </div>
             </mat-list-item>
           </mat-list>
-
-          <mat-divider></mat-divider>
           <br />
           <div
             class="product-transaction-amount-information"
