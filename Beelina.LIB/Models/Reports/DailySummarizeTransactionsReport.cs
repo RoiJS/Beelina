@@ -34,12 +34,17 @@ namespace Beelina.LIB.Models.Reports
                 {
                     InitialStocksValue = row.Field<decimal>("InitialStocksValue"),
                     RemainingStocksValue = row.Field<decimal>("RemainingStocksValue"),
-                    TotalSales = row.Field<decimal>("TotalSales")
+                    TotalGrossSales = row.Field<decimal>("TotalGrossSales"),
+                    DiscountAmount = row.Field<decimal>("DiscountAmount"),
+                    TotalNetSales = row.Field<decimal>("TotalNetSales"),
                 }).FirstOrDefault(),
 
                 ListOutput = reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new DailySummarizeTransactionsReportOutputList
                 {
-                    Collectibles = row.Field<decimal>("Collectibles"),
+                    GrossCollectibles = row.Field<decimal>("GrossCollectibles"),
+                    Discount = row.Field<decimal>("Discount"),
+                    DiscountedCollectibles = row.Field<decimal>("DiscountedCollectibles"),
+                    NetCollectibles = row.Field<decimal>("NetCollectibles"),
                     StoreName = row.Field<string>("StoreName"),
                     StoreAddress = row.Field<string>("StoreAddress"),
                     OrderReceived = row.Field<DateTime>("OrderReceived"),
@@ -61,21 +66,26 @@ namespace Beelina.LIB.Models.Reports
                 // You can set worksheet properties and add data here
                 worksheet.Cells["A2"].Value = reportOutput.HeaderOutput.InitialStocksValue;
                 worksheet.Cells["B2"].Value = reportOutput.HeaderOutput.RemainingStocksValue;
-                worksheet.Cells["C2"].Value = reportOutput.HeaderOutput.TotalSales;
+                worksheet.Cells["C2"].Value = reportOutput.HeaderOutput.TotalGrossSales;
+                worksheet.Cells["D2"].Value = reportOutput.HeaderOutput.DiscountAmount;
+                worksheet.Cells["E2"].Value = reportOutput.HeaderOutput.TotalNetSales;
 
                 var cellNumber = 5;
                 foreach (var item in reportOutput.ListOutput)
                 {
-                    worksheet.Cells[$"A{cellNumber}"].Value = item.Collectibles;
-                    // worksheet.Cells[$"B{cellNumber}"].Value = item.DueCollectibles;
-                    worksheet.Cells[$"C{cellNumber}"].Value = item.StoreName;
-                    worksheet.Cells[$"D{cellNumber}"].Value = item.StoreAddress;
-                    worksheet.Cells[$"E{cellNumber}"].Value = item.OrderReceived;
-                    worksheet.Cells[$"E{cellNumber}"].Style.Numberformat.Format = "yyyy-MM-dd";
-                    worksheet.Cells[$"F{cellNumber}"].Value = item.SalesAgentName;
-                    worksheet.Cells[$"G{cellNumber}"].Value = item.AreaCovered;
-                    worksheet.Cells[$"H{cellNumber}"].Value = item.OutletTypeName;
-                    worksheet.Cells[$"I{cellNumber}"].Value = item.PaymentMethod;
+                    worksheet.Cells[$"A{cellNumber}"].Value = item.GrossCollectibles;
+                    worksheet.Cells[$"B{cellNumber}"].Value = item.Discount;
+                    worksheet.Cells[$"C{cellNumber}"].Value = item.DiscountedCollectibles;
+                    worksheet.Cells[$"D{cellNumber}"].Value = item.NetCollectibles;
+                    // worksheet.Cells[$"E{cellNumber}"].Value = item.DueCollectibles;
+                    worksheet.Cells[$"F{cellNumber}"].Value = item.StoreName;
+                    worksheet.Cells[$"G{cellNumber}"].Value = item.StoreAddress;
+                    worksheet.Cells[$"H{cellNumber}"].Value = item.OrderReceived;
+                    worksheet.Cells[$"H{cellNumber}"].Style.Numberformat.Format = "yyyy-MM-dd";
+                    worksheet.Cells[$"I{cellNumber}"].Value = item.SalesAgentName;
+                    worksheet.Cells[$"J{cellNumber}"].Value = item.AreaCovered;
+                    worksheet.Cells[$"K{cellNumber}"].Value = item.OutletTypeName;
+                    worksheet.Cells[$"L{cellNumber}"].Value = item.PaymentMethod;
                     // worksheet.Cells[$"I{cellNumber}"].Value = item.DateCreated;
                     // worksheet.Cells[$"I{cellNumber}"].Style.Numberformat.Format = "yyyy-MM-dd";
                     cellNumber++;
@@ -103,7 +113,10 @@ namespace Beelina.LIB.Models.Reports
 
     public class DailySummarizeTransactionsReportOutputList
     {
-        public decimal Collectibles { get; set; }
+        public decimal GrossCollectibles { get; internal set; }
+        public decimal Discount { get; internal set; }
+        public decimal DiscountedCollectibles { get; internal set; }
+        public decimal NetCollectibles { get; internal set; }
         public DateTime DueCollectibles { get; set; }
         public string StoreName { get; set; }
         public string StoreAddress { get; set; }
@@ -132,6 +145,8 @@ namespace Beelina.LIB.Models.Reports
     {
         public decimal InitialStocksValue { get; set; }
         public decimal RemainingStocksValue { get; set; }
-        public decimal TotalSales { get; set; }
+        public decimal TotalGrossSales { get; internal set; }
+        public decimal DiscountAmount { get; internal set; }
+        public decimal TotalNetSales { get; internal set; }
     }
 }
