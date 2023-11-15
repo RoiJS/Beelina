@@ -231,7 +231,7 @@
         "LABEL": "Payment Method"
       },
       "DATE_CONTROL": {
-        "LABEL": "Due Date"
+        "LABEL": "Transaction Date"
       },
       "BUTTON_OPTIONS": {
         "CONFIRM": "Confirm",

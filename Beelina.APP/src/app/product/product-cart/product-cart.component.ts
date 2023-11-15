@@ -204,7 +204,7 @@ export class ProductCartComponent
               .get('paymentMethod')
               .setValue(this._transaction.store.paymentMethod.name);
             this._orderForm
-              .get('dueDate')
+              .get('transactionDate')
               .setValue(this._transaction.transactionDate);
           }
         })
@@ -306,7 +306,7 @@ export class ProductCartComponent
       transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
       transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
-        this._orderForm.get('dueDate').value
+        this._orderForm.get('transactionDate').value
       );
       transaction.productTransactions = this._productTransactions;
 
@@ -401,7 +401,7 @@ export class ProductCartComponent
             transaction.storeId = this._selectedCustomer.id;
             transaction.status = TransactionStatusEnum.CONFIRMED;
             transaction.transactionDate = DateFormatter.format(
-              this._orderForm.get('dueDate').value
+              this._orderForm.get('transactionDate').value
             );
             transaction.productTransactions = this._productTransactions;
 
