@@ -141,8 +141,7 @@ BEGIN
 			ON u.Id = t.CreatedById
 
 		WHERE
-			--FORMAT(t.DateCreated, 'yyyy-MM-dd') = @date
-			FORMAT(t.TransactionDate, 'yyyy-MM-dd') = @date
+			FORMAT(t.DateCreated, 'yyyy-MM-dd') = @date
 			AND t.CreatedById = @userId
 
 		GROUP BY

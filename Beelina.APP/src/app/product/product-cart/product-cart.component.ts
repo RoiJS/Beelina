@@ -98,7 +98,7 @@ export class ProductCartComponent
       name: ['', Validators.required],
       address: [''],
       paymentMethod: [''],
-      transactionDate: [null, Validators.required],
+      transactionDate: [new Date(), Validators.required],
     });
 
     this._discountForm = this.formBuilder.group({

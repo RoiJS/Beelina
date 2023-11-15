@@ -50,6 +50,9 @@
     <None Update="Templates\ReportTemplates\EndingInventoryPerProductReport_Template.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\ReportTemplates\SalesPerCustomerReport_Template.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
