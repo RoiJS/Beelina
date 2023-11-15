@@ -58,6 +58,7 @@ BEGIN
         FROM 
             Transactions t LEFT JOIN ProductTransactions pt 
             ON t.Id = pt.TransactionId
+                AND t.[Status] = 2 -- Confirmed Transaction
 
 			LEFT JOIN Products P
 			ON p.Id = pt.ProductId
