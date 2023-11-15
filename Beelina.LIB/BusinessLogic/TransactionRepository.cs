@@ -38,7 +38,10 @@ namespace Beelina.LIB.BusinessLogic
                 fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
                 toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
 
-                transactionSales = transactionSales.Where(t => t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate) && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate));
+                transactionSales = transactionSales.Where(t =>
+                        t.Transaction.DateCreated >= Convert.ToDateTime(fromDate)
+                        && t.Transaction.DateCreated <= Convert.ToDateTime(toDate)
+                );
             }
 
             // Extract Sales per Transaction
