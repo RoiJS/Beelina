@@ -25,6 +25,7 @@ namespace Beelina.LIB.BusinessLogic
                                     where
                                         t.Status == TransactionStatusEnum.Confirmed
                                         && t.CreatedById == currentUserService.CurrentUserId
+                                        && t.IsDelete == false
 
                                     select new
                                     {
@@ -34,10 +35,27 @@ namespace Beelina.LIB.BusinessLogic
 
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
+                fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
                 transactionSales = transactionSales.Where(t => t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate) && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate));
             }
 
-            return new TransactionSales { Sales = await transactionSales.SumAsync(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity) };
+            // Extract Sales per Transaction
+            var salesPerTransactions = transactionSales
+                        .GroupBy(
+                            t => new { t.Transaction.Id, t.Transaction.Discount }
+                        ).Select(p => new
+                        {
+                            TransactionId = p.Key.Id,
+                            Discount = p.Key.Discount,
+                            TotalAmountPerTransaction = p.Sum(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity)
+                        });
+
+            // Calculate Discounted Sales
+            var discountedSalesPerTransactions = await salesPerTransactions.SumAsync(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100));
+
+            return new TransactionSales { Sales = discountedSalesPerTransactions };
         }
 
         public async Task<List<Transaction>> GetTransactionByDate(TransactionStatusEnum status, string transactionDate)

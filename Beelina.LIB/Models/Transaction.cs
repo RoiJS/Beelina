@@ -13,6 +13,7 @@ namespace Beelina.LIB.Models
 
         public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
         public string InvoiceNo { get; set; }
+        public double Discount { get; set; }
 
         public bool HasUnpaidProductTransaction
         {
@@ -35,6 +36,14 @@ namespace Beelina.LIB.Models
             get
             {
                 return (float)ProductTransactions.Sum(s => s.Quantity * s.Price);
+            }
+        }
+
+        public string DateCreatedFormatted
+        {
+            get
+            {
+                return DateCreated.ToString("MMM dd, yyyy");
             }
         }
 

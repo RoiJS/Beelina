@@ -9,7 +9,8 @@
     "CLEAR": "Clear",
     "CANCEL": "Cancel",
     "RESET": "Reset",
-    "TOTAL": "Total",
+    "GROSS_TOTAL": "Gross Total",
+    "NET_TOTAL": "Net Total",
     "PAID": "Paid",
     "UNPAID": "Unpaid",
     "BALANCE": "Balance",
@@ -205,8 +206,14 @@
       "NO_OF_ITEMS": {
         "LABEL": "No. of Items"
       },
+      "DISCOUNT_CONTROL": {
+        "LABEL": "Discount (%)"
+      },
+      "REGISTERED_DATE_CONTROL": {
+        "LABEL": "Registered Date"
+      },
       "INVOICE_NO_CONTROL": {
-        "LABEL": "Invoice No.",
+        "LABEL": "Invoice No",
         "HINT": "Please enter a unique invoice number"
       },
       "BARANGAY_CONTROL": {
@@ -224,7 +231,7 @@
         "LABEL": "Payment Method"
       },
       "DATE_CONTROL": {
-        "LABEL": "Due Date"
+        "LABEL": "Transaction Date"
       },
       "BUTTON_OPTIONS": {
         "CONFIRM": "Confirm",

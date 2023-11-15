@@ -6,6 +6,7 @@ namespace Beelina.LIB.GraphQL.Types
     {
         public int Id { get; set; }
         public string InvoiceNo { get; set; }
+        public double Discount { get; set; }
         public int StoreId { get; set; }
         public string TransactionDate { get; set; }
         public TransactionStatusEnum Status { get; set; }

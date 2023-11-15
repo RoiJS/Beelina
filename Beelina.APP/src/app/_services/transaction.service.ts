@@ -98,10 +98,12 @@ const GET_TRANSACTION = gql`
       id
       storeId
       invoiceNo
+      discount
       transactionDate
       hasUnpaidProductTransaction
       total
       balance
+      dateCreatedFormatted
       store {
         id
         name
@@ -164,19 +166,27 @@ const GET_TRANSACTION_SALES = gql`
 export class Transaction extends Entity implements IModelNode {
   public storeId: number;
   public invoiceNo: string;
+  public discount: number;
   public transactionDate: Date;
   public store: CustomerStore;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
   public total: number;
+  public dateCreatedFormatted: string;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
   }
 
-  get totalFormatted(): string {
+  get grossTotalFormatted(): string {
     return NumberFormatter.formatCurrency(this.total);
+  }
+
+  get netTotalFormatted(): string {
+    const calculatedNetTotalAmount =
+      this.total - (this.discount / 100) * this.total;
+    return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
   }
 
   get balanceFormatted(): string {
@@ -206,6 +216,7 @@ export class TransactionSales {
 export class TransactionDto {
   public id: number = 0;
   public invoiceNo: string;
+  public discount: number;
   public storeId: number;
   public status: TransactionStatusEnum;
   public transactionDate: string;
@@ -235,6 +246,7 @@ export class TransactionService {
     const transactionInput: ITransactionInput = {
       id: transaction.id,
       invoiceNo: transaction.invoiceNo,
+      discount: transaction.discount,
       storeId: transaction.storeId,
       status: transaction.status,
       transactionDate: transaction.transactionDate,
@@ -334,11 +346,14 @@ export class TransactionService {
             const transaction = new Transaction();
             transaction.id = transactionFromRepo.id;
             transaction.invoiceNo = transactionFromRepo.invoiceNo;
+            transaction.discount = transactionFromRepo.discount;
             transaction.transactionDate = transactionFromRepo.transactionDate;
             transaction.storeId = transactionFromRepo.storeId;
             transaction.store = transactionFromRepo.store;
             transaction.balance = transactionFromRepo.balance;
             transaction.total = transactionFromRepo.total;
+            transaction.dateCreatedFormatted =
+              transactionFromRepo.dateCreatedFormatted;
             transaction.hasUnpaidProductTransaction =
               transactionFromRepo.hasUnpaidProductTransaction;
             transaction.productTransactions =
