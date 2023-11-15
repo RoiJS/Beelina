@@ -465,7 +465,9 @@
       "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_NAME": "Daily Summarize Transactions",
       "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "This report can generate a summary of confirmed transactions on a given date. This helps user to analyze and gives an insight of their daily transactions.",
       "DAILY_DETAILED_TRANSACTIONS_REPORT_NAME": "Daily Detailed Transactions",
-      "DAILY_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate detailed transactions on a given date. This presents transactions in an itemized manner where user can analyze purchased item per transactions. Take note that it only extract details from confirmed transactions."
+      "DAILY_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate detailed transactions on a given date. This presents transactions in an itemized manner where user can analyze purchased item per transactions. Take note that it only extract details from confirmed transactions.",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_NAME": "Ending Inventory Per Product Report",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_DESC": "The user can see the beginning and ending stocks information for a given date using this report. This will help administrators to analyze how much was the initial stocks loaded and how much was left."
     }
   },
 
