@@ -478,8 +478,8 @@
     "CONTROL_INFORMATION": {
       "DATE_RANGE_CONTROL": {
         "LABEL": "Enter a date range",
-        "START_DATE_PLACEHOLDER": "Start Date",
-        "END_DATE_PLACEHOLDER": "End Date"
+        "START_DATE_LABEL": "Start Date",
+        "END_DATE_LABEL": "End Date"
       },
       "DATE_PICKER_CONTROL": {
         "LABEL": "Enter a date",

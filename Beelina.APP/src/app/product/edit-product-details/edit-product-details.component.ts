@@ -29,6 +29,7 @@ import * as ProductActions from '../store/actions';
 })
 export class EditProductDetailsComponent implements OnInit {
   private _productForm: FormGroup;
+  private _productDetails: ProductInformationResult;
   private _productUnitOptions: Array<ProductUnit> = [];
   private _productUnitFilterOptions: Observable<Array<ProductUnit>>;
   private _productUnitOptionsSubscription: Subscription;
@@ -59,7 +60,7 @@ export class EditProductDetailsComponent implements OnInit {
           ],
         ],
         name: ['', Validators.required],
-        description: ['', Validators.required],
+        description: [''],
         stockQuantity: [null, [Validators.required, Validators.min(1)]],
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
@@ -82,6 +83,7 @@ export class EditProductDetailsComponent implements OnInit {
     this.productService
       .getProduct(this._productId)
       .subscribe((product: ProductInformationResult) => {
+        this._productDetails = product;
         this._productForm.get('name').setValue(product.name);
         this._productForm.get('code').setValue(product.code);
         this._productForm.get('description').setValue(product.description);
@@ -115,7 +117,9 @@ export class EditProductDetailsComponent implements OnInit {
     product.name = this._productForm.get('name').value;
     product.code = this._productForm.get('code').value;
     product.description = this._productForm.get('description').value;
-    product.stockQuantity = this._productForm.get('stockQuantity').value;
+
+    const newStockQuantity = (this._productForm.get('stockQuantity').value - this._productDetails.stockQuantity);
+    product.stockQuantity = newStockQuantity;
     product.pricePerUnit = this._productForm.get('pricePerUnit').value;
     product.productUnit.name = this._productForm.get('productUnit').value;
 

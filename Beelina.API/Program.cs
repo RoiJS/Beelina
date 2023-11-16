@@ -39,6 +39,7 @@ services.AddScoped(typeof(ICurrentUserService), typeof(CurrentUserService));
 services.AddScoped(typeof(IProductUnitRepository<ProductUnit>), typeof(ProductUnitRepository));
 services.AddScoped(typeof(IProductRepository<Product>), typeof(ProductRepository));
 services.AddScoped(typeof(IProductStockPerPanelRepository<ProductStockPerPanel>), typeof(ProductStockPerPanelRepository));
+services.AddScoped(typeof(IProductStockAuditRepository<ProductStockAudit>), typeof(ProductStockAuditRepository));
 services.AddScoped(typeof(IPaymentMethodRepository<PaymentMethod>), typeof(PaymentMethodRepository));
 services.AddScoped(typeof(IRefreshTokenRepository<RefreshToken>), typeof(RefreshTokenRepository));
 services.AddScoped(typeof(IStoreRepository<Store>), typeof(StoreRepository));

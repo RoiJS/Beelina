@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
 
 import { BaseControlComponent } from '../base-control/base-control.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-date-picker',
@@ -15,8 +16,11 @@ export class DatePickerComponent
 {
   private _form: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
-    super();
+  constructor(
+    private formBuilder: FormBuilder,
+    protected override translateService: TranslateService
+  ) {
+    super(translateService);
 
     this._form = this.formBuilder.group({
       date: [new Date(), [Validators.required]],

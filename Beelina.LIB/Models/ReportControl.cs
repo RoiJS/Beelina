@@ -6,6 +6,7 @@ namespace Beelina.LIB.Models
         public string Name { get; set; }
         public string ParentContainerName { get; set; }
         public string CustomCSSClasses { get; set; }
+        public string LabelIdentifier { get; set; }
         public ReportParameter ReportParameter { get; set; }
     }
 }

@@ -6,5 +6,7 @@ import { SortOrderControlComponent } from './sort-order-control/sort-order-contr
 export const componentsRegistry: { [key: string]: any } = {
   DateRangeControl: DateRangeControlComponent,
   DatePickerControl: DatePickerComponent,
+  StartDatePickerControl: DatePickerComponent,
+  EndDatePickerControl: DatePickerComponent,
   SortOrderDropdownControl: SortOrderControlComponent,
 };

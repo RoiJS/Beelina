@@ -70,7 +70,9 @@ export class ReportDetailsComponent
             (relation: ReportControlsRelation) => {
               const componentName = `${relation.reportControl.name}Control`;
               const componentId = relation.reportControlId;
-              this.attachComponentDynamically(componentId, componentName);
+              const controlLabelIdentifier =
+                relation.reportControl.labelIdentifier;
+              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier);
             }
           );
         });
@@ -84,12 +86,17 @@ export class ReportDetailsComponent
    * @param {string} componentName - The name of the component.
    */
 
-  private attachComponentDynamically(id: number, componentName: string) {
+  private attachComponentDynamically(
+    id: number,
+    componentName: string,
+    controlLabelIdentifier: string
+  ) {
     // Attach the component to the ViewContainerRef
     const componentRef = this.container.createComponent(
       componentsRegistry[componentName]
     );
     const componentRefInstance = componentRef.instance as BaseControlComponent;
+    componentRefInstance.setControlLabelIdentifier(controlLabelIdentifier);
 
     this.controlComponents.push({
       id: id,
