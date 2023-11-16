@@ -34,6 +34,7 @@ const GET_REPORT_INFORMATION = gql`
           reportControl {
             id
             name
+            labelIdentifier
             reportParameter {
               id
               name

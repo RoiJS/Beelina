@@ -1,11 +1,6 @@
 <div [formGroup]="form">
   <mat-form-field appearance="fill" class="date-picker-control">
-    <mat-label
-      >{{
-        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.DATE_PICKER_CONTROL.LABEL"
-          | translate
-      }}:</mat-label
-    >
+    <mat-label>{{ controLabel }}:</mat-label>
     <input matInput [matDatepicker]="picker" formControlName="date" />
     <mat-hint>MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>

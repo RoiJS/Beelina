@@ -16,6 +16,7 @@ namespace Beelina.API.Types.Mutations
         public async Task<Product> UpdateProduct(
             [Service] IProductRepository<Product> productRepository,
             [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
+            [Service] IProductStockAuditRepository<ProductStockAudit> productStockAuditRepository,
             [Service] IProductUnitRepository<ProductUnit> productUnitRepository,
             [Service] IMapper mapper,
             [Service] ICurrentUserService currentUserService,
@@ -58,17 +59,24 @@ namespace Beelina.API.Types.Mutations
                 {
                     ProductId = productFromRepo.Id,
                     UserAccountId = currentUserService.CurrentUserId,
-                    StockQuantity = productInput.StockQuantity,
                     PricePerUnit = productInput.PricePerUnit
                 };
             }
             else
             {
-                productStockPerPanelFromRepo.StockQuantity = productInput.StockQuantity;
                 productStockPerPanelFromRepo.PricePerUnit = productInput.PricePerUnit;
             }
 
             await productStockPerPanelRepository.UpdateProductStockPerPanel(productStockPerPanelFromRepo);
+
+            // Insert new stock audit for the product
+            var productStockAudit = new ProductStockAudit
+            {
+                ProductStockPerPanelId = productStockPerPanelFromRepo.Id,
+                Quantity = productInput.StockQuantity
+            };
+
+            await productStockAuditRepository.UpdateProductStockAudit(productStockAudit);
 
             return productFromRepo;
         }

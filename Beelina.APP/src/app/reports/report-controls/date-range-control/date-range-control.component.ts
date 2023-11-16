@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseControlComponent } from '../base-control/base-control.component';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-date-range',
@@ -13,8 +14,11 @@ export class DateRangeControlComponent
 {
   private _form: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
-    super();
+  constructor(
+    private formBuilder: FormBuilder,
+    protected override translateService: TranslateService
+  ) {
+    super(translateService);
 
     this._form = this.formBuilder.group({
       dateFrom: [null],

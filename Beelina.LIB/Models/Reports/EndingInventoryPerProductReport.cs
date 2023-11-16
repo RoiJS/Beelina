@@ -30,7 +30,6 @@ namespace Beelina.LIB.Models.Reports
             {
                 ListOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new EndingInventoryPerProductReportOutputList
                 {
-                    Id = row.Field<int>("Id"),
                     Code = row.Field<string>("Code"),
                     Name = row.Field<string>("Name"),
                     BeginningStocks = row.Field<int>("BeginningStocks"),

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-base-control',
@@ -6,7 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./base-control.component.scss'],
 })
 export class BaseControlComponent implements OnInit {
-  constructor() {}
+  protected controlLabelIdentifier: string;
+
+  constructor(protected translateService: TranslateService) {}
 
   ngOnInit() {}
 
@@ -16,5 +19,13 @@ export class BaseControlComponent implements OnInit {
 
   validate(): boolean {
     return true;
+  }
+
+  setControlLabelIdentifier(controlLabelIdentifier: string) {
+    this.controlLabelIdentifier = controlLabelIdentifier;
+  }
+
+  get controLabel(): string {
+    return this.translateService.instant(this.controlLabelIdentifier);
   }
 }
