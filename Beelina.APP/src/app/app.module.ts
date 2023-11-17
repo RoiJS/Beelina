@@ -1,29 +1,27 @@
-import { Injectable, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { TitleStrategy } from '@angular/router';
-
-import { BrowserModule } from '@angular/platform-browser';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { StoreModule } from '@ngrx/store';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { EffectsModule } from '@ngrx/effects';
-
+import { StoreModule } from '@ngrx/store';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTreeModule } from '@angular/material/tree';
-import { MatIconModule } from '@angular/material/icon';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
-import { translateLoaderFactory } from './_loaders/translate.loader';
 import { AuthGuard } from './_guards/auth.guard';
+import { translateLoaderFactory } from './_loaders/translate.loader';
 
-import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor.service';
-import { ErrorInteceptorProvider } from './_services/error.interceptor.service';
-import { GraphQLModule } from './graphql.module';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
+import { ErrorInteceptorProvider } from './_services/error.interceptor.service';
+import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor.service';
 import { TemplatePageTitleStrategyService } from './_services/title-strategy.service';
+import { GraphQLModule } from './graphql.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -59,6 +57,7 @@ import { TemplatePageTitleStrategyService } from './_services/title-strategy.ser
       provide: TitleStrategy,
       useClass: TemplatePageTitleStrategyService,
     },
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } },
   ],
   bootstrap: [AppComponent],
 })

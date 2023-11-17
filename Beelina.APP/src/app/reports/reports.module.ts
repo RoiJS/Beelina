@@ -1,19 +1,22 @@
 import { NgModule } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 import { ReportsComponent } from './reports.component';
-import { SharedModule } from '../shared/shared.module';
 import { ReportsRoutingModule } from './reports.routing.module';
-import { DateRangeControlComponent } from './report-controls/date-range-control/date-range-control.component';
-import { SortOrderControlComponent } from './report-controls/sort-order-control/sort-order-control.component';
-import { DatePickerComponent } from './report-controls/date-picker/date-picker.component';
+import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 
 @NgModule({
-  imports: [SharedModule, ReportsRoutingModule],
-  declarations: [
-    ReportsComponent,
-    DateRangeControlComponent,
-    DatePickerComponent,
-    SortOrderControlComponent,
+  imports: [
+    CommonModule,
+    CustomUISharedModule,
+    MatIconModule,
+    ReportsRoutingModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
   ],
+  declarations: [ReportsComponent],
 })
 export class ReportsModule {}

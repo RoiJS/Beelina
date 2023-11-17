@@ -1,10 +1,20 @@
 import { NgModule } from '@angular/core';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
+import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { ProductRoutingModule } from './product.routing.module';
-import { SharedModule } from '../shared/shared.module';
-
 import { ProductComponent } from './product.component';
 import { TopProductsComponent } from './top-products/top-products.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
@@ -27,9 +37,19 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
+    CustomUISharedModule,
+    ScrollingModule,
     ProductRoutingModule,
     AccountVerificationModule,
+    MatBadgeModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
+    MatRippleModule,
+    MatBottomSheetModule,
+    MatSnackBarModule,
+    ReactiveFormsModule,
     StoreModule.forFeature('barangays', BarangayReducers.reducers),
     StoreModule.forFeature('products', ProductReducers.reducers),
     StoreModule.forFeature('productUnits', ProductUnitReducers.reducers),
@@ -45,6 +65,7 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
       CustomerEffects,
       ProductTransactionsEffects,
     ]),
+    TranslateModule.forChild(),
   ],
   declarations: [
     ProductComponent,
