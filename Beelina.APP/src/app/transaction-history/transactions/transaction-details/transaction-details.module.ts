@@ -1,12 +1,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatDividerModule } from '@angular/material/divider';
+import { CommonModule } from '@angular/common';
+import { MatListModule } from '@angular/material/list';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { TransactionDetailsComponent } from './transaction-details.component';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
+    CustomUISharedModule,
+    MatDividerModule,
+    MatListModule,
+    MatSnackBarModule,
     RouterModule.forChild([
       {
         path: '',
@@ -14,6 +23,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
         title: 'TRANSACTION_DETAILS_PAGE.TITLE',
       },
     ]),
+    TranslateModule.forChild(),
   ],
   declarations: [TransactionDetailsComponent],
 })

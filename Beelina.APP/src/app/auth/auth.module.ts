@@ -1,18 +1,25 @@
 import { NgModule } from '@angular/core';
-import { AuthComponent } from './auth.component';
-import {
-  RouterModule,
-} from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { AuthComponent } from './auth.component';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { SharedModule } from '../shared/shared.module';
+import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { LoginEffects } from './store/effects';
 import { reducers } from './store/reducers';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
+    CustomUISharedModule,
+    MatIconModule,
+    MatSnackBarModule,
+    ReactiveFormsModule,
     RouterModule.forChild([
       {
         path: '',
@@ -20,6 +27,7 @@ import { reducers } from './store/reducers';
         title: 'AUTH_PAGE.TITLE',
       },
     ]),
+    TranslateModule.forChild(),
     StoreModule.forFeature('authCredentials', reducers),
     EffectsModule.forFeature([LoginEffects]),
   ],

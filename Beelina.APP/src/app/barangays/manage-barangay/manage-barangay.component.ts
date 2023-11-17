@@ -7,6 +7,7 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
+import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { Barangay } from 'src/app/_models/barangay';
 import { BarangayService } from 'src/app/_services/barangay.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
@@ -44,42 +45,46 @@ export class ManageBarangayComponent implements OnInit {
   ngOnInit() {}
 
   onSave() {
-    const name = this._barangayForm.get('name').value;
-    const id = this.data.barangay.id;
-    const manageBarangay = new Barangay();
-    manageBarangay.name = name;
-    manageBarangay.id = id;
+    this._barangayForm.markAllAsTouched();
 
-    this.dialogService
-      .openConfirmation(this.dialogTitle, this._dialogConfirmationMessage)
-      .subscribe((result) => {
-        if (result) {
-          this.barangayService.updateBarangay(manageBarangay).subscribe({
-            complete: () => {
-              this._bottomSheetRef.dismiss();
-              this.snackBarService.open(
-                this._dialogSuccessMessage,
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
-              );
-              this._bottomSheetRef.dismiss(true);
-            },
-            error: (err) => {
-              this._bottomSheetRef.dismiss();
-              this.snackBarService.open(
-                this._dialogErrorMessage,
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
-              );
-              this._bottomSheetRef.dismiss(false);
-            },
-          });
-        }
-      });
+    if (this._barangayForm.valid) {
+      const name = this._barangayForm.get('name').value;
+      const id = this.data.barangay.id;
+      const manageBarangay = new Barangay();
+      manageBarangay.name = name;
+      manageBarangay.id = id;
+
+      this.dialogService
+        .openConfirmation(this.dialogTitle, this._dialogConfirmationMessage)
+        .subscribe((result: ButtonOptions) => {
+          if (result === ButtonOptions.YES) {
+            this.barangayService.updateBarangay(manageBarangay).subscribe({
+              complete: () => {
+                this._bottomSheetRef.dismiss();
+                this.snackBarService.open(
+                  this._dialogSuccessMessage,
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                  {
+                    duration: 5000,
+                  }
+                );
+                this._bottomSheetRef.dismiss(true);
+              },
+              error: (err) => {
+                this._bottomSheetRef.dismiss();
+                this.snackBarService.open(
+                  this._dialogErrorMessage,
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                  {
+                    duration: 5000,
+                  }
+                );
+                this._bottomSheetRef.dismiss(false);
+              },
+            });
+          }
+        });
+    }
   }
 
   onCancel() {

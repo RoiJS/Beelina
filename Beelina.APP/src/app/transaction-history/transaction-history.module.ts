@@ -1,19 +1,29 @@
 import { NgModule } from '@angular/core';
-
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
-import { SharedModule } from '../shared/shared.module';
-import { TransactionHistoryComponent } from './transaction-history.component';
-
-import { TransactionDatesEffects } from '../transaction-history/store/effects';
-
+import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import * as TransactionDatesReducers from '../transaction-history/store/reducers';
+import { TransactionHistoryComponent } from './transaction-history.component';
+import { TransactionDatesEffects } from '../transaction-history/store/effects';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
+    CustomUISharedModule,
+    ScrollingModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatBottomSheetModule,
     StoreModule.forFeature(
       'transactionDates',
       TransactionDatesReducers.reducers
@@ -32,9 +42,8 @@ import * as TransactionDatesReducers from '../transaction-history/store/reducers
           ),
       },
     ]),
-    EffectsModule.forFeature([
-      TransactionDatesEffects,
-    ]),
+    EffectsModule.forFeature([TransactionDatesEffects]),
+    TranslateModule.forChild(),
   ],
   declarations: [TransactionHistoryComponent],
 })

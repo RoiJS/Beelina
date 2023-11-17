@@ -1,12 +1,24 @@
 import { NgModule } from '@angular/core';
-
-import { AddProductDetailsComponent } from './add-product-details.component';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { TranslateModule } from '@ngx-translate/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 
+import { AddProductDetailsComponent } from './add-product-details.component';
+import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
+    CustomUISharedModule,
+    MatSelectModule,
+    MatIconModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
     RouterModule.forChild([
       {
         path: '',
@@ -14,6 +26,7 @@ import { RouterModule } from '@angular/router';
         title: 'ADD_PRODUCT_DETAILS_PAGE.TITLE',
       },
     ]),
+    TranslateModule.forChild(),
   ],
   declarations: [AddProductDetailsComponent],
 })

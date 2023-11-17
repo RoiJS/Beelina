@@ -1,12 +1,19 @@
 import { NgModule } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TranslateModule } from '@ngx-translate/core';
+import { RouterModule } from '@angular/router';
 
 import { TransactionsComponent } from './transactions.component';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { RouterModule } from '@angular/router';
+import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
+    CustomUISharedModule,
+    MatIconModule,
+    ScrollingModule,
     RouterModule.forChild([
       {
         path: '',
@@ -21,6 +28,7 @@ import { RouterModule } from '@angular/router';
           ),
       },
     ]),
+    TranslateModule.forChild(),
   ],
   declarations: [TransactionsComponent],
 })
