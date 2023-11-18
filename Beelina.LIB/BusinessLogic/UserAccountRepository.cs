@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Helpers;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Helpers;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
@@ -37,6 +38,15 @@ namespace Beelina.LIB.BusinessLogic
             if (user != null && user.Id != userId)
                 return true;
             return false;
+        }
+
+        public async Task<List<UserAccount>> GetAllSalesAgents()
+        {
+            var salesAgentAccounts = await _beelinaRepository.ClientDbContext.UserAccounts
+                            .Includes(a => a.UserPermissions)
+                            .ToListAsync();
+
+            return salesAgentAccounts.Where(x => x.UserPermissions.Any(u => u.ModuleId == ModulesEnum.Retail && u.PermissionLevel == PermissionLevelEnum.User)).ToList();
         }
 
         public async Task<UserAccount> Login(string username, string password)

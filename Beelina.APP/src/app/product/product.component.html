@@ -6,6 +6,9 @@
     mat-icon-button
     class="toolbar-option"
     (click)="openTextOrderDialog()"
+    *ngIf="
+      currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
+    "
   >
     <mat-icon matBadgeColor="warn">add_comment</mat-icon>
   </button>
@@ -14,6 +17,9 @@
     [disabled]="itemCounter === 0"
     class="toolbar-option"
     (click)="goToCart()"
+    *ngIf="
+      currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
+    "
   >
     <mat-icon
       [matBadge]="itemCounter"
@@ -25,7 +31,9 @@
   <mat-icon
     matRipple
     [matMenuTriggerFor]="menu"
-    *ngIf="currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)"
+    *ngIf="
+      currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
+    "
     >more_vert</mat-icon
   >
   <mat-menu #menu="matMenu">
@@ -60,6 +68,31 @@
         "PRODUCTS_CATALOGUE_PAGE.DESCRIPTION" | translate
       }}</span>
     </div>
+    <div
+      *ngIf="
+        currentUserPermission > getPermissionLevel(permissionLevelEnum.User)
+      "
+      class="product-current-sales-agent-picker-container"
+    >
+      <mat-form-field appearance="fill">
+        <mat-label
+          >{{
+            "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.LABEL"
+              | translate
+          }}:</mat-label
+        >
+        <mat-select
+          [(ngModel)]="currentSalesAgentId"
+          (selectionChange)="switchSaleAgent($event)"
+        >
+          <mat-option
+            *ngFor="let salesAgent of salesAgents"
+            [value]="salesAgent.id"
+            >{{ salesAgent.fullname }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </div>
     <app-search-field
       (onSearch)="onSearch($event)"
       [placeHolderTextIdentifier]="
@@ -69,7 +102,7 @@
 
     <app-list-container
       [templateType]="emptyEntityTemplateEnum.PRODUCTS"
-      [count]="dataSource.itemCount"
+      [count]="dataSource?.itemCount"
     >
       <cdk-virtual-scroll-viewport
         itemSize="30"
@@ -80,7 +113,8 @@
           <app-product-card-item
             [productItem]="item"
             [allowManageItem]="
-              currentUserPermission > getPermissionLevel(permissionLevelEnum.User) ||
+              currentUserPermission >
+                getPermissionLevel(permissionLevelEnum.User) ||
               allowManageProductDetails
             "
             (editItem)="editProduct($event)"
@@ -90,6 +124,20 @@
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>
+    <div
+      *ngIf="
+        currentSalesAgentId === 0 &&
+        currentUserPermission > getPermissionLevel(permissionLevelEnum.User)
+      "
+      class="no-selected-sales-agent-label-container"
+    >
+      <div class="no-selected-sales-agent-label">
+        <mat-icon>person_pin</mat-icon>
+        <label>{{
+          "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.HINT" | translate
+        }}</label>
+      </div>
+    </div>
   </div>
 
   <app-floating-button

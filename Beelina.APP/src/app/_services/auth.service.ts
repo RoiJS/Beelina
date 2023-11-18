@@ -322,6 +322,7 @@ export class AuthService {
     this.storageService.remove('appSecretToken');
     this.storageService.remove('productTransactions');
     this.storageService.remove('allowManageProductDetails');
+    this.storageService.remove('currentSalesAgentId');
 
     this.store.dispatch(LoginActions.reserLoginCredentials());
 
@@ -487,6 +488,7 @@ export class AuthService {
     } = JSON.parse(<string>this.storageService.getString('authToken'));
 
     const user: {
+      id: number;
       firstName: string;
       middleName: string;
       lastName: string;
@@ -503,6 +505,7 @@ export class AuthService {
     );
 
     const loadedUser = new User();
+    loadedUser.id = user.id;
     loadedUser.firstName = user.firstName;
     loadedUser.middleName = user.middleName;
     loadedUser.lastName = user.lastName;
@@ -555,6 +558,7 @@ export class AuthService {
     const currentUser = this._jwtHelper.decodeToken(authToken.token);
 
     const user = new User();
+    user.id = +currentUser.nameid;
     user.firstName = currentUser.firstName;
     user.middleName = currentUser.middleName;
     user.lastName = currentUser.lastName;

@@ -20,10 +20,11 @@ namespace Beelina.API.Types.Mutations
             [Service] IProductUnitRepository<ProductUnit> productUnitRepository,
             [Service] IMapper mapper,
             [Service] ICurrentUserService currentUserService,
+            int userAccountId,
             ProductInput productInput)
         {
             var productFromRepo = await productRepository.GetEntity(productInput.Id).ToObjectAsync();
-            var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productInput.Id, currentUserService.CurrentUserId);
+            var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productInput.Id, userAccountId);
             var productUnitFromRepo = await productUnitRepository.GetProductUnitByName(productInput.ProductUnitInput.Name);
 
             productRepository.SetCurrentUserId(currentUserService.CurrentUserId);
@@ -58,7 +59,7 @@ namespace Beelina.API.Types.Mutations
                 productStockPerPanelFromRepo = new ProductStockPerPanel
                 {
                     ProductId = productFromRepo.Id,
-                    UserAccountId = currentUserService.CurrentUserId,
+                    UserAccountId = userAccountId,
                     PricePerUnit = productInput.PricePerUnit
                 };
             }

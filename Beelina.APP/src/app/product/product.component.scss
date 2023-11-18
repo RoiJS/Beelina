@@ -1,5 +1,23 @@
 @import "../../app-variables";
 
+.product-current-sales-agent-picker-container {
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.no-selected-sales-agent-label-container {
+  display: flex;
+  justify-content: space-around;
+  height: 400px;
+  align-items: center;
+
+  .no-selected-sales-agent-label {
+    display: flex;
+    align-items: center;
+  }
+}
+
 .product-list {
   height: 72vh;
 }

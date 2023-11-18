@@ -14,15 +14,15 @@ namespace Beelina.API.Types.Query
         [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
         [UseProjection]
         [UseFiltering]
-        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, [Service] ICurrentUserService currentUserService)
+        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, int userAccountId)
         {
-            return await productRepository.GetProducts(currentUserService.CurrentUserId, 0);
+            return await productRepository.GetProducts(userAccountId, 0);
         }
 
         [Authorize]
-        public async Task<IProductPayload> GetProduct([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, [Service] ICurrentUserService currentUserService, int productId)
+        public async Task<IProductPayload> GetProduct([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, int productId, int userAccountId)
         {
-            var productFromRepo = await productRepository.GetProducts(currentUserService.CurrentUserId, productId);
+            var productFromRepo = await productRepository.GetProducts(userAccountId, productId);
 
             if (productFromRepo == null || productFromRepo?.Count == 0)
             {

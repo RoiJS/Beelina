@@ -341,6 +341,10 @@
   "PRODUCTS_CATALOGUE_PAGE": {
     "TITLE": "Product Catalogue",
     "DESCRIPTION": "This is where product information is being managed. User can choose items and add them to cart.",
+    "SALES_AGENT_SELECT_CONTROL": {
+      "LABEL": "Sales Agent",
+      "HINT": "Select sales agent first to load product list"
+    },
     "SEARCH_TEXT_FIELD": {
       "PLACEHOLDER": "Search product name or code..."
     },
