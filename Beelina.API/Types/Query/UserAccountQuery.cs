@@ -55,5 +55,11 @@ namespace Beelina.API.Types.Query
             var usernameExists = await userAccountRepository.UserExists(username, userId);
             return new CheckUsernameInformationResult(usernameExists);
         }
+
+        [Authorize]
+        public async Task<List<UserAccount>> GetSalesAgents([Service] IUserAccountRepository<UserAccount> userAccountRepository)
+        {
+            return await userAccountRepository.GetAllSalesAgents();
+        }
     }
 }

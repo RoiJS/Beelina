@@ -5,13 +5,14 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { ProductRoutingModule } from './product.routing.module';
@@ -38,6 +39,7 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     CustomUISharedModule,
     ScrollingModule,
     ProductRoutingModule,
@@ -49,6 +51,7 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
     MatRippleModule,
     MatBottomSheetModule,
     MatSnackBarModule,
+    MatSelectModule,
     ReactiveFormsModule,
     StoreModule.forFeature('barangays', BarangayReducers.reducers),
     StoreModule.forFeature('products', ProductReducers.reducers),

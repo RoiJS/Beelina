@@ -55,6 +55,9 @@ export class ProductComponent
   private _subscription: Subscription = new Subscription();
   private _allowManageProductDetails = false;
   private _dialogRef: MatBottomSheetRef<AccountVerificationComponent>;
+  private _salesAgents: Array<User>;
+
+  currentSalesAgentId: number = 0;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -81,8 +84,6 @@ export class ProductComponent
       ProductTransactionActions.initializeProductTransactions()
     );
 
-    this._dataSource = new ProductDataSource(this.store);
-
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
     this._currentUser = this.authService.user.value;
 
@@ -101,6 +102,32 @@ export class ProductComponent
           }
         })
     );
+
+    if (
+      this.currentUserPermission ===
+      this.getPermissionLevel(PermissionLevelEnum.User)
+    ) {
+      this.currentSalesAgentId = this._currentUser.id;
+      this.storageService.storeString(
+        'currentSalesAgentId',
+        this._currentUser.id.toString()
+      );
+      this._dataSource = new ProductDataSource(this.store);
+    } else {
+      this.productService.getSalesAgentsList().subscribe({
+        next: (data: Array<User>) => {
+          this._salesAgents = data;
+
+          if (this.storageService.hasKey('currentSalesAgentId')) {
+            this.currentSalesAgentId = +this.storageService.getString(
+              'currentSalesAgentId'
+            );
+
+            this._dataSource = new ProductDataSource(this.store);
+          }
+        },
+      });
+    }
   }
 
   ngOnInit() {}
@@ -160,9 +187,14 @@ export class ProductComponent
   }
 
   addItemToCart(productId: number) {
-    this.bottomSheet.open(AddToCartProductComponent, {
-      data: { productId, productTransactions: this._productTransactions },
-    });
+    if (
+      this.currentUserPermission ===
+      this.getPermissionLevel(PermissionLevelEnum.User)
+    ) {
+      this.bottomSheet.open(AddToCartProductComponent, {
+        data: { productId, productTransactions: this._productTransactions },
+      });
+    }
   }
 
   openTextOrderDialog() {
@@ -241,6 +273,21 @@ export class ProductComponent
     this.store.dispatch(ProductActions.getProductsAction());
   }
 
+  switchSaleAgent(e) {
+    this.storageService.storeString('currentSalesAgentId', e.value.toString());
+    this.currentSalesAgentId = e.value;
+    this.store.dispatch(ProductActions.resetProductState());
+    this.store.dispatch(
+      ProductTransactionActions.initializeProductTransactions()
+    );
+
+    if (!this._dataSource) {
+      this._dataSource = new ProductDataSource(this.store);
+    } else {
+      this.store.dispatch(ProductActions.getProductsAction());
+    }
+  }
+
   get itemCounter(): number {
     return this._itemCounter;
   }
@@ -255,5 +302,9 @@ export class ProductComponent
 
   get allowManageProductDetails(): boolean {
     return this._allowManageProductDetails;
+  }
+
+  get salesAgents(): Array<User> {
+    return this._salesAgents;
   }
 }

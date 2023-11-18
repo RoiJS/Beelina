@@ -17,5 +17,6 @@ namespace Beelina.LIB.Interfaces
         EncryptedPassword GenerateNewPassword(string password);
         RefreshToken GenerateNewRefreshToken();
         Task RemoveExpiredRefreshTokens();
+        Task<List<UserAccount>> GetAllSalesAgents();
     }
 }

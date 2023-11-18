@@ -28,10 +28,13 @@ import { InsufficientProductQuantity } from '../_models/insufficient-product-qua
 import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
 import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
 import { IProductTransactionQueryPayload } from '../_interfaces/payloads/iproduct-transaction-query.payload';
+import { User } from '../_models/user.model';
+import { StorageService } from './storage.service';
 
 const GET_PRODUCTS_METHODS = gql`
-  query ($cursor: String, $filterKeyword: String) {
+  query ($userAccountId: Int!, $cursor: String, $filterKeyword: String) {
     products(
+      userAccountId: $userAccountId
       after: $cursor
       where: {
         or: [
@@ -78,8 +81,8 @@ const GET_PRODUCTS_METHODS = gql`
 `;
 
 const GET_PRODUCT_STORE = gql`
-  query ($productId: Int!) {
-    product(productId: $productId) {
+  query ($productId: Int!, $userAccountId: Int!) {
+    product(productId: $productId, userAccountId: $userAccountId) {
       typename: __typename
       ... on ProductInformationResult {
         id
@@ -101,8 +104,10 @@ const GET_PRODUCT_STORE = gql`
 `;
 
 const UPDATE_PRODUCT_MUTATION = gql`
-  mutation ($productInput: ProductInput!) {
-    updateProduct(input: { productInput: $productInput }) {
+  mutation ($productInput: ProductInput!, $userAccountId: Int!) {
+    updateProduct(
+      input: { productInput: $productInput, userAccountId: $userAccountId }
+    ) {
       product {
         name
       }
@@ -132,9 +137,13 @@ const CHECK_PRODUCT_CODE = gql`
 `;
 
 const VALIDATE_PRODUCT_QUANTITIES = gql`
-  query ($productTransactionsInputs: [ProductTransactionInput!]!) {
+  query (
+    $userAccountId: Int!
+    $productTransactionsInputs: [ProductTransactionInput!]!
+  ) {
     validateProductionTransactionsQuantities(
       productTransactionsInputs: $productTransactionsInputs
+      userAccountId: $userAccountId
     ) {
       productId
       productName
@@ -158,11 +167,23 @@ const ANALYZE_TEXT_ORDERS = gql`
   }
 `;
 
+const GET_SALES_AGENTS_LIST = gql`
+  query {
+    salesAgents {
+      id
+      firstName
+      lastName
+      username
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   constructor(
     private apollo: Apollo,
-    private store: Store<AppStateInterface>
+    private store: Store<AppStateInterface>,
+    private storageService: StorageService
   ) {}
 
   getProducts() {
@@ -189,12 +210,15 @@ export class ProductService {
         (productTransactions) => (productTransactionItems = productTransactions)
       );
 
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
     return this.apollo
       .watchQuery({
         query: GET_PRODUCTS_METHODS,
         variables: {
           cursor,
           filterKeyword,
+          userAccountId,
         },
       })
       .valueChanges.pipe(
@@ -240,11 +264,14 @@ export class ProductService {
   }
 
   getProduct(productId: number) {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
     return this.apollo
       .watchQuery({
         query: GET_PRODUCT_STORE,
         variables: {
           productId,
+          userAccountId,
         },
       })
       .valueChanges.pipe(
@@ -284,11 +311,14 @@ export class ProductService {
       },
     };
 
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
     return this.apollo
       .mutate({
         mutation: UPDATE_PRODUCT_MUTATION,
         variables: {
           productInput,
+          userAccountId,
         },
       })
       .pipe(
@@ -378,11 +408,14 @@ export class ProductService {
       };
     });
 
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
     return this.apollo
       .watchQuery({
         query: VALIDATE_PRODUCT_QUANTITIES,
         variables: {
           productTransactionsInputs,
+          userAccountId,
         },
       })
       .valueChanges.pipe(
@@ -447,6 +480,30 @@ export class ProductService {
             return productTransactions;
           }
         )
+      );
+  }
+
+  getSalesAgentsList() {
+    return this.apollo
+      .watchQuery({
+        query: GET_SALES_AGENTS_LIST,
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ salesAgents: Array<User> }>) => {
+          const data = result.data.salesAgents;
+
+          const salesAgents: Array<User> = data.map((currentUser: User) => {
+            const user = new User();
+            user.id = currentUser.id;
+            user.firstName = currentUser.firstName;
+            user.middleName = currentUser.middleName;
+            user.lastName = currentUser.lastName;
+            user.username = currentUser.username;
+            return user;
+          });
+
+          return salesAgents;
+        })
       );
   }
 }

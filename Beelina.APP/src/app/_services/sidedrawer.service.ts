@@ -47,8 +47,8 @@ export class SidedrawerService {
         name: 'MAIN_MENU.PRODUCTS_CATALOGUE',
         url: '/product-catalogue/product-list',
         icon: 'add_shopping_cart',
-        minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: administratorPermissionLevel,
+        // minimumPermissionLevel: userPermissionLevel,
+        // maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.TRANSACTION_HISTORY',
