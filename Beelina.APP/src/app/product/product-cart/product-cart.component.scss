@@ -15,6 +15,11 @@
     margin-bottom: 15px;
 
     &__list-item-section {
+      border-bottom-style: solid;
+      border-bottom-color: var(--mat-divider-color);
+      border-bottom-width: var(--mat-divider-width);
+      padding: 10px 0;
+
       .list-item {
         display: flex;
         flex-direction: row;
@@ -45,7 +50,7 @@
       margin-bottom: 15px;
 
       button {
-        width: 100px;
+        width: 135px;
         align-self: end;
       }
     }

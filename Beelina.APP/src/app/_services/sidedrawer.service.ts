@@ -28,32 +28,29 @@ export class SidedrawerService {
       PermissionLevelEnum.Administrator
     );
 
+    const managerPermissionLevel = getPermissionLevelEnum(
+      PermissionLevelEnum.Manager
+    );
+
     const availableMenus = [
       {
         name: 'MAIN_MENU.SALES',
         url: '/sales',
         icon: 'monetization_on',
         minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.TOP_PRODUCTS',
         url: '/product-catalogue/top-products',
         icon: 'trending_up',
         minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.PRODUCTS_CATALOGUE',
         url: '/product-catalogue/product-list',
         icon: 'add_shopping_cart',
-        // minimumPermissionLevel: userPermissionLevel,
-        // maximumPermissionLevel: administratorPermissionLevel,
-      },
-      {
-        name: 'MAIN_MENU.TRANSACTION_HISTORY',
-        url: '/transaction-history',
-        icon: 'history',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
       },
@@ -62,21 +59,28 @@ export class SidedrawerService {
         url: '/draft-transactions',
         icon: 'archive',
         minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
+      },
+      {
+        name: 'MAIN_MENU.TRANSACTION_HISTORY',
+        url: '/transaction-history',
+        icon: 'history',
+        minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.BARANGAYS',
         url: '/barangays',
         icon: 'place',
         minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.REPORTS',
         url: '/reports',
         icon: 'bar_chart',
         minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.PROFILE',

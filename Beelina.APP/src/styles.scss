@@ -14,8 +14,8 @@
 //  If you don't need the default component typographies but still want the hierarchy styles,
 //  you can delete this line and instead use:
 //    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-@include mat.all-legacy-component-typographies();
-@include mat.legacy-core();
+@include mat.all-component-typographies();
+@include mat.core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -214,6 +214,10 @@ body {
 /*#endregion*/
 
 /*#region FORM DIALOG*/
+.dialog-container {
+  padding: 15px;
+}
+
 .dialog-form-container {
   display: flex;
   flex-direction: column;

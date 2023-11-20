@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import * as TransactionDatesReducers from '../transaction-history/store/reducers';
@@ -24,6 +24,7 @@ import { TransactionDatesEffects } from '../transaction-history/store/effects';
     MatDatepickerModule,
     MatNativeDateModule,
     MatBottomSheetModule,
+    MatRippleModule,
     StoreModule.forFeature(
       'transactionDates',
       TransactionDatesReducers.reducers

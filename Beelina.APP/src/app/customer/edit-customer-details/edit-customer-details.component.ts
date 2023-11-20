@@ -52,7 +52,7 @@ export class EditCustomerDetailsComponent implements OnInit {
   ) {
     this._customerForm = this.formBuilder.group({
       name: ['', Validators.required],
-      address: ['', Validators.required],
+      address: [''],
       outletType: [null],
       paymentMethod: ['', Validators.required],
       barangay: ['', Validators.required],
@@ -156,7 +156,7 @@ export class EditCustomerDetailsComponent implements OnInit {
                     this.translateService.instant(
                       'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.ERROR_MESSAGE'
                     ),
-                    this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
                   );
                 },
               });

@@ -13,7 +13,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatNativeDateModule } from '@angular/material/core';
 
@@ -28,7 +27,6 @@ import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
     CommonModule,
     CustomUISharedModule,
     MatIconModule,
-    MatDividerModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,

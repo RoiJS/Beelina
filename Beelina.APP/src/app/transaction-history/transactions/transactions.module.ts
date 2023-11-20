@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatRippleModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,6 +14,7 @@ import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
     CommonModule,
     CustomUISharedModule,
     MatIconModule,
+    MatRippleModule,
     ScrollingModule,
     RouterModule.forChild([
       {

@@ -69,7 +69,6 @@ export class AuthComponent extends BaseComponent implements OnInit {
           this.store.dispatch(LoginActions.loginAction({ username, password }));
 
           this.store.pipe(select(authCredentialsSelector)).subscribe((auth) => {
-            this._isLoading = false;
             if (auth.accessToken) {
               this.router.navigate([this.getDefaultLandingPage()], {
                 replaceUrl: true,
@@ -79,6 +78,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
 
           this.store.pipe(select(errorSelector)).subscribe((error) => {
             if (error) {
+              this._isLoading = false;
               this.snackBarService.open(
                 error,
                 this.translateService.instant('GENERAL_TEXTS.CLOSE')
@@ -109,10 +109,8 @@ export class AuthComponent extends BaseComponent implements OnInit {
     const userPermission = this.authService.user.value.getModulePrivilege(
       ModuleEnum.Retail
     );
-    if (
-      userPermission === getPermissionLevelEnum(PermissionLevelEnum.Manager)
-    ) {
-      defaultLandingPage = '/profile';
+    if (userPermission > getPermissionLevelEnum(PermissionLevelEnum.User)) {
+      defaultLandingPage = '/product-catalogue';
     }
 
     return defaultLandingPage;

@@ -29,6 +29,7 @@ export class ProductTransactionsEffects {
           ProductTransactionActions.initializeProductTransactionsSuccess({
             productTransactions: productTransactions.map((p) => {
               const productTransaction = new ProductTransaction();
+              productTransaction.code = p.code;
               productTransaction.productId = p.productId;
               productTransaction.productName = p.productName;
               productTransaction.price = p.price;

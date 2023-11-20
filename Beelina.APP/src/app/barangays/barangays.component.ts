@@ -77,7 +77,7 @@ export class BarangaysComponent
 
     this._manageBarangayDialogRef
       .afterDismissed()
-      .subscribe((data: Barangay) => {
+      .subscribe((data: boolean) => {
         if (data) {
           this.store.dispatch(BarangaysStoreActions.resetBarangayList());
           this.store.dispatch(BarangaysStoreActions.getBarangaysAction());

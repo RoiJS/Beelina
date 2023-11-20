@@ -15,18 +15,22 @@
           class="panel__body-section transaction-details-panel__body-section"
         >
           <div class="product-transaction-amount-information">
-            <span>{{
-              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.REGISTERED_DATE_CONTROL.LABEL"
-                | translate
-            }}</span>
+            <span
+              >{{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.REGISTERED_DATE_CONTROL.LABEL"
+                  | translate
+              }}:</span
+            >
             <span>{{ transaction?.dateCreatedFormatted }}</span>
           </div>
           <br />
           <div class="product-transaction-amount-information">
-            <span>{{
-              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.INVOICE_NO_CONTROL.LABEL"
-                | translate
-            }}</span>
+            <span
+              >{{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.INVOICE_NO_CONTROL.LABEL"
+                  | translate
+              }}:</span
+            >
             <span>{{ transaction?.invoiceNo }}</span>
           </div>
           <br />
@@ -50,8 +54,10 @@
                     <br />
                     {{ item.product?.name }}
                   </span>
-                  <span>X</span>
-                  <span>{{ item.quantity }}</span>
+                  <span>
+                    <span>X</span>
+                    <span>{{ item.quantity }}</span>
+                  </span>
                 </div>
 
                 <div class="product-transaction-information-price">
@@ -70,7 +76,6 @@
                     >{{ "GENERAL_TEXTS.UNPAID" | translate }}</span
                   >
                 </div>
-                <mat-divider></mat-divider>
               </div>
             </mat-list-item>
           </mat-list>

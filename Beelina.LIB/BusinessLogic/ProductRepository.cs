@@ -12,7 +12,7 @@ namespace Beelina.LIB.BusinessLogic
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
         }
-        
+
         public async Task<IList<Product>> GetProducts(int userId, int productId)
         {
             // Gather products information with product stock per panel and product unit.
@@ -91,6 +91,7 @@ namespace Beelina.LIB.BusinessLogic
 
                                                    where
                                                         t.CreatedById == userId
+                                                        && t.Status == Enums.TransactionStatusEnum.Confirmed // Make sure only included confirmed transactions
                                                        && !t.IsDelete
                                                        && t.IsActive
                                                        && !pt.IsDelete
