@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
-  CanLoad,
   Route,
   UrlSegment,
-  CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
 } from '@angular/router';
@@ -14,7 +12,7 @@ import { productTransactionsSelector } from '../product/add-to-cart-product/stor
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
 @Injectable()
-export class CartGuard implements CanLoad, CanActivate {
+export class CartGuard {
   constructor(private store: Store<AppStateInterface>) {}
 
   canLoad(

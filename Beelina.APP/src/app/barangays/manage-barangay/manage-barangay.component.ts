@@ -60,7 +60,6 @@ export class ManageBarangayComponent implements OnInit {
           if (result === ButtonOptions.YES) {
             this.barangayService.updateBarangay(manageBarangay).subscribe({
               complete: () => {
-                this._bottomSheetRef.dismiss();
                 this.snackBarService.open(
                   this._dialogSuccessMessage,
                   this.translateService.instant('GENERAL_TEXTS.CLOSE'),
@@ -71,7 +70,6 @@ export class ManageBarangayComponent implements OnInit {
                 this._bottomSheetRef.dismiss(true);
               },
               error: (err) => {
-                this._bottomSheetRef.dismiss();
                 this.snackBarService.open(
                   this._dialogErrorMessage,
                   this.translateService.instant('GENERAL_TEXTS.CLOSE'),

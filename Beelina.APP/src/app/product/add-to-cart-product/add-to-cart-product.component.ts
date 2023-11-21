@@ -106,6 +106,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
   private setItem(currentValue: number) {
     this.store.dispatch(
       ProductTransactionActions.selectProduct({
+        code: this._product.code,
         productId: this._product.id,
         price: this._product.price,
         quantity: currentValue,

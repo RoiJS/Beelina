@@ -8,9 +8,11 @@ namespace Beelina.LIB.BusinessLogic
     public class StoreRepository
         : BaseRepository<Store>, IStoreRepository<Store>
     {
-        public StoreRepository(IBeelinaRepository<Store> beelinaRepository)
+        private readonly ICurrentUserService CurrentUserService;
+        public StoreRepository(IBeelinaRepository<Store> beelinaRepository, ICurrentUserService currentUserService)
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
+            CurrentUserService = currentUserService;
         }
 
         public async Task<List<Store>> GetAllStores()
@@ -24,7 +26,11 @@ namespace Beelina.LIB.BusinessLogic
         {
             return await _beelinaRepository.ClientDbContext.Stores
                         .Includes(s => s.Transactions)
-                        .Where(s => s.Barangay.Name == barangayName && !s.IsDelete)
+                        .Where(s =>
+                            s.Barangay.Name == barangayName
+                            && s.Barangay.UserAccountId == CurrentUserService.CurrentUserId
+                            && !s.IsDelete
+                        )
                         .ToListAsync();
         }
 

@@ -10,7 +10,6 @@ import { AuthService } from '../_services/auth.service';
 import { UniqueUsernameValidator } from '../_validators/unique-username.validator';
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -134,6 +133,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
                   ),
                   this.translateService.instant('GENERAL_TEXTS.CLOSE')
                 );
+                this.authService.refresh().subscribe(); // Make sure to refresh user details
               },
               error: (error) => {
                 this._isLoading = false;

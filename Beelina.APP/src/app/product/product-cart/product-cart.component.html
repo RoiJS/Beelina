@@ -30,7 +30,7 @@
                   ({{
                     "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE"
                       | translate
-                  }}: {{ item.product?.code }})
+                  }}: {{ item.code }})
                   <br />
                   {{ item?.productName }}
                 </span>
@@ -45,8 +45,8 @@
                     >edit</mat-icon
                   >
                 </div>
-                <mat-divider></mat-divider>
               </div>
+              <mat-divider></mat-divider>
             </mat-list-item>
           </mat-list>
           <div

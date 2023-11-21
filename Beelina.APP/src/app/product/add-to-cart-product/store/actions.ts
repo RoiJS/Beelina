@@ -23,7 +23,13 @@ export const initializeTransactionDetails = createAction(
 
 export const selectProduct = createAction(
   '[Transaction] Select Product',
-  props<{ productId: number; price: number; quantity: number; name: string }>()
+  props<{
+    code: string;
+    productId: number;
+    price: number;
+    quantity: number;
+    name: string;
+  }>()
 );
 
 export const setSaveOrderLoadingState = createAction(

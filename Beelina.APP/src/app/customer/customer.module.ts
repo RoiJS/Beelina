@@ -4,6 +4,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatRippleModule } from '@angular/material/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 
@@ -25,6 +26,7 @@ import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
     CustomUISharedModule,
     MatIconModule,
     MatMenuModule,
+    MatRippleModule,
     ScrollingModule,
     StoreModule.forFeature('paymentMethods', PaymentMethodReducers.reducers),
     StoreModule.forFeature('customerStores', CustomerStoresReducers.reducers),

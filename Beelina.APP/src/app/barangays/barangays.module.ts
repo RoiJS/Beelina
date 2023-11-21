@@ -19,6 +19,7 @@ import { BarangaysRoutingModule } from './barangays.routing.module';
 
 import * as BarangaysReducers from '../barangays/store/reducers';
 import { BarangaysEffects } from './store/effects';
+import { MatRippleModule } from '@angular/material/core';
 
 @NgModule({
   imports: [
@@ -28,6 +29,7 @@ import { BarangaysEffects } from './store/effects';
     MatInputModule,
     MatSnackBarModule,
     MatIconModule,
+    MatRippleModule,
     MatBottomSheetModule,
     ReactiveFormsModule,
     MatMenuModule,

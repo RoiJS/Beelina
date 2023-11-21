@@ -53,7 +53,7 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
   ) {
     this._customerForm = this.formBuilder.group({
       name: ['', Validators.required],
-      address: ['', Validators.required],
+      address: [''],
       outletType: [null],
       paymentMethod: ['', Validators.required],
       barangay: ['', Validators.required],
@@ -142,7 +142,7 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
                     this.translateService.instant(
                       'ADD_CUSTOMER_DETAILS_PAGE.SAVE_NEW_CUSTOMER_DIALOG.ERROR_MESSAGE'
                     ),
-                    this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
                   );
 
                   this.store.dispatch(

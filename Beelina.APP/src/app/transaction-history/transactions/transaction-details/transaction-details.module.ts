@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -13,7 +12,6 @@ import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
   imports: [
     CommonModule,
     CustomUISharedModule,
-    MatDividerModule,
     MatListModule,
     MatSnackBarModule,
     RouterModule.forChild([
