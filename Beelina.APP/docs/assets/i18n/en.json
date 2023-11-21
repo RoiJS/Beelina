@@ -1,0 +1,557 @@
+{
+  "GENERAL_TEXTS": {
+    "BEELINA": "Beelina",
+    "CLOSE": "Close",
+    "DAILY": "Daily",
+    "WEEKLY": "Weekly",
+    "MONTHLY": "Monthly",
+    "CONFIRM": "Confirm",
+    "CLEAR": "Clear",
+    "CANCEL": "Cancel",
+    "RESET": "Reset",
+    "GROSS_TOTAL": "Gross Total",
+    "NET_TOTAL": "Net Total",
+    "PAID": "Paid",
+    "UNPAID": "Unpaid",
+    "BALANCE": "Balance",
+    "MARK_AS_PAID": " Mark as paid",
+    "EDIT": "Edit",
+    "REMOVE": "Remove",
+    "STORES": "Stores"
+  },
+
+  "MAIN_MENU": {
+    "SALES": "Sales",
+    "CUSTOMERS": "Customers",
+    "BARANGAYS": "Barangays",
+    "TOP_PRODUCTS": "Top Products",
+    "PRODUCTS_CATALOGUE": "Products Catalogue",
+    "DRAFT_TRANSACTIONS": "Draft Transactions",
+    "TRANSACTION_HISTORY": "Transaction History",
+    "REPORTS": "Reports",
+    "PROFILE": "Profile",
+    "LOGOUT": "Logout"
+  },
+
+  "DIALOG": {
+    "CONFIRM_DIALOG_BUTTONS": {
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel"
+    },
+    "ALERT_DIALOG_BUTTONS": {
+      "OK": "OK"
+    }
+  },
+
+  "MAIN_PAGE": {
+    "DESCRIPTION": "This application is only supported in mobile view at the moment."
+  },
+
+  "AUTH_PAGE": {
+    "TITLE": "Login",
+    "MAIN_LABEL": "Login to your Account",
+    "SUB_LABEL": "Get started with our app and enjoy the experience.",
+    "AUTH_FORM": {
+      "COMPANY_FIELD": {
+        "LABEL": "Company",
+        "HINT": "Enter valid company name..."
+      },
+      "USERNAME_FIELD": {
+        "LABEL": "Username",
+        "HINT": "Enter valid username..."
+      },
+      "PASSWORD_FIELD": {
+        "LABEL": "Password",
+        "HINT": "Enter valid password..."
+      },
+      "LOGIN_BUTTON": {
+        "LABEL": "Login"
+      }
+    }
+  },
+
+  "ORDERS_PAGE": {
+    "TITLE": "Orders"
+  },
+
+  "CUSTOMERS_PAGE": {
+    "TITLE": "Customer",
+    "DESCRIPTION": "This is where customer information can be managed.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search customer name..."
+    },
+    "DELETE_CUSTOMER_DIALOG": {
+      "TITLE": "Delete customer",
+      "CONFIRM": "Are you sure to delete selected customer?",
+      "SUCCESS_MESSAGE": "Selected customer has been successfully removed.",
+      "ERROR_MESSAGE": "Removing customer failed. Please again later."
+    }
+  },
+
+  "BARANGAYS_PAGE": {
+    "TITLE": "Barangays",
+    "DESCRIPTION": "This is where barangays information can be managed.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search barangay name..."
+    },
+    "DELETE_BARANGAY_DIALOG": {
+      "TITLE": "Delete barangay",
+      "CONFIRM": "Are you sure to delete selected barangay?",
+      "SUCCESS_MESSAGE": "Selected barangay has been successfully removed.",
+      "ERROR_MESSAGE": "Removing barangay failed. Please again later."
+    },
+    "ADD_BARANGAY_DIALOG": {
+      "FORM_CONTROL_SECTION": {
+        "HEADER_TITLE": "Add New Barangay",
+        "NAME_CONTROL": {
+          "LABEL": "Name",
+          "HINT": "Please enter barangay name"
+        }
+      },
+      "TITLE": "Add Barangay",
+      "CONFIRM": "Are you sure to add new barangay?",
+      "SUCCESS_MESSAGE": "New barangay has been successfully added!",
+      "ERROR_MESSAGE": "Adding new barangay failed. Please again later."
+    },
+    "UPDATE_BARANGAY_DIALOG": {
+      "FORM_CONTROL_SECTION": {
+        "NAME_CONTROL": {
+          "LABEL": "Name",
+          "HINT": "Please enter barangay name"
+        }
+      },
+      "TITLE": "Update Barangay",
+      "CONFIRM": "Are you sure to update barangay?",
+      "SUCCESS_MESSAGE": "Selected barangay has been successfully updated!",
+      "ERROR_MESSAGE": "Updating barangay failed. Please again later."
+    }
+  },
+
+  "EDIT_CUSTOMER_DETAILS_PAGE": {
+    "TITLE": "Edit Customer",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Edit Store",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter customer name"
+      },
+      "ADDRESS_CONTROL": {
+        "LABEL": "Address",
+        "HINT": "Please enter customer address"
+      },
+      "OUTLET_TYPE_CONTROL": {
+        "LABEL": "Outlet Type",
+        "OPTIONS": {
+          "KEY_ACCOUNT": "Key Account",
+          "GEN_TRADE": "Gen Trade"
+        }
+      },
+      "PAYMENT_METHOD_CONTROL": {
+        "LABEL": "Payment Method",
+        "HINT": "Please specify payment method"
+      },
+      "BARANGAY_CONTROL": {
+        "LABEL": "Barangay/Branch",
+        "HINT": "Please specify from which barangay/branch"
+      }
+    },
+    "EDIT_CUSTOMER_DIALOG": {
+      "TITLE": "Update customer",
+      "CONFIRM": "Are you sure to save customer details?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating customer failed. Please again later."
+    }
+  },
+
+  "ADD_CUSTOMER_DETAILS_PAGE": {
+    "TITLE": "Add Customer",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Add New Store",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter customer name"
+      },
+      "ADDRESS_CONTROL": {
+        "LABEL": "Address",
+        "HINT": "Please enter customer address"
+      },
+      "PAYMENT_METHOD_CONTROL": {
+        "LABEL": "Payment Method",
+        "HINT": "Please specify payment method"
+      },
+      "OUTLET_TYPE_CONTROL": {
+        "LABEL": "Outlet Type",
+        "OPTIONS": {
+          "KEY_ACCOUNT": "Key Account",
+          "GEN_TRADE": "Gen Trade"
+        }
+      },
+      "BARANGAY_CONTROL": {
+        "LABEL": "Barangay/Branch",
+        "HINT": "Please specify from which barangay/branch"
+      }
+    },
+    "SAVE_NEW_CUSTOMER_DIALOG": {
+      "TITLE": "Save new customer",
+      "CONFIRM": "Are you sure to save new customer details?",
+      "SUCCESS_MESSAGE": "New customer has been saved!",
+      "ERROR_MESSAGE": "Saving new customer failed. Please again later."
+    }
+  },
+
+  "PRODUCT_CART_PAGE": {
+    "TITLE": "Order Summary",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Order Summary",
+      "NO_OF_ITEMS": {
+        "LABEL": "No. of Items"
+      },
+      "DISCOUNT_CONTROL": {
+        "LABEL": "Discount (%)"
+      },
+      "REGISTERED_DATE_CONTROL": {
+        "LABEL": "Registered Date"
+      },
+      "INVOICE_NO_CONTROL": {
+        "LABEL": "Invoice No",
+        "HINT": "Please enter a unique invoice number"
+      },
+      "BARANGAY_CONTROL": {
+        "LABEL": "Barangay/Branch",
+        "HINT": "Please select barangay/branch"
+      },
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please select customer name"
+      },
+      "ADDRESS_CONTROL": {
+        "LABEL": "Address"
+      },
+      "PAYMENT_METHOD_CONTROL": {
+        "LABEL": "Payment Method"
+      },
+      "DATE_CONTROL": {
+        "LABEL": "Due Date"
+      },
+      "BUTTON_OPTIONS": {
+        "CONFIRM": "Confirm",
+        "DRAFT": "Draft",
+        "ADD_ITEM": "Add Item +"
+      }
+    },
+    "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
+      "TITLE": "Save new order",
+      "CONFIRM": "Are you sure to save new order?",
+      "SUCCESS_MESSAGE": "New order has been saved!",
+      "ERROR_MESSAGE": "Saving order failed. Please again later."
+    },
+    "SAVE_NEW_DRAFT_ORDER_DIALOG": {
+      "TITLE": "Save as draft order",
+      "CONFIRM": "Are you sure to save new draft order?",
+      "SUCCESS_MESSAGE": "New draft order has been saved!",
+      "ERROR_MESSAGE": "Saving draft order failed. Please again later."
+    },
+    "CLEAR_ORDER_DIALOG": {
+      "TITLE": "Clear order",
+      "CONFIRM": "Are you sure to save clear order?",
+      "SUCCESS_MESSAGE": "Order has been cleared"
+    },
+    "INSUFFICIENT_PRODUCT_QUANTITY_DIALOG": {
+      "TITLE": "Insufficient Item Stocks",
+      "MESSAGE": "Following Items have insufficient stocks available: </br></br>"
+    }
+  },
+
+  "ADD_PRODUCT_DETAILS_PAGE": {
+    "TITLE": "Add Product",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Add New Product",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter product name"
+      },
+      "CODE_CONTROL": {
+        "LABEL": "Code",
+        "HINT": "Please enter product code",
+        "ALREADY_EXIST_ERROR_MESSAGE": "Code already exists. Please enter a different code"
+      },
+      "DESCRIPTION_CONTROL": {
+        "LABEL": "Description",
+        "HINT": "Please enter description"
+      },
+      "STOCK_QUANTITY_CONTROL": {
+        "LABEL": "Stock",
+        "HINT": "Please specify stock"
+      },
+      "PRICE_PER_UNIT_CONTROL": {
+        "LABEL": "Price",
+        "HINT": "Please specify price"
+      },
+      "UNIT_CONTROL": {
+        "LABEL": "Unit",
+        "HINT": "Please specify unit"
+      }
+    },
+    "SAVE_NEW_PRODUCT_DIALOG": {
+      "TITLE": "Save new product",
+      "CONFIRM": "Are you sure to save new prouct details?",
+      "SUCCESS_MESSAGE": "New product has been saved!",
+      "ERROR_MESSAGE": "Saving new product failed. Please again later."
+    }
+  },
+
+  "EDIT_PRODUCT_DETAILS_PAGE": {
+    "TITLE": "Edit Product",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Edit New Product",
+      "NAME_CONTROL": {
+        "LABEL": "Name",
+        "HINT": "Please enter product name"
+      },
+      "CODE_CONTROL": {
+        "LABEL": "Code",
+        "HINT": "Please enter product code",
+        "ALREADY_EXIST_ERROR_MESSAGE": "Code already exists. Please enter a different code"
+      },
+      "DESCRIPTION_CONTROL": {
+        "LABEL": "Description",
+        "HINT": "Please enter description"
+      },
+      "STOCK_QUANTITY_CONTROL": {
+        "LABEL": "Stock",
+        "HINT": "Please specify stock"
+      },
+      "PRICE_PER_UNIT_CONTROL": {
+        "LABEL": "Price",
+        "HINT": "Please specify price"
+      },
+      "UNIT_CONTROL": {
+        "LABEL": "Unit",
+        "HINT": "Please specify unit"
+      }
+    },
+    "EDIT_PRODUCT_DIALOG": {
+      "TITLE": "Update product",
+      "CONFIRM": "Are you sure to save product details?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating product failed. Please again later."
+    }
+  },
+
+  "PRODUCTS_CATALOGUE_PAGE": {
+    "TITLE": "Product Catalogue",
+    "DESCRIPTION": "This is where product information is being managed. User can choose items and add them to cart.",
+    "SALES_AGENT_SELECT_CONTROL": {
+      "LABEL": "Sales Agent",
+      "HINT": "Select sales agent first to load product list"
+    },
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search product name or code..."
+    },
+    "PRODUCT_CARD_ITEM": {
+      "NAME": "Name",
+      "CODE": "Code",
+      "STOCK": "Stock",
+      "PRICE": "Price"
+    },
+    "DELETE_PRODUCT_DIALOG": {
+      "TITLE": "Delete product",
+      "CONFIRM": "Are you sure to delete selected product?",
+      "SUCCESS_MESSAGE": "Selected product has been successfully removed.",
+      "ERROR_MESSAGE": "Removing product failed. Please again later."
+    },
+    "MANAGE_PRODUCT_DETAILS": {
+      "ACTIVATE_MANAGE_PRODUCT_DETAILS": "Activate Manage Product",
+      "DEACTIVATE_MANAGE_PRODUCT_DETAILS": "Deactivate Manage Product"
+    },
+    "ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG": {
+      "SUCCESS_MESSAGE": "Manage product details has been successfully activated.",
+      "INVALID_USER_PRIVILEGE_MESSAGE": "User does not have privilege to activate manage product details.",
+      "ERROR_MESSAGE": "Invalid user account! Activating manage product details failed. Please again later."
+    }
+  },
+
+  "ADD_TO_CART_PAGE": {
+    "TITLE": "Product",
+    "PRODUCT_INFORMATION_CONTAINER": {
+      "STOCK_LEFT": "Stock Left"
+    }
+  },
+
+  "TRANSACTION_FILTER_AND_SORT_DIALOG": {
+    "TITLE": "Filter Settings",
+    "DESCRIPTION": "",
+    "FORM_CONTROL_SECTION": {
+      "DATE_RANGE_CONTROL": {
+        "LABEL": "Enter a date range",
+        "START_DATE_PLACEHOLDER": "Start Date",
+        "END_DATE_PLACEHOLDER": "End Date"
+      },
+      "DATE_ORDER_CONTROL": {
+        "LABEL": "Date Order",
+        "ASCENDING_OPTION": "Ascending",
+        "DESCENDING_OPTION": "Descending"
+      }
+    }
+  },
+
+  "TRANSACTION_HISTORY_PAGE": {
+    "TITLE": "Transactions",
+    "DESCRIPTION": "This shows the list of dates where there are transactions recorded."
+  },
+
+  "DRAFT_TRANSACTIONS_PAGE": {
+    "TITLE": "Draft Transactions",
+    "DESCRIPTION": "This shows available dates that have draft transactions."
+  },
+
+  "TRANSACTION_PAGE": {
+    "TITLE": "Transactions",
+    "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
+  },
+
+  "TRANSACTION_DETAILS_PAGE": {
+    "TITLE": "Transactions Details",
+    "DETAILS_SECTION": {},
+    "MARK_TRANSACTION_AS_PAID_DIALOG": {
+      "TITLE": "Mark as Paid",
+      "CONFIRM": "Are you sure to mark this transaction as paid?",
+      "SUCCESS_MESSAGE": "Selected transaction is now marked as paid.",
+      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later."
+    }
+  },
+
+  "TOP_PRODUCTS_PAGE": {
+    "TITLE": "Top Products",
+    "DESCRIPTION": "This shows statistics of the most frequently transacted products."
+  },
+
+  "SALES_PAGE": {
+    "TITLE": "Sales",
+    "DESCRIPTION": "This shows the amount of sales that the system recorded based on the date filter.",
+    "FILTER_OPTIONS_PANEL": {
+      "PICK_DATE": "Pick Date",
+      "PICK_WEEK": "Pick Week",
+      "PICK_MONTH": "Pick Month"
+    },
+    "SALES_PANEL": {
+      "LABEL": "Sales Amount"
+    }
+  },
+
+  "SIDE_DRAWER_SECTION": {
+    "FOOTER": {
+      "VERSION": "Version",
+      "COPYRIGHT": "Copyright 2022.",
+      "ALL_RIGHTS_RESERVED": "All rights reserved"
+    }
+  },
+
+  "TEXT_ORDER_DIALOG": {
+    "TTTLE": "Text Order",
+    "DESCRIPTION": "Set orders by pasting texts following the format below:",
+    "FORM_CONTROL_SECTION": {
+      "TEXT_ORDER_CONTROL": {
+        "LABEL": "Enter Text Order:",
+        "HINT_LABEL_1": "[Product Code] x [Quantity]",
+        "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 x 20"
+      },
+      "BUTTON_OPTIONS": {
+        "SET_ORDER": "Set Order"
+      }
+    }
+  },
+
+  "REPORTS_PAGE": {
+    "TITLE": "Reports",
+    "DESCRIPTION": "This page contains the list of different type of reports that user can use for data analysis.",
+    "REPORTS_INFORMATION": {
+      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_NAME": "Daily Summarize Transactions",
+      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "This report can generate a summary of confirmed transactions on a given date. This helps user to analyze and gives an insight of their daily transactions.",
+      "DAILY_DETAILED_TRANSACTIONS_REPORT_NAME": "Daily Detailed Transactions",
+      "DAILY_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate detailed transactions on a given date. This presents transactions in an itemized manner where user can analyze purchased item per transactions. Take note that it only extract details from confirmed transactions.",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_NAME": "Ending Inventory Per Product Report",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_DESC": "The user can see the beginning and ending stocks information for a given date using this report. This will help administrators to analyze how much was the initial stocks loaded and how much was left.",
+      "SALES_PER_CUSTOMER_REPORT_NAME": "Sales Per Customer Report",
+      "SALES_PER_CUSTOMER_REPORT_DESC": "This report can generate sales per customer on a given date. This can help administrators to analyze the sales and get insights on sales per customer."
+    }
+  },
+
+  "REPORT_DETAILS_PAGE": {
+    "TITLE": "Report Filter Settings",
+    "CONTROL_INFORMATION": {
+      "DATE_RANGE_CONTROL": {
+        "LABEL": "Enter a date range",
+        "START_DATE_LABEL": "Start Date",
+        "END_DATE_LABEL": "End Date"
+      },
+      "DATE_PICKER_CONTROL": {
+        "LABEL": "Enter a date",
+        "DATE_PLACEHOLDER": "Date"
+      },
+      "SORT_ORDER_CONTROL": {
+        "LABEL": "Sort Order",
+        "ASCENDING_OPTION": "Ascending",
+        "DESCENDING_OPTION": "Descending"
+      }
+    },
+    "BUTTON_OPTIONS": {
+      "GENERATE_EXCEL_FILE": "Generate Report"
+    },
+    "GENERATE_REPORT_DIALOG": {
+      "TITLE": "Generate Report",
+      "CONFIRM": "This will generate report in an excel file format and will be sent to your email address. Do you want to  proceeed?",
+      "SUCCESS_MESSAGE": "Report has been successfully generated. The report will be sent to your email. Please check your email. Thank you!",
+      "ERROR_MESSAGE": "Failed to generate report file. Please try again later."
+    }
+  },
+
+  "PROFILE_PAGE": {
+    "TITLE": "Profile",
+    "DESCRIPTION": "This is where user profile information can be managed.",
+    "FORM_CONTROL_SECTION": {
+      "HEADER_TITLE": "Manage Profile",
+      "FIRSTNAME_CONTROL": {
+        "LABEL": "First name",
+        "HINT": "Please enter first name"
+      },
+      "MIDDLENAME_CONTROL": {
+        "LABEL": "Middle name",
+        "HINT": "Please enter middle name"
+      },
+      "LASTNAME_CONTROL": {
+        "LABEL": "Last name",
+        "HINT": "Please enter last name"
+      },
+      "EMAIL_CONTROL": {
+        "LABEL": "Email",
+        "HINT": "Please enter a valid email",
+        "INVALID_EMAIL_ERROR_MESSAGE": "Invalid email format. Please enter a valid email address."
+      },
+      "USERNAME_CONTROL": {
+        "LABEL": "Username",
+        "HINT": "Please enter a valid username",
+        "ALREADY_EXIST_ERROR_MESSAGE": "Username already exists. Please enter a different username"
+      },
+      "NEW_PASSWORD_CONTROL": {
+        "LABEL": "New Password",
+        "HINT": "Please new enter password",
+        "PASSWORD_NOT_STRONG_ERROR_MESSAGE": "Password must be at least 8 characters long and include one letter, one digit, and one special character."
+      },
+      "CONFIRM_PASSWORD_CONTROL": {
+        "LABEL": "Confirm Password",
+        "HINT": "Please enter confirm password"
+      }
+    },
+    "EDIT_PROFILE_DIALOG": {
+      "TITLE": "Update profile",
+      "CONFIRM": "Are you sure to save profile details?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating profile failed. Please again later."
+    }
+  },
+
+  "ACCOUNT_VERIFICATION_DIALOG": {
+    "TITLE": "Management Account Verification"
+  }
+}
