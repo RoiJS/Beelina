@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { TitleStrategy } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -22,6 +22,7 @@ import { ErrorInteceptorProvider } from './_services/error.interceptor.service';
 import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor.service';
 import { TemplatePageTitleStrategyService } from './_services/title-strategy.service';
 import { GraphQLModule } from './graphql.module';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [AppComponent],
@@ -47,6 +48,13 @@ import { GraphQLModule } from './graphql.module';
       maxAge: 25,
       logOnly: environment.production,
       autoPause: true,
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      // enabled: !isDevMode(),
+      enabled: isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
   providers: [

@@ -10,7 +10,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { filter } from 'rxjs';
+import { filter, map } from 'rxjs';
 
 import { SharedComponent } from './shared/components/shared/shared.component';
 
@@ -21,6 +21,7 @@ import { AuthService } from './_services/auth.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { UIService } from './_services/ui.service';
 import { ModuleEnum } from './_enum/module.enum';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -38,16 +39,22 @@ export class AppComponent
 
   private activatedUrl = '';
 
+  isOnline: boolean;
+  modalVersion: boolean;
+
   constructor(
     private authService: AuthService,
     private appVersionService: AppVersionService,
     private router: Router,
     private sideDrawerService: SidedrawerService,
     private translateService: TranslateService,
+    private swUpdate: SwUpdate,
     protected override uiService: UIService
   ) {
     super(uiService);
     this.translateService.setDefaultLang('en');
+
+    this.modalVersion = false;
   }
 
   override ngOnInit(): void {
@@ -59,6 +66,25 @@ export class AppComponent
     });
 
     this.initRouterEvents();
+
+    this.updateOnlineStatus();
+
+    window.addEventListener('online', this.updateOnlineStatus.bind(this));
+    window.addEventListener('offline', this.updateOnlineStatus.bind(this));
+
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates.pipe(
+        filter(
+          (evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'
+        ),
+        map((evt: any) => {
+          console.info(
+            `currentVersion=[${evt.currentVersion} | latestVersion=[${evt.latestVersion}]`
+          );
+          this.modalVersion = true;
+        })
+      );
+    }
   }
 
   override ngOnDestroy(): void {
@@ -88,6 +114,11 @@ export class AppComponent
     //   currentUrl = `${url}#${fragment}`;
     // }
     return this.activatedUrl === currentUrl;
+  }
+
+  private updateOnlineStatus(): void {
+    this.isOnline = window.navigator.onLine;
+    console.info(`isOnline=[${this.isOnline}]`);
   }
 
   private initRouterEvents(): void {
