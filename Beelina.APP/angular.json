@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Beelina.APP:build:production"
+              "browserTarget": "Beelina.APP:build:production"
             },
             "development": {
-              "buildTarget": "Beelina.APP:build:development"
+              "browserTarget": "Beelina.APP:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "Beelina.APP:build"
+            "browserTarget": "Beelina.APP:build"
           }
         },
         "test": {
