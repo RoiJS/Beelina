@@ -7,10 +7,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
+import { Platform } from '@angular/cdk/platform';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { filter, map } from 'rxjs';
+import { filter } from 'rxjs';
 
 import { SharedComponent } from './shared/components/shared/shared.component';
 
@@ -21,7 +22,7 @@ import { AuthService } from './_services/auth.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { UIService } from './_services/ui.service';
 import { ModuleEnum } from './_enum/module.enum';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -41,6 +42,8 @@ export class AppComponent
 
   isOnline: boolean;
   modalVersion: boolean;
+  modalPwaEvent: any;
+  modalPwaPlatform: string | undefined;
 
   constructor(
     private authService: AuthService,
@@ -49,6 +52,7 @@ export class AppComponent
     private sideDrawerService: SidedrawerService,
     private translateService: TranslateService,
     private swUpdate: SwUpdate,
+    private platform: Platform,
     protected override uiService: UIService
   ) {
     super(uiService);
@@ -72,19 +76,22 @@ export class AppComponent
     window.addEventListener('online', this.updateOnlineStatus.bind(this));
     window.addEventListener('offline', this.updateOnlineStatus.bind(this));
 
-    if (this.swUpdate.isEnabled) {
-      this.swUpdate.versionUpdates.pipe(
-        filter(
-          (evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'
-        ),
-        map((evt: any) => {
-          console.info(
-            `currentVersion=[${evt.currentVersion} | latestVersion=[${evt.latestVersion}]`
-          );
-          this.modalVersion = true;
-        })
-      );
-    }
+    // if (this.swUpdate.isEnabled) {
+    //   console.log('Service Worker is enabled');
+    //   this.swUpdate.versionUpdates.pipe(
+    //     filter(
+    //       (evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'
+    //     ),
+    //     map((evt: any) => {
+    //       console.info(
+    //         `currentVersion=[${evt.currentVersion} | latestVersion=[${evt.latestVersion}]`
+    //       );
+    //       this.modalVersion = true;
+    //     })
+    //   );
+    // } else {
+    //   console.log('Service Worker is disabled');
+    // }
   }
 
   override ngOnDestroy(): void {
@@ -116,9 +123,52 @@ export class AppComponent
     return this.activatedUrl === currentUrl;
   }
 
+  public updateVersion(): void {
+    this.modalVersion = false;
+    window.location.reload();
+  }
+
+  public closeVersion(): void {
+    this.modalVersion = false;
+  }
+
   private updateOnlineStatus(): void {
     this.isOnline = window.navigator.onLine;
     console.info(`isOnline=[${this.isOnline}]`);
+
+    if (!this.isOnline) {
+      this.router.navigate(['/offline']);
+    } else {
+      this.router.navigate(['/auth']);
+    }
+  }
+
+  private loadModalPwa(): void {
+    if (this.platform.ANDROID) {
+      window.addEventListener('beforeinstallprompt', (event: any) => {
+        event.preventDefault();
+        this.modalPwaEvent = event;
+        this.modalPwaPlatform = 'ANDROID';
+      });
+    }
+
+    if (this.platform.IOS && this.platform.SAFARI) {
+      const isInStandaloneMode =
+        'standalone' in window.navigator &&
+        (<any>window.navigator)['standalone'];
+      if (!isInStandaloneMode) {
+        this.modalPwaPlatform = 'IOS';
+      }
+    }
+  }
+
+  public addToHomeScreen(): void {
+    this.modalPwaEvent.prompt();
+    this.modalPwaPlatform = undefined;
+  }
+
+  public closePwa(): void {
+    this.modalPwaPlatform = undefined;
   }
 
   private initRouterEvents(): void {

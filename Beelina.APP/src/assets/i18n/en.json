@@ -553,5 +553,10 @@
 
   "ACCOUNT_VERIFICATION_DIALOG": {
     "TITLE": "Management Account Verification"
+  },
+
+  "OFFLINE_PAGE": {
+    "TITLE": "Offline",
+    "DESCRIPTION": "The app will be available as soon as the connection has been restored."
   }
 }

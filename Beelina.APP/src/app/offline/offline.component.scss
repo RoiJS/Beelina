@@ -1,0 +1,19 @@
+@import "../../app-variables";
+
+.offline-page-container {
+  background: $background-gradient;
+  display: flex;
+  justify-content: space-around;
+  height: 100vh;
+  padding: 0px 25px;
+
+  &__content {
+    align-self: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  &__title {
+    font-size: 45px;
+  }
+}
