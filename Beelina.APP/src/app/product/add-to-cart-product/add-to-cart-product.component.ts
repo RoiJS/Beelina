@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA,
@@ -28,6 +28,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
   private _productTransaction: ProductTransaction;
   private _itemCounterForm: FormGroup;
   private _productTransactions: Array<ProductTransaction>;
+  private _invalidValue: boolean;
 
   constructor(
     private _bottomSheetRef: MatBottomSheetRef<AddToCartProductComponent>,
@@ -44,7 +45,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
     this._productTransactions = data.productTransactions;
 
     this._itemCounterForm = this.formBuilder.group({
-      itemCounter: [0, Validators.maxLength(100)],
+      itemCounter: [0],
     });
 
     this._isLoading = true;
@@ -71,6 +72,10 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
             .setValue(this._productTransaction.quantity);
         }
       });
+
+    this._itemCounterForm.get('itemCounter').valueChanges.subscribe((value) => {
+      this._invalidValue = value > this._product.stockQuantity;
+    });
   }
 
   ngOnInit() {}
@@ -97,10 +102,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
   addItem() {
     let currentValue = this._itemCounterForm.get('itemCounter').value;
     currentValue += 1;
-
-    if (currentValue <= this._product.stockQuantity) {
-      this._itemCounterForm.get('itemCounter').setValue(currentValue);
-    }
+    this._itemCounterForm.get('itemCounter').setValue(currentValue);
   }
 
   private setItem(currentValue: number) {
@@ -128,5 +130,9 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
 
   get itemCounterForm(): FormGroup {
     return this._itemCounterForm;
+  }
+
+  get invalidValue(): boolean {
+    return this._invalidValue;
   }
 }

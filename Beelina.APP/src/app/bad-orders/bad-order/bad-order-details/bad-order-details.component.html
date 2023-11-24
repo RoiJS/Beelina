@@ -41,10 +41,7 @@
               *ngFor="let item of transaction?.productTransactions"
               role="listitem"
             >
-              <div
-                [ngClass]="{ unpaid: !item?.isPaid }"
-                class="product-transaction-list__item-section"
-              >
+              <div class="product-transaction-list__item-section">
                 <div class="product-transaction-information">
                   <span>
                     ({{
@@ -62,19 +59,6 @@
 
                 <div class="product-transaction-information-price">
                   <span>{{ item?.priceFormatted }}</span>
-                </div>
-
-                <div class="product-transaction-information-status">
-                  <span
-                    class="product-transaction-information-status--paid"
-                    *ngIf="item?.isPaid"
-                    >{{ "GENERAL_TEXTS.PAID" | translate }}</span
-                  >
-                  <span
-                    class="product-transaction-information-status--unpaid"
-                    *ngIf="!item?.isPaid"
-                    >{{ "GENERAL_TEXTS.UNPAID" | translate }}</span
-                  >
                 </div>
               </div>
             </mat-list-item>
@@ -119,13 +103,8 @@
         <div
           class="panel__footer-section transaction-details-panel__footer-section"
         >
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="markTransactionAsPaid()"
-            [disabled]="!transaction?.hasUnpaidProductTransaction"
-          >
-            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+          <button mat-raised-button color="warn" (click)="deleteTransaction()">
+            {{ "GENERAL_TEXTS.DELETE" | translate }}
           </button>
         </div>
       </div>

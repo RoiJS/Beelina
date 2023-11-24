@@ -14,7 +14,6 @@ namespace Beelina.API.Types.Mutations
         [Authorize]
         public async Task<Transaction> RegisterTransaction(
             [Service] ITransactionRepository<Transaction> transactionRepository,
-            [Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository,
             [Service] IProductRepository<Product> productRepository,
             [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
             [Service] ICurrentUserService currentUserService,
@@ -90,6 +89,21 @@ namespace Beelina.API.Types.Mutations
 
             transactionFromRepo.ProductTransactions.ForEach(p => p.Status = LIB.Enums.PaymentStatusEnum.Paid);
 
+            await transactionRepository.SaveChanges();
+
+            return transactionFromRepo;
+        }
+
+        [Authorize]
+        public async Task<Transaction> DeleteTransaction(
+                [Service] ITransactionRepository<Transaction> transactionRepository,
+                [Service] ICurrentUserService currentUserService,
+                int transactionId)
+        {
+            var transactionFromRepo = await transactionRepository.GetEntity(transactionId).ToObjectAsync();
+
+            transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+            transactionRepository.DeleteEntity(transactionFromRepo);
             await transactionRepository.SaveChanges();
 
             return transactionFromRepo;

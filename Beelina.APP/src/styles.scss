@@ -362,6 +362,10 @@ cdk-virtual-scroll-viewport.product-list
 }
 /*#endregion*/
 
+.transactions-list {
+  height: 80vh;
+}
+
 .mat-bottom-sheet-container {
   padding: 0 !important;
   background: $background-gradient;

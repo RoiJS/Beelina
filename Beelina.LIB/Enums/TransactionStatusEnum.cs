@@ -4,6 +4,8 @@
     {
         Draft = 1,
 
-        Confirmed = 2
+        Confirmed = 2,
+
+        BadOrder = 3
     }
 }

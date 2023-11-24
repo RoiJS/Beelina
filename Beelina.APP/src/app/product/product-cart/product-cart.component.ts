@@ -362,6 +362,72 @@ export class ProductCartComponent
     }
   }
 
+  saveAsBadOrder() {
+    this._orderForm.markAllAsTouched();
+    if (this._orderForm.valid) {
+      const transaction = new TransactionDto();
+      transaction.id = this._transactionId;
+      transaction.storeId = this._selectedCustomer.id;
+      transaction.status = TransactionStatusEnum.BAD_ORDER;
+      transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+      transaction.discount = this._discountForm.get('discount').value;
+      transaction.transactionDate = DateFormatter.format(
+        this._orderForm.get('transactionDate').value
+      );
+      transaction.productTransactions = this._productTransactions;
+
+      this.dialogService
+        .openConfirmation(
+          this.translateService.instant(
+            'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.TITLE'
+          ),
+          this.translateService.instant(
+            'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.CONFIRM'
+          )
+        )
+        .subscribe((result: ButtonOptions) => {
+          if (result === ButtonOptions.YES) {
+            this.transactionService.registerTransaction(transaction).subscribe({
+              next: () => {
+                this.snackBarService.open(
+                  this.translateService.instant(
+                    'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
+                  ),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
+                );
+                this.store.dispatch(
+                  ProductTransactionActions.setSaveOrderLoadingState({
+                    state: false,
+                  })
+                );
+                this.storageService.remove('productTransactions');
+                this.store.dispatch(
+                  ProductTransactionActions.resetProductTransactionState()
+                );
+
+                this.router.navigate(['/product-catalogue']);
+              },
+
+              error: () => {
+                this.snackBarService.open(
+                  this.translateService.instant(
+                    'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.ERROR_MESSAGE'
+                  ),
+                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
+                );
+
+                this.store.dispatch(
+                  ProductTransactionActions.setSaveOrderLoadingState({
+                    state: false,
+                  })
+                );
+              },
+            });
+          }
+        });
+    }
+  }
+
   updateItemToCart(productId: number) {
     this.bottomSheet.open(AddToCartProductComponent, {
       data: { productId, productTransactions: this._productTransactions },

@@ -69,6 +69,8 @@ namespace Beelina.LIB.BusinessLogic
                                         .Where(t =>
                                             t.TransactionDate.Date == Convert.ToDateTime(transactionDate)
                                             && t.Status == status
+                                            && t.IsDelete == false
+                                            && t.IsActive
                                             && t.CreatedById == currentUserService.CurrentUserId)
                                         .ToListAsync();
 
@@ -82,7 +84,11 @@ namespace Beelina.LIB.BusinessLogic
                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                     on t.Id equals pt.TransactionId
 
-                    where t.Status == status && t.CreatedById == currentUserService.CurrentUserId
+                    where
+                        t.Status == status
+                        && t.IsDelete == false
+                        && t.IsActive
+                        && t.CreatedById == currentUserService.CurrentUserId
 
                     select new
                     {

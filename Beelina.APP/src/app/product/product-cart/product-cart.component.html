@@ -104,7 +104,7 @@
           <mat-form-field appearance="fill">
             <mat-label
               >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.INVOICE_NO_CONTROL.LABEL"
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.TRANSACTION_NO_CONTROL.LABEL"
                   | translate
               }}:</mat-label
             >
@@ -205,6 +205,9 @@
         >
           <button mat-raised-button color="primary" (click)="confirm()">
             {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+          </button>
+          <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
+            {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
           </button>
           <button
             *ngIf="!isDraftTransaction"
