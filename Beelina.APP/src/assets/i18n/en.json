@@ -6,6 +6,7 @@
     "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
     "CONFIRM": "Confirm",
+    "BAD_ORDER": "Bad Order",
     "CLEAR": "Clear",
     "CANCEL": "Cancel",
     "RESET": "Reset",
@@ -14,7 +15,8 @@
     "PAID": "Paid",
     "UNPAID": "Unpaid",
     "BALANCE": "Balance",
-    "MARK_AS_PAID": " Mark as paid",
+    "MARK_AS_PAID": "Mark as paid",
+    "DELETE": "Delete",
     "EDIT": "Edit",
     "REMOVE": "Remove",
     "STORES": "Stores"
@@ -28,6 +30,7 @@
     "PRODUCTS_CATALOGUE": "Products Catalogue",
     "DRAFT_TRANSACTIONS": "Draft Transactions",
     "TRANSACTION_HISTORY": "Transaction History",
+    "BAD_ORDERS": "Bad Orders",
     "REPORTS": "Reports",
     "PROFILE": "Profile",
     "LOGOUT": "Logout"
@@ -212,8 +215,8 @@
       "REGISTERED_DATE_CONTROL": {
         "LABEL": "Registered Date"
       },
-      "INVOICE_NO_CONTROL": {
-        "LABEL": "Invoice No",
+      "TRANSACTION_NO_CONTROL": {
+        "LABEL": "Transaction No",
         "HINT": "Please enter a unique invoice number"
       },
       "BARANGAY_CONTROL": {
@@ -250,6 +253,12 @@
       "CONFIRM": "Are you sure to save new draft order?",
       "SUCCESS_MESSAGE": "New draft order has been saved!",
       "ERROR_MESSAGE": "Saving draft order failed. Please again later."
+    },
+    "SAVE_NEW_BAD_ORDER_DIALOG": {
+      "TITLE": "Save as bad order",
+      "CONFIRM": "Are you sure to save new bad order?",
+      "SUCCESS_MESSAGE": "New bad order has been saved!",
+      "ERROR_MESSAGE": "Saving bad order failed. Please again later."
     },
     "CLEAR_ORDER_DIALOG": {
       "TITLE": "Clear order",
@@ -405,6 +414,11 @@
     "DESCRIPTION": "This shows available dates that have draft transactions."
   },
 
+  "BAD_ORDERS_PAGE": {
+    "TITLE": "Bad Orders",
+    "DESCRIPTION": "This contains all registered bad orders."
+  },
+
   "TRANSACTION_PAGE": {
     "TITLE": "Transactions",
     "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
@@ -418,6 +432,16 @@
       "CONFIRM": "Are you sure to mark this transaction as paid?",
       "SUCCESS_MESSAGE": "Selected transaction is now marked as paid.",
       "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later."
+    }
+  },
+
+  "BAD_ORDER_DETAILS_PAGE": {
+    "TITLE": "Bad Order Details",
+    "DELETE_TRANSACTION_DIALOG": {
+      "TITLE": "Delete Bad Order",
+      "CONFIRM": "Are you sure to delete bar order?",
+      "SUCCESS_MESSAGE": "Bad order is now deleted.",
+      "ERROR_MESSAGE": "Deleting bad order failed. Please try again later."
     }
   },
 

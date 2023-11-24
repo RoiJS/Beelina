@@ -47,6 +47,12 @@ export const routes: Routes = [
     canLoad: [AuthGuard],
   },
   {
+    path: 'bad-orders',
+    loadChildren: () =>
+      import('./bad-orders/bad-orders.module').then((m) => m.BadOrdersModule),
+    canLoad: [AuthGuard],
+  },
+  {
     path: 'reports',
     loadChildren: () =>
       import('./reports/reports.module').then((m) => m.ReportsModule),

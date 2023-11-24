@@ -41,6 +41,16 @@ const REGISTER_TRANSACTION_MUTATION = gql`
   }
 `;
 
+const DELETE_TRANSACTION = gql`
+  mutation ($transactionId: Int!) {
+    deleteTransaction(input: { transactionId: $transactionId }) {
+      transaction {
+        id
+      }
+    }
+  }
+`;
+
 const GET_TRANSACTION_DATES = gql`
   query (
     $cursor: String
@@ -276,6 +286,37 @@ export class TransactionService {
             result: MutationResult<{ registerTransaction: ITransactionOutput }>
           ) => {
             const output = result.data.registerTransaction;
+            const payload = output.transaction;
+            const errors = output.errors;
+
+            if (payload) {
+              return payload;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return null;
+          }
+        )
+      );
+  }
+
+  deleteTransaction(transactionId: number) {
+    return this.apollo
+      .mutate({
+        mutation: DELETE_TRANSACTION,
+        variables: {
+          transactionId,
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{ deleteTransaction: ITransactionOutput }>
+          ) => {
+            const output = result.data.deleteTransaction;
             const payload = output.transaction;
             const errors = output.errors;
 

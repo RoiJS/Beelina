@@ -7,12 +7,14 @@ import { CommonModule } from '@angular/common';
 import { ReportsComponent } from './reports.component';
 import { ReportsRoutingModule } from './reports.routing.module';
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
+import { MatRippleModule } from '@angular/material/core';
 
 @NgModule({
   imports: [
     CommonModule,
     CustomUISharedModule,
     MatIconModule,
+    MatRippleModule,
     ReportsRoutingModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),

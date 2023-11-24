@@ -69,6 +69,14 @@ export class SidedrawerService {
         maximumPermissionLevel: managerPermissionLevel,
       },
       {
+        name: 'MAIN_MENU.BAD_ORDERS',
+        url: '/bad-orders',
+        icon: 'remove_shopping_cart',
+        minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
+      },
+
+      {
         name: 'MAIN_MENU.BARANGAYS',
         url: '/barangays',
         icon: 'place',

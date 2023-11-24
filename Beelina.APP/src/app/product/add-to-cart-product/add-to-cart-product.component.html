@@ -10,6 +10,7 @@
           <img [src]="getProductPhoto(product?.name)" />
         </div>
         <div class="product-information-container__details">
+          <span class="product-name">{{ product?.code }}</span>
           <span class="product-name">{{ product?.name }}</span>
           <span class="product-description">{{ product?.description }}</span>
           <span class="product-price">
@@ -36,8 +37,7 @@
           <input
             type="number"
             class="stock-number-input"
-            readonly
-            max="1000"
+            [ngClass]="{ 'warning-invalid-value': invalidValue }"
             formControlName="itemCounter"
           />
           <button mat-fab color="primary" (click)="addItem()">

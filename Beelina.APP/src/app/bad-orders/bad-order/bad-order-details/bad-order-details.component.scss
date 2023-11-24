@@ -1,0 +1,87 @@
+@import "../../../../app-variables";
+
+.transaction-details-panel {
+  height: 100%;
+
+  &__details-group-panel {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+  }
+
+  &__body-section {
+    padding: 15px 0;
+
+    .product-transaction-list {
+      mat-list-item {
+        border-bottom-style: solid;
+        border-bottom-color: var(--mat-divider-color);
+        border-bottom-width: var(--mat-divider-width);
+        padding: 10px 0;
+      }
+
+      max-height: 200px;
+      overflow: auto;
+      margin-bottom: 15px;
+
+      &__item-section {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 14px;
+
+        .product-transaction-information {
+          width: 180px;
+          display: flex;
+          justify-content: space-between;
+          align-self: center;
+        }
+
+        .product-transaction-information-price {
+          align-self: center;
+        }
+
+        .product-transaction-information-status {
+          align-self: center;
+          text-align: center;
+
+          span {
+            padding: 2px;
+
+            color: $white;
+            border-radius: 15px;
+            width: 50px;
+            display: block;
+            font-size: 12px;
+          }
+
+          &--paid {
+            background-color: #20c920;
+          }
+
+          &--unpaid {
+            background-color: #e02d00;
+          }
+        }
+      }
+    }
+
+    .product-transaction-amount-information {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+  }
+
+  &__footer-section {
+    padding: 0;
+
+    button {
+      width: 100%;
+    }
+  }
+}

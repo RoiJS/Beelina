@@ -1,8 +1,6 @@
 @import "../../app-variables";
 
 .transaction-history-list {
-  height: 80vh;
-
   &__unpaid-transactions-count-container {
     display: flex;
     justify-content: space-between;

@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { MatIconModule } from '@angular/material/icon';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
+import { EffectsModule } from '@ngrx/effects';
+import { TranslateModule } from '@ngx-translate/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { StoreModule } from '@ngrx/store';
 
-import { DraftTransactionsComponent } from './draft-transactions.component';
-import { TransactionDatesEffects } from '../transaction-history/store/effects';
+import { BadOrdersComponent } from './bad-orders.component';
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 
 import * as TransactionDatesReducers from '../transaction-history/store/reducers';
+import { TransactionDatesEffects } from '../transaction-history/store/effects';
 
 @NgModule({
   imports: [
@@ -33,20 +33,18 @@ import * as TransactionDatesReducers from '../transaction-history/store/reducers
     RouterModule.forChild([
       {
         path: '',
-        component: DraftTransactionsComponent,
-        title: 'MAIN_MENU.DRAFT_TRANSACTIONS',
+        component: BadOrdersComponent,
+        title: 'MAIN_MENU.BAD_ORDERS',
       },
       {
         path: 'transactions/:date',
         loadChildren: () =>
-          import('./draft-transaction/draft-transaction.module').then(
-            (m) => m.DraftTransactionModule
-          ),
+          import('./bad-order/bad-order.module').then((m) => m.BadOrderModule),
       },
     ]),
     EffectsModule.forFeature([TransactionDatesEffects]),
     TranslateModule.forChild(),
   ],
-  declarations: [DraftTransactionsComponent],
+  declarations: [BadOrdersComponent],
 })
-export class DraftTransactionsModule {}
+export class BadOrdersModule {}

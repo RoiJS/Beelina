@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors.Factories;
 using Beelina.LIB.GraphQL.Exceptions;
 using Beelina.LIB.GraphQL.Types;
@@ -74,7 +75,8 @@ namespace Beelina.API.Types.Mutations
             var productStockAudit = new ProductStockAudit
             {
                 ProductStockPerPanelId = productStockPerPanelFromRepo.Id,
-                Quantity = productInput.StockQuantity
+                Quantity = productInput.StockQuantity,
+                StockAuditSource = StockAuditSourceEnum.ManageProduct
             };
 
             await productStockAuditRepository.UpdateProductStockAudit(productStockAudit);
