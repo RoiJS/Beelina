@@ -3,7 +3,7 @@ import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { delay, map, take } from 'rxjs';
+import { map, take } from 'rxjs';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
@@ -36,27 +36,8 @@ const GET_PRODUCTS_METHODS = gql`
     products(
       userAccountId: $userAccountId
       after: $cursor
-      where: {
-        or: [
-          { name: { contains: $filterKeyword } }
-          { code: { contains: $filterKeyword } }
-        ]
-      }
+      filterKeyword: $filterKeyword
     ) {
-      edges {
-        cursor
-        node {
-          name
-          code
-          description
-          stockQuantity
-          pricePerUnit
-          productUnit {
-            id
-            name
-          }
-        }
-      }
       nodes {
         id
         name
@@ -275,7 +256,6 @@ export class ProductService {
         },
       })
       .valueChanges.pipe(
-        delay(1000),
         map(
           (
             result: ApolloQueryResult<{

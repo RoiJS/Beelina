@@ -135,12 +135,6 @@ export class AppComponent
   private updateOnlineStatus(): void {
     this.isOnline = window.navigator.onLine;
     console.info(`isOnline=[${this.isOnline}]`);
-
-    if (!this.isOnline) {
-      this.router.navigate(['/offline']);
-    } else {
-      this.router.navigate(['/auth']);
-    }
   }
 
   private loadModalPwa(): void {

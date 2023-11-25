@@ -13,7 +13,7 @@ namespace Beelina.LIB.BusinessLogic
         {
         }
 
-        public async Task<IList<Product>> GetProducts(int userId, int productId)
+        public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "")
         {
             // Gather products information with product stock per panel and product unit.
             var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
@@ -32,6 +32,7 @@ namespace Beelina.LIB.BusinessLogic
                                             !p.IsDelete
                                             && p.IsActive
                                             && ((productId > 0 && p.Id == productId) || productId == 0)
+                                            && (filterKeyWord != "" && (p.Name.Contains(filterKeyWord) || p.Code.Contains(filterKeyWord)) || filterKeyWord == "")
 
                                           select new
                                           {

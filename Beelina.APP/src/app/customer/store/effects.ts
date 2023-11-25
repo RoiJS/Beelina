@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, delay, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 
 import * as CustomerActions from './actions';
 
@@ -15,7 +15,6 @@ export class CustomerEffects {
       ofType(CustomerActions.getCustomerStoreAction),
       switchMap(() => {
         return this.customerStoreService.getCustomerStores().pipe(
-          delay(1000),
           map(
             (data: {
               endCursor: string;
@@ -48,7 +47,6 @@ export class CustomerEffects {
         return this.customerStoreService
           .getCustomerStoresPerBarangay(action.barangayName)
           .pipe(
-            delay(1000),
             map(
               (data: {
                 endCursor: string;

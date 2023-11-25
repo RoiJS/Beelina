@@ -64,9 +64,4 @@ export const routes: Routes = [
       import('./profile/profile.module').then((m) => m.ProfileModule),
     canLoad: [AuthGuard],
   },
-  {
-    path: 'offline',
-    loadChildren: () =>
-      import('./offline/offline.module').then((m) => m.OfflineModule),
-  },
 ];

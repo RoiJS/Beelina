@@ -3,7 +3,7 @@ import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { delay, map, take } from 'rxjs';
+import { map, take } from 'rxjs';
 
 import { Entity } from '../_models/entity.model';
 import { Product } from '../_models/product';
@@ -534,7 +534,6 @@ export class TransactionService {
         variables: { fromDate, toDate },
       })
       .valueChanges.pipe(
-        delay(1000),
         map(
           (
             result: ApolloQueryResult<{

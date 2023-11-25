@@ -8,6 +8,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTreeModule } from '@angular/material/tree';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -22,10 +23,10 @@ import { ErrorInteceptorProvider } from './_services/error.interceptor.service';
 import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor.service';
 import { TemplatePageTitleStrategyService } from './_services/title-strategy.service';
 import { GraphQLModule } from './graphql.module';
-import { ServiceWorkerModule } from '@angular/service-worker';
+import { OfflineComponent } from './offline/offline.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, OfflineComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -54,7 +55,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       // enabled: isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
+      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
   providers: [

@@ -68,7 +68,7 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <router-outlet *ngIf="isHandset"></router-outlet>
+    <router-outlet *ngIf="isHandset && isOnline"></router-outlet>
     <!-- <div class="w-100 position-absolute top-0" *ngIf="isHandset && modalVersion">
       <div class="alert alert-secondary m-2">
         <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Close" (click)="closeVersion()"></button>
@@ -99,5 +99,6 @@
         "MAIN_PAGE.DESCRIPTION" | translate
       }}</span>
     </div>
+    <app-offline *ngIf="!isOnline"></app-offline>
   </mat-sidenav-content>
 </mat-sidenav-container>

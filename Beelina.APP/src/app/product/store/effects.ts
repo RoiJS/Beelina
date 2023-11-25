@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
-import { catchError, delay, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
@@ -19,7 +19,6 @@ export class ProductEffects {
       ofType(ProductActions.getProductsAction),
       switchMap(() => {
         return this.productService.getProducts().pipe(
-          delay(1000),
           map(
             (data: {
               endCursor: string;

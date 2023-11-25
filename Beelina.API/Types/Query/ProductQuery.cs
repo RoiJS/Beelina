@@ -11,12 +11,12 @@ namespace Beelina.API.Types.Query
     public class ProductQuery
     {
         [Authorize]
-        [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
+        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50)]
         [UseProjection]
         [UseFiltering]
-        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, int userAccountId)
+        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, int userAccountId, string filterKeyword = "")
         {
-            return await productRepository.GetProducts(userAccountId, 0);
+            return await productRepository.GetProducts(userAccountId, 0, filterKeyword);
         }
 
         [Authorize]
