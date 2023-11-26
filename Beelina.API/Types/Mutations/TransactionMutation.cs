@@ -14,15 +14,12 @@ namespace Beelina.API.Types.Mutations
         [Authorize]
         public async Task<Transaction> RegisterTransaction(
             [Service] ITransactionRepository<Transaction> transactionRepository,
-            [Service] IProductRepository<Product> productRepository,
-            [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
             [Service] ICurrentUserService currentUserService,
             [Service] IMapper mapper,
             TransactionInput transactionInput)
         {
 
             transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-            productRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
             var transactionFromRepo = await transactionRepository
                                     .GetEntity(transactionInput.Id)
@@ -38,41 +35,9 @@ namespace Beelina.API.Types.Mutations
                 mapper.Map(transactionInput, transactionFromRepo);
             }
 
-            var deletedProductTransactions = transactionFromRepo.ProductTransactions.Where(t => transactionInput.ProductTransactionInputs.All(p => p.Id != t.Id)).ToList();
-
             transactionFromRepo.ProductTransactions = mapper.Map<List<ProductTransaction>>(transactionInput.ProductTransactionInputs);
 
             await transactionRepository.RegisterTransaction(transactionFromRepo);
-
-            // Quantities will only be deducted on the inventory if the transaction has been confirmed.
-            if (transactionInput.Status == TransactionStatusEnum.Confirmed)
-            {
-                foreach (var productTransaction in transactionInput.ProductTransactionInputs)
-                {
-                    var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productTransaction.ProductId, currentUserService.CurrentUserId);
-
-                    if (productStockPerPanelFromRepo != null)
-                    {
-                        if (productTransaction.DiffQuantity != 0)
-                        {
-                            productStockPerPanelFromRepo.StockQuantity += productTransaction.DiffQuantity;
-                            await productStockPerPanelRepository.SaveChanges();
-                        }
-                    }
-                }
-
-                foreach (var deletedProductTransaction in deletedProductTransactions)
-                {
-                    var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(deletedProductTransaction.ProductId, currentUserService.CurrentUserId);
-
-                    if (productStockPerPanelFromRepo != null)
-                    {
-                        productStockPerPanelFromRepo.StockQuantity += deletedProductTransaction.Quantity;
-                        await productStockPerPanelRepository.SaveChanges();
-                    }
-                }
-            }
-
 
             return transactionFromRepo;
         }
