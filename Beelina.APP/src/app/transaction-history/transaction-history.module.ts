@@ -33,7 +33,7 @@ import { TransactionDatesEffects } from '../transaction-history/store/effects';
       {
         path: '',
         component: TransactionHistoryComponent,
-        title: 'MAIN_MENU.TRANSACTION_HISTORY',
+        title: 'MAIN_MENU.CONFIRMED_ORDERS',
       },
       {
         path: 'transactions/:date',

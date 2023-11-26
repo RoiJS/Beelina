@@ -34,7 +34,7 @@ import * as TransactionDatesReducers from '../transaction-history/store/reducers
       {
         path: '',
         component: DraftTransactionsComponent,
-        title: 'MAIN_MENU.DRAFT_TRANSACTIONS',
+        title: 'MAIN_MENU.DRAFT_ORDERS',
       },
       {
         path: 'transactions/:date',

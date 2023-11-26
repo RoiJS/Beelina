@@ -28,8 +28,8 @@
     "BARANGAYS": "Barangays",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
-    "DRAFT_TRANSACTIONS": "Draft Transactions",
-    "TRANSACTION_HISTORY": "Transaction History",
+    "DRAFT_ORDERS": "Draft Orders",
+    "CONFIRMED_ORDERS": "Confirmed Orders",
     "BAD_ORDERS": "Bad Orders",
     "REPORTS": "Reports",
     "PROFILE": "Profile",
@@ -405,13 +405,13 @@
   },
 
   "TRANSACTION_HISTORY_PAGE": {
-    "TITLE": "Transactions",
-    "DESCRIPTION": "This shows the list of dates where there are transactions recorded."
+    "TITLE": "Confirmed Orders",
+    "DESCRIPTION": "This shows the list of dates where there are confirmed orders."
   },
 
   "DRAFT_TRANSACTIONS_PAGE": {
-    "TITLE": "Draft Transactions",
-    "DESCRIPTION": "This shows available dates that have draft transactions."
+    "TITLE": "Draft Orders",
+    "DESCRIPTION": "This shows available dates that have draft orders."
   },
 
   "BAD_ORDERS_PAGE": {
@@ -420,12 +420,12 @@
   },
 
   "TRANSACTION_PAGE": {
-    "TITLE": "Transactions",
+    "TITLE": "Confirmed Orders",
     "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
   },
 
   "TRANSACTION_DETAILS_PAGE": {
-    "TITLE": "Transactions Details",
+    "TITLE": "Order Details",
     "DETAILS_SECTION": {},
     "MARK_TRANSACTION_AS_PAID_DIALOG": {
       "TITLE": "Mark as Paid",
