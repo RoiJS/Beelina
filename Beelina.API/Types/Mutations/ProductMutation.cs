@@ -16,19 +16,11 @@ namespace Beelina.API.Types.Mutations
         [Error(typeof(ProductErrorFactory))]
         public async Task<Product> UpdateProduct(
             [Service] IProductRepository<Product> productRepository,
-            [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
-            [Service] IProductStockAuditRepository<ProductStockAudit> productStockAuditRepository,
-            [Service] IProductUnitRepository<ProductUnit> productUnitRepository,
             [Service] IMapper mapper,
-            [Service] ICurrentUserService currentUserService,
             int userAccountId,
             ProductInput productInput)
         {
             var productFromRepo = await productRepository.GetEntity(productInput.Id).ToObjectAsync();
-            var productStockPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productInput.Id, userAccountId);
-            var productUnitFromRepo = await productUnitRepository.GetProductUnitByName(productInput.ProductUnitInput.Name);
-
-            productRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
             if (productFromRepo == null)
             {
@@ -39,47 +31,14 @@ namespace Beelina.API.Types.Mutations
                 mapper.Map(productInput, productFromRepo);
             }
 
-            // Create new product unit if not exists.
-            if (productUnitFromRepo == null)
+            try
             {
-                productUnitFromRepo = new ProductUnit
-                {
-                    Name = productInput.ProductUnitInput.Name
-                };
-
-                await productUnitRepository.AddEntity(productUnitFromRepo);
+                await productRepository.CreateOrUpdateProduct(userAccountId, productInput, productFromRepo);
             }
-
-            productFromRepo.ProductUnitId = productUnitFromRepo.Id;
-
-            await productRepository.UpdateProduct(productFromRepo);
-
-            // Create new product stock per panel if not exists.
-            if (productStockPerPanelFromRepo is null)
+            catch
             {
-                productStockPerPanelFromRepo = new ProductStockPerPanel
-                {
-                    ProductId = productFromRepo.Id,
-                    UserAccountId = userAccountId,
-                    PricePerUnit = productInput.PricePerUnit
-                };
+                throw new ProductFailedRegisterException(productFromRepo.Name);
             }
-            else
-            {
-                productStockPerPanelFromRepo.PricePerUnit = productInput.PricePerUnit;
-            }
-
-            await productStockPerPanelRepository.UpdateProductStockPerPanel(productStockPerPanelFromRepo);
-
-            // Insert new stock audit for the product
-            var productStockAudit = new ProductStockAudit
-            {
-                ProductStockPerPanelId = productStockPerPanelFromRepo.Id,
-                Quantity = productInput.StockQuantity,
-                StockAuditSource = StockAuditSourceEnum.ManageProduct
-            };
-
-            await productStockAuditRepository.UpdateProductStockAudit(productStockAudit);
 
             return productFromRepo;
         }

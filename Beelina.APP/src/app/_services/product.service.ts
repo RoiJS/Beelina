@@ -92,6 +92,15 @@ const UPDATE_PRODUCT_MUTATION = gql`
       product {
         name
       }
+      errors {
+        __typename
+        ... on ProductFailedRegisterError {
+          message
+        }
+        ... on BaseError {
+          message
+        }
+      }
     }
   }
 `;
