@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Models;
+﻿using Beelina.LIB.GraphQL.Types;
+using Beelina.LIB.Models;
 
 namespace Beelina.LIB.Interfaces
 {
@@ -6,9 +7,9 @@ namespace Beelina.LIB.Interfaces
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
         Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "");
-        Task<Product> RegisterProduct(Product product);
         Task<Product> UpdateProduct(Product product);
         Task<Product> GetProductByUniqueCode(int productId, string productCode);
         Task<Product> GetProductByCode(string productCode);
+        Task<Product> CreateOrUpdateProduct(int userAccountId, ProductInput productInput, Product product);
     }
 }
