@@ -16,7 +16,7 @@ export class TemplatePageTitleStrategyService extends TitleStrategy {
     const title = this.buildTitle(routerState);
     if (title !== undefined) {
       const titlePrefix = this.translateService.instant(
-        'GENERAL_TEXTS.BEELINA'
+        'GENERAL_TEXTS.BIZUAL'
       );
       const textTitle = this.translateService.instant(title);
       this.title.setTitle(`${titlePrefix} - ${textTitle}`);
