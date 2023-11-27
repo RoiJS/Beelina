@@ -1,7 +1,7 @@
 {
-  "name": "Beelina",
-  "short_name": "Beelina",
-  "theme_color": "#d89c2a",
+  "name": "Bizual",
+  "short_name": "Bizual",
+  "theme_color": "#ffc603",
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "./",
