@@ -1,7 +1,6 @@
 ﻿using Beelina.LIB.DbContexts;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
-using Beelina.LIB.Models.Reports;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ReserbizAPP.LIB.Helpers.Class;
