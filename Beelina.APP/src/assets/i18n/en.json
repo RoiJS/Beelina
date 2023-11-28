@@ -36,6 +36,12 @@
     "LOGOUT": "Logout"
   },
 
+  "USER_TYPE": {
+    "SALES_AGENT": "Sales Agent",
+    "MANAGER": "Manager",
+    "ADMINISTRATOR": "Administrator"
+  },
+
   "DIALOG": {
     "CONFIRM_DIALOG_BUTTONS": {
       "CONFIRM": "Confirm",
@@ -44,6 +50,10 @@
     "ALERT_DIALOG_BUTTONS": {
       "OK": "OK"
     }
+  },
+
+  "USER_CARD": {
+    "GREETINGS": "Hello"
   },
 
   "MAIN_PAGE": {

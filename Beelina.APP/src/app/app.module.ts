@@ -11,10 +11,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTreeModule } from '@angular/material/tree';
+import { MatRippleModule } from '@angular/material/core';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
+import { GraphQLModule } from './graphql.module';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { UserCardComponent } from './shared/user-card/user-card.component';
+import { OfflineComponent } from './offline/offline.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { translateLoaderFactory } from './_loaders/translate.loader';
 
@@ -22,11 +27,9 @@ import { environment } from '../environments/environment';
 import { ErrorInteceptorProvider } from './_services/error.interceptor.service';
 import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor.service';
 import { TemplatePageTitleStrategyService } from './_services/title-strategy.service';
-import { GraphQLModule } from './graphql.module';
-import { OfflineComponent } from './offline/offline.component';
 
 @NgModule({
-  declarations: [AppComponent, OfflineComponent],
+  declarations: [AppComponent, UserCardComponent, OfflineComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -35,6 +38,7 @@ import { OfflineComponent } from './offline/offline.component';
     MatSidenavModule,
     MatTreeModule,
     MatIconModule,
+    MatRippleModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

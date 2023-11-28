@@ -1,0 +1,37 @@
+@import "../../../app-variables";
+
+.user-card-container {
+  background: $primary-gradient;
+  border-radius: 10px;
+  box-shadow: 1px -5px 8px 3px rgba(0, 0, 0, 0.1);
+  color: $white;
+  display: flex;
+  gap: 1em;
+  height: 3.5em;
+  margin: -15px 10px;
+  padding: 1em;
+
+  &__user-icon-container {
+    align-self: center;
+
+    img {
+      box-sizing: border-box;
+      width: 3em;
+    }
+  }
+
+  &__user-name-container {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    align-self: center;
+    .greetings {
+      font-size: 1.5em;
+    }
+
+    .user-type {
+      font-size: 0.8em;
+    }
+  }
+}

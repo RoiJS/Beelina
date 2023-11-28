@@ -1,0 +1,15 @@
+<div
+  matRipple
+  class="user-card-container scale-in-center-animation"
+  (click)="goToProfile()"
+>
+  <div class="user-card-container__user-icon-container">
+    <img src="../../../assets/icons/user-icon.png" />
+  </div>
+  <div class="user-card-container__user-name-container">
+    <span class="greetings"
+      >{{ "USER_CARD.GREETINGS" | translate }}, {{ user?.firstName }}!</span
+    ><br />
+    <span class="user-type">{{ getUserType }}</span>
+  </div>
+</div>
