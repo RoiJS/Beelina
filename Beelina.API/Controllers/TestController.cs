@@ -14,14 +14,17 @@ namespace Beelina.API.Controllers
     {
         private readonly IClientRepository<Client> _clientRepository;
         private readonly IOptions<ApplicationSettings> _appSettings;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         public TestController(
             IClientRepository<Client> clientRepository,
-            IOptions<ApplicationSettings> appSettings
+            IOptions<ApplicationSettings> appSettings,
+            IWebHostEnvironment hostingEnvironment
         )
         {
             _appSettings = appSettings;
             _clientRepository = clientRepository;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
@@ -59,6 +62,15 @@ namespace Beelina.API.Controllers
         public void TestThrowErroLog()
         {
             throw new Exception("Test error here!");
+        }
+
+        [HttpGet("getEnvironmentName")]
+
+        public IActionResult GetCurrentAppEnvironment()
+        {
+            var environmentName = _hostingEnvironment.EnvironmentName;
+
+            return Ok($"Current Environment: {environmentName}");
         }
     }
 }
