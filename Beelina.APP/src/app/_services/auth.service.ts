@@ -60,6 +60,9 @@ const LOGIN_QUERY = gql`
         ... on InvalidCredentialsError {
           message
         }
+        ... on SystemUpdateActiveError {
+          message
+        }
       }
     }
   }

@@ -78,6 +78,7 @@ namespace Beelina.API.Types.Mutations
         [Error(typeof(UserAccountErrorFactory))]
         public async Task<AuthenticationPayLoad> Login(
             [Service] IUserAccountRepository<UserAccount> userAccountRepository,
+            [Service] IGeneralInformationRepository<GeneralInformation> generalInformationRepository,
             [Service] IOptions<ApplicationSettings> appSettings,
             LoginInput loginInput)
         {
@@ -85,6 +86,11 @@ namespace Beelina.API.Types.Mutations
 
             if (userFromRepo == null)
                 throw new InvalidCredentialsException();
+
+            var generalInformation = await generalInformationRepository.GetGeneralInformation();
+
+            if (generalInformation.SystemUpdateStatus)
+                throw new SystemUpdateActiveException();
 
             var accessToken = GenerateAccessToken(appSettings, userFromRepo);
             var refreshToken = userAccountRepository.GenerateNewRefreshToken();

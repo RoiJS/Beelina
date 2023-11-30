@@ -20,6 +20,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UserCardComponent } from './shared/user-card/user-card.component';
 import { OfflineComponent } from './offline/offline.component';
+import { SystemUpdateComponent } from './system-update/system-update.component';
+
 import { AuthGuard } from './_guards/auth.guard';
 import { translateLoaderFactory } from './_loaders/translate.loader';
 
@@ -29,7 +31,12 @@ import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor
 import { TemplatePageTitleStrategyService } from './_services/title-strategy.service';
 
 @NgModule({
-  declarations: [AppComponent, UserCardComponent, OfflineComponent],
+  declarations: [
+    AppComponent,
+    UserCardComponent,
+    OfflineComponent,
+    SystemUpdateComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

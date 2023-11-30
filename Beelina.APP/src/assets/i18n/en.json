@@ -476,7 +476,7 @@
   "SIDE_DRAWER_SECTION": {
     "FOOTER": {
       "VERSION": "Version",
-      "COPYRIGHT": "Copyright 2022.",
+      "COPYRIGHT": "Copyright 2023.",
       "ALL_RIGHTS_RESERVED": "All rights reserved"
     }
   },
@@ -592,5 +592,10 @@
   "OFFLINE_PAGE": {
     "TITLE": "Offline",
     "DESCRIPTION": "The app will be available as soon as the connection has been restored."
+  },
+
+  "SYSTEM_UPDATE_PAGE": {
+    "TITLE": "System Maintenance",
+    "DESCRIPTION": "We are currently doing system maintenance and will be back shortly. Sorry for the inconvenience."
   }
 }

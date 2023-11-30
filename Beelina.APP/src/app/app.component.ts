@@ -7,11 +7,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
-import { Platform } from '@angular/cdk/platform';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { filter } from 'rxjs';
+import { Subject, filter } from 'rxjs';
 
 import { SharedComponent } from './shared/components/shared/shared.component';
 
@@ -23,6 +22,8 @@ import { SidedrawerService } from './_services/sidedrawer.service';
 import { UIService } from './_services/ui.service';
 import { ModuleEnum } from './_enum/module.enum';
 import { SwUpdate } from '@angular/service-worker';
+import { GeneralInformationService } from './_services/general-information.service';
+import { GeneralInformation } from './_models/general-information.model';
 
 @Component({
   selector: 'app-root',
@@ -40,10 +41,8 @@ export class AppComponent
 
   private activatedUrl = '';
 
+  isSystemUpdateActive: boolean;
   isOnline: boolean;
-  modalVersion: boolean;
-  modalPwaEvent: any;
-  modalPwaPlatform: string | undefined;
 
   constructor(
     private authService: AuthService,
@@ -51,14 +50,11 @@ export class AppComponent
     private router: Router,
     private sideDrawerService: SidedrawerService,
     private translateService: TranslateService,
-    private swUpdate: SwUpdate,
-    private platform: Platform,
+    private generalInformationService: GeneralInformationService,
     protected override uiService: UIService
   ) {
     super(uiService);
     this.translateService.setDefaultLang('en');
-
-    this.modalVersion = false;
   }
 
   override ngOnInit(): void {
@@ -70,28 +66,8 @@ export class AppComponent
     });
 
     this.initRouterEvents();
-
     this.updateOnlineStatus();
-
-    window.addEventListener('online', this.updateOnlineStatus.bind(this));
-    window.addEventListener('offline', this.updateOnlineStatus.bind(this));
-
-    // if (this.swUpdate.isEnabled) {
-    //   console.log('Service Worker is enabled');
-    //   this.swUpdate.versionUpdates.pipe(
-    //     filter(
-    //       (evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'
-    //     ),
-    //     map((evt: any) => {
-    //       console.info(
-    //         `currentVersion=[${evt.currentVersion} | latestVersion=[${evt.latestVersion}]`
-    //       );
-    //       this.modalVersion = true;
-    //     })
-    //   );
-    // } else {
-    //   console.log('Service Worker is disabled');
-    // }
+    this.monitorConnectionStatus();
   }
 
   override ngOnDestroy(): void {
@@ -116,20 +92,7 @@ export class AppComponent
 
   isPageSelected(url: string, fragment: string = ''): boolean {
     let currentUrl = url;
-
-    // if (fragment) {
-    //   currentUrl = `${url}#${fragment}`;
-    // }
     return this.activatedUrl === currentUrl;
-  }
-
-  public updateVersion(): void {
-    this.modalVersion = false;
-    window.location.reload();
-  }
-
-  public closeVersion(): void {
-    this.modalVersion = false;
   }
 
   private updateOnlineStatus(): void {
@@ -137,40 +100,22 @@ export class AppComponent
     console.info(`isOnline=[${this.isOnline}]`);
   }
 
-  private loadModalPwa(): void {
-    if (this.platform.ANDROID) {
-      window.addEventListener('beforeinstallprompt', (event: any) => {
-        event.preventDefault();
-        this.modalPwaEvent = event;
-        this.modalPwaPlatform = 'ANDROID';
-      });
-    }
-
-    if (this.platform.IOS && this.platform.SAFARI) {
-      const isInStandaloneMode =
-        'standalone' in window.navigator &&
-        (<any>window.navigator)['standalone'];
-      if (!isInStandaloneMode) {
-        this.modalPwaPlatform = 'IOS';
-      }
-    }
-  }
-
-  public addToHomeScreen(): void {
-    this.modalPwaEvent.prompt();
-    this.modalPwaPlatform = undefined;
-  }
-
-  public closePwa(): void {
-    this.modalPwaPlatform = undefined;
+  private monitorConnectionStatus(): void {
+    window.addEventListener('online', this.updateOnlineStatus.bind(this));
+    window.addEventListener('offline', this.updateOnlineStatus.bind(this));
   }
 
   private initRouterEvents(): void {
     this.router.events
       .pipe(filter((event: any) => event instanceof NavigationEnd))
-      .subscribe(
-        (event: NavigationEnd) => (this.activatedUrl = event.urlAfterRedirects)
-      );
+      .subscribe((event: NavigationEnd) => {
+        this.activatedUrl = event.urlAfterRedirects;
+        this.generalInformationService
+          .getGeneralInformation()
+          .subscribe((info: GeneralInformation) => {
+            this.isSystemUpdateActive = info.systemUpdateStatus;
+          });
+      });
   }
 
   get copyRightText(): string {

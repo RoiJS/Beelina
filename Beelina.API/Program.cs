@@ -47,6 +47,7 @@ services.AddScoped(typeof(ITransactionRepository<Transaction>), typeof(Transacti
 services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), typeof(ProductTransactionRepository));
 services.AddScoped(typeof(IBarangayRepository<Barangay>), typeof(BarangayRepository));
 services.AddScoped(typeof(IReportRepository<Report>), typeof(ReportRepository));
+services.AddScoped(typeof(IGeneralInformationRepository<GeneralInformation>), typeof(GeneralInformationRepository));
 services.AddTransient<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
 
 // GraphQL Services
@@ -67,6 +68,7 @@ services.AddGraphQLServer()
         .AddType<BarangayQuery>()
         .AddType<PaymentMethodQuery>()
         .AddType<TransactionQuery>()
+        .AddType<GeneralInformationQuery>()
         .AddType<UserAccountMutation>()
         .AddType<BarangayMutation>()
         .AddType<ProductMutation>()
@@ -87,6 +89,7 @@ services.AddGraphQLServer()
         .AddType<ProductNotExistsError>()
         .AddType<ReportNotExistsError>()
         .AddType<UserAccountNotExistsError>()
+        .AddType<SystemUpdateActiveError>()
         .AddType<CheckProductCodeInformationResult>()
         .AddType<ClientNotExistsError>();
 
