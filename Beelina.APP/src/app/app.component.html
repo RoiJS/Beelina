@@ -70,29 +70,9 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <router-outlet *ngIf="isHandset && isOnline"></router-outlet>
-    <!-- <div class="w-100 position-absolute top-0" *ngIf="isHandset && modalVersion">
-      <div class="alert alert-secondary m-2">
-        <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Close" (click)="closeVersion()"></button>
-        A new version of this app is available. <a href="" (click)="updateVersion()">Update now</a>
-      </div>
-    </div>
-    <div class="w-100 position-absolute bottom-0" *ngIf="isHandset && (modalPwaPlatform === 'ANDROID' || modalPwaPlatform === 'IOS')">
-      <div class="alert alert-secondary m-2">
-        <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Close" (click)="closePwa()"></button> -->
-    <!-- Android -->
-    <!-- <div *ngIf="modalPwaPlatform === 'ANDROID'" (click)="addToHomeScreen()">
-          Add this WEB app to home screen
-        </div> -->
-    <!-- iOS with Safari -->
-    <!-- <div *ngIf="modalPwaPlatform === 'IOS'">
-          To install this WEB app on your device, tap the "Menu" button
-          <img src="https://res.cloudinary.com/rodrigokamada/image/upload/v1641089482/Blog/angular-pwa/safari_action_button_38x50.png" class="ios-menu m-0" />
-          and then "Add to home screen" button
-          <i class="bi bi-plus-square"></i>
-        </div>
-      </div>
-    </div> -->
+    <router-outlet
+      *ngIf="isHandset && isOnline && !isSystemUpdateActive"
+    ></router-outlet>
     <div
       class="page-container mobile-view-supported-info-container"
       *ngIf="!isHandset"
@@ -102,5 +82,8 @@
       }}</span>
     </div>
     <app-offline *ngIf="!isOnline"></app-offline>
+    <app-system-update
+      *ngIf="isOnline && isSystemUpdateActive"
+    ></app-system-update>
   </mat-sidenav-content>
 </mat-sidenav-container>
