@@ -5,7 +5,6 @@ import {
   PermissionLevelEnum,
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
-import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +12,7 @@ import { AuthService } from './auth.service';
 export class SidedrawerService {
   mainMenu: IMenu[] = [];
   private _currentUserPermissionLevel: number;
-  constructor(private authService: AuthService) {}
+  constructor() { }
 
   setCurrentUserPrivileges(userPermissionLevel: number) {
     this._currentUserPermissionLevel = userPermissionLevel;
@@ -88,9 +87,10 @@ export class SidedrawerService {
         maximumPermissionLevel: userPermissionLevel,
       },
       {
-        name: 'MAIN_MENU.PROFILE',
-        url: '/profile',
-        icon: 'person_pin',
+        name: 'MAIN_MENU.MANUAL',
+        url: 'https://bizual-prod.s3.ap-southeast-1.amazonaws.com/assets/files/Bizual-User-Manual.pdf',
+        icon: 'info',
+        isExternalUrl: true,
       },
       {
         name: 'MAIN_MENU.LOGOUT',

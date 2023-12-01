@@ -1,63 +1,43 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav
-    #drawer
-    class="sidenav"
-    fixedInViewport
-    [attr.role]="isHandset ? 'dialog' : 'navigation'"
-    [mode]="isHandset ? 'over' : 'side'"
-    [opened]="!isHandset"
-  >
+  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="isHandset ? 'dialog' : 'navigation'"
+    [mode]="isHandset ? 'over' : 'side'" [opened]="!isHandset">
     <div class="sidenav-content-section">
       <div class="sidenav-header">
         <img src="../assets/logo/mainlogo.jpg" />
+        <mat-icon>info</mat-icon>
       </div>
 
       <app-user-card></app-user-card>
 
-      <mat-tree
-        [dataSource]="menuDataSource"
-        [treeControl]="treeControl"
-        class="side-drawer-menu-tree"
-      >
+      <mat-tree [dataSource]="menuDataSource" [treeControl]="treeControl" class="side-drawer-menu-tree">
         <!-- This is the tree node template for leaf nodes -->
         <!-- There is inline padding applied to this node using styles.
         This padding value depends on the mat-icon-button width. -->
-        <mat-tree-node
-          (click)="onNavItemTap(node.name, node.url, node.fragment)"
-          *matTreeNodeDef="let node"
-          matTreeNodeToggle
-          [class.active]="isPageSelected(node.url, node.fragment)"
+        <mat-tree-node (click)="onNavItemTap(node.name, node.url, node.fragment, node?.isExternalUrl)"
+          *matTreeNodeDef="let node" matTreeNodeToggle [class.active]="isPageSelected(node.url, node.fragment)"
           [class.sidenavbarbackgroundanimation]="
             isPageSelected(node.url, node.fragment)
-          "
-        >
+          ">
           <mat-icon>{{ node.icon }}</mat-icon> {{ node.name | translate }}
         </mat-tree-node>
         <!-- This is the tree node template for expandable nodes -->
         <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
-          <div
-            (click)="onNavItemTap(node.name, node.url, node.fragment)"
-            class="mat-tree-node"
-            [class.active]="isPageSelected(node.url, node.fragment)"
-            style="font-weight: 500"
-          >
+          <div (click)="onNavItemTap(node.name, node.url, node.fragment, node?.isExternalUrl)" class="mat-tree-node"
+            [class.active]="isPageSelected(node.url, node.fragment)" style="font-weight: 500">
             {{ node.name | translate }}
             <button mat-icon-button matTreeNodeToggle>
               <mat-icon class="mat-icon-rtl-mirror">
                 {{
-                  treeControl.isExpanded(node) ? "expand_more" : "chevron_right"
+                treeControl.isExpanded(node) ? "expand_more" : "chevron_right"
                 }}
               </mat-icon>
             </button>
           </div>
           <!-- There is inline padding applied to this div using styles.
               This padding value depends on the mat-icon-button width.  -->
-          <div
-            [class.side-drawer-menu-tree-invisible]="
+          <div [class.side-drawer-menu-tree-invisible]="
               !treeControl.isExpanded(node)
-            "
-            role="group"
-          >
+            " role="group">
             <ng-container matTreeNodeOutlet></ng-container>
           </div>
         </mat-nested-tree-node>
@@ -70,20 +50,13 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <router-outlet
-      *ngIf="isHandset && isOnline && !isSystemUpdateActive"
-    ></router-outlet>
-    <div
-      class="page-container mobile-view-supported-info-container"
-      *ngIf="!isHandset"
-    >
+    <router-outlet *ngIf="isHandset && isOnline && !isSystemUpdateActive"></router-outlet>
+    <div class="page-container mobile-view-supported-info-container" *ngIf="!isHandset">
       <span class="mobile-view-supported-info-container__description">{{
         "MAIN_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
     <app-offline *ngIf="!isOnline"></app-offline>
-    <app-system-update
-      *ngIf="isOnline && isSystemUpdateActive"
-    ></app-system-update>
+    <app-system-update *ngIf="isOnline && isSystemUpdateActive"></app-system-update>
   </mat-sidenav-content>
 </mat-sidenav-container>

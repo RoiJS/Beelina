@@ -194,6 +194,8 @@ export class ProductComponent
       this.bottomSheet.open(AddToCartProductComponent, {
         data: { productId, productTransactions: this._productTransactions },
       });
+    } else {
+      this.editProduct(productId);
     }
   }
 
