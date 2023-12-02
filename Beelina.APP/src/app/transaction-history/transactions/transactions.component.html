@@ -3,22 +3,20 @@
 <app-loader-layout [busy]="isLoading">
   <div class="page-container">
     <div class="page-container__page-divider">
-      <label>{{ "TRANSACTION_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "TRANSACTION_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "TRANSACTION_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
 
     <cdk-virtual-scroll-viewport itemSize="60" class="list-container transaction-list">
       <div *cdkVirtualFor="let item of transactions">
-        <div
-          matRipple
+        <div matRipple
           class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
-          [ngClass]="{ unpaid: item.hasUnpaidProductTransaction }"
-          (click)="goToTransaction(item.id)"
-        >
-          <span>{{ item.store.name }}</span>
+          [ngClass]="{ unpaid: item.hasUnpaidProductTransaction }" (click)="goToTransaction(item.id)">
+          <div>
+            <span># {{ item.invoiceNo }}</span> - <span>{{ item.store.name }}</span>
+          </div>
           <mat-icon>keyboard_arrow_right</mat-icon>
         </div>
       </div>

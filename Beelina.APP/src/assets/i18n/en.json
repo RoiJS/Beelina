@@ -21,7 +21,6 @@
     "REMOVE": "Remove",
     "STORES": "Stores"
   },
-
   "MAIN_MENU": {
     "SALES": "Sales",
     "CUSTOMERS": "Customers",
@@ -36,13 +35,11 @@
     "MANUAL": "User Manual",
     "LOGOUT": "Logout"
   },
-
   "USER_TYPE": {
     "SALES_AGENT": "Sales Agent",
     "MANAGER": "Manager",
     "ADMINISTRATOR": "Administrator"
   },
-
   "DIALOG": {
     "CONFIRM_DIALOG_BUTTONS": {
       "CONFIRM": "Confirm",
@@ -56,7 +53,6 @@
   "MAIN_PAGE": {
     "DESCRIPTION": "This application is only supported in mobile view at the moment."
   },
-
   "AUTH_PAGE": {
     "TITLE": "Login",
     "MAIN_LABEL": "Login to your Account",
@@ -79,11 +75,9 @@
       }
     }
   },
-
   "ORDERS_PAGE": {
     "TITLE": "Orders"
   },
-
   "CUSTOMERS_PAGE": {
     "TITLE": "Customer",
     "DESCRIPTION": "This is where customer information can be managed.",
@@ -97,7 +91,6 @@
       "ERROR_MESSAGE": "Removing customer failed. Please again later."
     }
   },
-
   "BARANGAYS_PAGE": {
     "TITLE": "Barangays",
     "DESCRIPTION": "This is where barangays information can be managed.",
@@ -136,7 +129,6 @@
       "ERROR_MESSAGE": "Updating barangay failed. Please again later."
     }
   },
-
   "EDIT_CUSTOMER_DETAILS_PAGE": {
     "TITLE": "Edit Customer",
     "FORM_CONTROL_SECTION": {
@@ -172,7 +164,6 @@
       "ERROR_MESSAGE": "Updating customer failed. Please again later."
     }
   },
-
   "ADD_CUSTOMER_DETAILS_PAGE": {
     "TITLE": "Add Customer",
     "FORM_CONTROL_SECTION": {
@@ -208,7 +199,6 @@
       "ERROR_MESSAGE": "Saving new customer failed. Please again later."
     }
   },
-
   "PRODUCT_CART_PAGE": {
     "TITLE": "Order Summary",
     "FORM_CONTROL_SECTION": {
@@ -240,7 +230,10 @@
       "PAYMENT_METHOD_CONTROL": {
         "LABEL": "Payment Method"
       },
-      "DATE_CONTROL": {
+      "TRANSACTION_DATE_CONTROL": {
+        "LABEL": "Transaction Date"
+      },
+      "DUE_DATE_CONTROL": {
         "LABEL": "Due Date"
       },
       "BUTTON_OPTIONS": {
@@ -277,7 +270,6 @@
       "MESSAGE": "Following Items have insufficient stocks available: </br></br>"
     }
   },
-
   "ADD_PRODUCT_DETAILS_PAGE": {
     "TITLE": "Add Product",
     "FORM_CONTROL_SECTION": {
@@ -315,7 +307,6 @@
       "ERROR_MESSAGE": "Saving new product failed. Please again later."
     }
   },
-
   "EDIT_PRODUCT_DETAILS_PAGE": {
     "TITLE": "Edit Product",
     "FORM_CONTROL_SECTION": {
@@ -353,7 +344,6 @@
       "ERROR_MESSAGE": "Updating product failed. Please again later."
     }
   },
-
   "PRODUCTS_CATALOGUE_PAGE": {
     "TITLE": "Product Catalogue",
     "DESCRIPTION": "This is where product information is being managed. User can choose items and add them to cart.",
@@ -386,14 +376,12 @@
       "ERROR_MESSAGE": "Invalid user account! Activating manage product details failed. Please again later."
     }
   },
-
   "ADD_TO_CART_PAGE": {
     "TITLE": "Product",
     "PRODUCT_INFORMATION_CONTAINER": {
       "STOCK_LEFT": "Stock Left"
     }
   },
-
   "TRANSACTION_FILTER_AND_SORT_DIALOG": {
     "TITLE": "Filter Settings",
     "DESCRIPTION": "",
@@ -410,27 +398,22 @@
       }
     }
   },
-
   "TRANSACTION_HISTORY_PAGE": {
     "TITLE": "Confirmed Orders",
     "DESCRIPTION": "This shows the list of dates where there are confirmed orders."
   },
-
   "DRAFT_TRANSACTIONS_PAGE": {
     "TITLE": "Draft Orders",
     "DESCRIPTION": "This shows available dates that have draft orders."
   },
-
   "BAD_ORDERS_PAGE": {
     "TITLE": "Bad Orders",
     "DESCRIPTION": "This contains all registered bad orders."
   },
-
   "TRANSACTION_PAGE": {
     "TITLE": "Confirmed Orders",
     "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
   },
-
   "TRANSACTION_DETAILS_PAGE": {
     "TITLE": "Order Details",
     "DETAILS_SECTION": {},
@@ -441,7 +424,6 @@
       "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later."
     }
   },
-
   "BAD_ORDER_DETAILS_PAGE": {
     "TITLE": "Bad Order Details",
     "DELETE_TRANSACTION_DIALOG": {
@@ -451,12 +433,10 @@
       "ERROR_MESSAGE": "Deleting bad order failed. Please try again later."
     }
   },
-
   "TOP_PRODUCTS_PAGE": {
     "TITLE": "Top Products",
     "DESCRIPTION": "This shows statistics of the most frequently transacted products."
   },
-
   "SALES_PAGE": {
     "TITLE": "Sales",
     "DESCRIPTION": "This shows the amount of sales that the system recorded based on the date filter.",
@@ -469,7 +449,6 @@
       "LABEL": "Sales Amount"
     }
   },
-
   "SIDE_DRAWER_SECTION": {
     "FOOTER": {
       "VERSION": "Version",
@@ -477,7 +456,6 @@
       "ALL_RIGHTS_RESERVED": "All rights reserved"
     }
   },
-
   "TEXT_ORDER_DIALOG": {
     "TTTLE": "Text Order",
     "DESCRIPTION": "Set orders by pasting texts following the format below:",
@@ -492,7 +470,6 @@
       }
     }
   },
-
   "REPORTS_PAGE": {
     "TITLE": "Reports",
     "DESCRIPTION": "This page contains the list of different type of reports that user can use for data analysis.",
@@ -507,7 +484,6 @@
       "SALES_PER_CUSTOMER_REPORT_DESC": "This report can generate sales per customer on a given date. This can help administrators to analyze the sales and get insights on sales per customer."
     }
   },
-
   "REPORT_DETAILS_PAGE": {
     "TITLE": "Report Filter Settings",
     "CONTROL_INFORMATION": {
@@ -536,7 +512,6 @@
       "ERROR_MESSAGE": "Failed to generate report file. Please try again later."
     }
   },
-
   "PROFILE_PAGE": {
     "TITLE": "Profile",
     "DESCRIPTION": "This is where user profile information can be managed.",
@@ -581,16 +556,13 @@
       "ERROR_MESSAGE": "Updating profile failed. Please again later."
     }
   },
-
   "ACCOUNT_VERIFICATION_DIALOG": {
     "TITLE": "Management Account Verification"
   },
-
   "OFFLINE_PAGE": {
     "TITLE": "Offline",
     "DESCRIPTION": "The app will be available as soon as the connection has been restored."
   },
-
   "SYSTEM_UPDATE_PAGE": {
     "TITLE": "System Maintenance",
     "DESCRIPTION": "We are currently doing system maintenance and will be back shortly. Sorry for the inconvenience."
