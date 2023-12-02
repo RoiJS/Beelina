@@ -86,9 +86,9 @@ export class AppComponent
       this.router.navigate([url], { fragment });
     }
 
-    if (this.isHandset) {
-      this.uiService.toggleDrawer();
-    }
+    // if (this.isHandset) {
+    this.uiService.toggleDrawer();
+    // }
 
     if (name === 'MAIN_MENU.LOGOUT') {
       this.authService.logout();

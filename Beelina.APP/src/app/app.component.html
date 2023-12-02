@@ -1,6 +1,5 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="isHandset ? 'dialog' : 'navigation'"
-    [mode]="isHandset ? 'over' : 'side'" [opened]="!isHandset">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport>
     <div class="sidenav-content-section">
       <div class="sidenav-header">
         <img src="../assets/logo/mainlogo.jpg" />
@@ -50,12 +49,12 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <router-outlet *ngIf="isHandset && isOnline && !isSystemUpdateActive"></router-outlet>
-    <div class="page-container mobile-view-supported-info-container" *ngIf="!isHandset">
+    <router-outlet *ngIf="isOnline && !isSystemUpdateActive"></router-outlet>
+    <!-- <div class="page-container mobile-view-supported-info-container" *ngIf="!isHandset">
       <span class="mobile-view-supported-info-container__description">{{
         "MAIN_PAGE.DESCRIPTION" | translate
         }}</span>
-    </div>
+    </div> -->
     <app-offline *ngIf="!isOnline"></app-offline>
     <app-system-update *ngIf="isOnline && isSystemUpdateActive"></app-system-update>
   </mat-sidenav-content>
