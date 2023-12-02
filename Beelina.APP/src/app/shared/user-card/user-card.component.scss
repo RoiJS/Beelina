@@ -21,6 +21,7 @@
   }
 
   &__user-name-container {
+    flex: 1;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -32,6 +33,15 @@
 
     .user-type {
       font-size: 0.8em;
+    }
+  }
+
+  &__arrow-icon {
+    align-self: center;
+    display: flex;
+
+    mat-icon {
+      align-self: end;
     }
   }
 }

@@ -32,6 +32,7 @@
     "BAD_ORDERS": "Bad Orders",
     "REPORTS": "Reports",
     "PROFILE": "Profile",
+    "MANUAL": "User Manual",
     "LOGOUT": "Logout"
   },
   "USER_TYPE": {
@@ -48,9 +49,7 @@
       "OK": "OK"
     }
   },
-  "USER_CARD": {
-    "GREETINGS": "Hello"
-  },
+
   "MAIN_PAGE": {
     "DESCRIPTION": "This application is only supported in mobile view at the moment."
   },

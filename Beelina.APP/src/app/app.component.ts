@@ -32,8 +32,7 @@ import { GeneralInformation } from './_models/general-information.model';
 })
 export class AppComponent
   extends SharedComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
+  implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSidenav) sideNav: MatSidenav | undefined;
 
   treeControl = new NestedTreeControl<IMenu>((node) => node.children);
@@ -78,12 +77,18 @@ export class AppComponent
     this.uiService.setDrawerRef(this.sideNav);
   }
 
-  onNavItemTap(name: string, url: string, fragment: string): void {
-    this.router.navigate([url], { fragment });
+  onNavItemTap(name: string, url: string, fragment: string, isExternalUrl: boolean): void {
+    console.log(isExternalUrl);
 
-    if (this.isHandset) {
-      this.uiService.toggleDrawer();
+    if (isExternalUrl) {
+      window.open(url, '_blank');
+    } else {
+      this.router.navigate([url], { fragment });
     }
+
+    // if (this.isHandset) {
+    this.uiService.toggleDrawer();
+    // }
 
     if (name === 'MAIN_MENU.LOGOUT') {
       this.authService.logout();

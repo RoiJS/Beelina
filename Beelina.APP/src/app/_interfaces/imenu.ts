@@ -6,6 +6,7 @@ export interface IMenu {
   icon?: string;
   fragment?: string;
   children?: IMenu[];
+  isExternalUrl?: boolean;
   minimumPermissionLevel?: number;
   maximumPermissionLevel?: number;
 }
