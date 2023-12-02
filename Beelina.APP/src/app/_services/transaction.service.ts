@@ -92,6 +92,7 @@ const GET_APPROVED_TRANSACTIONS_BY_DATE = gql`
   query ($transactionDate: String!, $status: TransactionStatusEnum!) {
     transactionsByDate(transactionDate: $transactionDate, status: $status) {
       id
+      invoiceNo
       storeId
       transactionDate
       hasUnpaidProductTransaction
@@ -110,10 +111,10 @@ const GET_TRANSACTION = gql`
       invoiceNo
       discount
       transactionDate
+      dueDate
       hasUnpaidProductTransaction
       total
       balance
-      dateCreatedFormatted
       store {
         id
         name
@@ -178,15 +179,19 @@ export class Transaction extends Entity implements IModelNode {
   public invoiceNo: string;
   public discount: number;
   public transactionDate: Date;
+  public dueDate: Date;
   public store: CustomerStore;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
   public total: number;
-  public dateCreatedFormatted: string;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
+  }
+
+  get dueDateFormatted(): string {
+    return DateFormatter.format(this.dueDate, 'MMM DD, YYYY');
   }
 
   get grossTotalFormatted(): string {
@@ -230,6 +235,7 @@ export class TransactionDto {
   public storeId: number;
   public status: TransactionStatusEnum;
   public transactionDate: string;
+  public dueDate: string;
   public productTransactions: Array<ProductTransaction>;
 }
 
@@ -250,7 +256,7 @@ export class TransactionService {
   constructor(
     private apollo: Apollo,
     private store: Store<AppStateInterface>
-  ) {}
+  ) { }
 
   registerTransaction(transaction: TransactionDto) {
     const transactionInput: ITransactionInput = {
@@ -260,6 +266,7 @@ export class TransactionService {
       storeId: transaction.storeId,
       status: transaction.status,
       transactionDate: transaction.transactionDate,
+      dueDate: transaction.dueDate,
       productTransactionInputs: transaction.productTransactions.map((p) => {
         const productTransaction: IProductTransactionInput = {
           id: p.id,
@@ -356,6 +363,7 @@ export class TransactionService {
             return result.data.transactionsByDate.map((t) => {
               const transaction = new Transaction();
               transaction.id = t.id;
+              transaction.invoiceNo = t.invoiceNo;
               transaction.storeId = t.storeId;
               transaction.store = t.store;
               transaction.hasUnpaidProductTransaction =
@@ -389,12 +397,11 @@ export class TransactionService {
             transaction.invoiceNo = transactionFromRepo.invoiceNo;
             transaction.discount = transactionFromRepo.discount;
             transaction.transactionDate = transactionFromRepo.transactionDate;
+            transaction.dueDate = transactionFromRepo.dueDate;
             transaction.storeId = transactionFromRepo.storeId;
             transaction.store = transactionFromRepo.store;
             transaction.balance = transactionFromRepo.balance;
             transaction.total = transactionFromRepo.total;
-            transaction.dateCreatedFormatted =
-              transactionFromRepo.dateCreatedFormatted;
             transaction.hasUnpaidProductTransaction =
               transactionFromRepo.hasUnpaidProductTransaction;
             transaction.productTransactions =

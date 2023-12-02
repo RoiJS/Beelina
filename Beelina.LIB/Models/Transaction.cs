@@ -8,6 +8,7 @@ namespace Beelina.LIB.Models
     {
         public int StoreId { get; set; }
         public DateTime TransactionDate { get; set; }
+        public DateTime DueDate { get; set; }
         public Store Store { get; set; }
         public TransactionStatusEnum Status { get; set; }
 
@@ -36,14 +37,6 @@ namespace Beelina.LIB.Models
             get
             {
                 return (float)ProductTransactions.Sum(s => s.Quantity * s.Price);
-            }
-        }
-
-        public string DateCreatedFormatted
-        {
-            get
-            {
-                return DateCreated.ToString("MMM dd, yyyy");
             }
         }
 

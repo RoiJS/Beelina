@@ -57,8 +57,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 })
 export class ProductCartComponent
   extends BaseComponent
-  implements OnInit, OnDestroy
-{
+  implements OnInit, OnDestroy {
   private _orderForm: FormGroup;
   private _discountForm: FormGroup;
   private _customerStoreOptions: Array<CustomerStore> = [];
@@ -99,6 +98,7 @@ export class ProductCartComponent
       address: [''],
       paymentMethod: [''],
       transactionDate: [new Date(), Validators.required],
+      dueDate: [new Date(), Validators.required],
     });
 
     this._discountForm = this.formBuilder.group({
@@ -206,6 +206,9 @@ export class ProductCartComponent
             this._orderForm
               .get('transactionDate')
               .setValue(this._transaction.transactionDate);
+            this._orderForm
+              .get('dueDate')
+              .setValue(this._transaction.dueDate);
           }
         })
     );
@@ -308,6 +311,9 @@ export class ProductCartComponent
       transaction.transactionDate = DateFormatter.format(
         this._orderForm.get('transactionDate').value
       );
+      transaction.dueDate = DateFormatter.format(
+        this._orderForm.get('dueDate').value
+      );
       transaction.productTransactions = this._productTransactions;
 
       this.dialogService
@@ -321,8 +327,10 @@ export class ProductCartComponent
         )
         .subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
+            this._isLoading = true;
             this.transactionService.registerTransaction(transaction).subscribe({
               next: () => {
+                this._isLoading = false;
                 this.snackBarService.open(
                   this.translateService.instant(
                     'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.SUCCESS_MESSAGE'
@@ -343,6 +351,7 @@ export class ProductCartComponent
               },
 
               error: () => {
+                this._isLoading = false;
                 this.snackBarService.open(
                   this.translateService.instant(
                     'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.ERROR_MESSAGE'
@@ -373,6 +382,9 @@ export class ProductCartComponent
       transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
         this._orderForm.get('transactionDate').value
+      );
+      transaction.dueDate = DateFormatter.format(
+        this._orderForm.get('dueDate').value
       );
       transaction.productTransactions = this._productTransactions;
 
@@ -468,6 +480,9 @@ export class ProductCartComponent
             transaction.status = TransactionStatusEnum.CONFIRMED;
             transaction.transactionDate = DateFormatter.format(
               this._orderForm.get('transactionDate').value
+            );
+            transaction.dueDate = DateFormatter.format(
+              this._orderForm.get('dueDate').value
             );
             transaction.productTransactions = this._productTransactions;
 
@@ -598,7 +613,7 @@ export class ProductCartComponent
   }
 
   get minDate(): Date {
-    return new Date();
+    return this._orderForm.get('transactionDate').value;
   }
 
   get isDraftTransaction(): boolean {

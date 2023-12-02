@@ -5,31 +5,26 @@
       <div class="panel__details-group-panel">
         <div class="panel__header-section">
           {{
-            "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE" | translate
+          "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE" | translate
           }}
         </div>
         <div class="panel__body-section product-cart-container__body-section">
           <div>
-            <span class="product-cart-container__no-of-items-label"
-              >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.NO_OF_ITEMS.LABEL"
-                  | translate
-              }}:</span
-            >
+            <span class="product-cart-container__no-of-items-label">{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.NO_OF_ITEMS.LABEL"
+              | translate
+              }}:</span>
             {{ productTransactions.length }}
           </div>
           <br />
           <mat-list role="list" class="product-transaction-list-container">
-            <mat-list-item
-              class="product-transaction-list-container__list-item-section"
-              *ngFor="let item of productTransactions"
-              role="listitem"
-            >
+            <mat-list-item class="product-transaction-list-container__list-item-section"
+              *ngFor="let item of productTransactions" role="listitem">
               <div class="list-item">
                 <span class="list-item__product-details-information">
                   ({{
-                    "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE"
-                      | translate
+                  "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE"
+                  | translate
                   }}: {{ item.code }})
                   <br />
                   {{ item?.productName }}
@@ -38,186 +33,120 @@
                   <span>{{ item?.priceFormatted }}</span>
                   <span>X</span>
                   <span>{{ item?.quantity }}</span>
-                  <mat-icon
-                    (click)="updateItemToCart(item.productId)"
-                    matRipple
-                    class="list-item__edit-product"
-                    >edit</mat-icon
-                  >
+                  <mat-icon (click)="updateItemToCart(item.productId)" matRipple
+                    class="list-item__edit-product">edit</mat-icon>
                 </div>
               </div>
               <mat-divider></mat-divider>
             </mat-list-item>
           </mat-list>
-          <div
-            *ngIf="isDraftTransaction"
-            class="product-transaction-list-container__button-section"
-          >
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="addINewtemToCart()"
-            >
+          <div *ngIf="isDraftTransaction" class="product-transaction-list-container__button-section">
+            <button mat-raised-button color="primary" (click)="addINewtemToCart()">
               {{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.ADD_ITEM"
-                  | translate
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.ADD_ITEM"
+              | translate
               }}
             </button>
           </div>
-          <div
-            class="product-transaction-total-amount-information-container"
-            *ngIf="productTransactions.length > 0"
-          >
+          <div class="product-transaction-total-amount-information-container" *ngIf="productTransactions.length > 0">
             <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
             <span>{{ grossTotalAmount }}</span>
           </div>
-          <div
-            class="product-transaction-total-amount-information-container"
-            *ngIf="productTransactions.length > 0"
-            [formGroup]="discountForm"
-          >
+          <div class="product-transaction-total-amount-information-container" *ngIf="productTransactions.length > 0"
+            [formGroup]="discountForm">
             <span>{{
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
-                | translate
-            }}</span>
-            <input
-              class="product-transaction-total-amount-information-container__input-discount-field"
-              type="number"
-              formControlName="discount"
-            />
+              | translate
+              }}</span>
+            <input class="product-transaction-total-amount-information-container__input-discount-field" type="number"
+              formControlName="discount" />
           </div>
-          <div
-            class="product-transaction-total-amount-information-container"
-            *ngIf="productTransactions.length > 0"
-          >
+          <div class="product-transaction-total-amount-information-container" *ngIf="productTransactions.length > 0">
             <span>{{ "GENERAL_TEXTS.NET_TOTAL" | translate }}</span>
             <span>{{ netTotalAmount }}</span>
           </div>
         </div>
       </div>
 
-      <div
-        [formGroup]="orderForm"
-        class="panel__details-group-panel product-transaction-information-container"
-      >
+      <div [formGroup]="orderForm" class="panel__details-group-panel product-transaction-information-container">
         <div class="panel__body-section product-cart-container__body-section">
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.TRANSACTION_NO_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.TRANSACTION_NO_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="invoiceNo" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
-            <input
-              matInput
-              type="text"
-              formControlName="barangay"
-              [matAutocomplete]="barangayFilter"
-            />
+            <mat-label>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input matInput type="text" formControlName="barangay" [matAutocomplete]="barangayFilter" />
 
             <mat-autocomplete #barangayFilter="matAutocomplete">
-              <mat-option
-                *ngFor="let option of barangayFilterOptions | async"
-                [value]="option.name"
-              >
+              <mat-option *ngFor="let option of barangayFilterOptions | async" [value]="option.name">
                 {{ option.name }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
-            <input
-              matInput
-              type="text"
-              formControlName="name"
-              [matAutocomplete]="customerFilter"
-            />
+            <mat-label>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input matInput type="text" formControlName="name" [matAutocomplete]="customerFilter" />
 
             <mat-autocomplete #customerFilter="matAutocomplete">
-              <mat-option
-                *ngFor="let option of customerStoreFilterOptions | async"
-                [value]="option.name"
-              >
+              <mat-option *ngFor="let option of customerStoreFilterOptions | async" [value]="option.name">
                 {{ option.name }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="address" readonly />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
-            <input
-              type="text"
-              matInput
-              formControlName="paymentMethod"
-              readonly
-            />
+            <mat-label>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input type="text" matInput formControlName="paymentMethod" readonly />
           </mat-form-field>
           <mat-form-field class="transaction-date" appearance="fill">
-            <mat-label
-              >{{
-                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DATE_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
-            <input
-              matInput
-              [matDatepicker]="picker"
-              [min]="minDate"
-              formControlName="transactionDate"
-            />
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle
-              matIconSuffix
-              [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-label>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.TRANSACTION_DATE_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input matInput [matDatepicker]="transactiondatepicker" formControlName="transactionDate" />
+            <mat-datepicker-toggle matIconSuffix [for]="transactiondatepicker"></mat-datepicker-toggle>
+            <mat-datepicker #transactiondatepicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="due-date" appearance="fill">
+            <mat-label>{{
+              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DUE_DATE_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input matInput [matDatepicker]="duedatepicker" [min]="minDate" formControlName="dueDate" />
+            <mat-datepicker-toggle matIconSuffix [for]="duedatepicker"></mat-datepicker-toggle>
+            <mat-datepicker #duedatepicker></mat-datepicker>
           </mat-form-field>
         </div>
-        <div
-          class="panel__footer-section product-transaction-information-container__button-options-section"
-        >
+        <div class="panel__footer-section product-transaction-information-container__button-options-section">
           <button mat-raised-button color="primary" (click)="confirm()">
             {{ "GENERAL_TEXTS.CONFIRM" | translate }}
           </button>
           <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
             {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
           </button>
-          <button
-            *ngIf="!isDraftTransaction"
-            mat-raised-button
-            color="default"
-            (click)="saveAsDraft()"
-          >
+          <button *ngIf="!isDraftTransaction" mat-raised-button color="default" (click)="saveAsDraft()">
             {{
-              "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
-                | translate
+            "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
+            | translate
             }}
           </button>
           <!-- <button mat-raised-button color="default" (click)="clear()">

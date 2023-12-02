@@ -7,6 +7,7 @@ export interface ITransactionInput {
   discount: number;
   storeId: number;
   transactionDate: string;
+  dueDate: string;
   status: TransactionStatusEnum;
   productTransactionInputs: Array<IProductTransactionInput>;
 }
