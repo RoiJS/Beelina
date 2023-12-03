@@ -242,7 +242,6 @@ namespace Beelina.LIB.BusinessLogic
       return productStockPerPanelFromRepo;
     }
 
-
     private async Task ManageProductStockAudit(ProductStockPerPanel productStockPerPanel, ProductInput productInput)
     {
       if (productInput.StockQuantity != 0)
@@ -251,13 +250,34 @@ namespace Beelina.LIB.BusinessLogic
         {
           ProductStockPerPanelId = productStockPerPanel.Id,
           Quantity = productInput.StockQuantity,
-          StockAuditSource = StockAuditSourceEnum.ManageProduct
+          StockAuditSource = StockAuditSourceEnum.ManageProduct,
+          WithdrawalSlipNo = productInput.WithdrawalSlipNo
         };
 
         if (productStockAudit.Id == 0)
           await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(productStockAudit);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync();
       }
+    }
+
+    public async Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId)
+    {
+      var productStockAuditsFromRepo = await _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                                      .Where(pp => pp.ProductId == productId && pp.UserAccountId == userAccountId)
+                                      .Include(pp => pp.ProductStockAudits)
+                                      .FirstOrDefaultAsync();
+      return productStockAuditsFromRepo
+            .ProductStockAudits
+            .OrderByDescending(ps => ps.DateCreated)
+            .ToList();
+    }
+
+    public async Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId)
+    {
+      var productStockAuditFromRepo = await _beelinaRepository.ClientDbContext.ProductStockAudits
+                                      .Where(pp => pp.Id == productStockAuditId)
+                                      .FirstOrDefaultAsync();
+      return productStockAuditFromRepo;
     }
   }
 }

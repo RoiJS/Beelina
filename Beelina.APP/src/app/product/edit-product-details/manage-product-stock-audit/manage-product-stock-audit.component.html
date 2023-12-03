@@ -1,0 +1,29 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
+</app-tool-bar>
+
+<app-loader-layout [busy]="$isLoading | async">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "MANAGE_PRODUCT_STOCK_AUDITS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "MANAGE_PRODUCT_STOCK_AUDITS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+
+    <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container product-stock-audit-list">
+        <div *cdkVirtualFor="let item of dataSource">
+          <div matRipple
+            class="list-container__item-section list-container__item-section--justify-content-space-between"
+            (click)="updateStockAudit(item.id)">
+            <div class="product-stock-audit-list__item-section">
+              <span>{{ item.withdrawalSlipNo }}</span>
+              <span>{{ item.quantity }}</span>
+              <span>{{ item.dateCreatedFormatted }}</span>
+            </div>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
+  </div>
+</app-loader-layout>

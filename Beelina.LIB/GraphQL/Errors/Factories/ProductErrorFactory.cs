@@ -15,5 +15,10 @@ namespace Beelina.LIB.GraphQL.Errors.Factories
         {
             return new ProductFailedRegisterError(ex.ProductName);
         }
+
+        public ProductStockAuditNotExistsError CreateErrorFrom(ProductStockAuditNotExistsException ex)
+        {
+            return new ProductStockAuditNotExistsError(ex.Id);
+        }
     }
 }

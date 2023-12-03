@@ -11,5 +11,7 @@ namespace Beelina.LIB.Interfaces
         Task<Product> GetProductByUniqueCode(int productId, string productCode);
         Task<Product> GetProductByCode(string productCode);
         Task<Product> CreateOrUpdateProduct(int userAccountId, ProductInput productInput, Product product);
+        Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId);
+        Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId);
     }
 }

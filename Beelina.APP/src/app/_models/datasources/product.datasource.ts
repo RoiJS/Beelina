@@ -11,7 +11,7 @@ import { BaseDataSource } from './base.datasource';
 export class ProductDataSource extends BaseDataSource<Product> {
   constructor(override store: Store<AppStateInterface>) {
     super(store);
-
+    this._pageSize = 50;
     this.store.dispatch(ProductActions.getProductsAction());
 
     this._subscription.add(

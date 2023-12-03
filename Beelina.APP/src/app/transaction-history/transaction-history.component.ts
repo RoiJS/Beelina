@@ -2,7 +2,6 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { Observable } from 'rxjs';
 
 import * as TransactionDateStoreActions from '../transaction-history/store/actions';
 

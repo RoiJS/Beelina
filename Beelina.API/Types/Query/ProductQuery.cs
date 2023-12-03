@@ -35,6 +35,15 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
+        [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
+        [UseProjection]
+        [UseFiltering]
+        public async Task<List<ProductStockAudit>> GetProductStockAudits([Service] IProductRepository<Product> productRepository, int productId, int userAccountId)
+        {
+            return await productRepository.GetProductStockAudits(productId, userAccountId);
+        }
+
+        [Authorize]
         public async Task<IProductPayload> CheckProductCode([Service] IProductRepository<Product> productRepository, int productId, string productCode)
         {
             var productFromRepo = await productRepository.GetProductByUniqueCode(productId, productCode);

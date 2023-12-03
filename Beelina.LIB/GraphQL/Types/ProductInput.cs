@@ -8,6 +8,7 @@
         public string Description { get; set; }
         public int StockQuantity { get; set; }
         public float PricePerUnit { get; set; }
+        public string WithdrawalSlipNo { get; set; }
         public ProductUnitInput ProductUnitInput { get; set; }
     }
 }
