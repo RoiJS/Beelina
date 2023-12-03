@@ -13,6 +13,9 @@ import {
   endCursorSelector,
   filterKeywordSelector,
 } from '../product/store/selectors';
+import {
+  endCursorSelector as endCursorProductStockAuditSelector,
+} from '../product/edit-product-details/manage-product-stock-audit/store/selectors';
 import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
 
 import { CheckProductCodeInformationResult } from '../_models/results/check-product-code-information-result';
@@ -30,6 +33,8 @@ import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduc
 import { IProductTransactionQueryPayload } from '../_interfaces/payloads/iproduct-transaction-query.payload';
 import { User } from '../_models/user.model';
 import { StorageService } from './storage.service';
+import { ProductStockAudit } from '../_models/product-stock-audit';
+import { IProductStockAuditOutput } from '../_interfaces/outputs/iproduct-stock-update.output';
 
 const GET_PRODUCTS_METHODS = gql`
   query ($userAccountId: Int!, $cursor: String, $filterKeyword: String) {
@@ -168,13 +173,55 @@ const GET_SALES_AGENTS_LIST = gql`
   }
 `;
 
+const GET_PRODUCT_STOCK_AUDITS_LIST = gql`
+  query ($productId: Int!, $userAccountId: Int!, $cursor: String) {
+    productStockAudits(productId: $productId, userAccountId: $userAccountId, after: $cursor ) {
+      nodes {
+        id
+        withdrawalSlipNo
+        quantity
+        dateCreated
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+`;
+
+const UPDATE_PRODUCT_STOCK_AUDIT = gql`
+mutation($productStockAuditId: Int!, $withdrawalSlipNo: String!, $newQuantity: Int!) {
+  updateProductStockAudit(input: {
+        productStockAuditId: $productStockAuditId,
+        withdrawalSlipNo: $withdrawalSlipNo,
+        newQuantity: $newQuantity
+    }){
+    productStockAudit {
+        id
+    }
+    errors {
+            __typename
+            ... on ProductStockAuditNotExistsError {
+                message
+            }
+            ... on BaseError {
+                message
+            }
+        }
+    }
+}
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   constructor(
     private apollo: Apollo,
     private store: Store<AppStateInterface>,
     private storageService: StorageService
-  ) {}
+  ) { }
 
   getProducts() {
     let cursor = null,
@@ -294,6 +341,7 @@ export class ProductService {
       description: product.description,
       stockQuantity: product.stockQuantity,
       pricePerUnit: product.pricePerUnit,
+      withdrawalSlipNo: product.withdrawalSlipNo,
       productUnitInput: {
         id: product.productUnit.id,
         name: product.productUnit.name,
@@ -492,6 +540,86 @@ export class ProductService {
           });
 
           return salesAgents;
+        })
+      );
+  }
+
+  getProductStockAuditList(productId: number, userAccountId: number) {
+    let cursor = null;
+
+    this.store
+      .select(endCursorProductStockAuditSelector)
+      .pipe(take(1))
+      .subscribe((currentCursor) => (cursor = currentCursor));
+
+    return this.apollo
+      .watchQuery({
+        query: GET_PRODUCT_STOCK_AUDITS_LIST,
+        variables: {
+          productId,
+          userAccountId,
+          cursor
+        }
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ productStockAudits: IBaseConnection }>) => {
+          const data = result.data.productStockAudits;
+          const errors = result.errors;
+          const endCursor = data.pageInfo.endCursor;
+          const hasNextPage = data.pageInfo.hasNextPage;
+          const productsStockAuditsDto = <Array<ProductStockAudit>>data.nodes;
+
+          const productStockAudits: Array<ProductStockAudit> = productsStockAuditsDto.map((stockAudit: ProductStockAudit) => {
+            const newStockAudit = new ProductStockAudit();
+            newStockAudit.id = stockAudit.id;
+            newStockAudit.quantity = stockAudit.quantity;
+            newStockAudit.withdrawalSlipNo = stockAudit.withdrawalSlipNo;
+            newStockAudit.dateCreated = stockAudit.dateCreated;
+            return newStockAudit;
+          });
+
+          if (productStockAudits) {
+            return {
+              endCursor,
+              hasNextPage,
+              productStockAudits,
+            };
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
+      );
+  }
+
+  updateProductStockAudit(productStockAudit: ProductStockAudit) {
+    return this.apollo
+      .mutate({
+        mutation: UPDATE_PRODUCT_STOCK_AUDIT,
+        variables: {
+          productStockAuditId: productStockAudit.id,
+          withdrawalSlipNo: productStockAudit.withdrawalSlipNo,
+          newQuantity: productStockAudit.quantity,
+        },
+      })
+      .pipe(
+        map((result: MutationResult<{ updateProductStockAudit: IProductStockAuditOutput }>) => {
+          const output = result.data.updateProductStockAudit;
+          const payload = output.productStockAudit;
+          const errors = output.errors;
+
+          if (payload) {
+            return payload;
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
         })
       );
   }

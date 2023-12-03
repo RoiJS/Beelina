@@ -9,6 +9,7 @@ namespace Beelina.LIB.Models
         public int UserAccountId { get; set; }
         public int StockQuantity { get; set; }
         public float PricePerUnit { get; set; }
+        public List<ProductStockAudit> ProductStockAudits { get; set; }
 
         public double Price
         {

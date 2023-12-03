@@ -8,8 +8,8 @@ namespace Beelina.LIB.Models
     {
         public int ProductStockPerPanelId { get; set; }
         public int Quantity { get; set; }
+        public string WithdrawalSlipNo { get; set; }
         public StockAuditSourceEnum StockAuditSource { get; set; }
-
         public ProductStockPerPanel ProductStockPerPanel { get; set; }
 
         public int? DeletedById { get; set; }

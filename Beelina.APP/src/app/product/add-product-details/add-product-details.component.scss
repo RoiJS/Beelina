@@ -1,0 +1,17 @@
+.product-detail-panel {
+  &__stock-quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 2em;
+    margin-bottom: 1.5em;
+
+    .stock-quantity-label {
+      font-size: 1.1em;
+    }
+
+    .stock-quantity-value {
+      font-weight: bold;
+    }
+  }
+}

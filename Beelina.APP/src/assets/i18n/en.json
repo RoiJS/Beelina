@@ -49,7 +49,6 @@
       "OK": "OK"
     }
   },
-
   "MAIN_PAGE": {
     "DESCRIPTION": "This application is only supported in mobile view at the moment."
   },
@@ -288,7 +287,11 @@
         "HINT": "Please enter description"
       },
       "STOCK_QUANTITY_CONTROL": {
-        "LABEL": "Stock",
+        "LABEL": "Stock Quantity",
+        "HINT": "Please specify stock"
+      },
+      "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
+        "LABEL": "Additional Stock Quantity",
         "HINT": "Please specify stock"
       },
       "PRICE_PER_UNIT_CONTROL": {
@@ -326,6 +329,10 @@
       },
       "STOCK_QUANTITY_CONTROL": {
         "LABEL": "Stock",
+        "HINT": "Please specify stock"
+      },
+      "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
+        "LABEL": "Additional Stock Quantity",
         "HINT": "Please specify stock"
       },
       "PRICE_PER_UNIT_CONTROL": {
@@ -395,6 +402,17 @@
         "LABEL": "Date Order",
         "ASCENDING_OPTION": "Ascending",
         "DESCENDING_OPTION": "Descending"
+      }
+    }
+  },
+  "PRODUCT_STOCK_WITHDRAWAL_DIALOG": {
+    "TITLE": "Product Stock Withdrawal",
+    "FORM_CONTROL_SECTION": {
+      "WITHDRAWAL_SLIP_NO_CONTROL": {
+        "LABEL": "Withdrawal Slip No"
+      },
+      "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
+        "LABEL": "Additional Stock Quantity"
       }
     }
   },
@@ -566,5 +584,9 @@
   "SYSTEM_UPDATE_PAGE": {
     "TITLE": "System Maintenance",
     "DESCRIPTION": "We are currently doing system maintenance and will be back shortly. Sorry for the inconvenience."
+  },
+  "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
+    "TITLE": "Product Stock Audit",
+    "DESCRIPTION": "This is where product stock audit information can be managed."
   }
 }

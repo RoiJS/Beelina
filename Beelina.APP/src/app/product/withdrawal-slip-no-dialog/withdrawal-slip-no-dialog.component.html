@@ -1,0 +1,33 @@
+<div class="product-stock-withdrawal-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "PRODUCT_STOCK_WITHDRAWAL_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body" [formGroup]="productWithdrawalForm">
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "PRODUCT_STOCK_WITHDRAWAL_DIALOG.FORM_CONTROL_SECTION.WITHDRAWAL_SLIP_NO_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <input matInput type="text" formControlName="withdrawalSlipNo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.ADDITIONAL_STOCK_QUANTITY_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <input matInput type="number" formControlName="additionalStockQuantity" />
+    </mat-form-field>
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CANCEL" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

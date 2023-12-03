@@ -1,0 +1,8 @@
+.product-stock-audit-list {
+  &__item-section {
+    display: flex;
+    min-width: 22em;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

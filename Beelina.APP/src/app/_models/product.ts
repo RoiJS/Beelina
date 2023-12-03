@@ -12,6 +12,7 @@ export class Product extends Entity implements IModelNode {
   public price: number;
   public productUnit: ProductUnit;
   public deductedStock: number;
+  public withdrawalSlipNo: string;
 
   get priceFormatted(): string {
     return NumberFormatter.formatCurrency(this.price);

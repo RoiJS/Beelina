@@ -7,5 +7,6 @@ export interface IProductInput {
   description: string;
   stockQuantity: number;
   pricePerUnit: number;
+  withdrawalSlipNo: string;
   productUnitInput: IProductUnitInput;
 }
