@@ -11,7 +11,8 @@ namespace Beelina.LIB.Models
         public bool Custom { get; set; }
         public string StoredProcedureName { get; set; }
         public ModulesEnum ModuleId { get; set; }
-        public PermissionLevelEnum UserMininimumModulePermission { get; set; }
+        public PermissionLevelEnum UserMinimumModulePermission { get; set; }
+        public PermissionLevelEnum UserMaximumModulePermission { get; set; }
 
         public List<ReportControlsRelation> ReportControlsRelations { get; set; }
     }

@@ -50,6 +50,8 @@ export class SidedrawerService {
         name: 'MAIN_MENU.PRODUCTS_CATALOGUE',
         url: '/product-catalogue/product-list',
         icon: 'add_shopping_cart',
+        minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
       {
         name: 'MAIN_MENU.DRAFT_ORDERS',
@@ -84,7 +86,7 @@ export class SidedrawerService {
         url: '/reports',
         icon: 'bar_chart',
         minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.MANUAL',
@@ -103,11 +105,12 @@ export class SidedrawerService {
     // The way in works now, is that if the user has a permission level of 'User' or 'Administrator', then all the menus will be shown.
     // If the user has a permission level of 'Manager', then only Profile menu will be shown.
     // We will later revisit this in the future to properly show menus based on the user's permission level.
+    // Done: We are now showing the correct menus based on the user's permission level.
     this.mainMenu = availableMenus.filter(
       (m) =>
         (!m.minimumPermissionLevel && !m.maximumPermissionLevel) ||
-        m.minimumPermissionLevel === this._currentUserPermissionLevel ||
-        m.maximumPermissionLevel === this._currentUserPermissionLevel
+        m.minimumPermissionLevel <= this._currentUserPermissionLevel &&
+        m.maximumPermissionLevel >= this._currentUserPermissionLevel
     );
     return this.mainMenu;
   }

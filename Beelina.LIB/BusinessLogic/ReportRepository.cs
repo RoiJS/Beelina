@@ -1,4 +1,5 @@
 ﻿using Beelina.LIB.DbContexts;
+using Beelina.LIB.Enums;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +12,8 @@ namespace Beelina.LIB.BusinessLogic
     public class ReportRepository
         : BaseRepository<Report>, IReportRepository<Report>
     {
+        private IUserAccountRepository<UserAccount> _userAccountRepository { get; }
         private ICurrentUserService _currentUserService;
-
         private IOptions<EmailServerSettings> _emailServerSettings { get; }
 
         public ReportRepository(
@@ -28,7 +29,6 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<Report> GetReportInformation(int reportId)
         {
-
             var reportFromRepo = await _beelinaRepository.SystemDbContext.Reports
                                 .Where(r => r.Id == reportId)
                                 .Include(r => r.ReportControlsRelations)
@@ -41,8 +41,22 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<IList<Report>> GetAllReports()
         {
-            // TODO: Only show reports that the user has access to based on permissions level on retail module.
-            var reportsFromRepo = await GetAllEntities().ToListObjectAsync();
+            var userRetailModulePermission = await _beelinaRepository
+                .ClientDbContext
+                .UserPermission
+                .Where(u =>
+                    u.ModuleId == ModulesEnum.Retail
+                    && u.UserAccountId == _currentUserService.CurrentUserId
+                )
+                .FirstOrDefaultAsync();
+
+            var reportsFromRepo = await _beelinaRepository.SystemDbContext.Reports
+                                    .Where(r =>
+                                    r.ModuleId == ModulesEnum.Retail
+                                    && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
+                                    && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
+                                ).ToListAsync();
+
             return reportsFromRepo;
         }
 
