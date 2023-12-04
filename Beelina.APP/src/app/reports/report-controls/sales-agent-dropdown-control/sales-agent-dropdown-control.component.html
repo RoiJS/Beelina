@@ -1,0 +1,8 @@
+<div [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label>{{ controLabel }}:</mat-label>
+    <mat-select formControlName="salesAgent">
+      <mat-option *ngFor="let salesAgent of salesAgents" [value]="salesAgent.id">{{ salesAgent.fullname }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
