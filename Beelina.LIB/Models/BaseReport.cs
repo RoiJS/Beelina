@@ -130,8 +130,16 @@ namespace Beelina.LIB.Models
 
             template = template.Replace("#customername", UserFullName);
             template = template.Replace("#reportname", reportName);
+            template = template.Replace("#date", ReportRequestedDate());
 
             return template;
+        }
+
+        protected virtual string ReportRequestedDate()
+        {
+            var dateControl = ControlValues.Where(c => c.ControlId == 1).FirstOrDefault();
+            if (dateControl is null) return String.Empty;
+            return dateControl.CurrentValue;
         }
     }
 

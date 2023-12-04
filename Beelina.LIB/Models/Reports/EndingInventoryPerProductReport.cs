@@ -64,6 +64,14 @@ namespace Beelina.LIB.Models.Reports
 
             return this;
         }
+
+        protected override string ReportRequestedDate()
+        {
+            var fromDateControl = ControlValues.Where(c => c.ControlId == 3).FirstOrDefault();
+            var toDateControl = ControlValues.Where(c => c.ControlId == 4).FirstOrDefault();
+            if (fromDateControl is null || toDateControl is null) return String.Empty;
+            return String.Format("{0} - {1}", fromDateControl.CurrentValue, toDateControl.CurrentValue);
+        }
     }
 
     public class EndingInventoryPerProductReportOutput : BaseReportOutput
