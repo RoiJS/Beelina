@@ -106,41 +106,44 @@ const GET_APPROVED_TRANSACTIONS_BY_DATE = gql`
 const GET_TRANSACTION = gql`
   query ($transactionId: Int!) {
     transaction(transactionId: $transactionId) {
-      id
-      storeId
-      invoiceNo
-      discount
-      transactionDate
-      dueDate
-      hasUnpaidProductTransaction
-      total
-      balance
-      store {
+      transaction {
         id
-        name
-        address
-        paymentMethod {
-          name
-        }
-        barangay {
-          name
-        }
-      }
-      productTransactions {
-        id
-        transactionId
-        productId
-        quantity
-        price
-        status
-        currentQuantity
-        product {
+        storeId
+        invoiceNo
+        discount
+        transactionDate
+        dueDate
+        hasUnpaidProductTransaction
+        total
+        balance
+        store {
           id
-          code
           name
+          address
+          paymentMethod {
+            name
+          }
+          barangay {
+            name
+          }
+        }
+        productTransactions {
+          id
+          transactionId
+          productId
+          quantity
           price
+          status
+          currentQuantity
+          product {
+            id
+            code
+            name
+            price
+          }
         }
       }
+      badOrderAmount
     }
   }
 `;
@@ -185,6 +188,7 @@ export class Transaction extends Entity implements IModelNode {
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
   public total: number;
+  public badOrderAmount: number;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
@@ -198,9 +202,13 @@ export class Transaction extends Entity implements IModelNode {
     return NumberFormatter.formatCurrency(this.total);
   }
 
+  get badOrderFormatted(): string {
+    return NumberFormatter.formatCurrency(this.badOrderAmount);
+  }
+
   get netTotalFormatted(): string {
     const calculatedNetTotalAmount =
-      this.total - (this.discount / 100) * this.total;
+      (this.total - (this.discount / 100) * this.total) - this.badOrderAmount;
     return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
   }
 
@@ -212,6 +220,11 @@ export class Transaction extends Entity implements IModelNode {
     super();
     this.productTransactions = new Array<ProductTransaction>();
   }
+}
+
+export class TransactionDetails {
+  public transaction: Transaction;
+  public badOrderAmount: number;
 }
 
 export class TransactionDateInformation {
@@ -387,25 +400,25 @@ export class TransactionService {
         map(
           (
             result: ApolloQueryResult<{
-              transaction: Transaction;
+              transaction: TransactionDetails;
             }>
           ) => {
             const transactionFromRepo = result.data.transaction;
-
             const transaction = new Transaction();
-            transaction.id = transactionFromRepo.id;
-            transaction.invoiceNo = transactionFromRepo.invoiceNo;
-            transaction.discount = transactionFromRepo.discount;
-            transaction.transactionDate = transactionFromRepo.transactionDate;
-            transaction.dueDate = transactionFromRepo.dueDate;
-            transaction.storeId = transactionFromRepo.storeId;
-            transaction.store = transactionFromRepo.store;
-            transaction.balance = transactionFromRepo.balance;
-            transaction.total = transactionFromRepo.total;
+            transaction.badOrderAmount = transactionFromRepo.badOrderAmount;
+            transaction.id = transactionFromRepo.transaction.id;
+            transaction.invoiceNo = transactionFromRepo.transaction.invoiceNo;
+            transaction.discount = transactionFromRepo.transaction.discount;
+            transaction.transactionDate = transactionFromRepo.transaction.transactionDate;
+            transaction.dueDate = transactionFromRepo.transaction.dueDate;
+            transaction.storeId = transactionFromRepo.transaction.storeId;
+            transaction.store = transactionFromRepo.transaction.store;
+            transaction.balance = transactionFromRepo.transaction.balance;
+            transaction.total = transactionFromRepo.transaction.total;
             transaction.hasUnpaidProductTransaction =
-              transactionFromRepo.hasUnpaidProductTransaction;
+              transactionFromRepo.transaction.hasUnpaidProductTransaction;
             transaction.productTransactions =
-              transactionFromRepo.productTransactions.map((pt) => {
+              transactionFromRepo.transaction.productTransactions.map((pt) => {
                 const productTransaction = new ProductTransaction();
                 productTransaction.id = pt.id;
                 productTransaction.quantity = pt.quantity;

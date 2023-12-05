@@ -73,6 +73,12 @@
             <span>{{ transaction.balanceFormatted }}</span>
           </div>
           <br />
+          <div class="product-transaction-amount-information"
+            *ngIf="transaction?.productTransactions?.length > 0 && transaction.badOrderAmount > 0">
+            <span>{{ "GENERAL_TEXTS.BAD_ORDERS_AMOUNT" | translate }}</span>
+            <span>{{ transaction.badOrderFormatted }}</span>
+          </div>
+          <br />
           <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
             <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
             <span>{{ transaction.grossTotalFormatted }}</span>

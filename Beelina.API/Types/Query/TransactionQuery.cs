@@ -27,11 +27,12 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
-    public async Task<Transaction> GetTransaction(
+    public async Task<TransactionDetails> GetTransaction(
         [Service] ITransactionRepository<Transaction> transactionRepository,
         [Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository,
         int transactionId)
     {
+      var badOrdersAmount = 0.0;
       var transactionFromRepo = await transactionRepository
                       .GetEntity(transactionId)
                       .Includes(
@@ -41,9 +42,15 @@ namespace Beelina.API.Types.Query
                       )
                       .ToObjectAsync();
 
+      // Only get for bad order amount if the transaction status is confirmed
+      if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
+      {
+        badOrdersAmount = await transactionRepository.GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId);
+      }
+
       transactionFromRepo.ProductTransactions = await productTransactionRepository.GetProductTransactions(transactionId);
 
-      return transactionFromRepo;
+      return new TransactionDetails { Transaction = transactionFromRepo, BadOrderAmount = badOrdersAmount };
     }
 
     [Authorize]

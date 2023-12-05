@@ -13,5 +13,7 @@ namespace Beelina.LIB.Interfaces
         Task<List<Transaction>> GetTransactionByDate(TransactionStatusEnum status,string transactionDate);
         
         Task<TransactionSales> GetSales(string fromDate, string toDate);
+
+        Task<double> GetBadOrderAmount(string transactionNo, int storeId);
     }
 }

@@ -10,6 +10,7 @@
     "CLEAR": "Clear",
     "CANCEL": "Cancel",
     "RESET": "Reset",
+    "BAD_ORDERS_AMOUNT": "Bad Orders",
     "GROSS_TOTAL": "Gross Total",
     "NET_TOTAL": "Net Total",
     "PAID": "Paid",
