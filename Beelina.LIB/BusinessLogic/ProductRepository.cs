@@ -29,7 +29,17 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "")
     {
+      var userRetailModulePermission = await _beelinaRepository
+                .ClientDbContext
+                .UserPermission
+                .Where(u =>
+                    u.ModuleId == ModulesEnum.Retail
+                    && u.UserAccountId == _currentUserService.CurrentUserId
+                )
+                .FirstOrDefaultAsync();
+
       // Gather products information with product stock per panel and product unit.
+      // Only gets the products that the user has permission to see.
       var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
                                     join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
 
@@ -47,6 +57,7 @@ namespace Beelina.LIB.BusinessLogic
                                       && p.IsActive
                                       && ((productId > 0 && p.Id == productId) || productId == 0)
                                       && (filterKeyWord != "" && (p.Name.Contains(filterKeyWord) || p.Code.Contains(filterKeyWord)) || filterKeyWord == "")
+                                      && (userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User || (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && pp != null))
 
                                     select new
                                     {
