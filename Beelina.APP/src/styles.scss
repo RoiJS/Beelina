@@ -350,14 +350,28 @@ app-tool-bar {
 /*#endregion*/
 
 /*#region PRODUCT LIST ITEM */
-cdk-virtual-scroll-viewport.product-list
-  > div.cdk-virtual-scroll-content-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
 
-  > .ng-star-inserted {
-    width: 48%;
+@media only screen  and (min-width: 780px) {
+  cdk-virtual-scroll-viewport.product-list > div.cdk-virtual-scroll-content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+
+    > .ng-star-inserted {
+      width: 48%;
+    }
+  }
+}
+
+@media only screen  and (min-width: 1440px) {
+  cdk-virtual-scroll-viewport.product-list > div.cdk-virtual-scroll-content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+
+    > .ng-star-inserted {
+      width: 33%;
+    }
   }
 }
 /*#endregion*/

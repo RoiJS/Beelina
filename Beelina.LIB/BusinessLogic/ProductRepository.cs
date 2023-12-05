@@ -34,7 +34,7 @@ namespace Beelina.LIB.BusinessLogic
                 .UserPermission
                 .Where(u =>
                     u.ModuleId == ModulesEnum.Retail
-                    && u.UserAccountId == userId
+                    && u.UserAccountId == _currentUserService.CurrentUserId
                 )
                 .FirstOrDefaultAsync();
 

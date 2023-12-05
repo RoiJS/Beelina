@@ -1,7 +1,7 @@
 @import "../../../app-variables";
 
 .product-item {
-  height: 18em;
+  height: 12em;
 
   &__header {
     color: $white;
@@ -15,7 +15,6 @@
     padding: 0.5em 1em;
     display: flex;
     justify-content: space-around;
-    flex: 1;
 
     mat-icon {
       height: 55px;
@@ -32,6 +31,7 @@
 
   &__footer {
     padding: 0 1em 1em 1em;
+    flex: 1;
 
     .product-info {
       overflow: hidden;
