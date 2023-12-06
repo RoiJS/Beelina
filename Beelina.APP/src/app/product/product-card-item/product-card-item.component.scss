@@ -21,7 +21,7 @@
       width: 85px;
       font-size: 6em;
       align-self: center;
-      color: #d89c2a;
+      color: $primary;
     }
 
     img {
@@ -30,8 +30,9 @@
   }
 
   &__footer {
-    padding: 0 1em 1em 1em;
     flex: 1;
+    overflow: hidden;
+    padding-right: 1em;
 
     .product-info {
       overflow: hidden;
@@ -40,6 +41,17 @@
 
       &__label {
         font-weight: bold;
+      }
+
+      &__stock {
+        padding: 2px;
+        background-color: $primary;
+        color: $white;
+        border-radius: 15px;
+        width: 40px;
+        display: inline-block;
+        text-align: center;
+        font-weight: 500;
       }
     }
   }

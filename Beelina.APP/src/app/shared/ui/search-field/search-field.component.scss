@@ -2,9 +2,10 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
+  gap: 1em;
 
   .txt-search-field {
-    width: 83%;
+    flex: 1;
     box-sizing: border-box;
     padding: 12px;
     font-size: 15px;

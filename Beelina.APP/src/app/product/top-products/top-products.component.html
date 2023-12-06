@@ -1,38 +1,20 @@
-<app-tool-bar
-  [title]="'GENERAL_TEXTS.BIZUAL' | translate"
-  [showBackButton]="false"
->
-  <button mat-icon-button class="toolbar-option">
-    <mat-icon matBadgeColor="warn">search</mat-icon>
-  </button>
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
 </app-tool-bar>
 
 <app-loader-layout [busy]="isLoading">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "TOP_PRODUCTS_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "TOP_PRODUCTS_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "TOP_PRODUCTS_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
 
-    <app-list-container
-      [templateType]="emptyEntityTemplateEnum.TOP_PRODUCTS"
-      [count]="topProducts?.length"
-    >
-      <cdk-virtual-scroll-viewport
-        itemSize="60"
-        class="list-container top-products-list-container"
-      >
+    <app-list-container [templateType]="emptyEntityTemplateEnum.TOP_PRODUCTS" [count]="topProducts?.length">
+      <cdk-virtual-scroll-viewport itemSize="60" class="list-container top-products-list-container">
         <div *cdkVirtualFor="let item of topProducts">
-          <div
-            matRipple
-            class="list-container__item-section top-products-list-container__item-section"
-          >
-            <span class="product-information"
-              ><span>({{ item.code }})</span> - {{ item.name }}</span
-            >
+          <div matRipple class="list-container__item-section top-products-list-container__item-section">
+            <span class="product-information"><span>({{ item.code }})</span> - {{ item.name }}</span>
             <span class="product-number-of-transaction">{{ item.count }}</span>
           </div>
         </div>
