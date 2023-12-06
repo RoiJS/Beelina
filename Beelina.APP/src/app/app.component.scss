@@ -32,7 +32,8 @@ mat-tree-node[aria-level="1"] {
   color: white;
 }
 
-.active {
+mat-tree-node.active,
+mat-tree-node:hover {
   background: $primary-gradient;
   color: white;
   border-bottom-right-radius: 50px;

@@ -33,13 +33,13 @@
       </div>
       <div class="product-info">
         <span class="product-info__label">{{
-          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.STOCK" | translate
-          }}: </span><span>{{ productItem.stockQuantity }}</span>
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.PRICE" | translate
+          }}: </span><span>{{ productItem.priceFormatted }}</span>
       </div>
       <div class="product-info">
         <span class="product-info__label">{{
-          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.PRICE" | translate
-          }}: </span><span>{{ productItem.priceFormatted }}</span>
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.STOCK" | translate
+          }}: </span><span class="product-info__stock">{{ productItem.stockQuantity }}</span>
       </div>
     </div>
   </div>

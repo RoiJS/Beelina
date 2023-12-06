@@ -1,35 +1,17 @@
-<app-tool-bar
-  [title]="'GENERAL_TEXTS.BIZUAL' | translate"
-  [showBackButton]="false"
->
-  <button
-    mat-icon-button
-    class="toolbar-option"
-    (click)="openTextOrderDialog()"
-    *ngIf="
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
+  <button mat-icon-button class="toolbar-option" (click)="openTextOrderDialog()" *ngIf="
       currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
-    "
-  >
+    ">
     <mat-icon matBadgeColor="warn">add_comment</mat-icon>
   </button>
-  <button
-    mat-icon-button
-    [disabled]="itemCounter === 0"
-    class="toolbar-option"
-    (click)="goToCart()"
-    *ngIf="
+  <button mat-icon-button [disabled]="itemCounter === 0" class="toolbar-option" (click)="goToCart()" *ngIf="
       currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
-    "
-  >
-    <mat-icon
-      [matBadge]="itemCounter"
-      [matBadgeHidden]="itemCounter === 0"
-      matBadgeColor="warn"
-      aria-hidden="false"
-      >shopping_cart</mat-icon
-    >
+    ">
+    <mat-icon [matBadge]="itemCounter" [matBadgeHidden]="itemCounter === 0" matBadgeColor="warn"
+      aria-hidden="false">shopping_cart</mat-icon>
   </button>
-  <mat-icon
+  <!-- I think this is not needed anymore since we have introduced an account portal for managers. -->
+  <!-- <mat-icon
     matRipple
     [matMenuTriggerFor]="menu"
     *ngIf="
@@ -58,95 +40,61 @@
           | translate
       }}
     </button>
-  </mat-menu>
+  </mat-menu> -->
 </app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "PRODUCTS_CATALOGUE_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "PRODUCTS_CATALOGUE_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "PRODUCTS_CATALOGUE_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
-    <div
-      *ngIf="
+    <div *ngIf="
         currentUserPermission > getPermissionLevel(permissionLevelEnum.User)
-      "
-      class="product-current-sales-agent-picker-container"
-    >
+      " class="product-current-sales-agent-picker-container">
       <mat-form-field appearance="fill">
-        <mat-label
-          >{{
-            "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.LABEL"
-              | translate
-          }}:</mat-label
-        >
-        <mat-select
-          [(ngModel)]="currentSalesAgentId"
-          (selectionChange)="switchSaleAgent($event)"
-        >
-          <mat-option
-            *ngFor="let salesAgent of salesAgents"
-            [value]="salesAgent.id"
-            >{{ salesAgent.fullname }}</mat-option
-          >
+        <mat-label>{{
+          "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.LABEL"
+          | translate
+          }}:</mat-label>
+        <mat-select [(ngModel)]="currentSalesAgentId" (selectionChange)="switchSaleAgent($event)">
+          <mat-option *ngFor="let salesAgent of salesAgents" [value]="salesAgent.id">{{ salesAgent.fullname
+            }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
-    <app-search-field
-      (onSearch)="onSearch($event)"
-      [placeHolderTextIdentifier]="
+    <app-search-field (onSearch)="onSearch($event)" [placeHolderTextIdentifier]="
         'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
-      "
-    ></app-search-field>
+      "></app-search-field>
 
-    <app-list-container
-      [templateType]="emptyEntityTemplateEnum.PRODUCTS"
-      [count]="dataSource?.itemCount"
-    >
-      <cdk-virtual-scroll-viewport
-        itemSize="30"
-        orientation="vertical"
-        class="list-container product-list"
-      >
+    <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="30" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item
-            [productItem]="item"
-            [allowManageItem]="
+          <app-product-card-item [productItem]="item" [allowManageItem]="
               currentUserPermission >
                 getPermissionLevel(permissionLevelEnum.User) ||
               allowManageProductDetails
-            "
-            (editItem)="editProduct($event)"
-            (deleteItem)="deleteProduct($event)"
-            (addItem)="addItemToCart($event)"
-          ></app-product-card-item>
+            " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
+            (addItem)="addItemToCart($event)"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>
-    <div
-      *ngIf="
+    <div *ngIf="
         currentSalesAgentId === 0 &&
         currentUserPermission > getPermissionLevel(permissionLevelEnum.User)
-      "
-      class="no-selected-sales-agent-label-container"
-    >
+      " class="no-selected-sales-agent-label-container">
       <div class="no-selected-sales-agent-label">
         <mat-icon>person_pin</mat-icon>
         <label>{{
           "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.HINT" | translate
-        }}</label>
+          }}</label>
       </div>
     </div>
   </div>
 
-  <app-floating-button
-    *ngIf="
+  <app-floating-button *ngIf="
       currentUserPermission > getPermissionLevel(permissionLevelEnum.User) ||
       allowManageProductDetails
-    "
-    (tapButton)="addProduct()"
-    [icon]="'add'"
-  ></app-floating-button>
+    " (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
 </app-loader-layout>
