@@ -1,0 +1,25 @@
+<div class="report-settings-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "REPORT_SETTINGS_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body" [formGroup]="reportSettingsForm">
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "REPORT_SETTINGS_DIALOG.FORM_CONTROL_SECTION.REPORT_NOTIFICATION_EMAIL_ADDRESS_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <input matInput type="  email" formControlName="emailAddress" />
+    </mat-form-field>
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CANCEL" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

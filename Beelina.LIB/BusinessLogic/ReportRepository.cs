@@ -68,8 +68,7 @@ namespace Beelina.LIB.BusinessLogic
         public async Task<Report> GenerateReport(int reportId, List<ControlValues> controlValues)
         {
             var reportFromRepo = await GetReportInformation(reportId);
-
-            var emailReceiver = _currentUserService.CurrrentUserEmailAddress;
+            var reportNotificationEmailAddress = await GetReportNotificationEmailAddress(_currentUserService.CurrentUserId);
             var userFullName = _currentUserService.CurrrentName;
 
             var reportName = reportFromRepo.ReportClass;
@@ -91,7 +90,8 @@ namespace Beelina.LIB.BusinessLogic
                 .GenerateAsExcel()
                 .SendViaEmail(
                     _emailServerSettings.Value.SmtpAddress,
-                    emailReceiver,
+                    _currentUserService.CurrrentUserEmailAddress,
+                    reportNotificationEmailAddress.EmailAddress,
                     _emailServerSettings.Value.SmtpAddress
                 );
             }
@@ -102,6 +102,24 @@ namespace Beelina.LIB.BusinessLogic
 
             return reportFromRepo;
         }
-    }
 
+        public async Task<ReportNotificationEmailAddress> GetReportNotificationEmailAddress(int userAccountId)
+        {
+            var reportNotificationEmailAddress = await _beelinaRepository.ClientDbContext.ReportNotificationEmailAddresses
+                                                .Where(r => r.UserAccountId == userAccountId)
+                                                .FirstOrDefaultAsync();
+
+            return reportNotificationEmailAddress;
+        }
+
+        public async Task RegisterNotificationEmailAddress(ReportNotificationEmailAddress reportNotificationEmailAddress)
+        {
+            if (reportNotificationEmailAddress.Id == 0)
+            {
+                await _beelinaRepository.ClientDbContext.ReportNotificationEmailAddresses.AddAsync(reportNotificationEmailAddress);
+            }
+
+            await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        }
+    }
 }

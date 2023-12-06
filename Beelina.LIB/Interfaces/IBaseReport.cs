@@ -7,6 +7,6 @@ namespace Beelina.LIB.Interfaces
     {
         IBaseReport<TOutput> GenerateAsExcel();
         DataSet GenerateReportData();
-        void SendViaEmail(string sender, string receiver, string bcc);
+        void SendViaEmail(string sender, string receiver, string cc, string bcc);
     }
 }

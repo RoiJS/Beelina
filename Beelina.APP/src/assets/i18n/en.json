@@ -594,5 +594,19 @@
   "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
     "TITLE": "Product Stock Audit",
     "DESCRIPTION": "This is where product stock audit information can be managed."
+  },
+  "REPORT_SETTINGS_DIALOG": {
+    "TITLE": "Report Settings",
+    "FORM_CONTROL_SECTION": {
+      "REPORT_NOTIFICATION_EMAIL_ADDRESS_CONTROL": {
+        "LABEL": "Report Notification Email Address"
+      }
+    },
+    "CONFIRMATION_REPORT_SETTINGS_DIALOG": {
+      "TITLE": "Update Report Settings",
+      "CONFIRM": "Are you sure to update report settings?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating report settings failed. Please again later."
+    }
   }
 }

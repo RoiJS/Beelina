@@ -8,5 +8,7 @@ namespace Beelina.LIB.Interfaces
         Task<Report> GetReportInformation(int reportId);
         Task<IList<Report>> GetAllReports();
         Task<Report> GenerateReport(int reportId, List<ControlValues> controlValues);
+        Task<ReportNotificationEmailAddress> GetReportNotificationEmailAddress(int userAccountId);
+        Task RegisterNotificationEmailAddress(ReportNotificationEmailAddress reportNotificationEmailAddress);
     }
 }

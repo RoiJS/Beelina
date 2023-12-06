@@ -28,7 +28,7 @@ namespace ReserbizAPP.LIB.Helpers.Services
             _fileName = fileName;
         }
 
-        public void Send(string senderEmail, string receiverEmail, string subject, string htmlBody, string bcc = "")
+        public void Send(string senderEmail, string receiverEmail, string subject, string htmlBody, string cc = "", string bcc = "")
         {
             var fileattachmentStream = new MemoryStream(_fileAttachmentStream);
             var mail = new MailMessage()
@@ -46,6 +46,11 @@ namespace ReserbizAPP.LIB.Helpers.Services
                 if (!String.IsNullOrEmpty(bcc))
                 {
                     mail.Bcc.Add(bcc);
+                }
+
+                if (!String.IsNullOrEmpty(cc) && receiverEmail != cc)
+                {
+                    mail.Bcc.Add(cc);
                 }
 
                 if (_fileAttachmentStream is not null)

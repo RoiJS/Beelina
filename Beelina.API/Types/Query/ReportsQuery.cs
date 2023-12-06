@@ -40,5 +40,21 @@ namespace Beelina.API.Types.Query
         {
             return await reportRepository.GenerateReport(reportId, controlValues);
         }
+
+        [Authorize]
+        public async Task<ReportNotificationEmailAddress> GetReportNotificationEmailAddress(
+                    [Service] IReportRepository<Report> reportRepository,
+                    [Service] ICurrentUserService currentUserService
+        )
+        {
+            var reportEmailNotificationFromRepo = await reportRepository.GetReportNotificationEmailAddress(currentUserService.CurrentUserId);
+
+            if (reportEmailNotificationFromRepo == null)
+            {
+                reportEmailNotificationFromRepo = new ReportNotificationEmailAddress() { EmailAddress = "" };
+            }
+
+            return reportEmailNotificationFromRepo;
+        }
     }
 }

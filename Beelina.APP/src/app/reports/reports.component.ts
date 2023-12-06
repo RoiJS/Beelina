@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { Report } from '../_models/report';
 import { ReportsService } from '../_services/reports.service';
 import { BaseComponent } from '../shared/components/base-component/base.component';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ReportSettingsComponent } from './report-settings/report-settings.component';
 
 @Component({
   selector: 'app-reports',
@@ -13,18 +15,24 @@ import { BaseComponent } from '../shared/components/base-component/base.componen
 export class ReportsComponent extends BaseComponent implements OnInit {
   private _reports: Array<Report>;
 
-  constructor(private reportService: ReportsService, private router: Router) {
+  constructor(
+    private bottomSheet: MatBottomSheet,
+    private reportService: ReportsService,
+    private router: Router
+  ) {
     super();
   }
 
   ngOnInit() {
     this._isLoading = true;
-    setTimeout(() => {
-      this.reportService.getAllReports().subscribe((reports: Array<Report>) => {
-        this._reports = reports;
-        this._isLoading = false;
-      });
-    }, 1200);
+    this.reportService.getAllReports().subscribe((reports: Array<Report>) => {
+      this._reports = reports;
+      this._isLoading = false;
+    });
+  }
+
+  openReportSettings() {
+    this.bottomSheet.open(ReportSettingsComponent);
   }
 
   goToReportInformation(reportId: number) {

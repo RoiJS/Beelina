@@ -1,32 +1,20 @@
-<app-tool-bar
-  [title]="'GENERAL_TEXTS.BIZUAL' | translate"
-  [showBackButton]="false"
->
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
+  <button mat-icon-button class="toolbar-option" (click)="openReportSettings()"><mat-icon>settings</mat-icon></button>
 </app-tool-bar>
 <app-loader-layout [busy]="isLoading">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "REPORTS_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "REPORTS_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "REPORTS_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
 
-    <app-list-container
-      [templateType]="emptyEntityTemplateEnum.REPORTS"
-      [count]="reports?.length"
-    >
+    <app-list-container [templateType]="emptyEntityTemplateEnum.REPORTS" [count]="reports?.length">
       <div class="list-container">
         <div *ngFor="let item of reports">
-          <div
-            class="list-container__item-section"
-            matRipple
-            (click)="goToReportInformation(item.id)"
-          >
-            <div
-              class="list-container__icon-section list-container__icon-section--right-space"
-            >
+          <div class="list-container__item-section" matRipple (click)="goToReportInformation(item.id)">
+            <div class="list-container__icon-section list-container__icon-section--right-space">
               <div class="list-container__icon-section--icon-container">
                 <mat-icon>bar_chart</mat-icon>
               </div>
@@ -34,7 +22,7 @@
             <div class="list-container__details-section">
               <label style="margin-bottom: 8px" class="main-label">{{
                 item.name
-              }}</label>
+                }}</label>
               <label>{{ item.description }}</label>
             </div>
             <div class="list-container__options-section">
