@@ -2,7 +2,7 @@ name: Continuous integration for Beelina Backend
 
 on:
   push:
-    branches: [master, development]
+    branches: [master, Development]
     paths:
       [
         .github/workflows/**,
@@ -12,7 +12,7 @@ on:
       ]
 
   pull_request:
-    branches: [master, development]
+    branches: [master, Development]
     paths:
        [
         .github/workflows/**,
