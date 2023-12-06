@@ -101,7 +101,7 @@ namespace Beelina.LIB.Models
             return dataSet;
         }
 
-        public void SendViaEmail(string sender, string receiver, string bcc)
+        public void SendViaEmail(string sender, string receiver, string cc, string bcc)
         {
             var reportPascalName = Report.ReportClass.AddSpacesToPascal();
             var fileName = $"{Report.ReportClass}_{DateTime.Now.ToString("yyyyMMddHHmmss")}";
@@ -114,6 +114,7 @@ namespace Beelina.LIB.Models
                     receiver,
                     subject,
                     emailContent,
+                    cc,
                     bcc
                 );
         }

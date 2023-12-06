@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
-import { Apollo, gql } from 'apollo-angular';
+import { Apollo, MutationResult, gql } from 'apollo-angular';
 import { map } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -8,6 +8,8 @@ import { IReportInformationQueryPayload } from '../_interfaces/payloads/ireport-
 import { ReportNotExistsError } from '../_models/errors/report-not-exists.error';
 import { Report } from '../_models/report';
 import { ControlValue } from '../reports/report-details/report-details.component';
+import { IReportNotificationEmailOutput } from '../_interfaces/outputs/ireport-notification-email.output';
+import { ReportNotificationEmailAddressResult } from '../_models/results/report-notification-emailaddress-result';
 
 const GET_ALL_REPORTS = gql`
   query ($filterKeyword: String) {
@@ -57,6 +59,25 @@ const GENERATE_REPORT = gql`
   }
 `;
 
+const GET_REPORT_EMAIL_NOTIFICATION = gql`
+  query {
+    reportNotificationEmailAddress {
+        emailAddress
+    }
+  }
+`;
+
+const UPDATE_REPORT_NOTIFICATION_EMAIL = gql`
+  mutation($emailAddress: String!) {
+    updateReportNotificationEmailAddress(input: { emailAddress: $emailAddress}){
+        reportNotificationEmailAddress {
+            id
+            emailAddress
+        }
+    }
+  }
+`;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -64,7 +85,7 @@ export class ReportsService {
   constructor(
     private apollo: Apollo,
     private translateService: TranslateService
-  ) {}
+  ) { }
 
   getAllReports() {
     return this.apollo
@@ -143,6 +164,24 @@ export class ReportsService {
       );
   }
 
+  getReportNotificationEmailAddress() {
+    return this.apollo
+      .watchQuery({
+        query: GET_REPORT_EMAIL_NOTIFICATION
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              reportNotificationEmailAddress: IReportInformationQueryPayload;
+            }>
+          ) => {
+            return <ReportNotificationEmailAddressResult>result.data.reportNotificationEmailAddress;
+          }
+        )
+      );
+  }
+
   generateReport(reportId: number, controlValues: ControlValue[]) {
     return this.apollo
       .watchQuery({
@@ -162,6 +201,33 @@ export class ReportsService {
             return true;
           }
         )
+      );
+  }
+
+  updateReportNotificationEmailAddress(emailAddress: string) {
+    return this.apollo
+      .mutate({
+        mutation: UPDATE_REPORT_NOTIFICATION_EMAIL,
+        variables: {
+          emailAddress,
+        },
+      })
+      .pipe(
+        map((result: MutationResult<{ updateReportNotificationEmailAddress: IReportNotificationEmailOutput }>) => {
+          const output = result.data.updateReportNotificationEmailAddress;
+          const payload = output.reportNotificationEmailAddress;
+          const errors = output.errors;
+
+          if (payload) {
+            return payload;
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
       );
   }
 }

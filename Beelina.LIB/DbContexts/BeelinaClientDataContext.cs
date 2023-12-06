@@ -27,6 +27,7 @@ namespace Beelina.LIB.DbContexts
         public DbSet<Store> Stores { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<ProductTransaction> ProductTransactions { get; set; }
+        public DbSet<ReportNotificationEmailAddress> ReportNotificationEmailAddresses { get; set; }
         public DbSet<Barangay> Barangays { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
@@ -138,7 +139,7 @@ namespace Beelina.LIB.DbContexts
                 .HasForeignKey(fk => fk.DeactivatedById)
                 .HasConstraintName("FK_Transaction_DeactivatedById_Accounts_AccountId");
             });
-            
+
             modelBuilder.Entity<ProductTransaction>(a =>
             {
                 a.HasOne(field => field.CreatedBy)
