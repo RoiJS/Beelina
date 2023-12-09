@@ -25,8 +25,7 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 })
 export class ReportDetailsComponent
   extends BaseComponent
-  implements OnInit, AfterViewInit
-{
+  implements OnInit, AfterViewInit {
   @ViewChild('container', { read: ViewContainerRef })
   container: ViewContainerRef;
 
@@ -50,7 +49,7 @@ export class ReportDetailsComponent
     this._isLoading = true;
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -146,14 +145,25 @@ export class ReportDetailsComponent
               this._isLoading = true;
               this.reportService
                 .generateReport(this._reportId, selectedValues)
-                .subscribe(() => {
-                  this._isLoading = false;
-                  this.snackBarService.open(
-                    this.translateService.instant(
-                      'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
-                    ),
-                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                  );
+                .subscribe({
+                  next: () => {
+                    this._isLoading = false;
+                    this.snackBarService.open(
+                      this.translateService.instant(
+                        'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
+                      ),
+                      this.translateService.instant('GENERAL_TEXTS.CLOSE')
+                    );
+                  },
+                  error: () => {
+                    this._isLoading = false;
+                    this.snackBarService.open(
+                      this.translateService.instant(
+                        'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
+                      ),
+                      this.translateService.instant('GENERAL_TEXTS.CLOSE')
+                    );
+                  },
                 });
             }
           },
