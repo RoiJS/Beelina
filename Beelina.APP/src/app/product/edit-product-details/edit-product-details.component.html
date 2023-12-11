@@ -65,13 +65,26 @@
               "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.UNIT_CONTROL.LABEL"
               | translate
               }}:</mat-label>
-            <input type="text" aria-label="Number" matInput formControlName="productUnit" [matAutocomplete]="auto" />
+            <input type="text" matInput formControlName="productUnit" [matAutocomplete]="auto" />
 
             <mat-autocomplete #auto="matAutocomplete">
               <mat-option *ngFor="let option of productUnitFilterOptions | async" [value]="option.name">
                 {{ option.name }}
               </mat-option>
             </mat-autocomplete>
+          </mat-form-field>
+          <div class="product-detail-panel__transferrable">
+            <mat-slide-toggle formControlName="isTransferable">{{
+              "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.TRANSFERRABLE_CONTROL.LABEL"
+              | translate
+              }}</mat-slide-toggle>
+          </div>
+          <mat-form-field appearance="fill">
+            <mat-label>{{
+              "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.NUMBER_OF_UNITS_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input matInput type="number" formControlName="numberOfUnits" />
           </mat-form-field>
         </div>
       </div>

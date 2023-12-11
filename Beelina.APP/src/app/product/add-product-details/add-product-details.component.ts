@@ -75,6 +75,8 @@ export class AddProductDetailsComponent implements OnInit {
         additionalStockQuantity: [0],
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
+        isTransferable: [false],
+        numberOfUnits: [0]
       },
       {
         updateOn: 'blur',
@@ -123,6 +125,8 @@ export class AddProductDetailsComponent implements OnInit {
     product.description = this._productForm.get('description').value;
     product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
     product.withdrawalSlipNo = this._productForm.get('withdrawalSlipNo').value;
+    product.isTransferable = this._productForm.get('isTransferable').value;
+    product.numberOfUnits = this._productForm.get('numberOfUnits').value;
     product.pricePerUnit = this._productForm.get('pricePerUnit').value;
     product.productUnit.name = this._productForm.get('productUnit').value;
 

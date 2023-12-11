@@ -35,8 +35,9 @@ import { User } from '../_models/user.model';
 import { StorageService } from './storage.service';
 import { ProductStockAudit } from '../_models/product-stock-audit';
 import { IProductStockAuditOutput } from '../_interfaces/outputs/iproduct-stock-update.output';
+import { TransferProductStockTypeEnum } from '../_enum/transfer-product-stock-type.enum';
 
-const GET_PRODUCTS_METHODS = gql`
+const GET_PRODUCTS_QUERY = gql`
   query ($userAccountId: Int!, $cursor: String, $filterKeyword: String) {
     products(
       userAccountId: $userAccountId
@@ -51,6 +52,8 @@ const GET_PRODUCTS_METHODS = gql`
         stockQuantity
         pricePerUnit
         price
+        numberOfUnits
+        isTransferable
         productUnit {
           id
           name
@@ -78,6 +81,8 @@ const GET_PRODUCT_STORE = gql`
         stockQuantity
         pricePerUnit
         price
+        numberOfUnits
+        isTransferable
         productUnit {
           name
         }
@@ -193,26 +198,52 @@ const GET_PRODUCT_STOCK_AUDITS_LIST = gql`
 `;
 
 const UPDATE_PRODUCT_STOCK_AUDIT = gql`
-mutation($productStockAuditId: Int!, $withdrawalSlipNo: String!, $newQuantity: Int!) {
-  updateProductStockAudit(input: {
-        productStockAuditId: $productStockAuditId,
-        withdrawalSlipNo: $withdrawalSlipNo,
-        newQuantity: $newQuantity
+  mutation($productStockAuditId: Int!, $withdrawalSlipNo: String!, $newQuantity: Int!) {
+    updateProductStockAudit(input: {
+          productStockAuditId: $productStockAuditId,
+          withdrawalSlipNo: $withdrawalSlipNo,
+          newQuantity: $newQuantity
+      }){
+      productStockAudit {
+          id
+      }
+      errors {
+              __typename
+              ... on ProductStockAuditNotExistsError {
+                  message
+              }
+              ... on BaseError {
+                  message
+              }
+          }
+      }
+  }
+`;
+
+const TRANSFER_PRODUCT_STOCK_FROM_OWN_INVENTORY_QUERY = gql`
+  mutation(
+    $userAccountId: Int!,
+    $sourceProductId: Int!,
+    $destinationProductId: Int!,
+    $destinationProductNumberOfUnits: Int!,
+    $sourceProductNumberOfUnits: Int!,
+    $sourceNumberOfUnitsTransfered: Int!,
+    $transferProductStockType: TransferProductStockTypeEnum!
+  ) {
+    transferProductStockFromOwnInventory(input: {
+      userAccountId: $userAccountId,
+      sourceProductId:  $sourceProductId,
+      destinationProductId:  $destinationProductId,
+      destinationProductNumberOfUnits: $destinationProductNumberOfUnits,
+      sourceProductNumberOfUnits:  $sourceProductNumberOfUnits,
+      sourceNumberOfUnitsTransfered:  $sourceNumberOfUnitsTransfered,
+      transferProductStockType: $transferProductStockType
     }){
-    productStockAudit {
-        id
+      product {
+          name
+      }
     }
-    errors {
-            __typename
-            ... on ProductStockAuditNotExistsError {
-                message
-            }
-            ... on BaseError {
-                message
-            }
-        }
-    }
-}
+  }
 `;
 
 @Injectable({ providedIn: 'root' })
@@ -251,7 +282,7 @@ export class ProductService {
 
     return this.apollo
       .watchQuery({
-        query: GET_PRODUCTS_METHODS,
+        query: GET_PRODUCTS_QUERY,
         variables: {
           cursor,
           filterKeyword,
@@ -275,11 +306,65 @@ export class ProductService {
             product.stockQuantity = productDto.stockQuantity;
             product.pricePerUnit = productDto.pricePerUnit;
             product.price = productDto.price;
+            product.isTransferable = productDto.isTransferable;
+            product.numberOfUnits = productDto.numberOfUnits;
             product.productUnit = productDto.productUnit;
             product.deductedStock =
               -productTransactionItems.find(
                 (pt) => pt.productId === productDto.id
               )?.quantity | 0;
+            return product;
+          });
+
+          if (products) {
+            return {
+              endCursor,
+              hasNextPage,
+              products,
+            };
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
+      );
+  }
+
+  getProductsByName(productName: string) {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
+    return this.apollo
+      .watchQuery({
+        query: GET_PRODUCTS_QUERY,
+        variables: {
+          cursor: null,
+          filterKeyword: productName,
+          userAccountId,
+        },
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ products: IBaseConnection }>) => {
+          const data = result.data.products;
+          const errors = result.errors;
+          const endCursor = data.pageInfo.endCursor;
+          const hasNextPage = data.pageInfo.hasNextPage;
+          const productsDto = <Array<Product>>data.nodes;
+
+          const products: Array<Product> = productsDto.map((productDto) => {
+            const product = new Product();
+            product.id = productDto.id;
+            product.code = productDto.code;
+            product.name = productDto.name;
+            product.description = productDto.description;
+            product.stockQuantity = productDto.stockQuantity;
+            product.pricePerUnit = productDto.pricePerUnit;
+            product.price = productDto.price;
+            product.isTransferable = productDto.isTransferable;
+            product.numberOfUnits = productDto.numberOfUnits;
+            product.productUnit = productDto.productUnit;
             return product;
           });
 
@@ -341,6 +426,8 @@ export class ProductService {
       description: product.description,
       stockQuantity: product.stockQuantity,
       pricePerUnit: product.pricePerUnit,
+      isTransferable: product.isTransferable,
+      numberOfUnits: product.numberOfUnits,
       withdrawalSlipNo: product.withdrawalSlipNo,
       productUnitInput: {
         id: product.productUnit.id,
@@ -609,6 +696,46 @@ export class ProductService {
         map((result: MutationResult<{ updateProductStockAudit: IProductStockAuditOutput }>) => {
           const output = result.data.updateProductStockAudit;
           const payload = output.productStockAudit;
+          const errors = output.errors;
+
+          if (payload) {
+            return payload;
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
+      );
+  }
+
+  transferProductStockFromOwnInventory(
+    userAccountId: number,
+    sourceProductId: number,
+    destinationProductId: number,
+    destinationProductNumberOfUnits: number,
+    sourceProductNumberOfUnits: number,
+    sourceNumberOfUnitsTransfered: number,
+    transferProductStockType: TransferProductStockTypeEnum) {
+    return this.apollo
+      .mutate({
+        mutation: TRANSFER_PRODUCT_STOCK_FROM_OWN_INVENTORY_QUERY,
+        variables: {
+          userAccountId,
+          sourceProductId,
+          destinationProductId,
+          destinationProductNumberOfUnits,
+          sourceProductNumberOfUnits,
+          sourceNumberOfUnitsTransfered,
+          transferProductStockType
+        },
+      })
+      .pipe(
+        map((result: MutationResult<{ transferProductStockFromOwnInventory: IProductOutput }>) => {
+          const output = result.data.transferProductStockFromOwnInventory;
+          const payload = output.product;
           const errors = output.errors;
 
           if (payload) {

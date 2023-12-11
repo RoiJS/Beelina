@@ -9,6 +9,8 @@
         public int StockQuantity { get; set; }
         public float PricePerUnit { get; set; }
         public string WithdrawalSlipNo { get; set; }
+        public bool IsTransferable { get; set; }
+        public int NumberOfUnits { get; set; }
         public ProductUnitInput ProductUnitInput { get; set; }
     }
 }

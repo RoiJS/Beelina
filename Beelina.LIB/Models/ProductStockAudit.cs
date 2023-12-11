@@ -11,6 +11,10 @@ namespace Beelina.LIB.Models
         public string WithdrawalSlipNo { get; set; }
         public StockAuditSourceEnum StockAuditSource { get; set; }
         public ProductStockPerPanel ProductStockPerPanel { get; set; }
+        public int SourceProductStockPerPanelId { get; set; }
+        public int SourceProductNumberOfUnits { get; set; }
+        public int DestinationProductStockPerPanelId { get; set; }
+        public TransferProductStockTypeEnum TransferProductStockType { get; set; }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

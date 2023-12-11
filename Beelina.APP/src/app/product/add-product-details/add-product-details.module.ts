@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule } from '@angular/router';
 
 import { AddProductDetailsComponent } from './add-product-details.component';
@@ -23,6 +24,7 @@ import { WithdrawalSlipNoDialogModule } from '../withdrawal-slip-no-dialog/withd
     MatRippleModule,
     MatBottomSheetModule,
     MatAutocompleteModule,
+    MatSlideToggleModule,
     ReactiveFormsModule,
     WithdrawalSlipNoDialogModule,
     RouterModule.forChild([
