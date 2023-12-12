@@ -2,8 +2,8 @@
 {
     public enum StockAuditSourceEnum
     {
-        ManageProduct = 1,
-
-        TransferRequest = 2
+        FromWithdrawal = 1,
+        MovedFromOtherProductInventory = 2,
+        MovedToOtherProductInventory = 3
     }
 }

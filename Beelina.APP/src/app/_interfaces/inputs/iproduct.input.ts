@@ -8,5 +8,7 @@ export interface IProductInput {
   stockQuantity: number;
   pricePerUnit: number;
   withdrawalSlipNo: string;
+  isTransferable: boolean;
+  numberOfUnits: number;
   productUnitInput: IProductUnitInput;
 }

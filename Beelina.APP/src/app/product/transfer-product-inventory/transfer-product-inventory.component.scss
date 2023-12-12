@@ -1,0 +1,11 @@
+@import "../../../app-variables";
+
+.transfer-product-stock-dialog-container {
+  mat-form-field {
+    margin-bottom: 2.5em;
+  }
+
+  mat-hint {
+    color: $primary;
+  }
+}

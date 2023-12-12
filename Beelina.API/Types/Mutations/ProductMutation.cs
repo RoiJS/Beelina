@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors.Factories;
 using Beelina.LIB.GraphQL.Exceptions;
 using Beelina.LIB.GraphQL.Types;
@@ -80,6 +81,28 @@ namespace Beelina.API.Types.Mutations
             productStockAuditFromRepo.Quantity = newQuantity;
             await productRepository.SaveChanges();
             return productStockAuditFromRepo;
+        }
+
+        [Authorize]
+        public async Task<Product> TransferProductStockFromOwnInventory(
+                    [Service] IProductRepository<Product> productRepository,
+                    int userAccountId,
+                    int sourceProductId,
+                    int destinationProductId,
+                    int destinationProductNumberOfUnits,
+                    int sourceProductNumberOfUnits,
+                    int sourceNumberOfUnitsTransfered,
+                    TransferProductStockTypeEnum transferProductStockType)
+        {
+            return await productRepository.TransferProductStockFromOwnInventory(
+                userAccountId,
+                sourceProductId,
+                destinationProductId,
+                destinationProductNumberOfUnits,
+                sourceProductNumberOfUnits,
+                sourceNumberOfUnitsTransfered,
+                transferProductStockType
+            );
         }
     }
 }

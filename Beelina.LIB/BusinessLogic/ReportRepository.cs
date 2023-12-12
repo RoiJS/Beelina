@@ -90,8 +90,8 @@ namespace Beelina.LIB.BusinessLogic
                 .GenerateAsExcel()
                 .SendViaEmail(
                     _emailServerSettings.Value.SmtpAddress,
-                    _currentUserService.CurrrentUserEmailAddress,
                     reportNotificationEmailAddress.EmailAddress,
+                    _currentUserService.CurrrentUserEmailAddress,
                     _emailServerSettings.Value.SmtpAddress
                 );
             }

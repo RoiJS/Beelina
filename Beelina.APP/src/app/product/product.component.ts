@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,6 +11,8 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
+import { AccountVerificationComponent } from '../shared/account-verification/account-verification.component';
+import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
 import { TextOrderComponent } from './text-order/text-order.component';
 
 import { ProductService } from '../_services/product.service';
@@ -37,7 +39,7 @@ import {
   PermissionLevelEnum,
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
-import { AccountVerificationComponent } from '../shared/account-verification/account-verification.component';
+import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
 
 @Component({
   selector: 'app-product',
@@ -46,15 +48,17 @@ import { AccountVerificationComponent } from '../shared/account-verification/acc
 })
 export class ProductComponent
   extends BaseComponent
-  implements OnInit, OnDestroy
-{
+  implements OnInit, OnDestroy {
+  @ViewChild(SearchFieldComponent) searchFieldComponent: SearchFieldComponent;
+
   private _dataSource: ProductDataSource;
   private _itemCounter: number;
   private _productTransactions: Array<ProductTransaction>;
   private _transactionId: number;
   private _subscription: Subscription = new Subscription();
   private _allowManageProductDetails = false;
-  private _dialogRef: MatBottomSheetRef<AccountVerificationComponent>;
+  private _accountVerificationDialogRef: MatBottomSheetRef<AccountVerificationComponent>;
+  private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
   private _salesAgents: Array<User>;
 
   currentSalesAgentId: number = 0;
@@ -130,11 +134,12 @@ export class ProductComponent
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
-    this._dialogRef = null;
+    this._accountVerificationDialogRef = null;
+    this._transferInventoryDialogRef = null;
   }
 
   goToCart() {
@@ -215,11 +220,11 @@ export class ProductComponent
     const defaultUsername = this.storageService.getString(
       'allowManageProductDetailsDefaultUsername'
     );
-    this._dialogRef = this.bottomSheet.open(AccountVerificationComponent, {
+    this._accountVerificationDialogRef = this.bottomSheet.open(AccountVerificationComponent, {
       data: { defaultUsername },
     });
 
-    this._dialogRef.afterDismissed().subscribe((data: User) => {
+    this._accountVerificationDialogRef.afterDismissed().subscribe((data: User) => {
       // We assume that if the returned value from the dialog is undefined,
       // it means that the user just simplycanceled the dialog.
       if (data === undefined) return;
@@ -231,7 +236,7 @@ export class ProductComponent
         if (
           retailModulePrivilege &&
           retailModulePrivilege >
-            getPermissionLevelEnum(PermissionLevelEnum.User)
+          getPermissionLevelEnum(PermissionLevelEnum.User)
         ) {
           this._allowManageProductDetails = true;
           this.storageService.storeString(
@@ -288,6 +293,19 @@ export class ProductComponent
     } else {
       this.store.dispatch(ProductActions.getProductsAction());
     }
+  }
+
+  transferProductInventory(productId: number) {
+    this._transferInventoryDialogRef = this.bottomSheet.open(TransferProductInventoryComponent, {
+      data: { productId },
+    });
+    this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.store.dispatch(ProductActions.resetProductState());
+        this.store.dispatch(ProductActions.getProductsAction());
+        this.searchFieldComponent.clear();
+      }
+    })
   }
 
   get itemCounter(): number {
