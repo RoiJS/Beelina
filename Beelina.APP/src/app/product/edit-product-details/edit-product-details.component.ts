@@ -77,6 +77,8 @@ export class EditProductDetailsComponent implements OnInit {
         additionalStockQuantity: [0],
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
+        isTransferable: [false],
+        numberOfUnits: [0]
       },
       {
         updateOn: 'blur',
@@ -102,6 +104,8 @@ export class EditProductDetailsComponent implements OnInit {
         this._productForm.get('description').setValue(product.description);
         this._productForm.get('stockQuantity').setValue(product.stockQuantity);
         this._productForm.get('pricePerUnit').setValue(product.price);
+        this._productForm.get('isTransferable').setValue(product.isTransferable);
+        this._productForm.get('numberOfUnits').setValue(product.numberOfUnits);
         this._productForm.get('productUnit').setValue(product.productUnit.name);
       });
 
@@ -146,6 +150,8 @@ export class EditProductDetailsComponent implements OnInit {
     product.description = this._productForm.get('description').value;
     product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
     product.withdrawalSlipNo = this._productForm.get('withdrawalSlipNo').value;
+    product.isTransferable = this._productForm.get('isTransferable').value;
+    product.numberOfUnits = this._productForm.get('numberOfUnits').value;
     product.pricePerUnit = this._productForm.get('pricePerUnit').value;
     product.productUnit.name = this._productForm.get('productUnit').value;
 

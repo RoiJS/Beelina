@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.GraphQL.Types;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Models;
 
 namespace Beelina.LIB.Interfaces
@@ -13,5 +14,14 @@ namespace Beelina.LIB.Interfaces
         Task<Product> CreateOrUpdateProduct(int userAccountId, ProductInput productInput, Product product);
         Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId);
         Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId);
+        Task<Product> TransferProductStockFromOwnInventory(
+            int userAccountId, 
+            int sourceProductId, 
+            int destinationProductId, 
+            int destinationProductNumberOfUnits,
+            int sourceProductNumberOfUnits, 
+            int sourceNumberOfUnitsTransfered, 
+            TransferProductStockTypeEnum transferProductStockType);
+
     }
 }

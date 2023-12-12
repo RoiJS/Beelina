@@ -42,7 +42,6 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
-import { Product } from 'src/app/_models/product';
 import { ProductCartTransaction } from 'src/app/_models/product-cart-transaction.model';
 
 import { Barangay } from 'src/app/_models/barangay';

@@ -22,11 +22,15 @@ export class SearchFieldComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onSubmit() {
     const field = this._searchForm.get('filterKeyword').value;
     this.onSearch.emit(field);
+  }
+
+  clear() {
+    this._searchForm.get('filterKeyword').setValue('');
   }
 
   get searchForm(): FormGroup {

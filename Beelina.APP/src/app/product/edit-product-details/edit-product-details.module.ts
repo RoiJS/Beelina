@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatInputModule } from '@angular/material/input';
 
 import { EditProductDetailsComponent } from './edit-product-details.component';
@@ -20,6 +21,7 @@ import { WithdrawalSlipNoDialogModule } from '../withdrawal-slip-no-dialog/withd
     MatIconModule,
     MatInputModule,
     MatAutocompleteModule,
+    MatSlideToggleModule,
     ReactiveFormsModule,
     WithdrawalSlipNoDialogModule,
     RouterModule.forChild([

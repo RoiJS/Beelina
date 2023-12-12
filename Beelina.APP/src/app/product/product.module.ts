@@ -35,6 +35,7 @@ import { ProductTransactionsEffects } from './add-to-cart-product/store/effects'
 import { CartGuard } from '../_guards/cart.guard';
 import { TextOrderComponent } from './text-order/text-order.component';
 import { AccountVerificationModule } from '../shared/account-verification/account-verification.module';
+import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
 
 @NgModule({
   imports: [
@@ -75,7 +76,8 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
     TopProductsComponent,
     AddToCartProductComponent,
     TextOrderComponent,
+    TransferProductInventoryComponent
   ],
   providers: [CartGuard],
 })
-export class ProductModule {}
+export class ProductModule { }

@@ -20,7 +20,8 @@
     "DELETE": "Delete",
     "EDIT": "Edit",
     "REMOVE": "Remove",
-    "STORES": "Stores"
+    "STORES": "Stores",
+    "TRANSFER_STOCK": "Transfer Stocks"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -302,6 +303,12 @@
       "UNIT_CONTROL": {
         "LABEL": "Unit",
         "HINT": "Please specify unit"
+      },
+      "TRANSFERRABLE_CONTROL": {
+        "LABEL": "Stock Quantity Transferable"
+      },
+      "NUMBER_OF_UNITS_CONTROL": {
+        "LABEL": "Number of units"
       }
     },
     "SAVE_NEW_PRODUCT_DIALOG": {
@@ -343,6 +350,12 @@
       "UNIT_CONTROL": {
         "LABEL": "Unit",
         "HINT": "Please specify unit"
+      },
+      "TRANSFERRABLE_CONTROL": {
+        "LABEL": "Stock Quantity Transferable"
+      },
+      "NUMBER_OF_UNITS_CONTROL": {
+        "LABEL": "Number of units"
       }
     },
     "EDIT_PRODUCT_DIALOG": {
@@ -415,6 +428,58 @@
       "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
         "LABEL": "Additional Stock Quantity"
       }
+    }
+  },
+  "TRANSFER_PRODUCT_STOCK_DIALOG": {
+    "TITLE": "Transfer Product Stock",
+    "DESCRIPTION": "This feature offers a way for the user to transfer or convert stocks from one product unit to another. User can specify the number of units to be transfered and the product where to transfer the stocks to.",
+    "FORM_CONTROL_SECTION": {
+      "TRANSFER_PRODUCT_TYPE_CONTROL": {
+        "LABEL": "Select type of product unit transfer",
+        "OPTIONS_CONTROL": {
+          "BULK_TO_PIECE": "Bulk to Pieces",
+          "PIECE_TO_BULK": "Pieces To Bulk"
+        }
+      },
+      "BULK_TO_PIECES_CONTROL": {
+        "NUMBER_OF_UNITS_CONTROL": {
+          "LABEL": "Specify number of units per __PRODUCT_UNIT__",
+          "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
+        },
+        "PRODUCT_DESTINATION_CONTROL": {
+          "LABEL": "Select product to transfer stocks to",
+          "HINT": "Choose product where you want to transfer stocks to. Take note that this only contains the same product name with the source product but with different unit."
+        },
+        "NUMBER_OF_STOCKS_TO_BE_TRANSFERED_CONTROL": {
+          "LABEL": "Specify number of __PRODUCT_UNIT__ to be transfered",
+          "HINT": "This value indicates how many units of the source product the user would like to transfer."
+        }
+      },
+      "PIECES_TO_BULK_CONTROL": {
+        "NUMBER_OF_UNITS_CONTROL": {
+          "LABEL": "Number of units per __PRODUCT_UNIT__",
+          "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
+        },
+        "PRODUCT_DESTINATION_CONTROL": {
+          "LABEL": "Select product to transfer stocks to",
+          "HINT": "Choose product where you want to transfer stocks to. Take note that this only contains the same product name with the source product but with different unit."
+        },
+        "NUMBER_OF_STOCKS_TO_BE_TRANSFERED_CONTROL": {
+          "LABEL": "Specify number of __PRODUCT_UNIT__ to be transfered",
+          "HINT": "This value indicates how many units of the source product the user would like to transfer."
+        }
+      }
+    },
+    "TRANSFER_PRODUCT_STOCK_CONFIRMATION_DIALOG": {
+      "TITLE": "Transfer Product Stock",
+      "CONFIRM_MESSAGE": "You are about to transfer stocks from __SOURCE_PRODUCT__ to __DESTINATION_PRODUCT__. This action cannot be reverted. Do you still want to proceed?",
+      "SUCCESS_MESSAGE": "Product stocks have been successfully transferred.",
+      "ERROR_MESSAGE": "Transferring product stocks failed. Please again later."
+    },
+    "TRANSFER_PRODUCT_STOCK_INVALID_DIALOG": {
+      "TITLE": "Invalid quantity to be transfered",
+      "QUANTITY_LESS_THAN_ERROR_MESSAGE": "Unable to proceed. The quantity to be transfered must be greater than or equal to the number of units of the destination product.",
+      "QUANTITY_INDIVISIBLE_ERROR_MESSAGE": "Unable to proceed. The quantity must be perfectly divisible by the number of units in the destination product."
     }
   },
   "TRANSACTION_HISTORY_PAGE": {

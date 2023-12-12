@@ -2,8 +2,7 @@ import { IProductInformationQueryPayload } from 'src/app/_interfaces/payloads/ip
 import { ProductUnit } from '../product-unit';
 
 export class ProductInformationResult
-  implements IProductInformationQueryPayload
-{
+  implements IProductInformationQueryPayload {
   public typename: string;
   public id: number;
   public name: string;
@@ -12,5 +11,7 @@ export class ProductInformationResult
   public stockQuantity: number;
   public pricePerUnit: number;
   public price: number;
+  public isTransferable: boolean;
+  public numberOfUnits: number;
   public productUnit: ProductUnit;
 }

@@ -10,6 +10,8 @@ namespace Beelina.LIB.Models
         public string Description { get; set; }
         public int StockQuantity { get; set; }
         public float PricePerUnit { get; set; }
+        public bool IsTransferable { get; set; }
+        public int NumberOfUnits { get; set; }
 
         public double Price
         {
