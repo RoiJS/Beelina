@@ -41,6 +41,7 @@ export const reducers = createReducer(
     (state, action) =>
       <IProductState>{
         ...state,
+        isLoading: false,
         error: action.error,
       }
   ),

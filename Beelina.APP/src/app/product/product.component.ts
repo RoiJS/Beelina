@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import {
   MatBottomSheet,
@@ -28,7 +28,7 @@ import * as ProductActions from './store/actions';
 
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
-import { isLoadingSelector } from './store/selectors';
+import { errorSelector, isLoadingSelector } from './store/selectors';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { BaseComponent } from '../shared/components/base-component/base.component';
@@ -89,6 +89,12 @@ export class ProductComponent
     );
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
+
+    this.store.pipe(select(errorSelector)).subscribe((result: string) => {
+      if (result) {
+        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+      }
+    })
     this._currentUser = this.authService.user.value;
 
     this._subscription.add(
