@@ -158,6 +158,7 @@ const ANALYZE_TEXT_ORDERS = gql`
   query ($textOrders: String!) {
     analyzeTextOrders(textOrders: $textOrders) {
       id
+      code
       productId
       productName
       quantity
@@ -604,6 +605,7 @@ export class ProductService {
             const productTransactions: Array<ProductTransaction> = data.map(
               (product) => {
                 return <ProductTransaction>{
+                  code: product.code,
                   productId: product.productId,
                   productName: product.productName,
                   price: product.price,

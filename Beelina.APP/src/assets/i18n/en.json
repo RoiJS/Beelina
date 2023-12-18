@@ -553,6 +553,10 @@
       "BUTTON_OPTIONS": {
         "SET_ORDER": "Set Order"
       }
+    },
+    "CONFIRM_ORDERS_DIALOG": {
+      "TITLE": "Confirm Orders",
+      "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?"
     }
   },
   "REPORTS_PAGE": {

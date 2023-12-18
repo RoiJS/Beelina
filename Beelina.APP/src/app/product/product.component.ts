@@ -140,13 +140,6 @@ export class ProductComponent
         },
       });
     }
-
-    this.productService
-      .getProductDetailList(this.authService.userId)
-      .subscribe((productList: Array<Product>) => {
-        console.log(productList);
-        this._productList = productList;
-      });
   }
 
   ngOnInit() { }
@@ -220,9 +213,14 @@ export class ProductComponent
   }
 
   openTextOrderDialog() {
-    this.bottomSheet.open(TextOrderComponent, {
-      data: { productList: this._productList }
-    });
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        this._productList = productList;
+        this.bottomSheet.open(TextOrderComponent, {
+          data: { productList: this._productList }
+        });
+      });
   }
 
   deactivateAllowManageProductDetailsDialog() {

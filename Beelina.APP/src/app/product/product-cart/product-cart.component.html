@@ -149,7 +149,7 @@
             | translate
             }}
           </button>
-          <button mat-raised-button color="default" (click)="clear()">
+          <button *ngIf="!isDraftTransaction" mat-raised-button color="default" (click)="clear()">
             {{ "GENERAL_TEXTS.CLEAR" | translate }}
           </button>
         </div>

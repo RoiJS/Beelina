@@ -125,6 +125,7 @@ namespace Beelina.API.Types.Query
               var productTransaction = new ProductTransactionDto
               {
                 Id = 0,
+                Code = productFromRepo.Code,
                 ProductId = productFromRepo.Id,
                 ProductName = productFromRepo.Name,
                 Price = productPerPanelFromRepo.Price,
