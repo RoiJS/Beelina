@@ -1,15 +1,15 @@
 import {
-    ComponentFactoryResolver,
-    ComponentRef,
-    Directive,
-    ElementRef,
-    EventEmitter,
-    HostListener,
-    Injector,
-    Input,
-    OnDestroy,
-    Output,
-    ViewContainerRef
+  ComponentFactoryResolver,
+  ComponentRef,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Injector,
+  Input,
+  OnDestroy,
+  Output,
+  ViewContainerRef
 } from '@angular/core';
 import getCaretCoordinates from 'textarea-caret';
 import { takeUntil } from 'rxjs/operators';
@@ -103,22 +103,24 @@ export class TextInputAutocompleteDirective implements OnDestroy {
     private elm: ElementRef
   ) { }
 
-  @HostListener('keypress', ['$event.key'])
-  onKeypress(key: string) {
+  @HostListener('keydown', ['$event.key'])
+  onKeyDown(key: string) {
+    console.log('onKeyDown');
     if (key === this.triggerCharacter) {
       this.usingShortcut = false;
       this.showMenu();
     }
   }
 
-  @HostListener('keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent) {
-    if (this.keyboardShortcut && this.keyboardShortcut(event)) {
-      this.usingShortcut = true;
-      this.showMenu();
-      this.onChange('');
-    }
-  }
+  // @HostListener('keydown', ['$event'])
+  // onKeyDown(event: KeyboardEvent) {
+  //   if (this.keyboardShortcut && this.keyboardShortcut(event)) {
+  //     console.log('onKeyDown');
+  //     this.usingShortcut = true;
+  //     this.showMenu();
+  //     this.onChange('');
+  //   }
+  // }
 
   @HostListener('input', ['$event.target.value'])
   onChange(value: string) {
