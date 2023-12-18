@@ -103,14 +103,21 @@ export class TextInputAutocompleteDirective implements OnDestroy {
     private elm: ElementRef
   ) { }
 
-  @HostListener('keydown', ['$event.key'])
+  @HostListener('document:keydown', ['$event.key'])
   onKeyDown(key: string) {
-    console.log('onKeyDown');
+    console.log('onKeyDown', key);
     if (key === this.triggerCharacter) {
       this.usingShortcut = false;
       this.showMenu();
     }
   }
+
+  // @HostListener('document:touchend', ['$event'])
+  // onTouchEnd(event: TouchEvent): void {
+  //   // Handle touchend event
+  //   console.log('Touch ended:', event);
+  //   // You can perform actions based on the touch end
+  // }
 
   // @HostListener('keydown', ['$event'])
   // onKeyDown(event: KeyboardEvent) {
@@ -124,6 +131,8 @@ export class TextInputAutocompleteDirective implements OnDestroy {
 
   @HostListener('input', ['$event.target.value'])
   onChange(value: string) {
+    console.log('onChange', value);
+    // this.onKeyDown(value);
     if (this.menu) {
       if (
         value[this.menu.triggerCharacterPosition] !== this.triggerCharacter &&
