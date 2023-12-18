@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import {
   MatBottomSheet,
@@ -28,7 +28,8 @@ import * as ProductActions from './store/actions';
 
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
-import { isLoadingSelector } from './store/selectors';
+import { errorSelector, isLoadingSelector } from './store/selectors';
+import { Product } from '../_models/product';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { BaseComponent } from '../shared/components/base-component/base.component';
@@ -60,6 +61,7 @@ export class ProductComponent
   private _accountVerificationDialogRef: MatBottomSheetRef<AccountVerificationComponent>;
   private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
   private _salesAgents: Array<User>;
+  private _productList: Array<Product> = [];
 
   currentSalesAgentId: number = 0;
 
@@ -89,6 +91,12 @@ export class ProductComponent
     );
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
+
+    this.store.pipe(select(errorSelector)).subscribe((result: string) => {
+      if (result) {
+        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+      }
+    })
     this._currentUser = this.authService.user.value;
 
     this._subscription.add(
@@ -132,6 +140,13 @@ export class ProductComponent
         },
       });
     }
+
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        console.log(productList);
+        this._productList = productList;
+      });
   }
 
   ngOnInit() { }
@@ -205,7 +220,9 @@ export class ProductComponent
   }
 
   openTextOrderDialog() {
-    this.bottomSheet.open(TextOrderComponent);
+    this.bottomSheet.open(TextOrderComponent, {
+      data: { productList: this._productList }
+    });
   }
 
   deactivateAllowManageProductDetailsDialog() {

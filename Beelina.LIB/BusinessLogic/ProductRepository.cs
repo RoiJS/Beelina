@@ -27,6 +27,51 @@ namespace Beelina.LIB.BusinessLogic
       _currentUserService = currentUserService;
     }
 
+    public async Task<List<Product>> GetProductsDetailList(int userId)
+    {
+      var userRetailModulePermission = await _beelinaRepository
+                     .ClientDbContext
+                     .UserPermission
+                     .Where(u =>
+                         u.ModuleId == ModulesEnum.Retail
+                         && u.UserAccountId == _currentUserService.CurrentUserId
+                     )
+                     .FirstOrDefaultAsync();
+
+      // Only gets the products that the user has permission to see.
+      var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
+                                    join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+
+                                    on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
+                                    into productStockJoin
+                                    from pp in productStockJoin.DefaultIfEmpty()
+
+                                    join pu in _beelinaRepository.ClientDbContext.ProductUnits
+                                        on p.ProductUnitId equals pu.Id
+                                        into productUnitJoin
+                                    from pu in productUnitJoin.DefaultIfEmpty()
+
+                                    where
+                                      !p.IsDelete
+                                      && p.IsActive
+                                      && (userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User || (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && pp != null))
+
+                                    select new Product
+                                    {
+                                      Id = p.Id,
+                                      Name = p.Name,
+                                      Code = p.Code,
+                                      IsTransferable = p.IsTransferable,
+                                      NumberOfUnits = p.NumberOfUnits,
+                                      Description = p.Description,
+                                      ProductUnitId = p.ProductUnitId,
+                                      ProductUnit = pu
+                                    }).ToListAsync();
+
+
+      return productsFromRepo;
+    }
+
     public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "")
     {
       var userRetailModulePermission = await _beelinaRepository

@@ -178,6 +178,18 @@ const GET_SALES_AGENTS_LIST = gql`
   }
 `;
 
+const GET_PRODUCT_DETAILS_LIST = gql`
+  query ($userAccountId: Int!) {
+    productsDetailList(
+      userAccountId: $userAccountId
+    ) {
+        id
+        name
+        code
+    }
+  }
+`;
+
 const GET_PRODUCT_STOCK_AUDITS_LIST = gql`
   query ($productId: Int!, $userAccountId: Int!, $cursor: String) {
     productStockAudits(productId: $productId, userAccountId: $userAccountId, after: $cursor ) {
@@ -627,6 +639,32 @@ export class ProductService {
           });
 
           return salesAgents;
+        })
+      );
+  }
+
+  getProductDetailList(userAccountId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_PRODUCT_DETAILS_LIST,
+        variables: {
+          userAccountId
+        }
+
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ productsDetailList: Array<Product> }>) => {
+          const data = result.data.productsDetailList;
+
+          const products: Array<Product> = data.map((currentProduct: Product) => {
+            const product = new Product();
+            product.id = currentProduct.id;
+            product.code = currentProduct.code;
+            product.name = currentProduct.name;
+            return product;
+          });
+
+          return products;
         })
       );
   }

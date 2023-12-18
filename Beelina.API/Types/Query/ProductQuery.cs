@@ -44,6 +44,12 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
+        public async Task<List<Product>> GetProductsDetailList([Service] IProductRepository<Product> productRepository, int userAccountId)
+        {
+            return await productRepository.GetProductsDetailList(userAccountId);
+        }
+
+        [Authorize]
         public async Task<IProductPayload> CheckProductCode([Service] IProductRepository<Product> productRepository, int productId, string productCode)
         {
             var productFromRepo = await productRepository.GetProductByUniqueCode(productId, productCode);

@@ -14,13 +14,14 @@ namespace Beelina.LIB.Interfaces
         Task<Product> CreateOrUpdateProduct(int userAccountId, ProductInput productInput, Product product);
         Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId);
         Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId);
+        Task<List<Product>> GetProductsDetailList(int userId);
         Task<Product> TransferProductStockFromOwnInventory(
-            int userAccountId, 
-            int sourceProductId, 
-            int destinationProductId, 
+            int userAccountId,
+            int sourceProductId,
+            int destinationProductId,
             int destinationProductNumberOfUnits,
-            int sourceProductNumberOfUnits, 
-            int sourceNumberOfUnitsTransfered, 
+            int sourceProductNumberOfUnits,
+            int sourceNumberOfUnitsTransfered,
             TransferProductStockTypeEnum transferProductStockType);
 
     }
