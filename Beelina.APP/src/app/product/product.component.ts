@@ -29,6 +29,7 @@ import * as ProductActions from './store/actions';
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
 import { errorSelector, isLoadingSelector } from './store/selectors';
+import { Product } from '../_models/product';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { BaseComponent } from '../shared/components/base-component/base.component';
@@ -60,6 +61,7 @@ export class ProductComponent
   private _accountVerificationDialogRef: MatBottomSheetRef<AccountVerificationComponent>;
   private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
   private _salesAgents: Array<User>;
+  private _productList: Array<Product> = [];
 
   currentSalesAgentId: number = 0;
 
@@ -138,6 +140,13 @@ export class ProductComponent
         },
       });
     }
+
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        console.log(productList);
+        this._productList = productList;
+      });
   }
 
   ngOnInit() { }
@@ -211,7 +220,9 @@ export class ProductComponent
   }
 
   openTextOrderDialog() {
-    this.bottomSheet.open(TextOrderComponent);
+    this.bottomSheet.open(TextOrderComponent, {
+      data: { productList: this._productList }
+    });
   }
 
   deactivateAllowManageProductDetailsDialog() {

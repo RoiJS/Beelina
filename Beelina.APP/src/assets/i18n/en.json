@@ -263,7 +263,7 @@
     },
     "CLEAR_ORDER_DIALOG": {
       "TITLE": "Clear order",
-      "CONFIRM": "Are you sure to save clear order?",
+      "CONFIRM": "You are about to clear your order. This action cannot be undone. Do you still want to proceed?",
       "SUCCESS_MESSAGE": "Order has been cleared"
     },
     "INSUFFICIENT_PRODUCT_QUANTITY_DIALOG": {
@@ -543,10 +543,10 @@
   },
   "TEXT_ORDER_DIALOG": {
     "TTTLE": "Text Order",
-    "DESCRIPTION": "Set orders by pasting texts following the format below:",
+    "DESCRIPTION": "Set orders by typing in texts following the format below. Type @ to search for product that you are looking for:",
     "FORM_CONTROL_SECTION": {
       "TEXT_ORDER_CONTROL": {
-        "LABEL": "Enter Text Order:",
+        "LABEL": "Type @ to search product...",
         "HINT_LABEL_1": "[Product Code] x [Quantity]",
         "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 x 20"
       },
