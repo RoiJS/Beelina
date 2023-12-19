@@ -103,8 +103,8 @@ export class TextInputAutocompleteDirective implements OnDestroy {
     private elm: ElementRef
   ) { }
 
-  // @HostListener('document:keydown', ['$event'])
-  onKeyDown(key: any) {
+  @HostListener('document:keydown', ['$event.key'])
+  onKeyDown(key: string) {
     console.log('onKeyDown', key);
     if (key === this.triggerCharacter) {
       this.usingShortcut = false;
@@ -125,7 +125,6 @@ export class TextInputAutocompleteDirective implements OnDestroy {
   @HostListener('input', ['$event.target.value'])
   onChange(value: string) {
     console.log('onChange', value);
-    this.onKeyDown(value)
     if (this.menu) {
       if (
         value[this.menu.triggerCharacterPosition] !== this.triggerCharacter &&
