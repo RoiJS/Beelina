@@ -56,7 +56,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
 
     if (this._authForm.valid) {
       this._isLoading = true;
-      this.store.dispatch(LoginActions.reserLoginCredentials());
+      this.store.dispatch(LoginActions.resetLoginCredentials());
 
       this.authService.checkCompany(company).subscribe({
         next: (client: ClientInformationResult) => {

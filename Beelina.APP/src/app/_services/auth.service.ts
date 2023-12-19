@@ -30,6 +30,7 @@ import { CheckUsernameInformationResult } from '../_models/results/check-usernam
 import { UserAccountInformationResult } from '../_models/results/user-account-information-result';
 import { UserModulePermission } from '../_models/user-module-permission';
 import * as LoginActions from '../auth/store/actions';
+import * as ProductTransactionActions from '../product/add-to-cart-product/store/actions';
 
 const GET_CLIENT_INFORMATION_QUERY = gql`
   query ($clientName: String!) {
@@ -326,8 +327,10 @@ export class AuthService {
     this.storageService.remove('productTransactions');
     this.storageService.remove('allowManageProductDetails');
     this.storageService.remove('currentSalesAgentId');
+    this.storageService.remove("textOrder");
 
-    this.store.dispatch(LoginActions.reserLoginCredentials());
+    this.store.dispatch(LoginActions.resetLoginCredentials());
+    this.store.dispatch(ProductTransactionActions.resetProductTransactionState());
 
     if (this._tokenExpirationTimer) {
       clearTimeout(this._tokenExpirationTimer);

@@ -3,7 +3,8 @@
 .dropdown-menu {
   display: block;
   max-height: 300px;
-  overflow-y: auto;
+  max-width: 300px;
+  overflow: auto;
   position: absolute;
   top: 100%;
   left: 0;
