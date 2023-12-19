@@ -14,6 +14,7 @@ import { ProductTransaction } from 'src/app/_models/transaction';
 import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { StorageService } from 'src/app/_services/storage.service';
 
 @Component({
   selector: 'app-text-order',
@@ -39,10 +40,21 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     private router: Router,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
+    private storageService: StorageService
   ) {
     this._orderForm = this.formBuilder.group({
       textOrder: ['', Validators.required],
     });
+
+    if (storageService.hasKey("textOrder")) {
+      this._orderForm.get('textOrder').setValue(storageService.getString("textOrder"));
+    }
+
+    this._subscription.add(this._orderForm.get('textOrder')
+      .valueChanges
+      .subscribe((value: string) => {
+        storageService.storeString("textOrder", value);
+      }));
 
     this._hintLabelText1 = this.translateService.instant(
       'TEXT_ORDER_DIALOG.FORM_CONTROL_SECTION.TEXT_ORDER_CONTROL.HINT_LABEL_1'
@@ -72,6 +84,7 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     const textOrders = this._orderForm.get('textOrder').value;
     this.store.dispatch(ProductActions.analyzeTextOrders({ textOrders }));
     setTimeout(() => {
+      this.storageService.remove("textOrder");
       this.router.navigate([`product-catalogue/product-cart`]);
       this._bottomSheetRef.dismiss();
     }, 1000);

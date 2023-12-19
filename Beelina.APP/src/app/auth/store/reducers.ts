@@ -29,7 +29,7 @@ export const reducers = createReducer(
     ...state,
     error: action.error,
   })),
-  on(LoginActions.reserLoginCredentials, (state, action) => ({
+  on(LoginActions.resetLoginCredentials, (state, action) => ({
     ...state,
     isLoading: false,
     isUpdateLoading: false,
