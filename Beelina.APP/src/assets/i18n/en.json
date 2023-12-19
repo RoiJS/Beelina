@@ -20,7 +20,8 @@
     "DELETE": "Delete",
     "EDIT": "Edit",
     "REMOVE": "Remove",
-    "STORES": "Stores"
+    "STORES": "Stores",
+    "TRANSFER_STOCK": "Transfer Stocks"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -262,7 +263,7 @@
     },
     "CLEAR_ORDER_DIALOG": {
       "TITLE": "Clear order",
-      "CONFIRM": "Are you sure to save clear order?",
+      "CONFIRM": "You are about to clear your order. This action cannot be undone. Do you still want to proceed?",
       "SUCCESS_MESSAGE": "Order has been cleared"
     },
     "INSUFFICIENT_PRODUCT_QUANTITY_DIALOG": {
@@ -302,6 +303,12 @@
       "UNIT_CONTROL": {
         "LABEL": "Unit",
         "HINT": "Please specify unit"
+      },
+      "TRANSFERRABLE_CONTROL": {
+        "LABEL": "Stock Quantity Transferable"
+      },
+      "NUMBER_OF_UNITS_CONTROL": {
+        "LABEL": "Number of units"
       }
     },
     "SAVE_NEW_PRODUCT_DIALOG": {
@@ -343,6 +350,12 @@
       "UNIT_CONTROL": {
         "LABEL": "Unit",
         "HINT": "Please specify unit"
+      },
+      "TRANSFERRABLE_CONTROL": {
+        "LABEL": "Stock Quantity Transferable"
+      },
+      "NUMBER_OF_UNITS_CONTROL": {
+        "LABEL": "Number of units"
       }
     },
     "EDIT_PRODUCT_DIALOG": {
@@ -368,6 +381,7 @@
       "STOCK": "Stock",
       "PRICE": "Price"
     },
+    "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
     "DELETE_PRODUCT_DIALOG": {
       "TITLE": "Delete product",
       "CONFIRM": "Are you sure to delete selected product?",
@@ -415,6 +429,58 @@
       "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
         "LABEL": "Additional Stock Quantity"
       }
+    }
+  },
+  "TRANSFER_PRODUCT_STOCK_DIALOG": {
+    "TITLE": "Transfer Product Stock",
+    "DESCRIPTION": "This feature offers a way for the user to transfer or convert stocks from one product unit to another. User can specify the number of units to be transfered and the product where to transfer the stocks to.",
+    "FORM_CONTROL_SECTION": {
+      "TRANSFER_PRODUCT_TYPE_CONTROL": {
+        "LABEL": "Select type of product unit transfer",
+        "OPTIONS_CONTROL": {
+          "BULK_TO_PIECE": "Bulk to Pieces",
+          "PIECE_TO_BULK": "Pieces To Bulk"
+        }
+      },
+      "BULK_TO_PIECES_CONTROL": {
+        "NUMBER_OF_UNITS_CONTROL": {
+          "LABEL": "Specify number of units per __PRODUCT_UNIT__",
+          "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
+        },
+        "PRODUCT_DESTINATION_CONTROL": {
+          "LABEL": "Select product to transfer stocks to",
+          "HINT": "Choose product where you want to transfer stocks to. Take note that this only contains the same product name with the source product but with different unit."
+        },
+        "NUMBER_OF_STOCKS_TO_BE_TRANSFERED_CONTROL": {
+          "LABEL": "Specify number of __PRODUCT_UNIT__ to be transfered",
+          "HINT": "This value indicates how many units of the source product the user would like to transfer."
+        }
+      },
+      "PIECES_TO_BULK_CONTROL": {
+        "NUMBER_OF_UNITS_CONTROL": {
+          "LABEL": "Number of units per __PRODUCT_UNIT__",
+          "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
+        },
+        "PRODUCT_DESTINATION_CONTROL": {
+          "LABEL": "Select product to transfer stocks to",
+          "HINT": "Choose product where you want to transfer stocks to. Take note that this only contains the same product name with the source product but with different unit."
+        },
+        "NUMBER_OF_STOCKS_TO_BE_TRANSFERED_CONTROL": {
+          "LABEL": "Specify number of __PRODUCT_UNIT__ to be transfered",
+          "HINT": "This value indicates how many units of the source product the user would like to transfer."
+        }
+      }
+    },
+    "TRANSFER_PRODUCT_STOCK_CONFIRMATION_DIALOG": {
+      "TITLE": "Transfer Product Stock",
+      "CONFIRM_MESSAGE": "You are about to transfer stocks from __SOURCE_PRODUCT__ to __DESTINATION_PRODUCT__. This action cannot be reverted. Do you still want to proceed?",
+      "SUCCESS_MESSAGE": "Product stocks have been successfully transferred.",
+      "ERROR_MESSAGE": "Transferring product stocks failed. Please again later."
+    },
+    "TRANSFER_PRODUCT_STOCK_INVALID_DIALOG": {
+      "TITLE": "Invalid quantity to be transfered",
+      "QUANTITY_LESS_THAN_ERROR_MESSAGE": "Unable to proceed. The quantity to be transfered must be greater than or equal to the number of units of the destination product.",
+      "QUANTITY_INDIVISIBLE_ERROR_MESSAGE": "Unable to proceed. The quantity must be perfectly divisible by the number of units in the destination product."
     }
   },
   "TRANSACTION_HISTORY_PAGE": {
@@ -477,16 +543,20 @@
   },
   "TEXT_ORDER_DIALOG": {
     "TTTLE": "Text Order",
-    "DESCRIPTION": "Set orders by pasting texts following the format below:",
+    "DESCRIPTION": "Set orders by typing in texts following the format below. Type @ to search for product that you are looking for:",
     "FORM_CONTROL_SECTION": {
       "TEXT_ORDER_CONTROL": {
-        "LABEL": "Enter Text Order:",
+        "LABEL": "Type @ to search product...",
         "HINT_LABEL_1": "[Product Code] x [Quantity]",
         "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 x 20"
       },
       "BUTTON_OPTIONS": {
         "SET_ORDER": "Set Order"
       }
+    },
+    "CONFIRM_ORDERS_DIALOG": {
+      "TITLE": "Confirm Orders",
+      "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?"
     }
   },
   "REPORTS_PAGE": {
@@ -494,13 +564,13 @@
     "DESCRIPTION": "This page contains the list of different type of reports that user can use for data analysis.",
     "REPORTS_INFORMATION": {
       "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_NAME": "Daily Summarize Transactions",
-      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "This report can generate a summary of confirmed transactions on a given date. This helps user to analyze and gives an insight of their daily transactions.",
+      "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "Summary and quick insights for daily confirmed transactions",
       "DAILY_DETAILED_TRANSACTIONS_REPORT_NAME": "Daily Detailed Transactions",
-      "DAILY_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate detailed transactions on a given date. This presents transactions in an itemized manner where user can analyze purchased item per transactions. Take note that it only extract details from confirmed transactions.",
+      "DAILY_DETAILED_TRANSACTIONS_REPORT_DESC": " Itemized details for confirmed transactions on a specific date, facilitating a focused analysis of each purchase.",
       "ENDING_INVENTORY_PER_PRODUCT_REPORT_NAME": "Ending Inventory Per Product Report",
-      "ENDING_INVENTORY_PER_PRODUCT_REPORT_DESC": "The user can see the beginning and ending stocks information for a given date using this report. This will help administrators to analyze how much was the initial stocks loaded and how much was left.",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_DESC": "Displays starting and ending stock for a given date, aiding administrators in analyzing initial load and remaining stock.",
       "SALES_PER_CUSTOMER_REPORT_NAME": "Sales Per Customer Report",
-      "SALES_PER_CUSTOMER_REPORT_DESC": "This report can generate sales per customer on a given date. This can help administrators to analyze the sales and get insights on sales per customer.",
+      "SALES_PER_CUSTOMER_REPORT_DESC": "Generates sales data per customer for a specified date, aiding administrators in analyzing and gaining insights into individual customer sales.",
       "PRODUCT_WITHDRAWAL_REPORT_NAME": "Product Withdrawal Report",
       "PRODUCT_WITHDRAWAL_REPORT_DESC": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date."
     }

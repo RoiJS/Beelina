@@ -351,8 +351,9 @@ app-tool-bar {
 
 /*#region PRODUCT LIST ITEM */
 
-@media only screen  and (min-width: 780px) {
-  cdk-virtual-scroll-viewport.product-list > div.cdk-virtual-scroll-content-wrapper {
+@media only screen and (min-width: 780px) {
+  cdk-virtual-scroll-viewport.product-list
+    > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5em;
@@ -363,8 +364,9 @@ app-tool-bar {
   }
 }
 
-@media only screen  and (min-width: 1440px) {
-  cdk-virtual-scroll-viewport.product-list > div.cdk-virtual-scroll-content-wrapper {
+@media only screen and (min-width: 1440px) {
+  cdk-virtual-scroll-viewport.product-list
+    > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5em;
@@ -404,6 +406,24 @@ button[color="primary"] {
 .transaction-date.unpaid,
 .product-transaction-list div.unpaid {
   color: red;
+}
+
+.autocomplete-menu {
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.autocomplete-option {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.autocomplete-option:hover {
+  background-color: #f0f0f0;
 }
 
 /*#region ANIMATION CLASS HELPERS */

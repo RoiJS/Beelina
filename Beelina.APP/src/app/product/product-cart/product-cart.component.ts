@@ -42,7 +42,6 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
-import { Product } from 'src/app/_models/product';
 import { ProductCartTransaction } from 'src/app/_models/product-cart-transaction.model';
 
 import { Barangay } from 'src/app/_models/barangay';
@@ -265,40 +264,37 @@ export class ProductCartComponent
     );
   }
 
-  // clear() {
-  //   this.dialogService
-  //     .openConfirmation(
-  //       this.translateService.instant(
-  //         'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.TITLE'
-  //       ),
-  //       this.translateService.instant(
-  //         'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.CONFIRM'
-  //       )
-  //     )
-  //     .subscribe((result: ButtonOptions) => {
-  //       if (result === ButtonOptions.YES) {
-  //         this.snackBarService.open(
-  //           this.translateService.instant(
-  //             'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.SUCCESS_MESSAGE'
-  //           ),
-  //           this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-  //           {
-  //             duration: 5000,
-  //           }
-  //         );
-  //         this.store.dispatch(
-  //           ProductTransactionActions.setSaveOrderLoadingState({
-  //             state: false,
-  //           })
-  //         );
-  //         this.storageService.remove('productTransactions');
-  //         this.store.dispatch(
-  //           ProductTransactionActions.resetProductTransactionState()
-  //         );
-  //         this.router.navigate(['/product-catalogue']);
-  //       }
-  //     });
-  // }
+  clear() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.CONFIRM'
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.snackBarService.open(
+            this.translateService.instant(
+              'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.SUCCESS_MESSAGE'
+            ),
+            this.translateService.instant('GENERAL_TEXTS.CLOSE'),
+          );
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: false,
+            })
+          );
+          this.storageService.remove('productTransactions');
+          this.store.dispatch(
+            ProductTransactionActions.resetProductTransactionState()
+          );
+          this.router.navigate(['/product-catalogue']);
+        }
+      });
+  }
 
   saveAsDraft() {
     this._orderForm.markAllAsTouched();

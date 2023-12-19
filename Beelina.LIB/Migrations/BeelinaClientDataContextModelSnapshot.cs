@@ -139,8 +139,14 @@ namespace Beelina.LIB.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsTransferable")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfUnits")
+                        .HasColumnType("int");
 
                     b.Property<float>("PricePerUnit")
                         .HasColumnType("real");
@@ -198,6 +204,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
+                    b.Property<int>("DestinationProductStockPerPanelId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -210,7 +219,16 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("SourceProductNumberOfUnits")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SourceProductStockPerPanelId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StockAuditSource")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransferProductStockType")
                         .HasColumnType("int");
 
                     b.Property<int?>("UpdatedById")

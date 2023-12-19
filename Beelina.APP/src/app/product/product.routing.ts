@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { CartGuard } from '../_guards/cart.guard';
 
 import { ProductComponent } from './product.component';
 import { TopProductsComponent } from './top-products/top-products.component';

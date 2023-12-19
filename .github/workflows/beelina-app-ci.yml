@@ -2,11 +2,11 @@ name: Continuous integration for Beelina Application
 
 on:
   push:
-    branches: [master, development]
+    branches: [master, Development]
     paths: [.github/workflows/**, Beelina.APP/**]
 
   pull_request:
-    branches: [master, development]
+    branches: [master, Development]
     paths: [.github/workflows/**, Beelina.APP/**]
 
 jobs:

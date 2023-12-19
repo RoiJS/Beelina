@@ -27,6 +27,51 @@ namespace Beelina.LIB.BusinessLogic
       _currentUserService = currentUserService;
     }
 
+    public async Task<List<Product>> GetProductsDetailList(int userId)
+    {
+      var userRetailModulePermission = await _beelinaRepository
+                     .ClientDbContext
+                     .UserPermission
+                     .Where(u =>
+                         u.ModuleId == ModulesEnum.Retail
+                         && u.UserAccountId == _currentUserService.CurrentUserId
+                     )
+                     .FirstOrDefaultAsync();
+
+      // Only gets the products that the user has permission to see.
+      var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
+                                    join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+
+                                    on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
+                                    into productStockJoin
+                                    from pp in productStockJoin.DefaultIfEmpty()
+
+                                    join pu in _beelinaRepository.ClientDbContext.ProductUnits
+                                        on p.ProductUnitId equals pu.Id
+                                        into productUnitJoin
+                                    from pu in productUnitJoin.DefaultIfEmpty()
+
+                                    where
+                                      !p.IsDelete
+                                      && p.IsActive
+                                      && (userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User || (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && pp != null))
+
+                                    select new Product
+                                    {
+                                      Id = p.Id,
+                                      Name = p.Name,
+                                      Code = p.Code,
+                                      IsTransferable = p.IsTransferable,
+                                      NumberOfUnits = p.NumberOfUnits,
+                                      Description = p.Description,
+                                      ProductUnitId = p.ProductUnitId,
+                                      ProductUnit = pu
+                                    }).ToListAsync();
+
+
+      return productsFromRepo;
+    }
+
     public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "")
     {
       var userRetailModulePermission = await _beelinaRepository
@@ -65,6 +110,8 @@ namespace Beelina.LIB.BusinessLogic
                                       ProductPerPanelId = (pp == null ? 0 : pp.Id),
                                       Name = p.Name,
                                       Code = p.Code,
+                                      IsTransferable = p.IsTransferable,
+                                      NumberOfUnits = p.NumberOfUnits,
                                       Description = p.Description,
                                       PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                       ProductUnitId = p.ProductUnitId,
@@ -102,6 +149,8 @@ namespace Beelina.LIB.BusinessLogic
                                                    ProductPerPanelId = p.ProductPerPanelId,
                                                    Name = p.Name,
                                                    Code = p.Code,
+                                                   IsTransferable = p.IsTransferable,
+                                                   NumberOfUnits = p.NumberOfUnits,
                                                    Description = p.Description,
                                                    PricePerUnit = p.PricePerUnit,
                                                    ProductUnitId = p.ProductUnitId,
@@ -144,6 +193,8 @@ namespace Beelina.LIB.BusinessLogic
                                      Id = p.Id,
                                      Name = p.Name,
                                      Code = p.Code,
+                                     IsTransferable = p.IsTransferable,
+                                     NumberOfUnits = p.NumberOfUnits,
                                      Description = p.Description,
                                      PricePerUnit = p.PricePerUnit,
                                      ProductUnitId = p.ProductUnitId,
@@ -223,6 +274,7 @@ namespace Beelina.LIB.BusinessLogic
         };
 
         _beelinaRepository.ClientDbContext.ProductUnits.Add(productUnitFromRepo);
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
       }
 
       return productUnitFromRepo;
@@ -261,7 +313,7 @@ namespace Beelina.LIB.BusinessLogic
         {
           ProductStockPerPanelId = productStockPerPanel.Id,
           Quantity = productInput.StockQuantity,
-          StockAuditSource = StockAuditSourceEnum.ManageProduct,
+          StockAuditSource = StockAuditSourceEnum.FromWithdrawal,
           WithdrawalSlipNo = productInput.WithdrawalSlipNo
         };
 
@@ -274,11 +326,15 @@ namespace Beelina.LIB.BusinessLogic
     public async Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId)
     {
       var productStockAuditsFromRepo = await _beelinaRepository.ClientDbContext.ProductStockPerPanels
-                                      .Where(pp => pp.ProductId == productId && pp.UserAccountId == userAccountId)
+                                      .Where(pp =>
+                                          pp.ProductId == productId
+                                          && pp.UserAccountId == userAccountId
+                                      )
                                       .Include(pp => pp.ProductStockAudits)
                                       .FirstOrDefaultAsync();
       return productStockAuditsFromRepo
             .ProductStockAudits
+            .Where(pa => pa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal)
             .OrderByDescending(ps => ps.DateCreated)
             .ToList();
     }
@@ -289,6 +345,118 @@ namespace Beelina.LIB.BusinessLogic
                                       .Where(pp => pp.Id == productStockAuditId)
                                       .FirstOrDefaultAsync();
       return productStockAuditFromRepo;
+    }
+
+    public async Task<Product> TransferProductStockFromOwnInventory(
+      int userAccountId,
+      int sourceProductId,
+      int destinationProductId,
+      int destinationProductNumberOfUnits,
+      int sourceProductNumberOfUnits,
+      int sourceNumberOfUnitsTransfered,
+      TransferProductStockTypeEnum transferProductStockType)
+    {
+      var sourceProductFromRepo = await GetProducts(userAccountId, sourceProductId);
+      var destinationProductFromRepo = await GetProducts(userAccountId, destinationProductId);
+
+      if (!sourceProductFromRepo[0].IsTransferable) return sourceProductFromRepo[0];
+
+      using var transaction = _beelinaRepository.ClientDbContext.Database.BeginTransaction();
+      try
+      {
+        var sourceProductStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(sourceProductId, userAccountId);
+        var destinationProductStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(destinationProductId, userAccountId);
+        var destinationNumberOfUnitsReceived = 0;
+        var productNumberOfUnits = 0;
+        var productId = 0;
+
+        // Identify which type of transfer stock.
+        if (transferProductStockType == TransferProductStockTypeEnum.BulkToPiece)
+        {
+          destinationNumberOfUnitsReceived = sourceProductNumberOfUnits * sourceNumberOfUnitsTransfered;
+          productNumberOfUnits = sourceProductNumberOfUnits;
+          productId = sourceProductFromRepo[0].Id;
+        }
+        else
+        {
+          destinationNumberOfUnitsReceived = sourceNumberOfUnitsTransfered / destinationProductNumberOfUnits;
+          productNumberOfUnits = destinationProductNumberOfUnits;
+          productId = destinationProductFromRepo[0].Id;
+        }
+
+        // Part 1 - Make sure to update the source product
+        var productFromRepo = await _beelinaRepository
+                              .ClientDbContext
+                              .Products
+                              .Where(p => p.Id == productId)
+                              .FirstOrDefaultAsync();
+        productFromRepo.NumberOfUnits = productNumberOfUnits;
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+
+        // Part 2 - Insert audit entry for the destination product
+        if (destinationProductStockPerPanel != null && destinationProductStockPerPanel.Id > 0)
+        {
+          var destinationProductStockAudit = new ProductStockAudit
+          {
+            ProductStockPerPanelId = destinationProductStockPerPanel.Id,
+            Quantity = destinationNumberOfUnitsReceived,
+            StockAuditSource = StockAuditSourceEnum.MovedFromOtherProductInventory,
+            SourceProductStockPerPanelId = sourceProductStockPerPanel.Id,
+            SourceProductNumberOfUnits = sourceProductNumberOfUnits,
+            TransferProductStockType = transferProductStockType,
+            WithdrawalSlipNo = String.Empty
+          };
+          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(destinationProductStockAudit);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        }
+        else
+        {
+          destinationProductStockPerPanel = new ProductStockPerPanel
+          {
+            ProductId = destinationProductId,
+            UserAccountId = userAccountId,
+            PricePerUnit = destinationProductFromRepo[0].PricePerUnit
+          };
+
+          await _beelinaRepository.ClientDbContext.ProductStockPerPanels.AddAsync(destinationProductStockPerPanel);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+
+          var destinationProductStockAudit = new ProductStockAudit
+          {
+            ProductStockPerPanelId = destinationProductStockPerPanel.Id,
+            Quantity = destinationNumberOfUnitsReceived,
+            StockAuditSource = StockAuditSourceEnum.MovedFromOtherProductInventory,
+            SourceProductStockPerPanelId = sourceProductStockPerPanel.Id,
+            SourceProductNumberOfUnits = sourceProductNumberOfUnits,
+            TransferProductStockType = transferProductStockType,
+            WithdrawalSlipNo = String.Empty
+          };
+          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(destinationProductStockAudit);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        }
+
+        // Part 3 - Insert audit entry for the source product
+        var sourceProductStockAudit = new ProductStockAudit
+        {
+          ProductStockPerPanelId = sourceProductStockPerPanel.Id,
+          Quantity = -sourceNumberOfUnitsTransfered,
+          StockAuditSource = StockAuditSourceEnum.MovedToOtherProductInventory,
+          DestinationProductStockPerPanelId = destinationProductStockPerPanel.Id,
+          TransferProductStockType = transferProductStockType,
+          WithdrawalSlipNo = String.Empty
+        };
+        await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(sourceProductStockAudit);
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        await transaction.CommitAsync();
+      }
+      catch
+      {
+        // Rollback the transaction if any operation fails
+        await transaction.RollbackAsync();
+        throw;
+      }
+
+      return sourceProductFromRepo[0];
     }
   }
 }

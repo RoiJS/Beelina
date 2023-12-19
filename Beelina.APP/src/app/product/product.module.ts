@@ -13,12 +13,16 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { ProductRoutingModule } from './product.routing.module';
 import { ProductComponent } from './product.component';
 import { TopProductsComponent } from './top-products/top-products.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
+import { TextInputAutocompleteContainerComponent } from '../shared/text-input-autocomplete/text-input-autocomplete-container.component';
+import { TextInputAutocompleteMenuComponent } from '../shared/text-input-autocomplete/text-input-autocomplete-menu.component';
+import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
 
 import * as BarangayReducers from '../barangays/store/reducers';
 import * as CustomerStoresReducers from '../customer/store/reducers';
@@ -36,6 +40,8 @@ import { CartGuard } from '../_guards/cart.guard';
 import { TextOrderComponent } from './text-order/text-order.component';
 import { AccountVerificationModule } from '../shared/account-verification/account-verification.module';
 
+import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -47,6 +53,7 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
     MatBadgeModule,
     MatIconModule,
     MatInputModule,
+    MatListModule,
     MatMenuModule,
     MatRippleModule,
     MatBottomSheetModule,
@@ -75,7 +82,11 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
     TopProductsComponent,
     AddToCartProductComponent,
     TextOrderComponent,
+    TransferProductInventoryComponent,
+    TextInputAutocompleteContainerComponent,
+    TextInputAutocompleteDirective,
+    TextInputAutocompleteMenuComponent
   ],
-  providers: [CartGuard],
+  providers: [CartGuard, TextInputAutocompleteDirective,],
 })
-export class ProductModule {}
+export class ProductModule { }
