@@ -103,7 +103,7 @@ export class TextInputAutocompleteDirective implements OnDestroy {
     private elm: ElementRef
   ) { }
 
-  @HostListener('document:keydown', ['$event.key'])
+  // @HostListener('document:keydown', ['$event.key'])
   onKeyDown(key: string) {
     console.log('onKeyDown', key);
     if (key === this.triggerCharacter) {
@@ -124,8 +124,10 @@ export class TextInputAutocompleteDirective implements OnDestroy {
 
   @HostListener('input', ['$event.target.value'])
   onChange(value: string) {
+    this.onKeyDown(value[value.length - 1]);
     console.log('onChange', value);
     if (this.menu) {
+      console.log('triggerCharacterPosition', this.menu.triggerCharacterPosition);
       if (
         value[this.menu.triggerCharacterPosition] !== this.triggerCharacter &&
         !this.usingShortcut
@@ -196,7 +198,7 @@ export class TextInputAutocompleteDirective implements OnDestroy {
           0,
           this.injector
         ),
-        triggerCharacterPosition: this.elm.nativeElement.selectionStart
+        triggerCharacterPosition: (this.elm.nativeElement.selectionStart - 1)
       };
 
       const lineHeight = this.getLineHeight(this.elm.nativeElement);
