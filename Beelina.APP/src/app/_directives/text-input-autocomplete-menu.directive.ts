@@ -43,7 +43,7 @@ export class TextInputAutocompleteDirective implements OnDestroy {
   /**
    * The regular expression that will match the search text after the trigger character
    */
-  @Input() searchRegexp = /^\w*$/;
+  @Input() searchRegexp = /^[\w\s]*$/;
 
   /**
    * Whether to close the menu when the host textarea loses focus
@@ -128,49 +128,42 @@ export class TextInputAutocompleteDirective implements OnDestroy {
     console.log('onChange', value);
     if (this.menu) {
       console.log('triggerCharacterPosition', this.menu.triggerCharacterPosition);
-      if (
-        value[this.menu.triggerCharacterPosition] !== this.triggerCharacter &&
-        !this.usingShortcut
-      ) {
+      const cursor = this.elm.nativeElement.selectionStart;
+      if (cursor < this.menu.triggerCharacterPosition) {
         this.hideMenu();
       } else {
-        const cursor = this.elm.nativeElement.selectionStart;
-        if (cursor < this.menu.triggerCharacterPosition) {
+        if (this.usingShortcut && !this.menu) {
+          value = this.triggerCharacter;
+        }
+        const offset = this.usingShortcut ? 0 : 1;
+        const searchText = value.slice(
+          this.menu.triggerCharacterPosition + offset,
+          cursor
+        );
+
+        if (!searchText.match(this.searchRegexp)) {
           this.hideMenu();
         } else {
-          if (this.usingShortcut && !this.menu) {
-            value = this.triggerCharacter;
-          }
-          const offset = this.usingShortcut ? 0 : 1;
-          const searchText = value.slice(
-            this.menu.triggerCharacterPosition + offset,
-            cursor
-          );
-
-          if (!searchText.match(this.searchRegexp)) {
-            this.hideMenu();
-          } else {
-            this.menu.component.instance.searchText = searchText;
-            this.menu.component.instance.choices = [];
-            this.menu.component.instance.choiceLoadError = undefined;
-            this.menu.component.instance.choiceLoading = true;
-            this.menu.component.changeDetectorRef.detectChanges();
-            Promise.resolve(this.findChoices(searchText, this.choices))
-              .then(choices => {
-                if (this.menu) {
-                  this.menu.component.instance.choices = choices;
-                  this.menu.component.instance.choiceLoading = false;
-                  this.menu.component.changeDetectorRef.detectChanges();
-                }
-              })
-              .catch(err => {
-                if (this.menu) {
-                  this.menu.component.instance.choiceLoading = false;
-                  this.menu.component.instance.choiceLoadError = err;
-                  this.menu.component.changeDetectorRef.detectChanges();
-                }
-              });
-          }
+          this.menu.component.instance.searchText = searchText;
+          this.menu.component.instance.choices = [];
+          this.menu.component.instance.choiceLoadError = undefined;
+          this.menu.component.instance.choiceLoading = true;
+          this.menu.component.changeDetectorRef.detectChanges();
+          Promise.resolve(this.findChoices(searchText, this.choices))
+            .then(choices => {
+              if (this.menu) {
+                this.menu.component.instance.choices = choices;
+                this.menu.component.instance.choiceLoading = false;
+                this.menu.component.changeDetectorRef.detectChanges();
+              }
+            })
+            .catch(err => {
+              if (this.menu) {
+                this.menu.component.instance.choiceLoading = false;
+                this.menu.component.instance.choiceLoadError = err;
+                this.menu.component.changeDetectorRef.detectChanges();
+              }
+            });
         }
       }
     }
