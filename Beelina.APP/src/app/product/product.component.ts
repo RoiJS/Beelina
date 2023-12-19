@@ -317,8 +317,8 @@ export class ProductComponent
     this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.store.dispatch(ProductActions.resetProductState());
+        this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
         this.store.dispatch(ProductActions.getProductsAction());
-        this.searchFieldComponent.clear();
       }
     })
   }
