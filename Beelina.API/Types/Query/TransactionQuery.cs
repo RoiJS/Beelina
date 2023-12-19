@@ -97,11 +97,12 @@ namespace Beelina.API.Types.Query
       return insufficientProductQuantities;
     }
 
+    [Authorize]
     public async Task<List<ProductTransactionDto>> AnalyzeTextOrders(
-      [Service] IProductRepository<Product> productRepository,
-      [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
-      [Service] ICurrentUserService currentUserService,
-        string textOrders)
+          [Service] IProductRepository<Product> productRepository,
+          [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
+          [Service] ICurrentUserService currentUserService,
+            string textOrders)
     {
 
       var textOrdersArray = textOrders.Split('\n');
