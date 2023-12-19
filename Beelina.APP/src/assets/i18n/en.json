@@ -547,8 +547,8 @@
     "FORM_CONTROL_SECTION": {
       "TEXT_ORDER_CONTROL": {
         "LABEL": "Type @ to search product...",
-        "HINT_LABEL_1": "[Product Code] x [Quantity]",
-        "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 x 20"
+        "HINT_LABEL_1": "[Product Code] * [Quantity]",
+        "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 * 20"
       },
       "BUTTON_OPTIONS": {
         "SET_ORDER": "Set Order"

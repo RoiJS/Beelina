@@ -109,7 +109,7 @@ namespace Beelina.API.Types.Query
 
       foreach (var texrOrder in textOrdersArray)
       {
-        var textOrderLines = texrOrder.ToLower().Split("x");
+        var textOrderLines = texrOrder.ToLower().Split("*");
 
         if (textOrderLines.Length > 1)
         {
