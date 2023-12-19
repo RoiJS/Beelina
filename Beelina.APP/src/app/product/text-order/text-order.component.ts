@@ -116,7 +116,7 @@ export class TextOrderComponent implements OnInit, OnDestroy {
   }
 
   getChoiceLabel(choice: string) {
-    return choice.trim().split("-")[0].trim();
+    return choice.trim().split(":")[0].trim();
   }
 
   get orderForm(): FormGroup {
@@ -132,6 +132,6 @@ export class TextOrderComponent implements OnInit, OnDestroy {
   }
 
   get productList(): Array<any> {
-    return this._productList.map(product => `${product.code} - ${product.name}`);
+    return this._productList.map(product => `${product.code} : ${product.name}`);
   }
 }
