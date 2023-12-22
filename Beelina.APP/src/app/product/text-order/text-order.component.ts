@@ -132,6 +132,6 @@ export class TextOrderComponent implements OnInit, OnDestroy {
   }
 
   get productList(): Array<any> {
-    return this._productList.map(product => `${product.code} : ${product.name}`);
+    return this._productList.map(product => `${product.code} : ${product.name} : ${product.productUnit.name}`);
   }
 }

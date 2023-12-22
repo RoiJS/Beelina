@@ -187,6 +187,9 @@ const GET_PRODUCT_DETAILS_LIST = gql`
         id
         name
         code
+        productUnit {
+          name
+        }
     }
   }
 `;
@@ -663,6 +666,7 @@ export class ProductService {
             product.id = currentProduct.id;
             product.code = currentProduct.code;
             product.name = currentProduct.name;
+            product.productUnit = currentProduct.productUnit;
             return product;
           });
 

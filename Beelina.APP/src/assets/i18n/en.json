@@ -379,7 +379,8 @@
       "NAME": "Name",
       "CODE": "Code",
       "STOCK": "Stock",
-      "PRICE": "Price"
+      "PRICE": "Price",
+      "UNIT": "Unit"
     },
     "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
     "DELETE_PRODUCT_DIALOG": {

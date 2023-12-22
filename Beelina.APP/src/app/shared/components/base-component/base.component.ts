@@ -53,7 +53,7 @@ export class BaseComponent {
 
     const photo =
       products.find((p) => p.name === name)?.url ||
-      '../../assets/icons/box-product.png';
+      'https://img.freepik.com/free-photo/3d-render-gift-box-with-ribbon-present-package_107791-15395.jpg?t=st=1703256126~exp=1703256726~hmac=5b932ebfcbc76651fb67a89282a91df08f04f9897afeb3002cf210b4f3a40136';
 
     return photo;
   }
