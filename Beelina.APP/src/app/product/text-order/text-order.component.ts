@@ -2,6 +2,7 @@ import { Router } from '@angular/router';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -12,9 +13,12 @@ import * as ProductActions from '../store/actions';
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { StorageService } from 'src/app/_services/storage.service';
+import { AuthService } from 'src/app/_services/auth.service';
+import { ProductService } from 'src/app/_services/product.service';
 
 @Component({
   selector: 'app-text-order',
@@ -35,12 +39,15 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     public data: {
       productList: Array<Product>;
     },
+    private authService: AuthService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
     private router: Router,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private snackBarService: MatSnackBar,
+    private productService: ProductService
   ) {
     this._orderForm = this.formBuilder.group({
       textOrder: ['', Validators.required],
@@ -78,6 +85,20 @@ export class TextOrderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+  }
+
+  refreshList() {
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        this.snackBarService.open(
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+          ),
+          this.translateService.instant('GENERAL_TEXTS.CLOSE')
+        )
+        this._productList = productList;
+      });
   }
 
   setOrder() {

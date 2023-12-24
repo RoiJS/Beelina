@@ -94,7 +94,7 @@ export class ProductComponent
 
     this.store.pipe(select(errorSelector)).subscribe((result: string) => {
       if (result) {
-        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
       }
     })
     this._currentUser = this.authService.user.value;

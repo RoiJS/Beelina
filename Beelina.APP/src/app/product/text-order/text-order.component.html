@@ -4,9 +4,13 @@
       <label>{{ "TEXT_ORDER_DIALOG.TTTLE" | translate }}</label>
     </div>
     <div class="panel__body-section">
-      <span class="page-information-description">{{
-        "TEXT_ORDER_DIALOG.DESCRIPTION" | translate
-        }}</span>
+      <div class="page-information-description-container">
+        <span class="page-information-description">{{
+          "TEXT_ORDER_DIALOG.DESCRIPTION" | translate
+          }}</span>
+        <mat-icon matRipple (click)="refreshList()">refresh</mat-icon>
+      </div>
+
       <mat-form-field ap pearance="fill">
         <mat-label>{{
           "TEXT_ORDER_DIALOG.FORM_CONTROL_SECTION.TEXT_ORDER_CONTROL.LABEL"

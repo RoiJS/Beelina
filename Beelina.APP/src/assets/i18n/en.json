@@ -382,7 +382,10 @@
       "PRICE": "Price",
       "UNIT": "Unit"
     },
-    "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
+    "TEXT_ORDER_DIALOG": {
+      "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
+      "REFRESH_PRODUCT_LIST_ERROR_MESSAGE": "Product List has been refreshed."
+    },
     "DELETE_PRODUCT_DIALOG": {
       "TITLE": "Delete product",
       "CONFIRM": "Are you sure to delete selected product?",
