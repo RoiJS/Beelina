@@ -80,6 +80,11 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
     this._piecesToBulkGroupForm.get('productDestination').valueChanges.subscribe((value: number) => {
       const destinationProduct = this._destinationProductOptions.find(p => p.id === value);
       this._piecesToBulkGroupForm.get('numberOfUnits').setValue(destinationProduct.numberOfUnits);
+      if (destinationProduct.numberOfUnits > 0){
+        this._piecesToBulkGroupForm.get('numberOfUnits').disable();
+      } else {
+        this._piecesToBulkGroupForm.get('numberOfUnits').enable();
+      }
       this._destinationProductNumberOfUnitsLabel = this.translateService.instant('TRANSFER_PRODUCT_STOCK_DIALOG.FORM_CONTROL_SECTION.PIECES_TO_BULK_CONTROL.NUMBER_OF_UNITS_CONTROL.LABEL').replace("__PRODUCT_UNIT__", destinationProduct.productUnit.name);
     });
 
@@ -98,6 +103,11 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
         this._sourceProduct.productUnit.name = result.productUnit.name;
 
         this._bulkToPiecesGroupForm.get('numberOfUnits').setValue(this._sourceProduct.numberOfUnits);
+        if (this._sourceProduct.numberOfUnits > 0){
+          this._bulkToPiecesGroupForm.get('numberOfUnits').disable();
+        } else {
+          this._bulkToPiecesGroupForm.get('numberOfUnits').enable();
+        }
         this._bulkToPiecesGroupForm.get('quantityToBeTransfered').setValidators(Validators.max(this._sourceProduct.stockQuantity));
         this._piecesToBulkGroupForm.get('quantityToBeTransfered').setValidators(Validators.max(this._sourceProduct.stockQuantity));
 

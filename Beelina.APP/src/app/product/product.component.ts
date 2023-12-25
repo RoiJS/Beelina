@@ -94,7 +94,7 @@ export class ProductComponent
 
     this.store.pipe(select(errorSelector)).subscribe((result: string) => {
       if (result) {
-        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
       }
     })
     this._currentUser = this.authService.user.value;
@@ -140,13 +140,6 @@ export class ProductComponent
         },
       });
     }
-
-    this.productService
-      .getProductDetailList(this.authService.userId)
-      .subscribe((productList: Array<Product>) => {
-        console.log(productList);
-        this._productList = productList;
-      });
   }
 
   ngOnInit() { }
@@ -220,9 +213,14 @@ export class ProductComponent
   }
 
   openTextOrderDialog() {
-    this.bottomSheet.open(TextOrderComponent, {
-      data: { productList: this._productList }
-    });
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        this._productList = productList;
+        this.bottomSheet.open(TextOrderComponent, {
+          data: { productList: this._productList }
+        });
+      });
   }
 
   deactivateAllowManageProductDetailsDialog() {
@@ -319,8 +317,8 @@ export class ProductComponent
     this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.store.dispatch(ProductActions.resetProductState());
+        this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
         this.store.dispatch(ProductActions.getProductsAction());
-        this.searchFieldComponent.clear();
       }
     })
   }

@@ -379,9 +379,13 @@
       "NAME": "Name",
       "CODE": "Code",
       "STOCK": "Stock",
-      "PRICE": "Price"
+      "PRICE": "Price",
+      "UNIT": "Unit"
     },
-    "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
+    "TEXT_ORDER_DIALOG": {
+      "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
+      "REFRESH_PRODUCT_LIST_ERROR_MESSAGE": "Product List has been refreshed."
+    },
     "DELETE_PRODUCT_DIALOG": {
       "TITLE": "Delete product",
       "CONFIRM": "Are you sure to delete selected product?",
@@ -547,12 +551,16 @@
     "FORM_CONTROL_SECTION": {
       "TEXT_ORDER_CONTROL": {
         "LABEL": "Type @ to search product...",
-        "HINT_LABEL_1": "[Product Code] x [Quantity]",
-        "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 x 20"
+        "HINT_LABEL_1": "[Product Code] * [Quantity]",
+        "HINT_LABEL_2": "<strong>Example:</strong> Prod-123 * 20"
       },
       "BUTTON_OPTIONS": {
         "SET_ORDER": "Set Order"
       }
+    },
+    "CONFIRM_ORDERS_DIALOG": {
+      "TITLE": "Confirm Orders",
+      "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?"
     }
   },
   "REPORTS_PAGE": {

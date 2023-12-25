@@ -13,6 +13,16 @@
     mat-hint {
       font-size: 11px;
     }
+
+    .page-information-description-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .page-information-description {
+        width: 90%;
+      }
+    }
   }
 
   .panel__footer-section {

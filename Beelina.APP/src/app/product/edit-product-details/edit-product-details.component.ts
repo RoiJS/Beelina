@@ -187,6 +187,7 @@ export class EditProductDetailsComponent implements OnInit {
                     state: false,
                   })
                 );
+                this.router.navigate(['/product-catalogue']);
               },
 
               error: () => {

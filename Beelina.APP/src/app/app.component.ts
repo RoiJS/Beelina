@@ -78,8 +78,6 @@ export class AppComponent
   }
 
   onNavItemTap(name: string, url: string, fragment: string, isExternalUrl: boolean): void {
-    console.log(isExternalUrl);
-
     if (isExternalUrl) {
       window.open(url, '_blank');
     } else {

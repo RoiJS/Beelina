@@ -90,7 +90,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.MANUAL',
-        url: 'https://bizual-prod.s3.ap-southeast-1.amazonaws.com/assets/files/Bizual-User-Manual.pdf',
+        url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
         icon: 'info',
         isExternalUrl: true,
       },

@@ -1,7 +1,7 @@
 @import "../../../app-variables";
 
 .product-item {
-  height: 12em;
+  height: 13em;
 
   &__header {
     color: $white;
@@ -38,9 +38,15 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      margin: 4px 0;
 
       &__label {
         font-weight: bold;
+      }
+
+      &__unit {
+        font-weight: 700;
+        text-transform: uppercase;
       }
 
       &__stock {

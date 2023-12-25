@@ -5,6 +5,7 @@ import { ModuleEnum } from 'src/app/_enum/module.enum';
 
 import { User } from 'src/app/_models/user.model';
 import { AuthService } from 'src/app/_services/auth.service';
+import { StorageService } from 'src/app/_services/storage.service';
 import { UIService } from 'src/app/_services/ui.service';
 
 @Component({
@@ -14,18 +15,23 @@ import { UIService } from 'src/app/_services/ui.service';
 })
 export class UserCardComponent implements OnInit {
   private _user: User;
+  private _company: string;
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private translateSerice: TranslateService,
+    private storageService: StorageService,
     private uiService: UIService
   ) {
     this.authService.user.subscribe((user: User) => {
       this._user = user;
     });
+
+    this._company = this.storageService.getString('company');
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   goToProfile() {
     this.router.navigate(['/profile']);
@@ -47,5 +53,9 @@ export class UserCardComponent implements OnInit {
 
   get user(): User {
     return this._user;
+  }
+
+  get company(): string {
+    return this._company;
   }
 }
