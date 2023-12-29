@@ -35,6 +35,7 @@ namespace Beelina.LIB.BusinessLogic
                                             && t.IsDelete == false
                                             && t.IsActive
                                             && t.CreatedById == currentUserService.CurrentUserId)
+                                        .AsNoTracking()
                                         .ToListAsync();
 
             return transactionsFromRepo;
