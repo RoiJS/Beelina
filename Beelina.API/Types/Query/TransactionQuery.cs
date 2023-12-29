@@ -146,5 +146,64 @@ namespace Beelina.API.Types.Query
 
       return productTransactionsDto;
     }
+
+    [Authorize]
+    public async Task<List<TextProductInventoryDto>> AnalyzeTextInventories(
+          [Service] IProductRepository<Product> productRepository,
+          [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
+          int userAccountId,
+          string textInventories)
+    {
+
+      var textInventoriesArray = textInventories.Split('\n');
+      var textProductInventoryDto = new List<TextProductInventoryDto>();
+
+      foreach (var textInventory in textInventoriesArray)
+      {
+        var textOrderLines = textInventory.Split(":");
+
+        if (textOrderLines.Length > 1)
+        {
+          try
+          {
+            var productCode = textOrderLines[0].Trim();
+            var productAdditionalQuantity = Convert.ToInt32(textOrderLines[1].Trim());
+            var withdrawalSlipNo = textOrderLines.Length > 2 ? textOrderLines[2].Trim() : "";
+            var productFromRepo = await productRepository.GetProductByCode(productCode);
+            var productPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productFromRepo.Id, userAccountId);
+            var price = textOrderLines.Length > 3 ? Convert.ToDouble(textOrderLines[3].Trim()) : (productPerPanelFromRepo != null ? productPerPanelFromRepo.PricePerUnit : 0.0);
+
+            if (productFromRepo != null && (productAdditionalQuantity > 0 || productAdditionalQuantity < 0))
+            {
+              var textProductInventory = new TextProductInventoryDto
+              {
+                Id = productFromRepo.Id,
+                Name = productFromRepo.Name,
+                Code = productFromRepo.Code,
+                Description = productFromRepo.Description,
+                AdditionalQuantity = productAdditionalQuantity,
+                Price = price,
+                IsTransferable = productFromRepo.IsTransferable,
+                NumberOfUnits = productFromRepo.NumberOfUnits,
+                WithdrawalSlipNo = withdrawalSlipNo,
+                ProductUnit = new ProductUnitDto
+                {
+                  Id = productFromRepo.ProductUnit.Id,
+                  Name = productFromRepo.ProductUnit.Name
+                }
+              };
+
+              textProductInventoryDto.Add(textProductInventory);
+            }
+          }
+          catch (Exception e)
+          {
+            Console.WriteLine(e.Message);
+          }
+        }
+      }
+
+      return textProductInventoryDto;
+    }
   }
 }

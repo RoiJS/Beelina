@@ -130,9 +130,13 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     }
   }
 
-  findChoices(searchText: string, choices: string[]) {
-    return choices.filter(item =>
-      item.toLowerCase().includes(searchText.toLowerCase())
+  findChoices = (searchText: string) => {
+    return this._productList.filter(item =>
+      item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.code.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.productUnit.name.toLowerCase().includes(searchText.toLowerCase())
+    ).map(
+      product => `${product.code} : ${product.name} : ${product.productUnit.name}`
     );
   }
 
@@ -150,9 +154,5 @@ export class TextOrderComponent implements OnInit, OnDestroy {
 
   get hintLabelText2() {
     return this._hintLabelText2;
-  }
-
-  get productList(): Array<any> {
-    return this._productList.map(product => `${product.code} : ${product.name} : ${product.productUnit.name}`);
   }
 }

@@ -41,6 +41,7 @@ import { TextOrderComponent } from './text-order/text-order.component';
 import { AccountVerificationModule } from '../shared/account-verification/account-verification.module';
 
 import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
+import { TextInventoriesComponent } from './text-inventories/text-inventories.component';
 
 @NgModule({
   imports: [
@@ -82,6 +83,7 @@ import { TextInputAutocompleteDirective } from '../_directives/text-input-autoco
     TopProductsComponent,
     AddToCartProductComponent,
     TextOrderComponent,
+    TextInventoriesComponent,
     TransferProductInventoryComponent,
     TextInputAutocompleteContainerComponent,
     TextInputAutocompleteDirective,

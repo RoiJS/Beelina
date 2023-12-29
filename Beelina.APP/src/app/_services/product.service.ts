@@ -31,6 +31,8 @@ import { InsufficientProductQuantity } from '../_models/insufficient-product-qua
 import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
 import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
 import { IProductTransactionQueryPayload } from '../_interfaces/payloads/iproduct-transaction-query.payload';
+import { ITextProductInventoryQueryPayload } from '../_interfaces/payloads/itext-product-inventory-query.payload';
+
 import { User } from '../_models/user.model';
 import { StorageService } from './storage.service';
 import { ProductStockAudit } from '../_models/product-stock-audit';
@@ -95,23 +97,21 @@ const GET_PRODUCT_STORE = gql`
 `;
 
 const UPDATE_PRODUCT_MUTATION = gql`
-  mutation ($productInput: ProductInput!, $userAccountId: Int!) {
-    updateProduct(
-      input: { productInput: $productInput, userAccountId: $userAccountId }
-    ) {
+  mutation($productInputs: [ProductInput!]!, $userAccountId: Int!) {
+    updateProducts(input: { productInputs: $productInputs, userAccountId:  $userAccountId }){
       product {
         name
       }
       errors {
-        __typename
-        ... on ProductFailedRegisterError {
-          message
-        }
-        ... on BaseError {
-          message
+          __typename
+          ... on ProductFailedRegisterError {
+              message
+          }
+          ... on BaseError {
+              message
+          }
         }
       }
-    }
   }
 `;
 
@@ -168,6 +168,26 @@ const ANALYZE_TEXT_ORDERS = gql`
   }
 `;
 
+const ANALYZE_TEXT_INVENTORIES = gql`
+  query ($userAccountId: Int!, $textInventories: String!) {
+    analyzeTextInventories(userAccountId: $userAccountId, textInventories: $textInventories) {
+      id
+      name
+      code
+      description
+      additionalQuantity
+      price
+      isTransferable
+      numberOfUnits
+      withdrawalSlipNo
+      productUnit {
+        id
+        name
+      }
+    }
+  }
+`;
+
 const GET_SALES_AGENTS_LIST = gql`
   query {
     salesAgents {
@@ -180,9 +200,10 @@ const GET_SALES_AGENTS_LIST = gql`
 `;
 
 const GET_PRODUCT_DETAILS_LIST = gql`
-  query ($userAccountId: Int!) {
+  query ($userAccountId: Int!, $filterKeyword: String) {
     productsDetailList(
-      userAccountId: $userAccountId
+      userAccountId: $userAccountId,
+      filterKeyword: $filterKeyword
     ) {
         id
         name
@@ -434,22 +455,25 @@ export class ProductService {
       );
   }
 
-  updateProductInformation(product: Product) {
-    const productInput: IProductInput = {
-      id: product.id,
-      name: product.name,
-      code: product.code,
-      description: product.description,
-      stockQuantity: product.stockQuantity,
-      pricePerUnit: product.pricePerUnit,
-      isTransferable: product.isTransferable,
-      numberOfUnits: product.numberOfUnits,
-      withdrawalSlipNo: product.withdrawalSlipNo,
-      productUnitInput: {
-        id: product.productUnit.id,
-        name: product.productUnit.name,
-      },
-    };
+  updateProductInformation(products: Array<Product>) {
+
+    const productInputs = products.map((product: Product) => {
+      return <IProductInput>{
+        id: product.id,
+        name: product.name,
+        code: product.code,
+        description: product.description,
+        stockQuantity: product.stockQuantity,
+        pricePerUnit: product.pricePerUnit,
+        isTransferable: product.isTransferable,
+        numberOfUnits: product.numberOfUnits,
+        withdrawalSlipNo: product.withdrawalSlipNo,
+        productUnitInput: {
+          id: product.productUnit.id,
+          name: product.productUnit.name,
+        },
+      }
+    });
 
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
@@ -457,14 +481,14 @@ export class ProductService {
       .mutate({
         mutation: UPDATE_PRODUCT_MUTATION,
         variables: {
-          productInput,
+          productInputs,
           userAccountId,
         },
       })
       .pipe(
-        map((result: MutationResult<{ updateProduct: IProductOutput }>) => {
-          const output = result.data.updateProduct;
-          const payload = output.product;
+        map((result: MutationResult<{ updateProducts: IProductOutput }>) => {
+          const output = result.data.updateProducts;
+          const payload = output.products;
           const errors = output.errors;
 
           if (payload) {
@@ -491,7 +515,7 @@ export class ProductService {
       .pipe(
         map((result: MutationResult<{ deleteProduct: IProductOutput }>) => {
           const output = result.data.deleteProduct;
-          const payload = output.product;
+          const payload = output.products;
           const errors = output.errors;
 
           if (payload) {
@@ -624,6 +648,52 @@ export class ProductService {
       );
   }
 
+  analyzeTextInventories(textInventories: string) {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
+    return this.apollo
+      .watchQuery({
+        query: ANALYZE_TEXT_INVENTORIES,
+        variables: {
+          textInventories,
+          userAccountId
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              analyzeTextInventories: Array<ITextProductInventoryQueryPayload>;
+            }>
+          ) => {
+            const data = <Array<ITextProductInventoryQueryPayload>>(
+              result.data.analyzeTextInventories
+            );
+
+            const products: Array<Product> = data.map(
+              (prod) => {
+                const product = new Product();
+                product.id = prod.id;
+                product.name = prod.name;
+                product.code = prod.code;
+                product.description = prod.description;
+                product.stockQuantity = prod.additionalQuantity;
+                product.pricePerUnit = prod.price;
+                product.price = prod.price;
+                product.isTransferable = prod.isTransferable;
+                product.numberOfUnits = prod.numberOfUnits;
+                product.withdrawalSlipNo = prod.withdrawalSlipNo;
+                product.productUnit = prod.productUnit;
+                return product;
+              }
+            );
+
+            return products;
+          }
+        )
+      );
+  }
+
   getSalesAgentsList() {
     return this.apollo
       .watchQuery({
@@ -648,12 +718,13 @@ export class ProductService {
       );
   }
 
-  getProductDetailList(userAccountId: number) {
+  getProductDetailList(userAccountId: number, filterKeyword: string = '') {
     return this.apollo
       .watchQuery({
         query: GET_PRODUCT_DETAILS_LIST,
         variables: {
-          userAccountId
+          userAccountId,
+          filterKeyword
         }
 
       })
@@ -779,7 +850,7 @@ export class ProductService {
       .pipe(
         map((result: MutationResult<{ transferProductStockFromOwnInventory: IProductOutput }>) => {
           const output = result.data.transferProductStockFromOwnInventory;
-          const payload = output.product;
+          const payload = output.products;
           const errors = output.errors;
 
           if (payload) {

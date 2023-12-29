@@ -1,5 +1,5 @@
 <div matRipple class="product-item list-container__card-item">
-  <div class="list-container__card-item-header product-item__header">
+  <div *ngIf="!hideHeader" class="list-container__card-item-header product-item__header">
     <mat-icon [matBadge]="productItem?.deductedStock" [matBadgeHidden]="productItem?.deductedStock === 0"
       matBadgeColor="warn" aria-hidden="false">add_shopping_cart</mat-icon>
     <div *ngIf="!hideHeaderOptions">
@@ -20,8 +20,8 @@
     </div>
   </div>
   <mat-divider></mat-divider>
-  <div (click)="addItemToCart(productItem.id)" style="display: flex; align-items: center;">
-    <div class="list-container__card-item-body product-item__body">
+  <div (click)="addItemToCart(productItem.id)" class="product-item__body-container">
+    <div *ngIf="!hideImage" class="list-container__card-item-body product-item__body">
       <img [src]="getProductPhoto(productItem?.name)" />
     </div>
     <div class="list-container__card-item-footer product-item__footer">
@@ -49,6 +49,11 @@
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.STOCK" | translate
           }}: </span><span class="product-info__stock">{{ productItem?.stockQuantity }}</span>
+      </div>
+      <div *ngIf="productItem?.withdrawalSlipNo" class="product-info">
+        <span class="product-info__label">{{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.WITHDRAWAL_SLIP_NO" | translate
+          }}: </span><span>{{ productItem?.withdrawalSlipNo }}</span>
       </div>
     </div>
   </div>
