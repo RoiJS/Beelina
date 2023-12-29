@@ -41,6 +41,7 @@ import {
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
+import { TextInventoriesComponent } from './text-inventories/text-inventories.component';
 
 @Component({
   selector: 'app-product',
@@ -212,15 +213,30 @@ export class ProductComponent
     }
   }
 
-  openTextOrderDialog() {
-    this.productService
-      .getProductDetailList(this.authService.userId)
-      .subscribe((productList: Array<Product>) => {
-        this._productList = productList;
-        this.bottomSheet.open(TextOrderComponent, {
-          data: { productList: this._productList }
+  openTextParserDialog() {
+    if (this.currentUserPermission < this.getPermissionLevel(PermissionLevelEnum.Manager)) {
+      this.productService
+        .getProductDetailList(this.authService.userId)
+        .subscribe((productList: Array<Product>) => {
+          this._productList = productList;
+          this.bottomSheet.open(TextOrderComponent, {
+            data: { productList: this._productList }
+          });
         });
-      });
+    } else {
+      if (this.currentSalesAgentId > 0) {
+        this.bottomSheet.open(TextInventoriesComponent);
+      } else {
+        this.dialogService.openAlert(
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.NO_SELECTED_SALES_AGENT_DIALOG.TITLE'
+          ),
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.NO_SELECTED_SALES_AGENT_DIALOG.DESCRIPTION'
+          )
+        );
+      }
+    }
   }
 
   deactivateAllowManageProductDetailsDialog() {

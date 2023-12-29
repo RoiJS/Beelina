@@ -27,7 +27,7 @@ namespace Beelina.LIB.BusinessLogic
       _currentUserService = currentUserService;
     }
 
-    public async Task<List<Product>> GetProductsDetailList(int userId)
+    public async Task<List<Product>> GetProductsDetailList(int userId, string filterKeyWord = "")
     {
       var userRetailModulePermission = await _beelinaRepository
                      .ClientDbContext
@@ -54,6 +54,7 @@ namespace Beelina.LIB.BusinessLogic
                                     where
                                       !p.IsDelete
                                       && p.IsActive
+                                      && (filterKeyWord != "" && (p.Name.Contains(filterKeyWord) || p.Code.Contains(filterKeyWord)) || filterKeyWord == "")
                                       && (userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User || (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && pp != null))
 
                                     select new Product
@@ -223,7 +224,10 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<Product> GetProductByCode(string productCode)
     {
-      var productFromRepo = await _beelinaRepository.ClientDbContext.Products.Where((p) => p.Code == productCode).FirstOrDefaultAsync();
+      var productFromRepo = await _beelinaRepository.ClientDbContext.Products
+                                .Where((p) => p.Code == productCode)
+                                .Include(p => p.ProductUnit)
+                                .FirstOrDefaultAsync();
       return productFromRepo;
     }
 

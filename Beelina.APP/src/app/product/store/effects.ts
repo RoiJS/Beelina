@@ -67,8 +67,32 @@ export class ProductEffects {
       })
     )
   );
+
+  analyzeTextInventories$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.analyzeTextInventories),
+      switchMap((action: { textInventories: string }) => {
+        return this.productService.analyzeTextInventories(action.textInventories).pipe(
+          map((textProductInventories: Array<Product>) => {
+            return ProductActions.analyzeTextInventoriesActionSuccess(
+              {
+                textProductInventories,
+              }
+            );
+          }),
+          catchError((error) =>
+            of(
+              ProductActions.getProductsActionError({
+                error: error.message,
+              })
+            )
+          )
+        );
+      })
+    )
+  );
   constructor(
     private actions$: Actions,
     private productService: ProductService
-  ) {}
+  ) { }
 }

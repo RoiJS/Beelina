@@ -9,6 +9,7 @@
     "BAD_ORDER": "Bad Order",
     "CLEAR": "Clear",
     "CANCEL": "Cancel",
+    "BACK": "Back",
     "RESET": "Reset",
     "BAD_ORDERS_AMOUNT": "Bad Orders",
     "GROSS_TOTAL": "Gross Total",
@@ -378,13 +379,18 @@
     "PRODUCT_CARD_ITEM": {
       "NAME": "Name",
       "CODE": "Code",
-      "STOCK": "Stock",
+      "STOCK": "Stocks",
       "PRICE": "Price",
-      "UNIT": "Unit"
+      "UNIT": "Unit",
+      "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No."
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
       "REFRESH_PRODUCT_LIST_ERROR_MESSAGE": "Product List has been refreshed."
+    },
+    "NO_SELECTED_SALES_AGENT_DIALOG": {
+      "TITLE": "No selected sales agent",
+      "DESCRIPTION": "Please select sales agent first."
     },
     "DELETE_PRODUCT_DIALOG": {
       "TITLE": "Delete product",
@@ -561,6 +567,27 @@
     "CONFIRM_ORDERS_DIALOG": {
       "TITLE": "Confirm Orders",
       "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?"
+    }
+  },
+  "TEXT_INVENTORIES_DIALOG": {
+    "TTTLE": "Text Inventories",
+    "TTTLE_2": "Preview",
+    "DESCRIPTION": "Set inventories by typing in texts following the format below. Type @ to search for product that you are looking for:",
+    "FORM_CONTROL_SECTION": {
+      "TEXT_ORDER_CONTROL": {
+        "LABEL": "Type @ to search product...",
+        "HINT_LABEL_1": "[ProductCode]:[Quantity]:[WithdrawalNumber]:[Price]",
+        "HINT_LABEL_2": "<strong>Example:</strong> RP-0006:15:T-123:115.50"
+      },
+      "BUTTON_OPTIONS": {
+        "PREVIEW_TEXT_INVENTORIES": "Preview Text Inventories"
+      }
+    },
+    "CONFIRM_ORDERS_DIALOG": {
+      "TITLE": "Confirm Update on Inventories",
+      "CONFIRM_MESSAGE": "You are about to update product inventories for the following product items. This action cannot be undone. Do you still want to proceed?",
+      "SUCCESS_MESSAGE": "Product inventories has been successfully updated!",
+      "ERROR_MESSAGE": "Updating product inventories failed. Please again later."
     }
   },
   "REPORTS_PAGE": {

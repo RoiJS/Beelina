@@ -1,0 +1,37 @@
+.text-inventories-container {
+  height: 70vh;
+  padding: 0;
+
+  .panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel__body-section {
+    flex: 1;
+    overflow: auto;
+
+    mat-hint {
+      font-size: 11px;
+    }
+
+    .page-information-description-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .page-information-description {
+        width: 90%;
+      }
+    }
+  }
+
+  .panel__footer-section {
+    display: flex;
+    gap: 1em;
+    button {
+      width: 100%;
+    }
+  }
+}
