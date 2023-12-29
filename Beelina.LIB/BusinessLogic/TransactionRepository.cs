@@ -24,7 +24,7 @@ namespace Beelina.LIB.BusinessLogic
             return new TransactionSales { Sales = confirmedOrdersAmount.Sales - badOrdersAmount.Sales };
         }
 
-        public async Task<List<TransactionInformation>> GetTransactionByDate(TransactionStatusEnum status, string transactionDate)
+        public async Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate)
         {
             var transactions = await (
                     from t in _beelinaRepository.ClientDbContext.Transactions

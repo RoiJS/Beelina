@@ -10,7 +10,7 @@ namespace Beelina.LIB.Interfaces
 
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum statuse, string fromDate, string toDate);
 
-        Task<List<TransactionInformation>> GetTransactionByDate(TransactionStatusEnum status, string transactionDate);
+        Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);
 
         Task<TransactionSales> GetSales(string fromDate, string toDate);
 

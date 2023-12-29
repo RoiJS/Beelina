@@ -23,7 +23,7 @@ namespace Beelina.API.Types.Query
     [Authorize]
     public async Task<IList<TransactionInformation>> GetTransactionsByDate([Service] ITransactionRepository<Transaction> transactionRepository, TransactionStatusEnum status, string transactionDate)
     {
-      return await transactionRepository.GetTransactionByDate(status, transactionDate);
+      return await transactionRepository.GetTransactionsByDate(status, transactionDate);
     }
 
     [Authorize]
