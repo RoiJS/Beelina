@@ -94,11 +94,9 @@ const GET_APPROVED_TRANSACTIONS_BY_DATE = gql`
       id
       invoiceNo
       storeId
+      storeName
       transactionDate
       hasUnpaidProductTransaction
-      store {
-        name
-      }
     }
   }
 `;
@@ -177,6 +175,15 @@ const GET_TRANSACTION_SALES = gql`
   }
 `;
 
+export class TransactionInformation {
+  public id: number;
+  public invoiceNo: string;
+  public storeId: number;
+  public storeName: string;
+  public transactionDate: Date;
+  public hasUnpaidProductTransaction: boolean;
+}
+
 export class Transaction extends Entity implements IModelNode {
   public storeId: number;
   public invoiceNo: string;
@@ -219,6 +226,7 @@ export class Transaction extends Entity implements IModelNode {
   constructor() {
     super();
     this.productTransactions = new Array<ProductTransaction>();
+    this.store = new CustomerStore();
   }
 }
 
@@ -370,7 +378,7 @@ export class TransactionService {
         map(
           (
             result: ApolloQueryResult<{
-              transactionsByDate: Array<Transaction>;
+              transactionsByDate: Array<TransactionInformation>;
             }>
           ) => {
             return result.data.transactionsByDate.map((t) => {
@@ -378,7 +386,7 @@ export class TransactionService {
               transaction.id = t.id;
               transaction.invoiceNo = t.invoiceNo;
               transaction.storeId = t.storeId;
-              transaction.store = t.store;
+              transaction.store.name = t.storeName;
               transaction.hasUnpaidProductTransaction =
                 t.hasUnpaidProductTransaction;
               return transaction;

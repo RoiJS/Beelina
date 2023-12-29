@@ -24,20 +24,50 @@ namespace Beelina.LIB.BusinessLogic
             return new TransactionSales { Sales = confirmedOrdersAmount.Sales - badOrdersAmount.Sales };
         }
 
-        public async Task<List<Transaction>> GetTransactionByDate(TransactionStatusEnum status, string transactionDate)
+        public async Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate)
         {
-            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
-                                        .Include(t => t.Store)
-                                        .Include(t => t.ProductTransactions)
-                                        .Where(t =>
-                                            t.TransactionDate.Date == Convert.ToDateTime(transactionDate)
-                                            && t.Status == status
-                                            && t.IsDelete == false
-                                            && t.IsActive
-                                            && t.CreatedById == currentUserService.CurrentUserId)
-                                        .ToListAsync();
+            var transactions = await (
+                    from t in _beelinaRepository.ClientDbContext.Transactions
 
-            return transactionsFromRepo;
+                    join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                    on t.Id equals pt.TransactionId
+
+                    join s in _beelinaRepository.ClientDbContext.Stores
+                    on t.StoreId equals s.Id
+
+                    where
+                        t.TransactionDate == Convert.ToDateTime(transactionDate)
+                        && t.Status == status
+                        && t.IsDelete == false
+                        && t.IsActive
+                        && t.CreatedById == currentUserService.CurrentUserId
+
+                    select new
+                    {
+                        Id = t.Id,
+                        InvoiceNo = t.InvoiceNo,
+                        StoreId = s.Id,
+                        StoreName = s.Name,
+                        TransactionDate = t.TransactionDate,
+                        ProductTransactions = pt
+                    }
+                ).ToListAsync();
+
+
+            var transactionsWithPaymentStatus = (from t in transactions
+                                                group t by new { t.Id, t.InvoiceNo, t.StoreId, t.StoreName, t.TransactionDate } into g
+                                                select new TransactionInformation
+                                                {
+                                                    Id = g.Key.Id,
+                                                    InvoiceNo = g.Key.InvoiceNo,
+                                                    StoreId = g.Key.StoreId,
+                                                    StoreName = g.Key.StoreName,
+                                                    TransactionDate = g.Key.TransactionDate,
+                                                    HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransactions.Status)) == 0
+                                                })
+                                                .ToList();
+
+            return transactionsWithPaymentStatus;
         }
 
         public async Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate)
