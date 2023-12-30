@@ -1,13 +1,17 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
 <div class="text-order-container page-container" [formGroup]="orderForm">
+  <div class="page-container__page-divider scale-in-center-animation">
+    <label>{{ "TEXT_ORDER_DIALOG.TITLE" | translate }}</label><br />
+    <span class="page-information-description">{{
+      "TEXT_ORDER_DIALOG.DESCRIPTION" | translate
+      }}</span>
+  </div>
   <div class="panel">
     <div class="panel__header-section">
-      <label>{{ "TEXT_ORDER_DIALOG.TTTLE" | translate }}</label>
+      <label>{{ "TEXT_ORDER_DIALOG.TITLE" | translate }}</label>
     </div>
     <div class="panel__body-section">
       <div class="page-information-description-container">
-        <span class="page-information-description">{{
-          "TEXT_ORDER_DIALOG.DESCRIPTION" | translate
-          }}</span>
         <mat-icon matRipple (click)="refreshList()">refresh</mat-icon>
       </div>
 

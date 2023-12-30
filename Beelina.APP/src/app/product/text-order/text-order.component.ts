@@ -1,7 +1,5 @@
-import { Router } from '@angular/router';
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,15 +32,9 @@ export class TextOrderComponent implements OnInit, OnDestroy {
   private _hasActiveOrders: boolean;
 
   constructor(
-    private _bottomSheetRef: MatBottomSheetRef<TextOrderComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      productList: Array<Product>;
-    },
     private authService: AuthService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
-    private router: Router,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
     private storageService: StorageService,
@@ -74,11 +66,19 @@ export class TextOrderComponent implements OnInit, OnDestroy {
       this.store
         .pipe(select(productTransactionsSelector))
         .subscribe((productTransactions: Array<ProductTransaction>) => {
+          this.storageService.storeString(
+            'productTransactions',
+            JSON.stringify(productTransactions)
+          );
           this._hasActiveOrders = productTransactions.length > 0;
         })
     );
 
-    this._productList = data.productList;
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        this._productList = productList;
+      });
   }
 
   ngOnInit() { }
@@ -104,11 +104,6 @@ export class TextOrderComponent implements OnInit, OnDestroy {
   setOrder() {
     const textOrders = this._orderForm.get('textOrder').value;
     this.store.dispatch(ProductActions.analyzeTextOrders({ textOrders }));
-    setTimeout(() => {
-      this.storageService.remove("textOrder");
-      this.router.navigate([`product-catalogue/product-cart`]);
-      this._bottomSheetRef.dismiss();
-    }, 1000);
   }
 
   confirmOrders() {

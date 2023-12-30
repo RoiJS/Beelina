@@ -82,26 +82,22 @@
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
               | translate
               }}:</mat-label>
-            <input matInput type="text" formControlName="barangay" [matAutocomplete]="barangayFilter" />
 
-            <mat-autocomplete #barangayFilter="matAutocomplete">
-              <mat-option *ngFor="let option of barangayFilterOptions | async" [value]="option.name">
-                {{ option.name }}
-              </mat-option>
-            </mat-autocomplete>
+            <mat-select formControlName="barangay">
+              <mat-option *ngFor="let barangay of barangayOptions" [value]="barangay.name">{{ barangay.name
+                }}</mat-option>
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>{{
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
               | translate
               }}:</mat-label>
-            <input matInput type="text" formControlName="name" [matAutocomplete]="customerFilter" />
 
-            <mat-autocomplete #customerFilter="matAutocomplete">
-              <mat-option *ngFor="let option of customerStoreFilterOptions | async" [value]="option.name">
-                {{ option.name }}
-              </mat-option>
-            </mat-autocomplete>
+            <mat-select formControlName="name">
+              <mat-option *ngFor="let customer of customerStoreOptions" [value]="customer.name">{{ customer.name
+                }}</mat-option>
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>{{

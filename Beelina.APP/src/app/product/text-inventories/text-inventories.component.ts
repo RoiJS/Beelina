@@ -1,6 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
@@ -34,11 +33,6 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
   private _textInventoriesList: Product[];
 
   constructor(
-    private _bottomSheetRef: MatBottomSheetRef<TextInventoriesComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      productList: Array<Product>;
-    },
     private authService: AuthService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
@@ -46,7 +40,8 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
     private translateService: TranslateService,
     private storageService: StorageService,
     private snackBarService: MatSnackBar,
-    private productService: ProductService
+    private productService: ProductService,
+    private router: Router
   ) {
     super();
     this._textInventoriesForm = this.formBuilder.group({
@@ -127,7 +122,6 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
           this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: true }));
           this.productService.updateProductInformation(this._textInventoriesList).subscribe({
             next: () => {
-              this._bottomSheetRef.dismiss();
               this.store.dispatch(ProductActions.resetProductState());
               this.store.dispatch(ProductActions.getProductsAction());
               this.storageService.remove('textInventoriesList');
@@ -135,6 +129,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
               this.store.dispatch(ProductActions.resetTextInventoriesState());
               this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: false }));
               this.snackBarService.open(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+              this.router.navigate([`product-catalogue/product-list`]);
             },
             error: () => {
               this.snackBarService.open(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));

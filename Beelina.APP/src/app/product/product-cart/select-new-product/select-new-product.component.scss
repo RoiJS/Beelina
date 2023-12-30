@@ -1,13 +1,13 @@
 @import "../../../../app-variables";
 
 .select-new-product-container {
-  height: 80vh;
+  height: 75vh;
   display: flex;
   flex-direction: column;
 
-  .product-list {
-    height: 60vh;
-  }
+  // .product-list {
+  //   height: 60vh;
+  // }
 
   &__header {
     font-size: 16px;

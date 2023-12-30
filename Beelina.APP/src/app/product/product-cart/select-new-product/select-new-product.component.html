@@ -6,23 +6,14 @@
   <div class="select-new-product-container__body">
     <app-loader-layout [busy]="$isLoading | async">
       <div class="page-container">
-        <app-search-field
-          (onSearch)="onSearch($event)"
-          [placeHolderTextIdentifier]="
+        <app-search-field (onSearch)="onSearch($event)" [placeHolderTextIdentifier]="
             'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
-          "
-        ></app-search-field>
+          "></app-search-field>
 
-        <cdk-virtual-scroll-viewport
-          itemSize="60"
-          orientation="vertical"
-          class="list-container product-list"
-        >
+        <cdk-virtual-scroll-viewport itemSize="60" orientation="vertical" class="list-container">
           <div *cdkVirtualFor="let item of dataSource">
-            <app-product-card-item
-              [productItem]="item"
-              (addItem)="addItemToCart($event)"
-            ></app-product-card-item>
+            <app-product-card-item [productItem]="item" [hideHeaderOptions]="true"
+              (addItem)="addItemToCart($event)"></app-product-card-item>
           </div>
         </cdk-virtual-scroll-viewport>
       </div>

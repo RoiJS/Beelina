@@ -1,5 +1,5 @@
 <mat-toolbar>
-  <button type="button" mat-icon-button (click)="toggleDrawer()" *ngIf="!canGoBack">
+  <button type="button" mat-icon-button (click)="toggleDrawer()" *ngIf="isHandset && !canGoBack">
     <mat-icon class="sidenav-toggle-icon">menu</mat-icon>
   </button>
   <button type="button" mat-icon-button (click)="onGoBack()" *ngIf="canGoBack">

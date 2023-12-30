@@ -1,7 +1,4 @@
-<app-tool-bar
-  [title]="'GENERAL_TEXTS.BIZUAL' | translate"
-  [showBackButton]="false"
->
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
   <button mat-icon-button class="toolbar-option" (click)="saveProfile()">
     <mat-icon>save</mat-icon>
   </button>
@@ -10,11 +7,10 @@
 <app-loader-layout [busy]="isLoading">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "PROFILE_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "PROFILE_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "PROFILE_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
 
     <div class="panel">
@@ -22,89 +18,71 @@
         <div class="panel__header-section">
           <label>{{
             "PROFILE_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE" | translate
-          }}</label>
+            }}</label>
         </div>
         <div class="panel__body-section">
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.FIRSTNAME_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.FIRSTNAME_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="firstName" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.MIDDLENAME_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.MIDDLENAME_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="middleName" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.LASTNAME_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.LASTNAME_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="lastName" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="email" formControlName="emailAddress" />
-            <mat-error
-              *ngIf="profileForm.get('emailAddress').hasError('email')"
-            >
+            <mat-error *ngIf="profileForm.get('emailAddress').hasError('email')">
               {{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.INVALID_EMAIL_ERROR_MESSAGE"
-                  | translate
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.INVALID_EMAIL_ERROR_MESSAGE"
+              | translate
               }}
             </mat-error>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="email" formControlName="username" />
 
-            <mat-error
-              *ngIf="
+            <mat-error *ngIf="
                 profileForm.get('username')?.hasError('usernameAlreadyExists')
-              "
-            >
+              ">
               {{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
-                  | translate
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+              | translate
               }}
             </mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="password" formControlName="newPassword" />
 
-            <mat-error
-              *ngIf="profileForm.get('newPassword').hasError('pattern')"
-            >
+            <mat-error *ngIf="profileForm.get('newPassword').hasError('pattern')">
               {{
-                "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
-                  | translate
+              "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
+              | translate
               }}
             </mat-error>
           </mat-form-field>

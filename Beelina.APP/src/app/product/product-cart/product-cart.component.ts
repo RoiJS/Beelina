@@ -1,5 +1,5 @@
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -22,6 +22,7 @@ import { StorageService } from 'src/app/_services/storage.service';
 import { ProductService } from 'src/app/_services/product.service';
 
 import { AddToCartProductComponent } from '../add-to-cart-product/add-to-cart-product.component';
+import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
 import {
@@ -57,13 +58,12 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 export class ProductCartComponent
   extends BaseComponent
   implements OnInit, OnDestroy {
+  @ViewChild(LoaderLayoutComponent) loaderLayoutComponent: LoaderLayoutComponent;
   private _orderForm: FormGroup;
   private _discountForm: FormGroup;
   private _customerStoreOptions: Array<CustomerStore> = [];
-  private _customerStoreFilterOptions: Observable<Array<CustomerStore>>;
 
   private _barangayOptions: Array<Barangay> = [];
-  private _barangayFilterOptions: Observable<Array<Barangay>>;
 
   private _subscription: Subscription = new Subscription();
   private _selectedCustomer: CustomerStore;
@@ -190,7 +190,7 @@ export class ProductCartComponent
               .setValue(this._transaction.invoiceNo);
             this._discountForm
               .get('discount')
-              .setValue(this._transaction.discount);
+              .setValue(this._transaction.discount || 0);
             this._orderForm
               .get('barangay')
               .setValue(this._transaction.store.barangay.name);
@@ -212,11 +212,6 @@ export class ProductCartComponent
         })
     );
 
-    this._customerStoreFilterOptions = nameControl.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filterCustomers(value || ''))
-    );
-
     this._subscription.add(
       barangayControl.valueChanges.subscribe((value) => {
         nameControl.setValue('');
@@ -231,11 +226,6 @@ export class ProductCartComponent
           nameControl.disable();
         }
       })
-    );
-
-    this._barangayFilterOptions = barangayControl.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filterBarangays(value || ''))
     );
 
     this._subscription.add(
@@ -324,6 +314,7 @@ export class ProductCartComponent
         .subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
             this._isLoading = true;
+            this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.LOADING_MESSAGE');
             this.transactionService.registerTransaction(transaction).subscribe({
               next: () => {
                 this._isLoading = false;
@@ -395,8 +386,11 @@ export class ProductCartComponent
         )
         .subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
+            this._isLoading = true;
+            this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.LOADING_MESSAGE');
             this.transactionService.registerTransaction(transaction).subscribe({
               next: () => {
+                this._isLoading = false;
                 this.snackBarService.open(
                   this.translateService.instant(
                     'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
@@ -417,6 +411,7 @@ export class ProductCartComponent
               },
 
               error: () => {
+                this._isLoading = false;
                 this.snackBarService.open(
                   this.translateService.instant(
                     'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.ERROR_MESSAGE'
@@ -443,10 +438,13 @@ export class ProductCartComponent
   }
 
   confirm() {
+    this._isLoading = true;
+    this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
     this.productService
       .validateProductionTransactionsQuantities(this._productTransactions)
       .subscribe(
         (insufficientProductQuantities: Array<InsufficientProductQuantity>) => {
+          this._isLoading = false;
           if (insufficientProductQuantities.length > 0) {
             let errorMessage = this.translateService.instant(
               'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
@@ -493,10 +491,13 @@ export class ProductCartComponent
               )
               .subscribe((result: ButtonOptions) => {
                 if (result === ButtonOptions.YES) {
+                  this._isLoading = true;
+                  this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.LOADING_MESSAGE');
                   this.transactionService
                     .registerTransaction(transaction)
                     .subscribe({
                       next: () => {
+                        this._isLoading = false;
                         this.snackBarService.open(
                           this.translateService.instant(
                             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
@@ -521,6 +522,7 @@ export class ProductCartComponent
                       },
 
                       error: () => {
+                        this._isLoading = false;
                         this.snackBarService.open(
                           this.translateService.instant(
                             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
@@ -555,24 +557,6 @@ export class ProductCartComponent
     this.store.dispatch(ProductTransactionActions.resetTransactionState());
   }
 
-  private _filterCustomers(value: string): Array<CustomerStore> {
-    const filterValue = value?.toLowerCase();
-    const currentBarangay = this._orderForm.get('barangay').value.toLowerCase();
-    return this._customerStoreOptions.filter((option) => {
-      return (
-        option.barangay?.name.toLowerCase().includes(currentBarangay) &&
-        option.name?.toLowerCase().includes(filterValue)
-      );
-    });
-  }
-
-  private _filterBarangays(value: string): Array<Barangay> {
-    const filterValue = value?.toLowerCase();
-    return this._barangayOptions.filter((option) =>
-      option.name?.toLowerCase().includes(filterValue)
-    );
-  }
-
   get orderForm(): FormGroup {
     return this._orderForm;
   }
@@ -587,14 +571,6 @@ export class ProductCartComponent
 
   get productTransactions(): Array<ProductTransaction> {
     return this._productTransactions;
-  }
-
-  get customerStoreFilterOptions(): Observable<Array<CustomerStore>> {
-    return this._customerStoreFilterOptions;
-  }
-
-  get barangayFilterOptions(): Observable<Array<Barangay>> {
-    return this._barangayFilterOptions;
   }
 
   get grossTotalAmount(): string {
@@ -618,5 +594,14 @@ export class ProductCartComponent
 
   get barangayOptions(): Array<Barangay> {
     return this._barangayOptions;
+  }
+
+  get customerStoreOptions(): Array<CustomerStore> {
+    const currentBarangay = this._orderForm.get('barangay').value.toLowerCase();
+    return this._customerStoreOptions.filter((option) => {
+      return (
+        option.barangay?.name.toLowerCase().includes(currentBarangay)
+      );
+    });
   }
 }

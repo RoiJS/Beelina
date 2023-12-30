@@ -7,13 +7,14 @@ import { User } from 'src/app/_models/user.model';
 import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { UIService } from 'src/app/_services/ui.service';
+import { SharedComponent } from '../components/shared/shared.component';
 
 @Component({
   selector: 'app-user-card',
   templateUrl: './user-card.component.html',
   styleUrls: ['./user-card.component.scss'],
 })
-export class UserCardComponent implements OnInit {
+export class UserCardComponent extends SharedComponent implements OnInit {
   private _user: User;
   private _company: string;
 
@@ -22,8 +23,9 @@ export class UserCardComponent implements OnInit {
     private router: Router,
     private translateSerice: TranslateService,
     private storageService: StorageService,
-    private uiService: UIService
+    override uiService: UIService
   ) {
+    super(uiService);
     this.authService.user.subscribe((user: User) => {
       this._user = user;
     });
@@ -31,11 +33,13 @@ export class UserCardComponent implements OnInit {
     this._company = this.storageService.getString('company');
   }
 
-  ngOnInit() { }
+  override ngOnInit() { }
 
   goToProfile() {
     this.router.navigate(['/profile']);
-    this.uiService.toggleDrawer();
+    if (this.isHandset) {
+      this.uiService.toggleDrawer();
+    }
   }
 
   get getUserType(): string {

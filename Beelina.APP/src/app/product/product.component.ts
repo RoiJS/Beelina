@@ -215,17 +215,10 @@ export class ProductComponent
 
   openTextParserDialog() {
     if (this.currentUserPermission < this.getPermissionLevel(PermissionLevelEnum.Manager)) {
-      this.productService
-        .getProductDetailList(this.authService.userId)
-        .subscribe((productList: Array<Product>) => {
-          this._productList = productList;
-          this.bottomSheet.open(TextOrderComponent, {
-            data: { productList: this._productList }
-          });
-        });
+      this.router.navigate(['product-catalogue/text-order']);
     } else {
       if (this.currentSalesAgentId > 0) {
-        this.bottomSheet.open(TextInventoriesComponent);
+        this.router.navigate(['product-catalogue/text-inventories']);
       } else {
         this.dialogService.openAlert(
           this.translateService.instant(
