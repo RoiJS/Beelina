@@ -20,6 +20,9 @@ import { FloatingButtonComponent } from './ui/floating-button/floating-button.co
 import { ListContainerComponent } from './ui/list-container/list-container.component';
 import { LoaderLayoutComponent } from './ui/loader-layout/loader-layout.component';
 import { SearchFieldComponent } from './ui/search-field/search-field.component';
+import { TextInputAutocompleteContainerComponent } from './text-input-autocomplete/text-input-autocomplete-container.component';
+import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
+import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/text-input-autocomplete-menu.component';
 
 @NgModule({
   imports: [
@@ -45,6 +48,9 @@ import { SearchFieldComponent } from './ui/search-field/search-field.component';
     FloatingButtonComponent,
     ProductCardItemComponent,
     SearchFieldComponent,
+    TextInputAutocompleteContainerComponent,
+    TextInputAutocompleteDirective,
+    TextInputAutocompleteMenuComponent
   ],
   exports: [
     FilterAndSortComponent,
@@ -56,6 +62,9 @@ import { SearchFieldComponent } from './ui/search-field/search-field.component';
     ProductCardItemComponent,
     SearchFieldComponent,
     DialogModule,
+    TextInputAutocompleteContainerComponent,
+    TextInputAutocompleteDirective,
+    TextInputAutocompleteMenuComponent
   ],
 })
-export class CustomUISharedModule {}
+export class CustomUISharedModule { }

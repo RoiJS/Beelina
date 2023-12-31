@@ -3,7 +3,6 @@
 .loader-layout-container {
   width: 100%;
   height: 100%;
-  position: fixed;
 
   .loader-section {
     display: flex;
@@ -37,6 +36,13 @@
   margin-left: -100px;
   top: 50%;
   margin-top: -100px;
+}
+
+.loader-label {
+  color: $white;
+  position: absolute;
+  top: 58%;
+  font-size: 1.3em;
 }
 
 .hex-brick {

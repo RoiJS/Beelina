@@ -9,7 +9,7 @@ import { map, shareReplay } from 'rxjs/operators';
 export class UIService {
   private _sideNavRef: MatSidenav | undefined;
   private _isHandSet: Observable<boolean> = this.breakpointObserver
-    .observe(Breakpoints.Handset)
+    .observe([Breakpoints.Handset, Breakpoints.TabletPortrait])
     .pipe(
       map((result) => result.matches),
       shareReplay()

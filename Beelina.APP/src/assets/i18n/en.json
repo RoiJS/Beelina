@@ -248,19 +248,22 @@
       "TITLE": "Save new order",
       "CONFIRM": "Are you sure to save new order?",
       "SUCCESS_MESSAGE": "New order has been saved!",
-      "ERROR_MESSAGE": "Saving order failed. Please again later."
+      "ERROR_MESSAGE": "Saving order failed. Please again later.",
+      "LOADING_MESSAGE": "Saving order as confirmed. Please wait..."
     },
     "SAVE_NEW_DRAFT_ORDER_DIALOG": {
       "TITLE": "Save as draft order",
       "CONFIRM": "Are you sure to save new draft order?",
       "SUCCESS_MESSAGE": "New draft order has been saved!",
-      "ERROR_MESSAGE": "Saving draft order failed. Please again later."
+      "ERROR_MESSAGE": "Saving draft order failed. Please again later.",
+      "LOADING_MESSAGE": "Saving order as draft. Please wait..."
     },
     "SAVE_NEW_BAD_ORDER_DIALOG": {
       "TITLE": "Save as bad order",
       "CONFIRM": "Are you sure to save new bad order?",
       "SUCCESS_MESSAGE": "New bad order has been saved!",
-      "ERROR_MESSAGE": "Saving bad order failed. Please again later."
+      "ERROR_MESSAGE": "Saving bad order failed. Please again later.",
+      "LOADING_MESSAGE": "Saving order as bad order. Please wait..."
     },
     "CLEAR_ORDER_DIALOG": {
       "TITLE": "Clear order",
@@ -269,7 +272,8 @@
     },
     "INSUFFICIENT_PRODUCT_QUANTITY_DIALOG": {
       "TITLE": "Insufficient Item Stocks",
-      "MESSAGE": "Following Items have insufficient stocks available: </br></br>"
+      "MESSAGE": "Following Items have insufficient stocks available: </br></br>",
+      "LOADING_MESSAGE": "Validating product quantities. Please wait..."
     }
   },
   "ADD_PRODUCT_DETAILS_PAGE": {
@@ -552,8 +556,8 @@
     }
   },
   "TEXT_ORDER_DIALOG": {
-    "TTTLE": "Text Order",
-    "DESCRIPTION": "Set orders by typing in texts following the format below. Type @ to search for product that you are looking for:",
+    "TITLE": "Text Order",
+    "DESCRIPTION": "This feature offers a much faster way to set up orders especially when you have a large number of items. You can set up orders by typing in texts following the format below. Type @ to search for product that you are looking for:",
     "FORM_CONTROL_SECTION": {
       "TEXT_ORDER_CONTROL": {
         "LABEL": "Type @ to search product...",
@@ -566,13 +570,14 @@
     },
     "CONFIRM_ORDERS_DIALOG": {
       "TITLE": "Confirm Orders",
-      "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?"
+      "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?",
+      "LOADING_MESSAGE": "Processing text order. Please wait..."
     }
   },
   "TEXT_INVENTORIES_DIALOG": {
-    "TTTLE": "Text Inventories",
-    "TTTLE_2": "Preview",
-    "DESCRIPTION": "Set inventories by typing in texts following the format below. Type @ to search for product that you are looking for:",
+    "TITLE": "Text Inventories",
+    "TITLE_2": "Preview",
+    "DESCRIPTION": "This feature offers a much faster way to set update product details especially when you have a large number of products. Type @ to search for product that you are looking for:",
     "FORM_CONTROL_SECTION": {
       "TEXT_ORDER_CONTROL": {
         "LABEL": "Type @ to search product...",
@@ -587,7 +592,8 @@
       "TITLE": "Confirm Update on Inventories",
       "CONFIRM_MESSAGE": "You are about to update product inventories for the following product items. This action cannot be undone. Do you still want to proceed?",
       "SUCCESS_MESSAGE": "Product inventories has been successfully updated!",
-      "ERROR_MESSAGE": "Updating product inventories failed. Please again later."
+      "ERROR_MESSAGE": "Updating product inventories failed. Please again later.",
+      "LOADING_MESSAGE": "Processing product details. Please wait..."
     }
   },
   "REPORTS_PAGE": {
@@ -709,5 +715,8 @@
       "SUCCESS_MESSAGE": "New updates has been saved!",
       "ERROR_MESSAGE": "Updating report settings failed. Please again later."
     }
+  },
+  "LOADER_LAYOUT": {
+    "LOADING_TEXT": "Loading. Please wait..."
   }
 }

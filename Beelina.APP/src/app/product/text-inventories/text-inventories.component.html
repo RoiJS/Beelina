@@ -1,15 +1,18 @@
-<div class="text-inventories-container page-container">
-  <app-loader-layout [busy]="$isLoading | async">
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
+<app-loader-layout [busy]="$isLoading | async" [label]="loadingLabel">
+  <div class="text-inventories-container page-container">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "TEXT_INVENTORIES_DIALOG.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "TEXT_INVENTORIES_DIALOG.DESCRIPTION" | translate
+        }}</span>
+    </div>
     <div *ngIf="showTextInventoriesTextAreaContainer && !hasActiveTextInventories"
       class="panel text-inventories-textarea-container" [formGroup]="textInventoriesForm">
       <div class="panel__header-section">
-        <label>{{ "TEXT_INVENTORIES_DIALOG.TTTLE" | translate }}</label>
+        <label>{{ "TEXT_INVENTORIES_DIALOG.TITLE" | translate }}</label>
       </div>
       <div class="panel__body-section">
-        <span class="page-information-description">{{
-          "TEXT_INVENTORIES_DIALOG.DESCRIPTION" | translate
-          }}</span>
-
         <mat-form-field appearance="fill">
           <mat-label>{{
             "TEXT_INVENTORIES_DIALOG.FORM_CONTROL_SECTION.TEXT_ORDER_CONTROL.LABEL"
@@ -32,7 +35,7 @@
     <div *ngIf="!showTextInventoriesTextAreaContainer || hasActiveTextInventories"
       class="panel text-inventories-list-container">
       <div class="panel__header-section">
-        <label>{{ "TEXT_INVENTORIES_DIALOG.TTTLE_2" | translate }}</label>
+        <label>{{ "TEXT_INVENTORIES_DIALOG.TITLE_2" | translate }}</label>
       </div>
       <div class="panel__body-section">
         <div *ngFor="let item of textInventoriesList" role="listitem">
@@ -48,6 +51,5 @@
         </button>
       </div>
     </div>
-  </app-loader-layout>
-
-</div>
+  </div>
+</app-loader-layout>
