@@ -204,10 +204,10 @@ export class ProductCartComponent
               .setValue(this._transaction.store.paymentMethod.name);
             this._orderForm
               .get('transactionDate')
-              .setValue(this._transaction.transactionDate);
+              .setValue(this._transaction.transactionDate || new Date());
             this._orderForm
               .get('dueDate')
-              .setValue(this._transaction.dueDate);
+              .setValue(this._transaction.dueDate || new Date());
           }
         })
     );

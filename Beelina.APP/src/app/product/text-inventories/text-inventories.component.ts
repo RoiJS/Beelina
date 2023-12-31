@@ -31,6 +31,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
   private _hasActiveTextInventories: boolean;
   private _showTextInventoriesTextAreaContainer: boolean = true;
   private _textInventoriesList: Product[];
+  private _loadingLabel: string;
 
   constructor(
     private authService: AuthService,
@@ -95,6 +96,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
     );
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
+    this._loadingLabel = this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.LOADING_MESSAGE');
   }
 
   ngOnInit() { }
@@ -180,5 +182,9 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
 
   get textInventoriesList(): Array<Product> {
     return this._textInventoriesList;
+  }
+
+  get loadingLabel(): string {
+    return this._loadingLabel;
   }
 }

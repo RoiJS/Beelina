@@ -1,5 +1,5 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
-<app-loader-layout [busy]="$isLoading | async">
+<app-loader-layout [busy]="$isLoading | async" [label]="loadingLabel">
   <div class="text-inventories-container page-container">
     <div class="page-container__page-divider scale-in-center-animation">
       <label>{{ "TEXT_INVENTORIES_DIALOG.TITLE" | translate }}</label><br />

@@ -17,19 +17,21 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-text-order',
   templateUrl: './text-order.component.html',
   styleUrls: ['./text-order.component.scss'],
 })
-export class TextOrderComponent implements OnInit, OnDestroy {
+export class TextOrderComponent extends BaseComponent implements OnInit, OnDestroy {
   private _subscription: Subscription = new Subscription();
   private _productList: Array<Product> = [];
   private _orderForm: FormGroup;
   private _hintLabelText1: string;
   private _hintLabelText2: string;
   private _hasActiveOrders: boolean;
+  private _loadingLabel: string;
 
   constructor(
     private authService: AuthService,
@@ -41,6 +43,7 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     private snackBarService: MatSnackBar,
     private productService: ProductService
   ) {
+    super();
     this._orderForm = this.formBuilder.group({
       textOrder: ['', Validators.required],
     });
@@ -79,6 +82,8 @@ export class TextOrderComponent implements OnInit, OnDestroy {
       .subscribe((productList: Array<Product>) => {
         this._productList = productList;
       });
+
+    this._loadingLabel = this.translateService.instant('TEXT_ORDER_DIALOG.CONFIRM_ORDERS_DIALOG.LOADING_MESSAGE');
   }
 
   ngOnInit() { }
@@ -103,7 +108,10 @@ export class TextOrderComponent implements OnInit, OnDestroy {
 
   setOrder() {
     const textOrders = this._orderForm.get('textOrder').value;
-    this.store.dispatch(ProductActions.analyzeTextOrders({ textOrders }));
+    if (textOrders.length > 0) {
+      this._isLoading = true;
+      this.store.dispatch(ProductActions.analyzeTextOrders({ textOrders }));
+    }
   }
 
   confirmOrders() {
@@ -149,5 +157,9 @@ export class TextOrderComponent implements OnInit, OnDestroy {
 
   get hintLabelText2() {
     return this._hintLabelText2;
+  }
+
+  get loadingLabel(): string {
+    return this._loadingLabel;
   }
 }

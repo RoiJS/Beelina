@@ -256,7 +256,7 @@
       "CONFIRM": "Are you sure to save new draft order?",
       "SUCCESS_MESSAGE": "New draft order has been saved!",
       "ERROR_MESSAGE": "Saving draft order failed. Please again later.",
-      "LOADING_MESSAGE": "Saving order as dradf. Please wait..."
+      "LOADING_MESSAGE": "Saving order as draft. Please wait..."
     },
     "SAVE_NEW_BAD_ORDER_DIALOG": {
       "TITLE": "Save as bad order",
@@ -570,7 +570,8 @@
     },
     "CONFIRM_ORDERS_DIALOG": {
       "TITLE": "Confirm Orders",
-      "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?"
+      "CONFIRM_MESSAGE": "You have active orders that are not yet saved. Proceeding with this action will override active orders. Do you still want to proceed?",
+      "LOADING_MESSAGE": "Processing text order. Please wait..."
     }
   },
   "TEXT_INVENTORIES_DIALOG": {
@@ -591,7 +592,8 @@
       "TITLE": "Confirm Update on Inventories",
       "CONFIRM_MESSAGE": "You are about to update product inventories for the following product items. This action cannot be undone. Do you still want to proceed?",
       "SUCCESS_MESSAGE": "Product inventories has been successfully updated!",
-      "ERROR_MESSAGE": "Updating product inventories failed. Please again later."
+      "ERROR_MESSAGE": "Updating product inventories failed. Please again later.",
+      "LOADING_MESSAGE": "Processing product details. Please wait..."
     }
   },
   "REPORTS_PAGE": {
