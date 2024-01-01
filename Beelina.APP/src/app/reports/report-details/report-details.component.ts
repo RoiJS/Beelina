@@ -37,6 +37,8 @@ export class ReportDetailsComponent
   private controlComponents: Array<ControlComponent> =
     new Array<ControlComponent>();
 
+  private _loadingLabel: string;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
@@ -47,6 +49,7 @@ export class ReportDetailsComponent
     super();
     this._reportId = +this.activatedRoute.snapshot.paramMap.get('id');
     this._isLoading = true;
+    this._loadingLabel = this.translateService.instant('LOADER_LAYOUT.LOADING_TEXT');
   }
 
   ngOnInit() { }
@@ -143,6 +146,7 @@ export class ReportDetailsComponent
           next: (result: ButtonOptions) => {
             if (result === ButtonOptions.YES) {
               this._isLoading = true;
+              this._loadingLabel = this.translateService.instant('REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.LOADING_MESSAGE');
               this.reportService
                 .generateReport(this._reportId, selectedValues)
                 .subscribe({
@@ -189,7 +193,7 @@ export class ReportDetailsComponent
   }
 
   get loadingLabel(): string {
-    return this.translateService.instant('REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.LOADING_MESSAGE');
+    return this._loadingLabel;
   }
 }
 
