@@ -1,7 +1,6 @@
-import { Router } from '@angular/router';
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -12,36 +11,39 @@ import * as ProductActions from '../store/actions';
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { StorageService } from 'src/app/_services/storage.service';
+import { AuthService } from 'src/app/_services/auth.service';
+import { ProductService } from 'src/app/_services/product.service';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-text-order',
   templateUrl: './text-order.component.html',
   styleUrls: ['./text-order.component.scss'],
 })
-export class TextOrderComponent implements OnInit, OnDestroy {
+export class TextOrderComponent extends BaseComponent implements OnInit, OnDestroy {
   private _subscription: Subscription = new Subscription();
   private _productList: Array<Product> = [];
   private _orderForm: FormGroup;
   private _hintLabelText1: string;
   private _hintLabelText2: string;
   private _hasActiveOrders: boolean;
+  private _loadingLabel: string;
 
   constructor(
-    private _bottomSheetRef: MatBottomSheetRef<TextOrderComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      productList: Array<Product>;
-    },
+    private authService: AuthService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
-    private router: Router,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private snackBarService: MatSnackBar,
+    private productService: ProductService
   ) {
+    super();
     this._orderForm = this.formBuilder.group({
       textOrder: ['', Validators.required],
     });
@@ -67,11 +69,21 @@ export class TextOrderComponent implements OnInit, OnDestroy {
       this.store
         .pipe(select(productTransactionsSelector))
         .subscribe((productTransactions: Array<ProductTransaction>) => {
+          this.storageService.storeString(
+            'productTransactions',
+            JSON.stringify(productTransactions)
+          );
           this._hasActiveOrders = productTransactions.length > 0;
         })
     );
 
-    this._productList = data.productList;
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        this._productList = productList;
+      });
+
+    this._loadingLabel = this.translateService.instant('TEXT_ORDER_DIALOG.CONFIRM_ORDERS_DIALOG.LOADING_MESSAGE');
   }
 
   ngOnInit() { }
@@ -80,14 +92,26 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     this._subscription.unsubscribe();
   }
 
+  refreshList() {
+    this.productService
+      .getProductDetailList(this.authService.userId)
+      .subscribe((productList: Array<Product>) => {
+        this.snackBarService.open(
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+          ),
+          this.translateService.instant('GENERAL_TEXTS.CLOSE')
+        )
+        this._productList = productList;
+      });
+  }
+
   setOrder() {
     const textOrders = this._orderForm.get('textOrder').value;
-    this.store.dispatch(ProductActions.analyzeTextOrders({ textOrders }));
-    setTimeout(() => {
-      this.storageService.remove("textOrder");
-      this.router.navigate([`product-catalogue/product-cart`]);
-      this._bottomSheetRef.dismiss();
-    }, 1000);
+    if (textOrders.length > 0) {
+      this._isLoading = true;
+      this.store.dispatch(ProductActions.analyzeTextOrders({ textOrders }));
+    }
   }
 
   confirmOrders() {
@@ -109,9 +133,13 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     }
   }
 
-  findChoices(searchText: string, choices: string[]) {
-    return choices.filter(item =>
-      item.toLowerCase().includes(searchText.toLowerCase())
+  findChoices = (searchText: string) => {
+    return this._productList.filter(item =>
+      item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.code.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.productUnit.name.toLowerCase().includes(searchText.toLowerCase())
+    ).map(
+      product => `${product.code} : ${product.name} : ${product.productUnit.name}`
     );
   }
 
@@ -131,7 +159,7 @@ export class TextOrderComponent implements OnInit, OnDestroy {
     return this._hintLabelText2;
   }
 
-  get productList(): Array<any> {
-    return this._productList.map(product => `${product.code} : ${product.name} : ${product.productUnit.name}`);
+  get loadingLabel(): string {
+    return this._loadingLabel;
   }
 }

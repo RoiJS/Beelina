@@ -11,6 +11,8 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 export class ProductCardItemComponent extends BaseComponent implements OnInit {
   @Input() productItem: Product;
   @Input() allowManageItem: boolean = false;
+  @Input() hideHeader: boolean = false;
+  @Input() hideImage: boolean = false;
   @Input() hideHeaderOptions: boolean = false;
   @Output() editItem = new EventEmitter<number>();
   @Output() deleteItem = new EventEmitter<number>();

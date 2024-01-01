@@ -14,7 +14,7 @@ namespace Beelina.LIB.Interfaces
         Task<Product> CreateOrUpdateProduct(int userAccountId, ProductInput productInput, Product product);
         Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId);
         Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId);
-        Task<List<Product>> GetProductsDetailList(int userId);
+        Task<List<Product>> GetProductsDetailList(int userId, string filterKeyWord = "");
         Task<Product> TransferProductStockFromOwnInventory(
             int userAccountId,
             int sourceProductId,

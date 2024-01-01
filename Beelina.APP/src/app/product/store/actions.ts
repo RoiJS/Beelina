@@ -12,6 +12,18 @@ export const getProductsActionSuccess = createAction(
   }>()
 );
 
+export const analyzeTextInventories = createAction(
+  '[Product] Analyze Text Inventories',
+  props<{ textInventories: string }>()
+);
+
+export const analyzeTextInventoriesActionSuccess = createAction(
+  '[Product] Analyze Text Inventories Success',
+  props<{
+    textProductInventories: Array<Product>;
+  }>()
+);
+
 export const getProductsActionError = createAction(
   '[Product] Get Product Error',
   props<{ error: string }>()
@@ -38,3 +50,5 @@ export const analyzeTextOrders = createAction(
 );
 
 export const resetProductState = createAction('[Product] Reset Product State');
+
+export const resetTextInventoriesState = createAction('[Product] Reset Text Inventories State');

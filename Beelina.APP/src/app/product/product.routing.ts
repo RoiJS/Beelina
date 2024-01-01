@@ -20,6 +20,18 @@ export const routes: Routes = [
     title: 'PRODUCTS_CATALOGUE_PAGE.TITLE',
   },
   {
+    path: 'text-order',
+    loadChildren: () => import('./text-order/text-order.module').then(
+      (m) => m.TextOrderModule
+    ),
+  },
+  {
+    path: 'text-inventories',
+    loadChildren: () => import('./text-inventories/text-inventories.module').then(
+      (m) => m.TextInventoriesModule
+    ),
+  },
+  {
     path: 'add-product',
     loadChildren: () =>
       import('./add-product-details/add-product-details.module').then(

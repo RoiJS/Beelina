@@ -20,8 +20,6 @@ import { ProductRoutingModule } from './product.routing.module';
 import { ProductComponent } from './product.component';
 import { TopProductsComponent } from './top-products/top-products.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
-import { TextInputAutocompleteContainerComponent } from '../shared/text-input-autocomplete/text-input-autocomplete-container.component';
-import { TextInputAutocompleteMenuComponent } from '../shared/text-input-autocomplete/text-input-autocomplete-menu.component';
 import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
 
 import * as BarangayReducers from '../barangays/store/reducers';
@@ -37,10 +35,7 @@ import { ProductUnitEffects } from '../units/store/effects';
 import { ProductTransactionsEffects } from './add-to-cart-product/store/effects';
 
 import { CartGuard } from '../_guards/cart.guard';
-import { TextOrderComponent } from './text-order/text-order.component';
 import { AccountVerificationModule } from '../shared/account-verification/account-verification.module';
-
-import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
 
 @NgModule({
   imports: [
@@ -81,12 +76,8 @@ import { TextInputAutocompleteDirective } from '../_directives/text-input-autoco
     ProductComponent,
     TopProductsComponent,
     AddToCartProductComponent,
-    TextOrderComponent,
-    TransferProductInventoryComponent,
-    TextInputAutocompleteContainerComponent,
-    TextInputAutocompleteDirective,
-    TextInputAutocompleteMenuComponent
+    TransferProductInventoryComponent
   ],
-  providers: [CartGuard, TextInputAutocompleteDirective,],
+  providers: [CartGuard],
 })
 export class ProductModule { }

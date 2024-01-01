@@ -41,6 +41,7 @@ import {
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
+import { TextInventoriesComponent } from './text-inventories/text-inventories.component';
 
 @Component({
   selector: 'app-product',
@@ -94,7 +95,7 @@ export class ProductComponent
 
     this.store.pipe(select(errorSelector)).subscribe((result: string) => {
       if (result) {
-        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
       }
     })
     this._currentUser = this.authService.user.value;
@@ -212,15 +213,23 @@ export class ProductComponent
     }
   }
 
-  openTextOrderDialog() {
-    this.productService
-      .getProductDetailList(this.authService.userId)
-      .subscribe((productList: Array<Product>) => {
-        this._productList = productList;
-        this.bottomSheet.open(TextOrderComponent, {
-          data: { productList: this._productList }
-        });
-      });
+  openTextParserDialog() {
+    if (this.currentUserPermission < this.getPermissionLevel(PermissionLevelEnum.Manager)) {
+      this.router.navigate(['product-catalogue/text-order']);
+    } else {
+      if (this.currentSalesAgentId > 0) {
+        this.router.navigate(['product-catalogue/text-inventories']);
+      } else {
+        this.dialogService.openAlert(
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.NO_SELECTED_SALES_AGENT_DIALOG.TITLE'
+          ),
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.NO_SELECTED_SALES_AGENT_DIALOG.DESCRIPTION'
+          )
+        );
+      }
+    }
   }
 
   deactivateAllowManageProductDetailsDialog() {

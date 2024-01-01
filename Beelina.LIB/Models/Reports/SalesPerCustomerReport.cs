@@ -1,4 +1,5 @@
 using Beelina.LIB.BusinessLogic;
+using Beelina.LIB.Enums;
 using Beelina.LIB.Interfaces;
 using OfficeOpenXml;
 using ReserbizAPP.LIB.Helpers.Services;
@@ -36,6 +37,7 @@ namespace Beelina.LIB.Models.Reports
                     GrossAmount = row.Field<decimal>("GrossAmount"),
                     BadOrder = row.Field<decimal>("BadOrder"),
                     NetAmount = row.Field<decimal>("NetAmount"),
+                    Status = (PaymentStatusEnum)row.Field<int>("Status"),
                 }).ToList()
             };
 
@@ -55,6 +57,7 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"D{cellNumber}"].Value = item.GrossAmount;
                     worksheet.Cells[$"E{cellNumber}"].Value = item.BadOrder;
                     worksheet.Cells[$"F{cellNumber}"].Value = item.NetAmount;
+                    worksheet.Cells[$"G{cellNumber}"].Value = item.Status == PaymentStatusEnum.Unpaid ? "AR" : "";
                     cellNumber++;
                 }
 
@@ -84,6 +87,7 @@ namespace Beelina.LIB.Models.Reports
         public decimal GrossAmount { get; set; }
         public decimal BadOrder { get; set; }
         public decimal NetAmount { get; set; }
+        public PaymentStatusEnum Status { get; set; }
 
         public SalesPerCustomerReportOutputList()
         {

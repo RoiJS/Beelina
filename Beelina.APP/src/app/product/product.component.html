@@ -1,7 +1,5 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
-  <button mat-icon-button class="toolbar-option" (click)="openTextOrderDialog()" *ngIf="
-      currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
-    ">
+  <button mat-icon-button class="toolbar-option" (click)="openTextParserDialog()">
     <mat-icon matBadgeColor="warn">add_comment</mat-icon>
   </button>
   <button mat-icon-button [disabled]="itemCounter === 0" class="toolbar-option" (click)="goToCart()" *ngIf="

@@ -14,33 +14,39 @@ namespace Beelina.API.Types.Mutations
     {
         [Authorize]
         [Error(typeof(ProductErrorFactory))]
-        public async Task<Product> UpdateProduct(
+        public async Task<List<Product>> UpdateProducts(
             [Service] IProductRepository<Product> productRepository,
             [Service] IMapper mapper,
             int userAccountId,
-            ProductInput productInput)
+            List<ProductInput> productInputs)
         {
-            var productFromRepo = await productRepository.GetEntity(productInput.Id).ToObjectAsync();
+            var productsFromRepo = new List<Product>();
 
-            if (productFromRepo == null)
+            foreach (var productInput in productInputs)
             {
-                productFromRepo = mapper.Map<Product>(productInput);
-            }
-            else
-            {
-                mapper.Map(productInput, productFromRepo);
+                var productFromRepo = await productRepository.GetEntity(productInput.Id).ToObjectAsync();
+
+                if (productFromRepo == null)
+                {
+                    productFromRepo = mapper.Map<Product>(productInput);
+                }
+                else
+                {
+                    mapper.Map(productInput, productFromRepo);
+                }
+
+                try
+                {
+                    await productRepository.CreateOrUpdateProduct(userAccountId, productInput, productFromRepo);
+                    productsFromRepo.Add(productFromRepo);
+                }
+                catch
+                {
+                    throw new ProductFailedRegisterException(productFromRepo.Name);
+                }
             }
 
-            try
-            {
-                await productRepository.CreateOrUpdateProduct(userAccountId, productInput, productFromRepo);
-            }
-            catch
-            {
-                throw new ProductFailedRegisterException(productFromRepo.Name);
-            }
-
-            return productFromRepo;
+            return productsFromRepo;
         }
 
         [Authorize]

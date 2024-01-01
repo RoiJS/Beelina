@@ -174,7 +174,7 @@ export class EditProductDetailsComponent implements OnInit {
                 state: true,
               })
             );
-            this.productService.updateProductInformation(product).subscribe({
+            this.productService.updateProductInformation([product]).subscribe({
               next: () => {
                 this.snackBarService.open(
                   this.translateService.instant(

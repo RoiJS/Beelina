@@ -328,6 +328,8 @@ export class AuthService {
     this.storageService.remove('allowManageProductDetails');
     this.storageService.remove('currentSalesAgentId');
     this.storageService.remove("textOrder");
+    this.storageService.remove("textInventories");
+    this.storageService.remove("textInventoriesList");
 
     this.store.dispatch(LoginActions.resetLoginCredentials());
     this.store.dispatch(ProductTransactionActions.resetProductTransactionState());

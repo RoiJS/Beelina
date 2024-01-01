@@ -10,6 +10,7 @@ export const initialState: IProductState = {
   isLoading: false,
   isUpdateLoading: false,
   products: new Array<Product>(),
+  textProductInventories: new Array<Product>(),
   endCursor: null,
   filterKeyword: '',
   hasNextPage: false,
@@ -37,6 +38,23 @@ export const reducers = createReducer(
       }
   ),
   on(
+    ProductActions.analyzeTextInventories,
+    (state, action) =>
+      <IProductState>{
+        ...state,
+        isLoading: true,
+      }
+  ),
+  on(
+    ProductActions.analyzeTextInventoriesActionSuccess,
+    (state, action) =>
+      <IProductState>{
+        ...state,
+        isLoading: false,
+        textProductInventories: state.textProductInventories.concat(action.textProductInventories),
+      }
+  ),
+  on(
     ProductActions.getProductsActionError,
     (state, action) =>
       <IProductState>{
@@ -45,12 +63,24 @@ export const reducers = createReducer(
         error: action.error,
       }
   ),
+  on(
+    ProductActions.setUpdateProductLoadingState,
+    (state, action) =>
+      <IProductState>{
+        ...state,
+        isLoading: action.state,
+      }
+  ),
   on(ProductActions.setSearchProductAction, (state, action) => ({
     ...state,
     filterKeyword: action.keyword,
   })),
   on(ProductActions.resetProductState, (state, action) => ({
     ...initialState,
+  })),
+  on(ProductActions.resetTextInventoriesState, (state, action) => ({
+    ...state,
+    textProductInventories: initialState.textProductInventories,
   })),
   mutableOn(ProductActions.setProductDeductionAction, (state, action) => {
     const productIdx = state.products.findIndex(

@@ -1,4 +1,4 @@
-.text-order-container {
+.text-inventories-container {
   .panel {
     display: flex;
     flex-direction: column;
@@ -6,6 +6,7 @@
 
   .panel__body-section {
     flex: 1;
+    overflow: auto;
 
     mat-hint {
       font-size: 11px;
@@ -13,12 +14,18 @@
 
     .page-information-description-container {
       display: flex;
-      align-items: end;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+
+      .page-information-description {
+        width: 90%;
+      }
     }
   }
 
   .panel__footer-section {
+    display: flex;
+    gap: 1em;
     button {
       width: 100%;
     }

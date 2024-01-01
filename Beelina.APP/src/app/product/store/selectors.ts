@@ -37,3 +37,8 @@ export const filterKeywordSelector = createSelector(
   selectFeature,
   (state) => state.filterKeyword
 );
+
+export const textInventoriesSelector = createSelector(
+  selectFeature,
+  (state) => state.textProductInventories
+);

@@ -12,7 +12,7 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import getCaretCoordinates from 'textarea-caret';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { TextInputAutocompleteMenuComponent } from '../shared/text-input-autocomplete/text-input-autocomplete-menu.component';
 import { Subject } from 'rxjs';
 import toPX from 'to-px';
@@ -74,9 +74,7 @@ export class TextInputAutocompleteDirective implements OnDestroy {
   /**
    * A function that accepts a search string and returns an array of choices. Can also return a promise.
    */
-  @Input() findChoices: (searchText: string, choices: any[]) => any[] | Promise<any[]>;
-
-  @Input() choices: any[] = [];
+  @Input() findChoices: (searchText: string) => any[] | Promise<any[]>;
 
   /**
    * A function that formats the selected choice once selected.
@@ -96,15 +94,38 @@ export class TextInputAutocompleteDirective implements OnDestroy {
 
   private usingShortcut = false;
 
+  private searchTerms = new Subject<string>();
+
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
     private viewContainerRef: ViewContainerRef,
     private injector: Injector,
     private elm: ElementRef
-  ) { }
+  ) {
+    this.searchTerms.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+    ).subscribe(searchText => {
+      Promise.resolve(this.findChoices(searchText))
+        .then(choices => {
+          if (this.menu) {
+            this.menu.component.instance.choices = choices;
+            this.menu.component.instance.choiceLoading = false;
+            this.menu.component.changeDetectorRef.detectChanges();
+          }
+        })
+        .catch(err => {
+          if (this.menu) {
+            this.menu.component.instance.choiceLoading = false;
+            this.menu.component.instance.choiceLoadError = err;
+            this.menu.component.changeDetectorRef.detectChanges();
+          }
+        });
+    });
+  }
 
   onKeyDown(key: string) {
-    console.log('onKeyDown', key);
+    // console.log('onKeyDown', key);
     if (key === this.triggerCharacter) {
       this.usingShortcut = false;
       this.showMenu();
@@ -114,9 +135,7 @@ export class TextInputAutocompleteDirective implements OnDestroy {
   @HostListener('input', ['$event.target.value'])
   onChange(value: string) {
     this.onKeyDown(value[value.length - 1]);
-    console.log('onChange', value);
     if (this.menu) {
-      console.log('triggerCharacterPosition', this.menu.triggerCharacterPosition);
       const cursor = this.elm.nativeElement.selectionStart;
       if (cursor < this.menu.triggerCharacterPosition) {
         this.hideMenu();
@@ -133,26 +152,7 @@ export class TextInputAutocompleteDirective implements OnDestroy {
         if (!searchText.match(this.searchRegexp)) {
           this.hideMenu();
         } else {
-          this.menu.component.instance.searchText = searchText;
-          this.menu.component.instance.choices = [];
-          this.menu.component.instance.choiceLoadError = undefined;
-          this.menu.component.instance.choiceLoading = true;
-          this.menu.component.changeDetectorRef.detectChanges();
-          Promise.resolve(this.findChoices(searchText, this.choices))
-            .then(choices => {
-              if (this.menu) {
-                this.menu.component.instance.choices = choices;
-                this.menu.component.instance.choiceLoading = false;
-                this.menu.component.changeDetectorRef.detectChanges();
-              }
-            })
-            .catch(err => {
-              if (this.menu) {
-                this.menu.component.instance.choiceLoading = false;
-                this.menu.component.instance.choiceLoadError = err;
-                this.menu.component.changeDetectorRef.detectChanges();
-              }
-            });
+          this.searchTerms.next(searchText);
         }
       }
     }
