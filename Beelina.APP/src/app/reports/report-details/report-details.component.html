@@ -1,5 +1,5 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"> </app-tool-bar>
-<app-loader-layout [busy]="isLoading">
+<app-loader-layout [busy]="isLoading" [label]="loadingLabel">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
       <label>{{ reportName }}</label
