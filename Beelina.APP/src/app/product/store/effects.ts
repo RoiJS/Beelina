@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
 
 import { ProductService } from 'src/app/_services/product.service';
+import { StorageService } from 'src/app/_services/storage.service';
 
-import * as ProductActions from './actions';
 import * as ProductTransactionActions from '../add-to-cart-product/store/actions';
+import * as ProductActions from './actions';
 
 @Injectable()
 export class ProductEffects {
@@ -56,6 +56,10 @@ export class ProductEffects {
               }
             );
           }),
+          tap(() => {
+            this.storageService.remove("textOrder");
+            this.router.navigate([`product-catalogue/product-cart`]);
+          }),
           catchError((error) =>
             of(
               ProductActions.getProductsActionError({
@@ -93,6 +97,8 @@ export class ProductEffects {
   );
   constructor(
     private actions$: Actions,
-    private productService: ProductService
+    private productService: ProductService,
+    private router: Router,
+    private storageService: StorageService,
   ) { }
 }

@@ -42,6 +42,7 @@ export class AppComponent
 
   isSystemUpdateActive: boolean;
   isOnline: boolean;
+  isAuthenticated: boolean;
 
   constructor(
     private authService: AuthService,
@@ -62,6 +63,7 @@ export class AppComponent
         user?.getModulePrivilege(ModuleEnum.Retail)
       );
       this.menuDataSource.data = this.sideDrawerService.getMenus();
+      this.isAuthenticated = (user !== null);
     });
 
     this.initRouterEvents();
@@ -84,9 +86,9 @@ export class AppComponent
       this.router.navigate([url], { fragment });
     }
 
-    // if (this.isHandset) {
-    this.uiService.toggleDrawer();
-    // }
+    if (this.isHandset) {
+      this.uiService.toggleDrawer();
+    }
 
     if (name === 'MAIN_MENU.LOGOUT') {
       this.authService.logout();

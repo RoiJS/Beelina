@@ -187,6 +187,10 @@ export class ReportDetailsComponent
   get reportDescription(): string {
     return this._reportDescription;
   }
+
+  get loadingLabel(): string {
+    return this.translateService.instant('REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.LOADING_MESSAGE');
+  }
 }
 
 class ControlComponent {

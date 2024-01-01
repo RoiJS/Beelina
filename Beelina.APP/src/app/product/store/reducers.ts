@@ -63,6 +63,14 @@ export const reducers = createReducer(
         error: action.error,
       }
   ),
+  on(
+    ProductActions.setUpdateProductLoadingState,
+    (state, action) =>
+      <IProductState>{
+        ...state,
+        isLoading: action.state,
+      }
+  ),
   on(ProductActions.setSearchProductAction, (state, action) => ({
     ...state,
     filterKeyword: action.keyword,

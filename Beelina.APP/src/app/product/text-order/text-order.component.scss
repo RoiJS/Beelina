@@ -1,8 +1,5 @@
 .text-order-container {
-  height: 65vh;
-
   .panel {
-    height: 100%;
     display: flex;
     flex-direction: column;
   }
@@ -16,12 +13,8 @@
 
     .page-information-description-container {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .page-information-description {
-        width: 90%;
-      }
+      align-items: end;
+      flex-direction: column;
     }
   }
 
