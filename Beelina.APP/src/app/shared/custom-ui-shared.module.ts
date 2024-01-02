@@ -19,6 +19,7 @@ import { FilterAndSortComponent } from './ui/filter-and-sort/filter-and-sort.com
 import { FloatingButtonComponent } from './ui/floating-button/floating-button.component';
 import { ListContainerComponent } from './ui/list-container/list-container.component';
 import { LoaderLayoutComponent } from './ui/loader-layout/loader-layout.component';
+import { NotificationModule } from './ui/notification/notification.module';
 import { SearchFieldComponent } from './ui/search-field/search-field.component';
 import { TextInputAutocompleteContainerComponent } from './text-input-autocomplete/text-input-autocomplete-container.component';
 import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
@@ -28,6 +29,7 @@ import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/te
   imports: [
     CommonModule,
     DialogModule,
+    NotificationModule,
     MatBadgeModule,
     MatIconModule,
     MatToolbarModule,
@@ -62,6 +64,7 @@ import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/te
     ProductCardItemComponent,
     SearchFieldComponent,
     DialogModule,
+    NotificationModule,
     TextInputAutocompleteContainerComponent,
     TextInputAutocompleteDirective,
     TextInputAutocompleteMenuComponent

@@ -1,0 +1,13 @@
+.notification-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__icon {
+    mat-icon {
+      font-size: 2.3em;
+      height: auto;
+      min-width: 1em;
+    }
+  }
+}

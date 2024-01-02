@@ -77,7 +77,7 @@ import { TemplatePageTitleStrategyService } from './_services/title-strategy.ser
       provide: TitleStrategy,
       useClass: TemplatePageTitleStrategyService,
     },
-    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } },
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 8000 } },
   ],
   bootstrap: [AppComponent],
 })

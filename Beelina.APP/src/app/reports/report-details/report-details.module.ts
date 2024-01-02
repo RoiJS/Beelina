@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
@@ -20,7 +19,6 @@ import { SalesAgentDropdownControlComponent } from '../report-controls/sales-age
   imports: [
     CommonModule,
     CustomUISharedModule,
-    MatSnackBarModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,

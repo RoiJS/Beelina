@@ -11,7 +11,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
 
@@ -52,7 +51,6 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
     MatMenuModule,
     MatRippleModule,
     MatBottomSheetModule,
-    MatSnackBarModule,
     MatSelectModule,
     ReactiveFormsModule,
     StoreModule.forFeature('barangays', BarangayReducers.reducers),
