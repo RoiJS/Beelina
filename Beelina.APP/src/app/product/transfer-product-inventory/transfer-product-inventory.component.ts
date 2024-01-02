@@ -2,7 +2,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Product } from 'src/app/_models/product';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
@@ -11,8 +10,9 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
-import { StorageService } from 'src/app/_services/storage.service';
 import { AuthService } from 'src/app/_services/auth.service';
+import { StorageService } from 'src/app/_services/storage.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import { TransferProductStockTypeEnum } from 'src/app/_enum/transfer-product-stock-type.enum';
 
@@ -42,7 +42,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
       productId: number;
     },
     private authService: AuthService,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
     private productService: ProductService,
@@ -80,7 +80,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
     this._piecesToBulkGroupForm.get('productDestination').valueChanges.subscribe((value: number) => {
       const destinationProduct = this._destinationProductOptions.find(p => p.id === value);
       this._piecesToBulkGroupForm.get('numberOfUnits').setValue(destinationProduct.numberOfUnits);
-      if (destinationProduct.numberOfUnits > 0){
+      if (destinationProduct.numberOfUnits > 0) {
         this._piecesToBulkGroupForm.get('numberOfUnits').disable();
       } else {
         this._piecesToBulkGroupForm.get('numberOfUnits').enable();
@@ -103,7 +103,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
         this._sourceProduct.productUnit.name = result.productUnit.name;
 
         this._bulkToPiecesGroupForm.get('numberOfUnits').setValue(this._sourceProduct.numberOfUnits);
-        if (this._sourceProduct.numberOfUnits > 0){
+        if (this._sourceProduct.numberOfUnits > 0) {
           this._bulkToPiecesGroupForm.get('numberOfUnits').disable();
         } else {
           this._bulkToPiecesGroupForm.get('numberOfUnits').enable();
@@ -200,22 +200,16 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
           .subscribe({
             next: () => {
               this._isLoading = false;
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'TRANSFER_PRODUCT_STOCK_DIALOG.TRANSFER_PRODUCT_STOCK_CONFIRMATION_DIALOG.SUCCESS_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE')
-              )
+              this.notificationService.openSuccessNotification(this.translateService.instant(
+                'TRANSFER_PRODUCT_STOCK_DIALOG.TRANSFER_PRODUCT_STOCK_CONFIRMATION_DIALOG.SUCCESS_MESSAGE'
+              ));
               this._bottomSheetRef.dismiss(true);
             },
             error: () => {
               this._isLoading = false;
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'TRANSFER_PRODUCT_STOCK_DIALOG.TRANSFER_PRODUCT_STOCK_CONFIRMATION_DIALOG.ERROR_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE')
-              )
+              this.notificationService.openErrorNotification(this.translateService.instant(
+                'TRANSFER_PRODUCT_STOCK_DIALOG.TRANSFER_PRODUCT_STOCK_CONFIRMATION_DIALOG.ERROR_MESSAGE'
+              ));
             }
           });
       }

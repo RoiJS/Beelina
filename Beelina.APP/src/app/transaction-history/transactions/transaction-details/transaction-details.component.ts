@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -10,6 +9,7 @@ import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 @Component({
   selector: 'app-transaction-details',
@@ -18,8 +18,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 })
 export class TransactionDetailsComponent
   extends BaseComponent
-  implements OnInit
-{
+  implements OnInit {
   private _transactionId: number;
   private _transaction: Transaction;
 
@@ -27,7 +26,7 @@ export class TransactionDetailsComponent
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
     private router: Router,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private transactionService: TransactionService,
     private translateService: TranslateService
   ) {
@@ -61,29 +60,16 @@ export class TransactionDetailsComponent
             .markTransactionAsPaid(this._transactionId)
             .subscribe({
               next: () => {
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.SUCCESS_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
-                );
-
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.SUCCESS_MESSAGE'
+                ));
                 this.router.navigate(['transaction-history']);
               },
 
               error: () => {
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.ERROR_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
-                );
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.ERROR_MESSAGE'
+                ));
               },
             });
         }

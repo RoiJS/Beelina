@@ -9,7 +9,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { BarangaysComponent } from './barangays.component';
@@ -27,7 +26,6 @@ import { MatRippleModule } from '@angular/material/core';
     CustomUISharedModule,
     BarangaysRoutingModule,
     MatInputModule,
-    MatSnackBarModule,
     MatIconModule,
     MatRippleModule,
     MatBottomSheetModule,
@@ -40,4 +38,4 @@ import { MatRippleModule } from '@angular/material/core';
   ],
   declarations: [BarangaysComponent, ManageBarangayComponent],
 })
-export class BarangaysModule {}
+export class BarangaysModule { }

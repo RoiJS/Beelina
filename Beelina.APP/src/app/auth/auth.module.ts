@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { LoginEffects } from './store/effects';
@@ -18,7 +17,6 @@ import { reducers } from './store/reducers';
     CommonModule,
     CustomUISharedModule,
     MatIconModule,
-    MatSnackBarModule,
     ReactiveFormsModule,
     RouterModule.forChild([
       {
@@ -33,4 +31,4 @@ import { reducers } from './store/reducers';
   ],
   declarations: [AuthComponent],
 })
-export class AuthModule {}
+export class AuthModule { }

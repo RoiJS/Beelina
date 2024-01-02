@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,6 +10,7 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { CustomerStoreService } from 'src/app/_services/customer-store.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import * as BarangayActions from '../../barangays/store/actions';
 import * as PaymentMethodActions from '../../payment-methods/store/actions';
@@ -47,7 +47,7 @@ export class EditCustomerDetailsComponent implements OnInit {
     private customerStoreService: CustomerStoreService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private translateService: TranslateService
   ) {
     this._customerForm = this.formBuilder.group({
@@ -136,12 +136,9 @@ export class EditCustomerDetailsComponent implements OnInit {
               .updateStoreInformation(customerStore)
               .subscribe({
                 next: () => {
-                  this.snackBarService.open(
-                    this.translateService.instant(
-                      'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
-                    ),
-                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                  );
+                  this.notificationService.openSuccessNotification(this.translateService.instant(
+                    'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
+                  ));
 
                   this.store.dispatch(
                     CustomerStoresActions.setUpdateCustomerLoadingState({
@@ -152,12 +149,9 @@ export class EditCustomerDetailsComponent implements OnInit {
                 },
 
                 error: () => {
-                  this.snackBarService.open(
-                    this.translateService.instant(
-                      'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.ERROR_MESSAGE'
-                    ),
-                    this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                  );
+                  this.notificationService.openErrorNotification(this.translateService.instant(
+                    'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.ERROR_MESSAGE'
+                  ));
                 },
               });
           }
