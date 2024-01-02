@@ -83,7 +83,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GeneralInformation", b =>
@@ -117,7 +117,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeneralInformations");
+                    b.ToTable("GeneralInformations", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>
@@ -162,7 +162,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("GlobalErrorLogs");
+                    b.ToTable("GlobalErrorLogs", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Report", b =>
@@ -217,7 +217,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Reports", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControl", b =>
@@ -260,7 +260,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportControls");
+                    b.ToTable("ReportControls", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControlsRelation", b =>
@@ -307,7 +307,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportControlsRelations");
+                    b.ToTable("ReportControlsRelations", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportParameter", b =>
@@ -350,7 +350,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.HasIndex("ReportControlId")
                         .IsUnique();
 
-                    b.ToTable("ReportParameters");
+                    b.ToTable("ReportParameters", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>

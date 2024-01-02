@@ -527,8 +527,8 @@
     "TITLE": "Bad Order Details",
     "DELETE_TRANSACTION_DIALOG": {
       "TITLE": "Delete Bad Order",
-      "CONFIRM": "Are you sure to delete bar order?",
-      "SUCCESS_MESSAGE": "Bad order is now deleted.",
+      "CONFIRM": "Are you sure to delete bad order?",
+      "SUCCESS_MESSAGE": "Bad order has been deleted.",
       "ERROR_MESSAGE": "Deleting bad order failed. Please try again later."
     }
   },

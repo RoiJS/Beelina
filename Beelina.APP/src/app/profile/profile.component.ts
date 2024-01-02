@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 import { UserAccountInformationResult } from '../_models/results/user-account-information-result';
@@ -10,6 +9,7 @@ import { AuthService } from '../_services/auth.service';
 import { UniqueUsernameValidator } from '../_validators/unique-username.validator';
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { NotificationService } from '../shared/ui/notification/notification.service';
 
 @Component({
   selector: 'app-profile',
@@ -24,7 +24,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private dialogService: DialogService,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private translateService: TranslateService,
     private uniqueUsernameValidator: UniqueUsernameValidator
   ) {
@@ -79,12 +79,12 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   profileHasChanged(): boolean {
     return (
       this._profileForm.get('firstName').value !==
-        this._userDetails.firstName ||
+      this._userDetails.firstName ||
       this._profileForm.get('middleName').value !==
-        this._userDetails.middleName ||
+      this._userDetails.middleName ||
       this._profileForm.get('lastName').value !== this._userDetails.lastName ||
       this._profileForm.get('emailAddress').value !==
-        this._userDetails.emailAddress ||
+      this._userDetails.emailAddress ||
       this._profileForm.get('username').value !== this._userDetails.username ||
       this._profileForm.get('newPassword').value !== ''
     );
@@ -127,22 +127,16 @@ export class ProfileComponent extends BaseComponent implements OnInit {
               next: () => {
                 this._isLoading = false;
                 this._userDetails = user;
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'PROFILE_PAGE.EDIT_PROFILE_DIALOG.SUCCESS_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'PROFILE_PAGE.EDIT_PROFILE_DIALOG.SUCCESS_MESSAGE'
+                ));
                 this.authService.refresh().subscribe(); // Make sure to refresh user details
               },
               error: (error) => {
                 this._isLoading = false;
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'PROFILE_PAGE.EDIT_PROFILE_DIALOG.ERROR_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'PROFILE_PAGE.EDIT_PROFILE_DIALOG.ERROR_MESSAGE'
+                ));
               },
             });
           }

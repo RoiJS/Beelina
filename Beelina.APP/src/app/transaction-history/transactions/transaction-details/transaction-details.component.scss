@@ -57,11 +57,11 @@
           }
 
           &--paid {
-            background-color: #20c920;
+            background-color: $success;
           }
 
           &--unpaid {
-            background-color: #e02d00;
+            background-color: $error;
           }
         }
       }

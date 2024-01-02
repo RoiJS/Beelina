@@ -1,10 +1,9 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { select, Store } from '@ngrx/store';
-import { map, Observable, startWith, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { barangaysSelector } from 'src/app/barangays/store/selectors';
@@ -18,6 +17,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { ProductService } from 'src/app/_services/product.service';
 
@@ -85,7 +85,7 @@ export class ProductCartComponent
     private store: Store<AppStateInterface>,
     private transactionService: TransactionService,
     private translateService: TranslateService,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private storageService: StorageService,
     private productService: ProductService
   ) {
@@ -266,12 +266,9 @@ export class ProductCartComponent
       )
       .subscribe((result: ButtonOptions) => {
         if (result === ButtonOptions.YES) {
-          this.snackBarService.open(
-            this.translateService.instant(
-              'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.SUCCESS_MESSAGE'
-            ),
-            this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-          );
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            'PRODUCT_CART_PAGE.CLEAR_ORDER_DIALOG.SUCCESS_MESSAGE'
+          ));
           this.store.dispatch(
             ProductTransactionActions.setSaveOrderLoadingState({
               state: false,
@@ -318,12 +315,9 @@ export class ProductCartComponent
             this.transactionService.registerTransaction(transaction).subscribe({
               next: () => {
                 this._isLoading = false;
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.SUCCESS_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.SUCCESS_MESSAGE'
+                ));
                 this.store.dispatch(
                   ProductTransactionActions.setSaveOrderLoadingState({
                     state: false,
@@ -339,12 +333,9 @@ export class ProductCartComponent
 
               error: () => {
                 this._isLoading = false;
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.ERROR_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'PRODUCT_CART_PAGE.SAVE_NEW_DRAFT_ORDER_DIALOG.ERROR_MESSAGE'
+                ));
 
                 this.store.dispatch(
                   ProductTransactionActions.setSaveOrderLoadingState({
@@ -391,12 +382,9 @@ export class ProductCartComponent
             this.transactionService.registerTransaction(transaction).subscribe({
               next: () => {
                 this._isLoading = false;
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
+                ));
                 this.store.dispatch(
                   ProductTransactionActions.setSaveOrderLoadingState({
                     state: false,
@@ -412,12 +400,9 @@ export class ProductCartComponent
 
               error: () => {
                 this._isLoading = false;
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.ERROR_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.ERROR_MESSAGE'
+                ));
 
                 this.store.dispatch(
                   ProductTransactionActions.setSaveOrderLoadingState({
@@ -498,12 +483,9 @@ export class ProductCartComponent
                     .subscribe({
                       next: () => {
                         this._isLoading = false;
-                        this.snackBarService.open(
-                          this.translateService.instant(
-                            'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
-                          ),
-                          this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                        );
+                        this.notificationService.openSuccessNotification(this.translateService.instant(
+                          'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
+                        ));
                         this.store.dispatch(
                           ProductTransactionActions.setSaveOrderLoadingState({
                             state: false,
@@ -523,12 +505,9 @@ export class ProductCartComponent
 
                       error: () => {
                         this._isLoading = false;
-                        this.snackBarService.open(
-                          this.translateService.instant(
-                            'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
-                          ),
-                          this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                        );
+                        this.notificationService.openErrorNotification(this.translateService.instant(
+                          'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
+                        ));
 
                         this.store.dispatch(
                           ProductTransactionActions.setSaveOrderLoadingState({

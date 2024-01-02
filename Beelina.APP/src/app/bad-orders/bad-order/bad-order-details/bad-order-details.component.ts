@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -9,6 +8,8 @@ import {
   Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
@@ -23,8 +24,8 @@ export class BadOrderDetailsComponent extends BaseComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
+    private notificationService: NotificationService,
     private router: Router,
-    private snackBarService: MatSnackBar,
     private transactionService: TransactionService,
     private translateService: TranslateService
   ) {
@@ -59,29 +60,16 @@ export class BadOrderDetailsComponent extends BaseComponent implements OnInit {
             .deleteTransaction(this._transactionId)
             .subscribe({
               next: () => {
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
-                );
-
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
+                ));
                 this.router.navigate([`bad-orders`]);
               },
 
               error: () => {
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
-                );
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
+                ));
               },
             });
         }

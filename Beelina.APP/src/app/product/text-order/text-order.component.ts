@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -17,6 +16,8 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
@@ -40,7 +41,7 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
     private storageService: StorageService,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private productService: ProductService
   ) {
     super();
@@ -96,12 +97,9 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
     this.productService
       .getProductDetailList(this.authService.userId)
       .subscribe((productList: Array<Product>) => {
-        this.snackBarService.open(
-          this.translateService.instant(
-            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
-          ),
-          this.translateService.instant('GENERAL_TEXTS.CLOSE')
-        )
+        this.notificationService.openSuccessNotification(this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+        ));
         this._productList = productList;
       });
   }

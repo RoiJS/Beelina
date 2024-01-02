@@ -3,7 +3,6 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { TransactionDetailsComponent } from './transaction-details.component';
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
@@ -13,7 +12,6 @@ import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
     CommonModule,
     CustomUISharedModule,
     MatListModule,
-    MatSnackBarModule,
     RouterModule.forChild([
       {
         path: '',
@@ -25,4 +23,4 @@ import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
   ],
   declarations: [TransactionDetailsComponent],
 })
-export class TransactionDetailsModule {}
+export class TransactionDetailsModule { }

@@ -3,7 +3,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
@@ -16,11 +15,10 @@ import { ProfileComponent } from './profile.component';
     CustomUISharedModule,
     MatInputModule,
     MatIconModule,
-    MatSnackBarModule,
     ProfileRoutingModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
   ],
   declarations: [ProfileComponent],
 })
-export class ProfileModule {}
+export class ProfileModule { }

@@ -55,6 +55,8 @@ namespace Beelina.LIB.BusinessLogic
                                     r.ModuleId == ModulesEnum.Retail
                                     && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
                                     && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
+                                    && r.IsActive
+                                    && !r.IsDelete
                                 ).ToListAsync();
 
             return reportsFromRepo;

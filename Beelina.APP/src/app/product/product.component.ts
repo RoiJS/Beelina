@@ -2,18 +2,16 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import {
   MatBottomSheet,
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
 import { AccountVerificationComponent } from '../shared/account-verification/account-verification.component';
 import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
-import { TextOrderComponent } from './text-order/text-order.component';
 
 import { ProductService } from '../_services/product.service';
 import { StorageService } from '../_services/storage.service';
@@ -34,6 +32,7 @@ import { Product } from '../_models/product';
 import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { AuthService } from '../_services/auth.service';
+import { NotificationService } from '../shared/ui/notification/notification.service';
 import { User } from '../_models/user.model';
 import { ModuleEnum } from '../_enum/module.enum';
 import {
@@ -41,7 +40,6 @@ import {
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
-import { TextInventoriesComponent } from './text-inventories/text-inventories.component';
 
 @Component({
   selector: 'app-product',
@@ -74,7 +72,7 @@ export class ProductComponent
     private productService: ProductService,
     private router: Router,
     private store: Store<AppStateInterface>,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private storageService: StorageService,
     private translateService: TranslateService
   ) {
@@ -95,7 +93,7 @@ export class ProductComponent
 
     this.store.pipe(select(errorSelector)).subscribe((result: string) => {
       if (result) {
-        this.snackBarService.open(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.LOAD_PRODUCT_LIST_ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+        this.notificationService.openErrorNotification(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.LOAD_PRODUCT_LIST_ERROR_MESSAGE'));
       }
     })
     this._currentUser = this.authService.user.value;
@@ -173,23 +171,17 @@ export class ProductComponent
         if (result === ButtonOptions.YES) {
           this.productService.deleteProduct(id).subscribe({
             next: () => {
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'PRODUCTS_CATALOGUE_PAGE.DELETE_PRODUCT_DIALOG.SUCCESS_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE')
-              );
+              this.notificationService.openSuccessNotification(this.translateService.instant(
+                'PRODUCTS_CATALOGUE_PAGE.DELETE_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+              ));
               this.store.dispatch(ProductActions.resetProductState());
               this.store.dispatch(ProductActions.getProductsAction());
             },
 
             error: () => {
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'PRODUCTS_CATALOGUE_PAGE.DELETE_PRODUCT_DIALOG.ERROR_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE')
-              );
+              this.notificationService.openErrorNotification(this.translateService.instant(
+                'PRODUCTS_CATALOGUE_PAGE.DELETE_PRODUCT_DIALOG.ERROR_MESSAGE'
+              ));
             },
           });
         }
@@ -250,7 +242,7 @@ export class ProductComponent
 
     this._accountVerificationDialogRef.afterDismissed().subscribe((data: User) => {
       // We assume that if the returned value from the dialog is undefined,
-      // it means that the user just simplycanceled the dialog.
+      // it means that the user just simply canceled the dialog.
       if (data === undefined) return;
 
       if (data !== null) {
@@ -271,27 +263,18 @@ export class ProductComponent
             'allowManageProductDetails',
             JSON.stringify(this._allowManageProductDetails)
           );
-          this.snackBarService.open(
-            this.translateService.instant(
-              'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.SUCCESS_MESSAGE'
-            ),
-            this.translateService.instant('GENERAL_TEXTS.CLOSE')
-          );
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.SUCCESS_MESSAGE'
+          ));
         } else {
-          this.snackBarService.open(
-            this.translateService.instant(
-              'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.INVALID_USER_PRIVILEGE_MESSAGE'
-            ),
-            this.translateService.instant('GENERAL_TEXTS.CLOSE')
-          );
+          this.notificationService.openErrorNotification(this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.INVALID_USER_PRIVILEGE_MESSAGE'
+          ));
         }
       } else {
-        this.snackBarService.open(
-          this.translateService.instant(
-            'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.ERROR_MESSAGE'
-          ),
-          this.translateService.instant('GENERAL_TEXTS.CLOSE')
-        );
+        this.notificationService.openErrorNotification(this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.ALLOW_MANAGE_PRODUCT_DETAILS_DIALOG.ERROR_MESSAGE'
+        ));
       }
     });
   }

@@ -5,7 +5,6 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -17,6 +16,7 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { BaseControlComponent } from '../report-controls/base-control/base-control.component';
 import { componentsRegistry } from '../report-controls/components-registry';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 @Component({
   selector: 'app-report-details',
@@ -42,7 +42,7 @@ export class ReportDetailsComponent
   constructor(
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private reportService: ReportsService,
     private translateService: TranslateService
   ) {
@@ -152,33 +152,24 @@ export class ReportDetailsComponent
                 .subscribe({
                   next: () => {
                     this._isLoading = false;
-                    this.snackBarService.open(
-                      this.translateService.instant(
-                        'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
-                      ),
-                      this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                    );
+                    this.notificationService.openSuccessNotification(this.translateService.instant(
+                      'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
+                    ));
                   },
                   error: () => {
                     this._isLoading = false;
-                    this.snackBarService.open(
-                      this.translateService.instant(
-                        'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
-                      ),
-                      this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                    );
+                    this.notificationService.openErrorNotification(this.translateService.instant(
+                      'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
+                    ));
                   },
                 });
             }
           },
           error: () => {
             this._isLoading = false;
-            this.snackBarService.open(
-              this.translateService.instant(
-                'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
-              ),
-              this.translateService.instant('GENERAL_TEXTS.CLOSE')
-            );
+            this.notificationService.openErrorNotification(this.translateService.instant(
+              'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
+            ));
           },
         });
     }

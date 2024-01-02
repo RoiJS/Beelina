@@ -4,13 +4,13 @@ import {
   MAT_BOTTOM_SHEET_DATA,
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { Barangay } from 'src/app/_models/barangay';
 import { BarangayService } from 'src/app/_services/barangay.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 @Component({
   selector: 'app-manage-barangay',
@@ -33,7 +33,7 @@ export class ManageBarangayComponent implements OnInit {
       barangay: Barangay;
     },
     private formBuilder: FormBuilder,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private translateService: TranslateService
   ) {
     this.setUpLanguageTexts(this.data.barangay.id === 0);
@@ -42,7 +42,7 @@ export class ManageBarangayComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onSave() {
     this._barangayForm.markAllAsTouched();
@@ -60,23 +60,11 @@ export class ManageBarangayComponent implements OnInit {
           if (result === ButtonOptions.YES) {
             this.barangayService.updateBarangay(manageBarangay).subscribe({
               complete: () => {
-                this.snackBarService.open(
-                  this._dialogSuccessMessage,
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
-                );
+                this.notificationService.openSuccessNotification(this._dialogSuccessMessage);
                 this._bottomSheetRef.dismiss(true);
               },
               error: (err) => {
-                this.snackBarService.open(
-                  this._dialogErrorMessage,
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                  {
-                    duration: 5000,
-                  }
-                );
+                this.notificationService.openErrorNotification(this._dialogErrorMessage);
                 this._bottomSheetRef.dismiss(false);
               },
             });

@@ -24,4 +24,4 @@ import { MatDividerModule } from '@angular/material/divider';
   declarations: [ConfirmationDialogComponent, AlertDialogComponent],
   providers: [DialogService],
 })
-export class DialogModule {}
+export class DialogModule { }

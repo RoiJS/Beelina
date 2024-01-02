@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,6 +11,7 @@ import { BaseComponent } from '../shared/components/base-component/base.componen
 
 import { BarangayService } from '../_services/barangay.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { NotificationService } from '../shared/ui/notification/notification.service';
 
 import { Barangay } from '../_models/barangay';
 import * as BarangaysStoreActions from '../barangays/store/actions';
@@ -24,8 +24,7 @@ import { ManageBarangayComponent } from './manage-barangay/manage-barangay.compo
 })
 export class BarangaysComponent
   extends BaseComponent
-  implements OnInit, OnDestroy
-{
+  implements OnInit, OnDestroy {
   private _dataSource: BarangaysDataSource;
   private _manageBarangayDialogRef: any;
 
@@ -33,8 +32,8 @@ export class BarangaysComponent
     private barangayService: BarangayService,
     private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
+    private notificationService: NotificationService,
     private router: Router,
-    private snackBarService: MatSnackBar,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService
   ) {
@@ -43,7 +42,7 @@ export class BarangaysComponent
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.store.dispatch(BarangaysStoreActions.resetBarangayState());
@@ -99,29 +98,16 @@ export class BarangaysComponent
         if (result) {
           this.barangayService.deleteBarangay(id).subscribe({
             complete: () => {
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.SUCCESS_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
-              );
-
+              this.notificationService.openSuccessNotification(this.translateService.instant(
+                'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.SUCCESS_MESSAGE'
+              ));
               this.store.dispatch(BarangaysStoreActions.resetBarangayList());
               this.store.dispatch(BarangaysStoreActions.getBarangaysAction());
             },
             error: (err) => {
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.ERROR_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
-              );
+              this.notificationService.openErrorNotification(this.translateService.instant(
+                'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.ERROR_MESSAGE'
+              ));
             },
           });
         }
