@@ -22,7 +22,8 @@
     "EDIT": "Edit",
     "REMOVE": "Remove",
     "STORES": "Stores",
-    "TRANSFER_STOCK": "Transfer Stocks"
+    "TRANSFER_STOCK": "Transfer Stocks",
+    "SAVE_CHANGES": "Save Changes"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -257,6 +258,13 @@
       "SUCCESS_MESSAGE": "New draft order has been saved!",
       "ERROR_MESSAGE": "Saving draft order failed. Please again later.",
       "LOADING_MESSAGE": "Saving order as draft. Please wait..."
+    },
+    "SAVE_EXISTING_DRAFT_ORDER_DIALOG": {
+      "TITLE": "Save draft order",
+      "CONFIRM": "Are you sure to save new updates for this draft order?",
+      "SUCCESS_MESSAGE": "New updates for this draft order has been saved!",
+      "ERROR_MESSAGE": "Saving new updates for this draft order failed. Please again later.",
+      "LOADING_MESSAGE": "Saving new updates for this draft order. Please wait..."
     },
     "SAVE_NEW_BAD_ORDER_DIALOG": {
       "TITLE": "Save as bad order",
