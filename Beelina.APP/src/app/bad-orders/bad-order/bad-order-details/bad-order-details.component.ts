@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -11,13 +11,15 @@ import {
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
 
 @Component({
   selector: 'app-bad-order-details',
   templateUrl: './bad-order-details.component.html',
   styleUrls: ['./bad-order-details.component.scss'],
 })
-export class BadOrderDetailsComponent extends BaseComponent implements OnInit {
+export class BadOrderDetailsComponent extends BaseComponent implements AfterViewInit {
+  @ViewChild(LoaderLayoutComponent) loaderLayoutComponent: LoaderLayoutComponent;
   private _transactionId: number;
   private _transaction: Transaction;
 
@@ -30,12 +32,12 @@ export class BadOrderDetailsComponent extends BaseComponent implements OnInit {
     private translateService: TranslateService
   ) {
     super();
+    this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
+    this._isLoading = true;
   }
 
-  ngOnInit() {
-    this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
-
-    this._isLoading = true;
+  ngAfterViewInit() {
+    this.loaderLayoutComponent.label = this.translateService.instant('LOADER_LAYOUT.LOADING_TEXT');
     this.transactionService
       .getTransaction(this._transactionId)
       .subscribe((transaction: Transaction) => {
@@ -56,10 +58,13 @@ export class BadOrderDetailsComponent extends BaseComponent implements OnInit {
       )
       .subscribe((result: ButtonOptions) => {
         if (result == ButtonOptions.YES) {
+          this._isLoading = true;
+          this.loaderLayoutComponent.label = this.translateService.instant('BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.LOADING_MESSAGE');
           this.transactionService
             .deleteTransaction(this._transactionId)
             .subscribe({
               next: () => {
+                this._isLoading = false;
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                 ));
