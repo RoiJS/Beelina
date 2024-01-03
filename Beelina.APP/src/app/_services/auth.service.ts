@@ -181,6 +181,7 @@ export class AuthService {
   private _tokenInfo = new BehaviorSubject<AuthToken>(null);
   private _currentUserFullname = new BehaviorSubject<string>('');
   private _currentUsername = new BehaviorSubject<string>('');
+  private _company = new BehaviorSubject<string>('');
   private _tokenExpirationTimer: any;
   private _jwtHelper = new JwtHelperService();
 
@@ -189,10 +190,16 @@ export class AuthService {
     private routingService: RoutingService,
     private storageService: StorageService,
     private store: Store<AppStateInterface>
-  ) {}
+  ) {
+    this._company.next(this.storageService.getString('company'));
+  }
 
   get user() {
     return this._user;
+  }
+
+  get company() {
+    return this._company;
   }
 
   get currentFullname() {

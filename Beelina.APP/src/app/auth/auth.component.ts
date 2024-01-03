@@ -60,6 +60,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
 
       this.authService.checkCompany(company).subscribe({
         next: (client: ClientInformationResult) => {
+          this.authService.company.next(client.name);
           this.storageService.storeString('company', client.name);
           this.storageService.storeString('appSecretToken', client.dBHashName);
 
