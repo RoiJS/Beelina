@@ -10,7 +10,7 @@
     </div>
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="transactions?.length">
-      <cdk-virtual-scroll-viewport itemSize="60" class="list-container transactions-list">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container transactions-list">
         <div *cdkVirtualFor="let item of transactions">
           <div matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"

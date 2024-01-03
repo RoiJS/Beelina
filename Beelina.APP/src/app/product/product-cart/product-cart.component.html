@@ -139,7 +139,10 @@
           <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
             {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
           </button>
-          <button *ngIf="!isDraftTransaction" mat-raised-button color="default" (click)="saveAsDraft()">
+          <button *ngIf="isDraftTransaction" mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
+            {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
+          </button>
+          <button *ngIf="!isDraftTransaction" mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
             {{
             "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
             | translate
