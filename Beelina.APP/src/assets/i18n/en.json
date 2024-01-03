@@ -520,7 +520,8 @@
       "TITLE": "Mark as Paid",
       "CONFIRM": "Are you sure to mark this transaction as paid?",
       "SUCCESS_MESSAGE": "Selected transaction is now marked as paid.",
-      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later."
+      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later.",
+      "LOADING_MESSAGE": "Marking transaction as paid. Please wait..."
     }
   },
   "BAD_ORDER_DETAILS_PAGE": {
@@ -529,7 +530,8 @@
       "TITLE": "Delete Bad Order",
       "CONFIRM": "Are you sure to delete bad order?",
       "SUCCESS_MESSAGE": "Bad order has been deleted.",
-      "ERROR_MESSAGE": "Deleting bad order failed. Please try again later."
+      "ERROR_MESSAGE": "Deleting bad order failed. Please try again later.",
+      "LOADING_MESSAGE": "Deleting bad order. Please wait..."
     }
   },
   "TOP_PRODUCTS_PAGE": {

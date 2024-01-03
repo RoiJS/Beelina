@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -10,6 +10,7 @@ import {
 } from 'src/app/_services/transaction.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
 
 @Component({
   selector: 'app-transaction-details',
@@ -18,7 +19,8 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
 })
 export class TransactionDetailsComponent
   extends BaseComponent
-  implements OnInit {
+  implements AfterViewInit {
+  @ViewChild(LoaderLayoutComponent) loaderLayoutComponent: LoaderLayoutComponent;
   private _transactionId: number;
   private _transaction: Transaction;
 
@@ -31,11 +33,12 @@ export class TransactionDetailsComponent
     private translateService: TranslateService
   ) {
     super();
-  }
-
-  ngOnInit() {
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
     this._isLoading = true;
+  }
+
+  ngAfterViewInit() {
+    this.loaderLayoutComponent.label = this.translateService.instant('LOADER_LAYOUT.LOADING_TEXT');
     this.transactionService
       .getTransaction(this._transactionId)
       .subscribe((transaction: Transaction) => {
@@ -56,10 +59,13 @@ export class TransactionDetailsComponent
       )
       .subscribe((result: ButtonOptions) => {
         if (result == ButtonOptions.YES) {
+          this._isLoading = true;
+          this.loaderLayoutComponent.label = this.translateService.instant('TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.LOADING_MESSAGE');
           this.transactionService
             .markTransactionAsPaid(this._transactionId)
             .subscribe({
               next: () => {
+                this._isLoading = false;
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.SUCCESS_MESSAGE'
                 ));
@@ -67,6 +73,7 @@ export class TransactionDetailsComponent
               },
 
               error: () => {
+                this._isLoading = false;
                 this.notificationService.openErrorNotification(this.translateService.instant(
                   'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.ERROR_MESSAGE'
                 ));
