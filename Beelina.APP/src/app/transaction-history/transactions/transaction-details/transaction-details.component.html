@@ -45,6 +45,10 @@
                     "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE"
                     | translate
                     }}: {{ item.product?.code }})
+                    ({{
+                    "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.UNIT"
+                    | translate
+                    }}: {{ item.product?.productUnit?.name }})
                     <br />
                     {{ item.product?.name }}
                   </span>

@@ -22,6 +22,7 @@ namespace Beelina.LIB.BusinessLogic
                                                 .ProductTransactions
                                                 .Where(p => p.TransactionId == transactionId)
                                                 .Include(p => p.Product)
+                                                .Include(p => p.Product.ProductUnit)
                                                 .ToListAsync();
             return productTransactionsFromRepo;
         }
