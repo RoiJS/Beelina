@@ -138,6 +138,9 @@ const GET_TRANSACTION = gql`
             code
             name
             price
+            productUnit {
+                name
+            }
           }
         }
       }
@@ -442,6 +445,7 @@ export class TransactionService {
                 productTransaction.product.code = pt.product.code;
                 productTransaction.product.name = pt.product.name;
                 productTransaction.product.price = pt.product.price;
+                productTransaction.product.productUnit = pt.product.productUnit;
                 return productTransaction;
               });
 
