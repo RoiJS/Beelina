@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
@@ -9,6 +8,7 @@ import { ReportNotificationEmailAddressResult } from 'src/app/_models/results/re
 
 import { ReportsService } from 'src/app/_services/reports.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 @Component({
   selector: 'app-report-settings',
@@ -24,7 +24,7 @@ export class ReportSettingsComponent implements OnInit {
     private dialogService: DialogService,
     private reportService: ReportsService,
     private formBuilder: FormBuilder,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private translateService: TranslateService,
   ) {
     this._reportSettingsForm = this.formBuilder.group({
@@ -56,17 +56,11 @@ export class ReportSettingsComponent implements OnInit {
             .updateReportNotificationEmailAddress(this._reportSettingsForm.value.emailAddress)
             .subscribe({
               next: () => {
-                this.snackBarService.open(
-                  this.translateService.instant('REPORT_SETTINGS_DIALOG.CONFIRMATION_REPORT_SETTINGS_DIALOG.SUCCESS_MESSAGE'),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                )
+                this.notificationService.openSuccessNotification(this.translateService.instant('REPORT_SETTINGS_DIALOG.CONFIRMATION_REPORT_SETTINGS_DIALOG.SUCCESS_MESSAGE'));
                 this._bottomSheetRef.dismiss();
               },
               error: () => {
-                this.snackBarService.open(
-                  this.translateService.instant('REPORT_SETTINGS_DIALOG.CONFIRMATION_REPORT_SETTINGS_DIALOG.ERROR_MESSAGE'),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                )
+                this.notificationService.openErrorNotification(this.translateService.instant('REPORT_SETTINGS_DIALOG.CONFIRMATION_REPORT_SETTINGS_DIALOG.ERROR_MESSAGE'));
                 this._bottomSheetRef.dismiss();
               }
             });

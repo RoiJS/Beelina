@@ -30,7 +30,9 @@ export class UserCardComponent extends SharedComponent implements OnInit {
       this._user = user;
     });
 
-    this._company = this.storageService.getString('company');
+    this.authService.company.subscribe((company: string) => {
+      this._company = company;
+    });
   }
 
   override ngOnInit() { }

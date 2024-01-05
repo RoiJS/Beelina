@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { ProductService } from 'src/app/_services/product.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
@@ -22,7 +23,6 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 import { ProductUnit } from 'src/app/_models/product-unit';
 import { Product } from 'src/app/_models/product';
-import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { WithdrawalSlipNoDialogComponent } from '../withdrawal-slip-no-dialog/withdrawal-slip-no-dialog.component';
 
 @Component({
@@ -53,7 +53,7 @@ export class AddProductDetailsComponent implements OnInit {
     private productService: ProductService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private translateService: TranslateService,
     private uniqueProductCodeValidator: UniqueProductCodeValidator
   ) {
@@ -151,12 +151,9 @@ export class AddProductDetailsComponent implements OnInit {
             );
             this.productService.updateProductInformation([product]).subscribe({
               next: () => {
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.SUCCESS_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+                ));
                 this.store.dispatch(
                   ProductActions.setUpdateProductLoadingState({
                     state: false,
@@ -166,12 +163,9 @@ export class AddProductDetailsComponent implements OnInit {
               },
 
               error: () => {
-                this.snackBarService.open(
-                  this.translateService.instant(
-                    'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.ERROR_MESSAGE'
-                  ),
-                  this.translateService.instant('GENERAL_TEXTS.CLOSE')
-                );
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.ERROR_MESSAGE'
+                ));
 
                 this.store.dispatch(
                   ProductActions.setUpdateProductLoadingState({

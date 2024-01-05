@@ -12,9 +12,15 @@ namespace Beelina.LIB.BusinessLogic
         {
         }
 
-        public async Task<Barangay> GetBarangayByName(string name)
+        public async Task<Barangay> GetBarangayByName(string name, int userId)
         {
-            var barangay = await _beelinaRepository.ClientDbContext.Barangays.Where(p => p.Name == name).FirstOrDefaultAsync();
+            var barangay = await _beelinaRepository.ClientDbContext.Barangays
+                                .Where(p => 
+                                    p.Name == name && 
+                                    p.UserAccountId == userId &&
+                                    !p.IsDelete &&
+                                    p.IsActive
+                                ).FirstOrDefaultAsync();
             return barangay;
         }
 

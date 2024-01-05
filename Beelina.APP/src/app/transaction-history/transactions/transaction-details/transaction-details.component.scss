@@ -36,6 +36,7 @@
           display: flex;
           justify-content: space-between;
           align-self: center;
+          gap: 10px;
         }
 
         .product-transaction-information-price {
@@ -57,11 +58,11 @@
           }
 
           &--paid {
-            background-color: #20c920;
+            background-color: $success;
           }
 
           &--unpaid {
-            background-color: #e02d00;
+            background-color: $error;
           }
         }
       }

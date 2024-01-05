@@ -22,7 +22,8 @@
     "EDIT": "Edit",
     "REMOVE": "Remove",
     "STORES": "Stores",
-    "TRANSFER_STOCK": "Transfer Stocks"
+    "TRANSFER_STOCK": "Transfer Stocks",
+    "SAVE_CHANGES": "Save Changes"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -257,6 +258,13 @@
       "SUCCESS_MESSAGE": "New draft order has been saved!",
       "ERROR_MESSAGE": "Saving draft order failed. Please again later.",
       "LOADING_MESSAGE": "Saving order as draft. Please wait..."
+    },
+    "SAVE_EXISTING_DRAFT_ORDER_DIALOG": {
+      "TITLE": "Save draft order",
+      "CONFIRM": "Are you sure to save new updates for this draft order?",
+      "SUCCESS_MESSAGE": "New updates for this draft order has been saved!",
+      "ERROR_MESSAGE": "Saving new updates for this draft order failed. Please again later.",
+      "LOADING_MESSAGE": "Saving new updates for this draft order. Please wait..."
     },
     "SAVE_NEW_BAD_ORDER_DIALOG": {
       "TITLE": "Save as bad order",
@@ -520,16 +528,18 @@
       "TITLE": "Mark as Paid",
       "CONFIRM": "Are you sure to mark this transaction as paid?",
       "SUCCESS_MESSAGE": "Selected transaction is now marked as paid.",
-      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later."
+      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later.",
+      "LOADING_MESSAGE": "Marking transaction as paid. Please wait..."
     }
   },
   "BAD_ORDER_DETAILS_PAGE": {
     "TITLE": "Bad Order Details",
     "DELETE_TRANSACTION_DIALOG": {
       "TITLE": "Delete Bad Order",
-      "CONFIRM": "Are you sure to delete bar order?",
-      "SUCCESS_MESSAGE": "Bad order is now deleted.",
-      "ERROR_MESSAGE": "Deleting bad order failed. Please try again later."
+      "CONFIRM": "Are you sure to delete bad order?",
+      "SUCCESS_MESSAGE": "Bad order has been deleted.",
+      "ERROR_MESSAGE": "Deleting bad order failed. Please try again later.",
+      "LOADING_MESSAGE": "Deleting bad order. Please wait..."
     }
   },
   "TOP_PRODUCTS_PAGE": {
@@ -551,7 +561,7 @@
   "SIDE_DRAWER_SECTION": {
     "FOOTER": {
       "VERSION": "Version",
-      "COPYRIGHT": "Copyright 2023.",
+      "COPYRIGHT": "Copyright 2024.",
       "ALL_RIGHTS_RESERVED": "All rights reserved"
     }
   },

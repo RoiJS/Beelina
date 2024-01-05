@@ -5,7 +5,10 @@
   </div>
   <mat-divider></mat-divider>
   <div class="dialog-container__message">
-    <p [innerHTML]="data.message"></p>
+    <div class="dialog-container__icon">
+      <mat-icon class="info-icon">help_outline</mat-icon>
+    </div>
+    <span [innerHTML]="data.message"></span>
   </div>
   <div class="dialog-container__confirmation-buttons">
     <button mat-button mat-raised-button color="primary" (click)="onConfirm()">

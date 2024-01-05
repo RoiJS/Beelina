@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 import { authCredentialsSelector, errorSelector } from './store/selectors';
@@ -11,6 +10,7 @@ import { authCredentialsSelector, errorSelector } from './store/selectors';
 import * as LoginActions from './store/actions';
 import { AppVersionService } from '../_services/app-version.service';
 import { AuthService } from '../_services/auth.service';
+import { NotificationService } from '../shared/ui/notification/notification.service';
 import { StorageService } from '../_services/storage.service';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
@@ -36,7 +36,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
     private appVersionService: AppVersionService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private storageService: StorageService,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService
@@ -49,7 +49,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onSubmit() {
     const company = this.authForm.get('company').value;
@@ -60,6 +60,7 @@ export class AuthComponent extends BaseComponent implements OnInit {
 
       this.authService.checkCompany(company).subscribe({
         next: (client: ClientInformationResult) => {
+          this.authService.company.next(client.name);
           this.storageService.storeString('company', client.name);
           this.storageService.storeString('appSecretToken', client.dBHashName);
 
@@ -79,22 +80,13 @@ export class AuthComponent extends BaseComponent implements OnInit {
           this.store.pipe(select(errorSelector)).subscribe((error) => {
             if (error) {
               this._isLoading = false;
-              this.snackBarService.open(
-                error,
-                this.translateService.instant('GENERAL_TEXTS.CLOSE')
-              );
-
-              console.error(error);
+              this.notificationService.openErrorNotification(error);
             }
           });
         },
         error: (e: ClientNotExistsError) => {
           this._isLoading = false;
-          this.snackBarService.open(
-            e.message,
-            this.translateService.instant('GENERAL_TEXTS.CLOSE')
-          );
-          console.error(e.message);
+          this.notificationService.openErrorNotification(e.message);
         },
       });
     }

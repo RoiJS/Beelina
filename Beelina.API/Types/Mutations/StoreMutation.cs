@@ -23,7 +23,7 @@ namespace Beelina.API.Types.Mutations
         {
             var storeFromRepo = await storeRepository.GetEntity(storeInput.Id).ToObjectAsync();
             var paymentMethodFromRepo = await paymentMethodRepository.GetPaymentMethodByName(storeInput.PaymentMethodInput.Name);
-            var barangayFromRepo = await barangayRepository.GetBarangayByName(storeInput.BarangayInput.Name);
+            var barangayFromRepo = await barangayRepository.GetBarangayByName(storeInput.BarangayInput.Name, currentUserService.CurrentUserId);
 
             storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 

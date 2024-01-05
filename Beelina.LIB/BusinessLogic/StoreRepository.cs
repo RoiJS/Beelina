@@ -30,6 +30,7 @@ namespace Beelina.LIB.BusinessLogic
                             s.Barangay.Name == barangayName
                             && s.Barangay.UserAccountId == CurrentUserService.CurrentUserId
                             && !s.IsDelete
+                            && s.IsActive
                         )
                         .ToListAsync();
         }

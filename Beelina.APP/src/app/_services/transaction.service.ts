@@ -138,6 +138,9 @@ const GET_TRANSACTION = gql`
             code
             name
             price
+            productUnit {
+                name
+            }
           }
         }
       }
@@ -413,8 +416,8 @@ export class TransactionService {
           ) => {
             const transactionFromRepo = result.data.transaction;
             const transaction = new Transaction();
-            transaction.badOrderAmount = transactionFromRepo.badOrderAmount;
             transaction.id = transactionFromRepo.transaction.id;
+            transaction.badOrderAmount = transactionFromRepo.badOrderAmount;
             transaction.invoiceNo = transactionFromRepo.transaction.invoiceNo;
             transaction.discount = transactionFromRepo.transaction.discount;
             transaction.transactionDate = transactionFromRepo.transaction.transactionDate;
@@ -435,12 +438,14 @@ export class TransactionService {
                 productTransaction.status = pt.status;
                 productTransaction.productName = pt.product.name;
                 productTransaction.productId = pt.product.id;
+                productTransaction.code = pt.product.code;
 
                 productTransaction.product = new Product();
                 productTransaction.product.id = pt.product.id;
                 productTransaction.product.code = pt.product.code;
                 productTransaction.product.name = pt.product.name;
                 productTransaction.product.price = pt.product.price;
+                productTransaction.product.productUnit = pt.product.productUnit;
                 return productTransaction;
               });
 

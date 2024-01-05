@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -16,6 +15,7 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { isLoadingSelector, textInventoriesSelector } from '../store/selectors';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 @Component({
   selector: 'app-text-inventories',
@@ -40,7 +40,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
     private storageService: StorageService,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private productService: ProductService,
     private router: Router
   ) {
@@ -130,11 +130,11 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
               this.storageService.remove('textInventories');
               this.store.dispatch(ProductActions.resetTextInventoriesState());
               this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: false }));
-              this.snackBarService.open(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+              this.notificationService.openSuccessNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE'));
               this.router.navigate([`product-catalogue/product-list`]);
             },
             error: () => {
-              this.snackBarService.open(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE'), this.translateService.instant('GENERAL_TEXTS.CLOSE'));
+              this.notificationService.openErrorNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE'));
             }
           });
         }

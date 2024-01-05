@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
@@ -12,6 +11,7 @@ import { isLoadingSelector } from './store/selectors';
 
 import { CustomerStoreService } from '../_services/customer-store.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { NotificationService } from '../shared/ui/notification/notification.service';
 
 import { ButtonOptions } from '../_enum/button-options.enum';
 
@@ -26,8 +26,7 @@ import { BaseComponent } from '../shared/components/base-component/base.componen
 })
 export class CustomerComponent
   extends BaseComponent
-  implements OnInit, OnDestroy
-{
+  implements OnInit, OnDestroy {
   private _dataSource: CustomerStoreDataSource;
   private _barangay: string;
 
@@ -37,7 +36,7 @@ export class CustomerComponent
     private dialogService: DialogService,
     private router: Router,
     private store: Store<AppStateInterface>,
-    private snackBarService: MatSnackBar,
+    private notificationService: NotificationService,
     private translateService: TranslateService
   ) {
     super();
@@ -47,7 +46,7 @@ export class CustomerComponent
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.store.dispatch(CustomerStoreActions.resetCustomerState());
@@ -72,31 +71,18 @@ export class CustomerComponent
         if (result === ButtonOptions.YES) {
           this.customerStoreService.deleteCustomer(storeId).subscribe({
             next: () => {
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'CUSTOMERS_PAGE.DELETE_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
-              );
+              this.notificationService.openSuccessNotification(this.translateService.instant(
+                'CUSTOMERS_PAGE.DELETE_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
+              ));
               this.store.dispatch(CustomerStoreActions.resetCustomerState());
               this.store.dispatch(
                 CustomerStoreActions.getCustomerStoreAction()
               );
             },
-
             error: () => {
-              this.snackBarService.open(
-                this.translateService.instant(
-                  'CUSTOMERS_PAGE.DELETE_CUSTOMER_DIALOG.ERROR_MESSAGE'
-                ),
-                this.translateService.instant('GENERAL_TEXTS.CLOSE'),
-                {
-                  duration: 5000,
-                }
-              );
+              this.notificationService.openErrorNotification(this.translateService.instant(
+                'CUSTOMERS_PAGE.DELETE_CUSTOMER_DIALOG.ERROR_MESSAGE'
+              ));
             },
           });
         }

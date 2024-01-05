@@ -2,11 +2,14 @@
 
 .login-main-container {
   height: calc(100% - 30px);
-  background: $primary-gradient;
   padding: 15px;
   display: flex;
   justify-content: space-around;
   flex-direction: column;
+  background-image: url("../../assets/logo/bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
   .app-logo-container {
     font-size: 120px;
