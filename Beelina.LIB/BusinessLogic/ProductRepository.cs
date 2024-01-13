@@ -360,6 +360,8 @@ namespace Beelina.LIB.BusinessLogic
       int sourceNumberOfUnitsTransfered,
       TransferProductStockTypeEnum transferProductStockType)
     {
+      SetCurrentUserId(userAccountId);
+      
       var sourceProductFromRepo = await GetProducts(userAccountId, sourceProductId);
       var destinationProductFromRepo = await GetProducts(userAccountId, destinationProductId);
 

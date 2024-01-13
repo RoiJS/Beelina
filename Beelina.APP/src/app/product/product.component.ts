@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,7 +26,7 @@ import * as ProductActions from './store/actions';
 
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
-import { errorSelector, isLoadingSelector } from './store/selectors';
+import { errorSelector, filterKeywordSelector, isLoadingSelector } from './store/selectors';
 import { Product } from '../_models/product';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
@@ -48,7 +48,7 @@ import { SearchFieldComponent } from '../shared/ui/search-field/search-field.com
 })
 export class ProductComponent
   extends BaseComponent
-  implements OnInit, OnDestroy {
+  implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(SearchFieldComponent) searchFieldComponent: SearchFieldComponent;
 
   private _dataSource: ProductDataSource;
@@ -147,6 +147,15 @@ export class ProductComponent
     this._subscription.unsubscribe();
     this._accountVerificationDialogRef = null;
     this._transferInventoryDialogRef = null;
+  }
+
+  ngAfterViewInit() {
+    this._subscription.add(
+      this.store.pipe(select(filterKeywordSelector))
+        .subscribe((filterKeyword: string) => {
+          this.searchFieldComponent.value(filterKeyword)
+        })
+    );
   }
 
   goToCart() {
