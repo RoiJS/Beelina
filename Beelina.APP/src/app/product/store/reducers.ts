@@ -75,8 +75,10 @@ export const reducers = createReducer(
     ...state,
     filterKeyword: action.keyword,
   })),
-  on(ProductActions.resetProductState, (state, action) => ({
+  on(ProductActions.resetProductState, (state, action) =>
+  (<IProductState>{
     ...initialState,
+    filterKeyword: state.filterKeyword
   })),
   on(ProductActions.resetTextInventoriesState, (state, action) => ({
     ...state,
