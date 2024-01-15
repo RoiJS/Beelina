@@ -343,6 +343,89 @@ namespace Beelina.LIB.BusinessLogic
             .ToList();
     }
 
+    public async Task<List<ProductStockAuditItem>> GetProductStockAuditItems(int productId, int userAccountId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate)
+    {
+      var productStockAuditItemsFromRepo = await (from ps in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                                                  join pa in _beelinaRepository.ClientDbContext.ProductStockAudits
+
+                                                  on new { Id = ps.Id } equals new { Id = pa.ProductStockPerPanelId }
+                                                  into productStockAuditJoin
+                                                  from pa in productStockAuditJoin.DefaultIfEmpty()
+
+                                                  join u in _beelinaRepository.ClientDbContext.UserAccounts
+                                                  on pa.CreatedById equals u.Id
+
+                                                  where
+                                                    ps.ProductId == productId
+                                                    && ps.UserAccountId == userAccountId
+                                                    && pa.IsActive
+                                                    && !pa.IsDelete
+
+                                                  select new ProductStockAuditItem
+                                                  {
+                                                    Id = pa.Id,
+                                                    Quantity = pa.Quantity,
+                                                    StockAuditSource = pa.StockAuditSource,
+                                                    TransactionNumber = pa.WithdrawalSlipNo,
+                                                    ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
+                                                    ModifiedDate = pa.DateCreated
+                                                  }).ToListAsync();
+
+
+      var productTransactionsAuditItems = await (from t in _beelinaRepository.ClientDbContext.Transactions
+                                                 join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+
+                                                 on new { Id = t.Id } equals new { Id = pt.TransactionId }
+                                                 into transactionJoin
+                                                 from tj in transactionJoin.DefaultIfEmpty()
+
+                                                 join u in _beelinaRepository.ClientDbContext.UserAccounts
+                                                 on t.CreatedById equals u.Id
+
+                                                 where
+                                                   t.CreatedById == userAccountId
+                                                   && t.Status == Enums.TransactionStatusEnum.Confirmed
+                                                   && tj.ProductId == productId
+                                                   && t.IsActive
+                                                   && !t.IsDelete
+
+                                                 select new ProductStockAuditItem
+                                                 {
+                                                   Id = t.Id,
+                                                   Quantity = -tj.Quantity,
+                                                   StockAuditSource = StockAuditSourceEnum.OrderTransaction,
+                                                   TransactionNumber = t.InvoiceNo,
+                                                   ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
+                                                   ModifiedDate = tj.DateCreated
+                                                 }).ToListAsync();
+
+
+      productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
+
+      if (stockAuditSource != StockAuditSourceEnum.None)
+      {
+        productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.StockAuditSource == stockAuditSource).ToList();
+      }
+
+      if (!string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate))
+      {
+        fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+        toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+        if (!String.IsNullOrEmpty(fromDate))
+        {
+          productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.ModifiedDate >= Convert.ToDateTime(fromDate)).ToList();
+        }
+
+        if (!String.IsNullOrEmpty(toDate))
+        {
+          productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.ModifiedDate <= Convert.ToDateTime(toDate)).ToList();
+        }
+      }
+
+      return productStockAuditItemsFromRepo;
+    }
+
     public async Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId)
     {
       var productStockAuditFromRepo = await _beelinaRepository.ClientDbContext.ProductStockAudits
@@ -361,7 +444,7 @@ namespace Beelina.LIB.BusinessLogic
       TransferProductStockTypeEnum transferProductStockType)
     {
       SetCurrentUserId(userAccountId);
-      
+
       var sourceProductFromRepo = await GetProducts(userAccountId, sourceProductId);
       var destinationProductFromRepo = await GetProducts(userAccountId, destinationProductId);
 

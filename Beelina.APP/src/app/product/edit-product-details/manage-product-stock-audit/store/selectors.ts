@@ -5,7 +5,7 @@ export const selectFeature = (state: AppStateInterface) => state.productStockAud
 
 export const productStockAuditsSelector = createSelector(
   selectFeature,
-  (state) => state.productStockAudits
+  (state) => state.productStockAuditItems
 );
 
 export const endCursorSelector = createSelector(
@@ -31,4 +31,24 @@ export const errorSelector = createSelector(
 export const isUpdateLoadingSelector = createSelector(
   selectFeature,
   (state) => state.isUpdateLoading
+);
+
+export const sortOrderSelector = createSelector(
+  selectFeature,
+  (state) => state.sortOrder
+);
+
+export const stockAuditSourceSelector = createSelector(
+  selectFeature,
+  (state) => state.stockAuditSource
+);
+
+export const fromDateSelector = createSelector(
+  selectFeature,
+  (state) => state.fromDate
+);
+
+export const toDateSelector = createSelector(
+  selectFeature,
+  (state) => state.toDate
 );
