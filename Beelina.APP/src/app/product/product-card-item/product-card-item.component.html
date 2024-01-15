@@ -16,6 +16,9 @@
           (click)="transferProductInventory(productItem?.id)">
           <mat-icon>move_to_inbox</mat-icon> {{ "GENERAL_TEXTS.TRANSFER_STOCK" | translate }}
         </button>
+        <button *ngIf="allowManageItem" mat-menu-item (click)="addProductStockQuantity()">
+          <mat-icon>library_add</mat-icon> {{ "GENERAL_TEXTS.ADD_STOCK_QUANTITY" | translate }}
+        </button>
       </mat-menu>
     </div>
   </div>

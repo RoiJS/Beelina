@@ -2,14 +2,20 @@ import { createReducer, on } from '@ngrx/store';
 
 import * as ProductStockAuditActions from './actions';
 import { IProductStockAuditState } from './types/product-state.interface';
-import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
+import { SortOrderOptionsEnum } from 'src/app/_enum/sort-order-options.enum';
+import { ProductStockAuditItem } from 'src/app/_models/product-stock-audit-item';
+import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
 
 export const initialState: IProductStockAuditState = {
   isLoading: false,
   isUpdateLoading: false,
-  productStockAudits: new Array<ProductStockAudit>(),
+  productStockAuditItems: new Array<ProductStockAuditItem>(),
   endCursor: null,
   filterKeyword: '',
+  fromDate: null,
+  toDate: null,
+  sortOrder: SortOrderOptionsEnum.ASCENDING,
+  stockAuditSource: StockAuditSourceEnum.None,
   hasNextPage: false,
   error: null,
 };
@@ -31,8 +37,17 @@ export const reducers = createReducer(
         ...state,
         isLoading: false,
         endCursor: action.endCursor,
-        productStockAudits: state.productStockAudits.concat(action.productStockAudits),
+        productStockAuditItems: state.productStockAuditItems.concat(action.productStockAuditItems),
       }
+  ),
+  on(
+    ProductStockAuditActions.setSortAndfilterStockAuditsAction,
+    (state, action) => ({
+      ...state,
+      sortOrder: action.sortOrder,
+      fromDate: action.dateStart,
+      toDate: action.dateEnd,
+    })
   ),
   on(
     ProductStockAuditActions.getProductStockAuditsActionError,
@@ -42,7 +57,9 @@ export const reducers = createReducer(
         error: action.error,
       }
   ),
-  on(ProductStockAuditActions.resetProductStockAuditsState, (state, action) => ({
-    ...initialState,
+  on(ProductStockAuditActions.resetProductStockAuditItemsState, (state, action) => ({
+    ...state,
+    productStockAuditItems: initialState.productStockAuditItems,
+    endCursor: initialState.endCursor,
   }))
 );

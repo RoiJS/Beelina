@@ -5,14 +5,14 @@ import { productStockAuditsSelector } from '../../product/edit-product-details/m
 import * as ProductStockAuditsStoreActions from '../../product/edit-product-details/manage-product-stock-audit/store/actions';
 import { BaseDataSource } from './base.datasource';
 
-import { ProductStockAudit } from '../product-stock-audit';
+import { ProductStockAuditItem } from '../product-stock-audit-item';
 
-export class ProductStockAuditsDatasource extends BaseDataSource<ProductStockAudit> {
+export class ProductStockAuditsDatasource extends BaseDataSource<ProductStockAuditItem> {
 
   constructor(
     override store: Store<AppStateInterface>,
     protected productId: number,
-    protected userAccountId: number
+    protected userAccountId: number,
   ) {
     super(store);
 
@@ -25,8 +25,8 @@ export class ProductStockAuditsDatasource extends BaseDataSource<ProductStockAud
     this._subscription.add(
       this.store
         .pipe(select(productStockAuditsSelector))
-        .subscribe((productStockAudits: Array<ProductStockAudit>) => {
-          this._dataStream.next(productStockAudits);
+        .subscribe((productStockAuditItems: Array<ProductStockAuditItem>) => {
+          this._dataStream.next(productStockAuditItems);
         })
     );
   }

@@ -23,6 +23,7 @@
     "REMOVE": "Remove",
     "STORES": "Stores",
     "TRANSFER_STOCK": "Transfer Stocks",
+    "ADD_STOCK_QUANTITY": "Add Stock Quantity",
     "SAVE_CHANGES": "Save Changes"
   },
   "MAIN_MENU": {
@@ -418,6 +419,12 @@
       "SUCCESS_MESSAGE": "Manage product details has been successfully activated.",
       "INVALID_USER_PRIVILEGE_MESSAGE": "User does not have privilege to activate manage product details.",
       "ERROR_MESSAGE": "Invalid user account! Activating manage product details failed. Please again later."
+    },
+    "ADD_PRODUCT_STOCK_QUANTITY_DIALOG": {
+      "TITLE": "Add Product Stock Quantity",
+      "CONFIRM": "Are you sure to add new product quantity?",
+      "SUCCESS_MESSAGE": "New product quantity has been successfully added!",
+      "ERROR_MESSAGE": "Adding new product quantity failed. Please again later."
     }
   },
   "ADD_TO_CART_PAGE": {
@@ -711,7 +718,21 @@
   },
   "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
     "TITLE": "Product Stock Audit",
-    "DESCRIPTION": "This is where product stock audit information can be managed."
+    "DESCRIPTION": "This is where product stock audit information can be managed.",
+    "LIST_ITEM": {
+      "SOURCE_TYPE": {
+        "FROM_WITHDRAWAL": "From Withdrawal",
+        "MOVED_FROM_OTHER_PRODUCT_INVENTORY": "Moved From Other Product Inventory",
+        "MOVED_TO_OTHER_PRODUCT_INVENTORY": "Moved To Other Product Inventory",
+        "ORDER_TRANSACTION": "Order Transaction"
+      },
+      "SOURCE_LABEL": "Source",
+      "QUANTITY_LABEL": "Quantity",
+      "MODIFIED_DATE_LABEL": "Modified Date",
+      "MODIFIED_BY_LABEL": "Modified By",
+      "WITHDRAWAL_SLIP_NO_LABEL": "Withdrawal Slip No.",
+      "INVOICE_NO_LABEL": "Invoice No."
+    }
   },
   "REPORT_SETTINGS_DIALOG": {
     "TITLE": "Report Settings",

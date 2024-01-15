@@ -17,6 +17,7 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
   @Output() editItem = new EventEmitter<number>();
   @Output() deleteItem = new EventEmitter<number>();
   @Output() transferProduct = new EventEmitter<number>();
+  @Output() addStockQuantity = new EventEmitter<Product>();
   @Output() addItem = new EventEmitter<number>();
 
   constructor() {
@@ -35,6 +36,10 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
 
   transferProductInventory(id: number) {
     this.transferProduct.emit(id);
+  }
+
+  addProductStockQuantity() {
+    this.addStockQuantity.emit(this.productItem);
   }
 
   addItemToCart(id: number) {

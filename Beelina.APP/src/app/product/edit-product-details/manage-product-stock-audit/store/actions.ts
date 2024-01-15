@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
-import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
+import { SortOrderOptionsEnum } from 'src/app/_enum/sort-order-options.enum';
+import { ProductStockAuditItem } from 'src/app/_models/product-stock-audit-item';
 
 export const getProductStockAuditsAction = createAction(
   '[Product Stock Audit] Get Product Stock Audits',
@@ -11,7 +12,7 @@ export const getProductStockAuditsActionSuccess = createAction(
   props<{
     endCursor: string;
     hasNextPage: boolean;
-    productStockAudits: Array<ProductStockAudit>;
+    productStockAuditItems: Array<ProductStockAuditItem>;
   }>()
 );
 
@@ -25,4 +26,13 @@ export const setUpdateProductStockAuditsLoadingState = createAction(
   props<{ state: boolean }>()
 );
 
-export const resetProductStockAuditsState = createAction('[Product Stock Audit] Reset Product Stock Audits State');
+export const setSortAndfilterStockAuditsAction = createAction(
+  '[Product Stock Audit] Sort and Filter Stock Audits',
+  props<{
+    dateStart: string;
+    dateEnd: string;
+    sortOrder: SortOrderOptionsEnum;
+  }>()
+);
+
+export const resetProductStockAuditItemsState = createAction('[Product Stock Audit] Reset Product Stock Audits State');

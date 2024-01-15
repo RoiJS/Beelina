@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,7 +26,7 @@ import * as ProductActions from './store/actions';
 
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
-import { errorSelector, isLoadingSelector } from './store/selectors';
+import { errorSelector, filterKeywordSelector, isLoadingSelector } from './store/selectors';
 import { Product } from '../_models/product';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
@@ -40,6 +40,7 @@ import {
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
+import { WithdrawalSlipNoDialogComponent } from './withdrawal-slip-no-dialog/withdrawal-slip-no-dialog.component';
 
 @Component({
   selector: 'app-product',
@@ -48,7 +49,7 @@ import { SearchFieldComponent } from '../shared/ui/search-field/search-field.com
 })
 export class ProductComponent
   extends BaseComponent
-  implements OnInit, OnDestroy {
+  implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(SearchFieldComponent) searchFieldComponent: SearchFieldComponent;
 
   private _dataSource: ProductDataSource;
@@ -61,6 +62,14 @@ export class ProductComponent
   private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
   private _salesAgents: Array<User>;
   private _productList: Array<Product> = [];
+  private _dialogRef: MatBottomSheetRef<
+    WithdrawalSlipNoDialogComponent,
+    {
+      additionalStockQuantity: number;
+      withdrawalSlipNo: string;
+    }
+  >;
+  private _selectedProduct: Product;
 
   currentSalesAgentId: number = 0;
 
@@ -147,6 +156,15 @@ export class ProductComponent
     this._subscription.unsubscribe();
     this._accountVerificationDialogRef = null;
     this._transferInventoryDialogRef = null;
+  }
+
+  ngAfterViewInit() {
+    this._subscription.add(
+      this.store.pipe(select(filterKeywordSelector))
+        .subscribe((filterKeyword: string) => {
+          this.searchFieldComponent.value(filterKeyword)
+        })
+    );
   }
 
   goToCart() {
@@ -313,6 +331,87 @@ export class ProductComponent
         this.store.dispatch(ProductActions.getProductsAction());
       }
     })
+  }
+
+  addProductStockQuantity(product: Product) {
+    this._selectedProduct = product;
+    this._dialogRef = this.bottomSheet.open(WithdrawalSlipNoDialogComponent, {
+      data: {
+        additionalStockQuantity: 0,
+        withdrawalSlipNo: '',
+      },
+    });
+
+    this._dialogRef
+      .afterDismissed()
+      .subscribe(
+        (data: {
+          additionalStockQuantity: number;
+          withdrawalSlipNo: string;
+        }) => {
+          if (data.additionalStockQuantity === 0) return;
+
+          this.dialogService.openConfirmation(
+            this.translateService.instant(
+              'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.TITLE',
+            ),
+            this.translateService.instant(
+              'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.CONFIRM',
+            )
+          ).subscribe((result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
+
+              this.store.dispatch(
+                ProductActions.setUpdateProductLoadingState({
+                  state: true,
+                })
+              );
+
+              const product = new Product();
+              product.id = this._selectedProduct.id;
+              product.name = this._selectedProduct.name;
+              product.code = this._selectedProduct.code;
+              product.description = this._selectedProduct.description;
+              product.stockQuantity = data.additionalStockQuantity;
+              product.withdrawalSlipNo = data.withdrawalSlipNo;
+              product.isTransferable = this._selectedProduct.isTransferable;
+              product.numberOfUnits = this._selectedProduct.numberOfUnits;
+              product.pricePerUnit = this._selectedProduct.pricePerUnit;
+              product.productUnit.name = this._selectedProduct.productUnit.name;
+              console.log(product);
+
+              this.productService.updateProductInformation([product]).subscribe({
+                next: () => {
+                  this.notificationService.openSuccessNotification(this.translateService.instant(
+                    'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.SUCCESS_MESSAGE'
+                  ));
+                  this.store.dispatch(
+                    ProductActions.setUpdateProductLoadingState({
+                      state: false,
+                    })
+                  );
+
+                  this.store.dispatch(ProductActions.resetProductState());
+                  this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
+                  this.store.dispatch(ProductActions.getProductsAction());
+                },
+
+                error: () => {
+                  this.notificationService.openErrorNotification(this.translateService.instant(
+                    'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.ERROR_MESSAGE'
+                  ));
+
+                  this.store.dispatch(
+                    ProductActions.setUpdateProductLoadingState({
+                      state: false,
+                    })
+                  );
+                },
+              })
+            }
+          })
+        }
+      );
   }
 
   get itemCounter(): number {

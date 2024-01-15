@@ -15,9 +15,10 @@ import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 import * as TransactionDateStoreActions from '../transaction-history/store/actions';
 import { isLoadingSelector } from '../transaction-history/store/selectors';
 
-import { FilterAndSortTransactionsService } from '../_services/filter-and-sort-transactions.service';
+import { BaseFilterAndSortService } from '../_services/base-filter-and-sort.service';
 
 import { BaseComponent } from '../shared/components/base-component/base.component';
+import { TransactionDateInformation } from '../_services/transaction.service';
 
 @Component({
   selector: 'app-bad-orders',
@@ -26,13 +27,12 @@ import { BaseComponent } from '../shared/components/base-component/base.componen
 })
 export class BadOrdersComponent
   extends BaseComponent
-  implements OnInit, IFilterAndSortTransactions
-{
+  implements OnInit, IFilterAndSortTransactions {
   constructor(
     private router: Router,
     private store: Store<AppStateInterface>,
     private bottomSheet: MatBottomSheet,
-    private filterAndSortTransactionsService: FilterAndSortTransactionsService
+    private filterAndSortTransactionsService: BaseFilterAndSortService<TransactionDateInformation>
   ) {
     super();
 
@@ -50,7 +50,7 @@ export class BadOrdersComponent
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.store.dispatch(
@@ -69,7 +69,7 @@ export class BadOrdersComponent
   }
 
   get dataSource(): TransactionDatesDataSource {
-    return this.filterAndSortTransactionsService.dataSource;
+    return <TransactionDatesDataSource>this.filterAndSortTransactionsService.dataSource;
   }
 
   get isFilterActive(): boolean {
