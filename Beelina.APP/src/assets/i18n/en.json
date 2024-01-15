@@ -23,6 +23,7 @@
     "REMOVE": "Remove",
     "STORES": "Stores",
     "TRANSFER_STOCK": "Transfer Stocks",
+    "ADD_STOCK_QUANTITY": "Add Stock Quantity",
     "SAVE_CHANGES": "Save Changes"
   },
   "MAIN_MENU": {
@@ -418,6 +419,12 @@
       "SUCCESS_MESSAGE": "Manage product details has been successfully activated.",
       "INVALID_USER_PRIVILEGE_MESSAGE": "User does not have privilege to activate manage product details.",
       "ERROR_MESSAGE": "Invalid user account! Activating manage product details failed. Please again later."
+    },
+    "ADD_PRODUCT_STOCK_QUANTITY_DIALOG": {
+      "TITLE": "Add Product Stock Quantity",
+      "CONFIRM": "Are you sure to add new product quantity?",
+      "SUCCESS_MESSAGE": "New product quantity has been successfully added!",
+      "ERROR_MESSAGE": "Adding new product quantity failed. Please again later."
     }
   },
   "ADD_TO_CART_PAGE": {
