@@ -40,7 +40,6 @@ import { IProductStockAuditOutput } from '../_interfaces/outputs/iproduct-stock-
 import { TransferProductStockTypeEnum } from '../_enum/transfer-product-stock-type.enum';
 import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { ProductStockAuditItem } from '../_models/product-stock-audit-item';
-import { TranslateService } from '@ngx-translate/core';
 import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 
 const GET_PRODUCTS_QUERY = gql`
@@ -825,6 +824,7 @@ export class ProductService {
             newStockAuditItem.id = stockAudit.id;
             newStockAuditItem.quantity = stockAudit.quantity;
             newStockAuditItem.stockAuditSource = stockAudit.stockAuditSource;
+            newStockAuditItem.transactionNumber = stockAudit.transactionNumber;
             newStockAuditItem.modifiedDate = stockAudit.modifiedDate;
             newStockAuditItem.modifiedBy = stockAudit.modifiedBy;
             return newStockAuditItem;
