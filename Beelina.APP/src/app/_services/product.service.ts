@@ -14,7 +14,7 @@ import {
   filterKeywordSelector,
 } from '../product/store/selectors';
 import {
-  endCursorSelector as endCursorProductStockAuditSelector,
+  endCursorSelector as endCursorProductStockAuditSelector, fromDateSelector, sortOrderSelector, stockAuditSourceSelector, toDateSelector,
 } from '../product/edit-product-details/manage-product-stock-audit/store/selectors';
 import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
 
@@ -38,6 +38,10 @@ import { StorageService } from './storage.service';
 import { ProductStockAudit } from '../_models/product-stock-audit';
 import { IProductStockAuditOutput } from '../_interfaces/outputs/iproduct-stock-update.output';
 import { TransferProductStockTypeEnum } from '../_enum/transfer-product-stock-type.enum';
+import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
+import { ProductStockAuditItem } from '../_models/product-stock-audit-item';
+import { TranslateService } from '@ngx-translate/core';
+import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 
 const GET_PRODUCTS_QUERY = gql`
   query ($userAccountId: Int!, $cursor: String, $filterKeyword: String) {
@@ -216,13 +220,29 @@ const GET_PRODUCT_DETAILS_LIST = gql`
 `;
 
 const GET_PRODUCT_STOCK_AUDITS_LIST = gql`
-  query ($productId: Int!, $userAccountId: Int!, $cursor: String) {
-    productStockAudits(productId: $productId, userAccountId: $userAccountId, after: $cursor ) {
+  query (
+    $productId: Int!,
+    $userAccountId: Int!,
+    $stockAuditSource: StockAuditSourceEnum!,
+    $sortOrder: SortEnumType
+    $fromDate: String,
+    $toDate: String,
+    $cursor: String) {
+    productStockAuditItems(
+        after: $cursor
+        order: [{ modifiedDate: $sortOrder }]
+        stockAuditSource: $stockAuditSource,
+        productId: $productId,
+        userAccountId: $userAccountId,
+        fromDate: $fromDate,
+        toDate: $toDate) {
       nodes {
         id
-        withdrawalSlipNo
         quantity
-        dateCreated
+        transactionNumber
+        stockAuditSource
+        modifiedBy
+        modifiedDate
       }
       pageInfo {
         endCursor
@@ -747,12 +767,37 @@ export class ProductService {
   }
 
   getProductStockAuditList(productId: number, userAccountId: number) {
-    let cursor = null;
+    let cursor = null,
+      sortOrder = SortOrderOptionsEnum.ASCENDING,
+      stockAuditSource = StockAuditSourceEnum.None,
+      fromDate = null,
+      toDate = null;
 
     this.store
       .select(endCursorProductStockAuditSelector)
       .pipe(take(1))
       .subscribe((currentCursor) => (cursor = currentCursor));
+
+    this.store
+      .select(sortOrderSelector)
+      .pipe(take(1))
+      .subscribe((currentSortOrder) => (sortOrder = currentSortOrder));
+
+    this.store
+      .select(stockAuditSourceSelector)
+      .pipe(take(1))
+      .subscribe((currentStockAuditSource) => (stockAuditSource = currentStockAuditSource));
+
+    this.store
+      .select(fromDateSelector)
+      .pipe(take(1))
+      .subscribe((currentFromDate) => (fromDate = currentFromDate));
+
+    this.store
+      .select(toDateSelector)
+      .pipe(take(1))
+      .subscribe((currentToDate) => (toDate = currentToDate));
+
 
     return this.apollo
       .watchQuery({
@@ -760,31 +805,36 @@ export class ProductService {
         variables: {
           productId,
           userAccountId,
-          cursor
+          cursor,
+          sortOrder,
+          stockAuditSource,
+          fromDate,
+          toDate
         }
       })
       .valueChanges.pipe(
-        map((result: ApolloQueryResult<{ productStockAudits: IBaseConnection }>) => {
-          const data = result.data.productStockAudits;
+        map((result: ApolloQueryResult<{ productStockAuditItems: IBaseConnection }>) => {
+          const data = result.data.productStockAuditItems;
           const errors = result.errors;
           const endCursor = data.pageInfo.endCursor;
           const hasNextPage = data.pageInfo.hasNextPage;
-          const productsStockAuditsDto = <Array<ProductStockAudit>>data.nodes;
+          const productsStockAuditsDto = <Array<ProductStockAuditItem>>data.nodes;
 
-          const productStockAudits: Array<ProductStockAudit> = productsStockAuditsDto.map((stockAudit: ProductStockAudit) => {
-            const newStockAudit = new ProductStockAudit();
-            newStockAudit.id = stockAudit.id;
-            newStockAudit.quantity = stockAudit.quantity;
-            newStockAudit.withdrawalSlipNo = stockAudit.withdrawalSlipNo;
-            newStockAudit.dateCreated = stockAudit.dateCreated;
-            return newStockAudit;
+          const productStockAuditItems: Array<ProductStockAuditItem> = productsStockAuditsDto.map((stockAudit: ProductStockAuditItem) => {
+            const newStockAuditItem = new ProductStockAuditItem();
+            newStockAuditItem.id = stockAudit.id;
+            newStockAuditItem.quantity = stockAudit.quantity;
+            newStockAuditItem.stockAuditSource = stockAudit.stockAuditSource;
+            newStockAuditItem.modifiedDate = stockAudit.modifiedDate;
+            newStockAuditItem.modifiedBy = stockAudit.modifiedBy;
+            return newStockAuditItem;
           });
 
-          if (productStockAudits) {
+          if (productStockAuditItems) {
             return {
               endCursor,
               hasNextPage,
-              productStockAudits,
+              productStockAuditItems,
             };
           }
 

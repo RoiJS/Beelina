@@ -70,26 +70,6 @@ namespace Beelina.API.Types.Mutations
         }
 
         [Authorize]
-        [Error(typeof(ProductErrorFactory))]
-        public async Task<ProductStockAudit> UpdateProductStockAudit(
-            [Service] IProductRepository<Product> productRepository,
-            int productStockAuditId,
-            string withdrawalSlipNo,
-            int newQuantity
-        )
-        {
-            var productStockAuditFromRepo = await productRepository.GetProductStockAudit(productStockAuditId);
-
-            if (productStockAuditFromRepo is null)
-                throw new ProductStockAuditNotExistsException(productStockAuditId);
-
-            productStockAuditFromRepo.WithdrawalSlipNo = withdrawalSlipNo;
-            productStockAuditFromRepo.Quantity = newQuantity;
-            await productRepository.SaveChanges();
-            return productStockAuditFromRepo;
-        }
-
-        [Authorize]
         public async Task<Product> TransferProductStockFromOwnInventory(
                     [Service] IProductRepository<Product> productRepository,
                     int userAccountId,

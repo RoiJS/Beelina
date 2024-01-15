@@ -45,7 +45,7 @@ export class BaseDataSource<T> extends DataSource<T | undefined> {
     this.fetchData();
   }
 
-  protected fetchData() {
+  fetchData() {
     throw new Error('Not implemented!');
   }
 

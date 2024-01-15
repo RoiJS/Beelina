@@ -711,7 +711,21 @@
   },
   "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
     "TITLE": "Product Stock Audit",
-    "DESCRIPTION": "This is where product stock audit information can be managed."
+    "DESCRIPTION": "This is where product stock audit information can be managed.",
+    "LIST_ITEM": {
+      "SOURCE_TYPE": {
+        "FROM_WITHDRAWAL": "From Withdrawal",
+        "MOVED_FROM_OTHER_PRODUCT_INVENTORY": "Moved From Other Product Inventory",
+        "MOVED_TO_OTHER_PRODUCT_INVENTORY": "Moved To Other Product Inventory",
+        "ORDER_TRANSACTION": "Order Transaction"
+      },
+      "SOURCE_LABEL": "Source",
+      "QUANTITY_LABEL": "Quantity",
+      "MODIFIED_DATE_LABEL": "Modified Date",
+      "MODIFIED_BY_LABEL": "Modified By",
+      "WITHDRAWAL_SLIP_NO_LABEL": "Withdrawal Slip No.",
+      "INVOICE_NO_LABEL": "Invoice No."
+    }
   },
   "REPORT_SETTINGS_DIALOG": {
     "TITLE": "Report Settings",

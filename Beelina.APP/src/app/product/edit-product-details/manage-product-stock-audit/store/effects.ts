@@ -3,9 +3,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap } from 'rxjs';
 
 import { ProductService } from 'src/app/_services/product.service';
-import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
 
 import * as ProductStockAuditActions from './actions';
+import { ProductStockAuditItem } from 'src/app/_models/product-stock-audit-item';
 
 @Injectable()
 export class ProductStockAuditEffects {
@@ -18,10 +18,10 @@ export class ProductStockAuditEffects {
             (data: {
               endCursor: string;
               hasNextPage: boolean;
-              productStockAudits: Array<ProductStockAudit>;
+              productStockAuditItems: Array<ProductStockAuditItem>;
             }) => {
               return ProductStockAuditActions.getProductStockAuditsActionSuccess({
-                productStockAudits: data.productStockAudits,
+                productStockAuditItems: data.productStockAuditItems,
                 endCursor: data.endCursor,
                 hasNextPage: data.hasNextPage,
               });

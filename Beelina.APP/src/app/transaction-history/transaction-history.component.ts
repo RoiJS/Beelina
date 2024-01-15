@@ -15,7 +15,8 @@ import { isLoadingSelector } from '../transaction-history/store/selectors';
 
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 import { IFilterAndSortTransactions } from '../_interfaces/services/ifilter-and-sort-transactions.interface';
-import { FilterAndSortTransactionsService } from '../_services/filter-and-sort-transactions.service';
+import { BaseFilterAndSortService } from '../_services/base-filter-and-sort.service';
+import { TransactionDateInformation } from '../_services/transaction.service';
 
 @Component({
   selector: 'app-transaction-history',
@@ -24,8 +25,7 @@ import { FilterAndSortTransactionsService } from '../_services/filter-and-sort-t
 })
 export class TransactionHistoryComponent
   extends BaseComponent
-  implements OnDestroy, IFilterAndSortTransactions
-{
+  implements OnDestroy, IFilterAndSortTransactions {
   /**
    * Constructor for the class.
    *
@@ -36,7 +36,7 @@ export class TransactionHistoryComponent
     private router: Router,
     private store: Store<AppStateInterface>,
     private bottomSheet: MatBottomSheet,
-    private filterAndSortTransactionsService: FilterAndSortTransactionsService
+    private filterAndSortTransactionsService: BaseFilterAndSortService<TransactionDateInformation>
   ) {
     super();
 
@@ -85,7 +85,7 @@ export class TransactionHistoryComponent
   }
 
   get dataSource(): TransactionDatesDataSource {
-    return this.filterAndSortTransactionsService.dataSource;
+    return <TransactionDatesDataSource>this.filterAndSortTransactionsService.dataSource;
   }
 
   get isFilterActive(): boolean {
