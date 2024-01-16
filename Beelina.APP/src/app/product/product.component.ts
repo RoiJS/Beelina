@@ -433,4 +433,8 @@ export class ProductComponent
   get salesAgents(): Array<User> {
     return this._salesAgents;
   }
+
+  get filterKeyword(): string {
+    return this.searchFieldComponent?.value();
+  }
 }
