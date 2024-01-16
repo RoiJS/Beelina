@@ -34,12 +34,12 @@
       <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE" | translate
-          }}: </span><span>{{ productItem?.code }}</span>
+          }}: </span><span [innerHTML]="highlightText(productItem?.code)"></span>
       </div>
       <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.NAME" | translate
-          }}: </span><span>{{ productItem?.name }}</span>
+          }}: </span><span [innerHTML]="highlightText(productItem?.name)"></span>
       </div>
       <div class="product-info">
         <span class="product-info__label">{{

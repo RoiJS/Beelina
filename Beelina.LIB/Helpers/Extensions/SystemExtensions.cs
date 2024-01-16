@@ -111,8 +111,8 @@ namespace Beelina.LIB.Helpers.Extensions
 
         public static bool IsMatchAnyKeywords(this string input, string keywords)
         {
-            string pattern = string.Join("|", keywords.Split(' ').Select(Regex.Escape));
-            bool containsAnyKeyword = Regex.IsMatch(input, pattern);
+            string pattern = string.Join("|", keywords.ToLower().Split(' ').Select(Regex.Escape));
+            bool containsAnyKeyword = Regex.IsMatch(input.ToLower(), pattern);
             return containsAnyKeyword;
         }
     }

@@ -79,4 +79,32 @@ export class BaseComponent {
     return this._currentUser.getModulePrivilege(module);
   }
   //#endregion
+
+  findAllIndicesForMultiWordKeyword(mainString: string, multiWordKeyword: string) {
+    const keywords = multiWordKeyword.split(' ').map(word => word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+    const regex = new RegExp(keywords.join('|'), "gi");
+
+    let indices: { startIndex: number; endIndex: number }[] = [];
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(mainString)) !== null) {
+      const startIndex = match.index;
+      const endIndex = startIndex + match[0].length - 1;
+      indices.push({ startIndex, endIndex });
+    }
+
+    return indices.length > 0 ? indices : null;
+  }
+  insertMarkAtIndex(originalString: string, startIndex: number, endIndex: number) {
+    if (startIndex < 0 || endIndex >= originalString.length || startIndex > endIndex) {
+      console.error("Invalid indices");
+      return originalString;
+    }
+
+    const prefix = originalString.slice(0, startIndex);
+    const markedText = originalString.slice(startIndex, endIndex + 1);
+    const suffix = originalString.slice(endIndex + 1);
+
+    return `${prefix}<mark>${markedText}</mark>${suffix}`;
+  }
 }
