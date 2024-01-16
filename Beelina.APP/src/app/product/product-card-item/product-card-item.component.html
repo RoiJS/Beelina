@@ -2,7 +2,10 @@
   <div *ngIf="!hideHeader" class="list-container__card-item-header product-item__header">
     <mat-icon [matBadge]="productItem?.deductedStock" [matBadgeHidden]="productItem?.deductedStock === 0"
       matBadgeColor="warn" aria-hidden="false">add_shopping_cart</mat-icon>
-    <div *ngIf="!hideHeaderOptions">
+
+    <div class="product-item__header-options" *ngIf="!hideHeaderOptions">
+      <span *ngIf="productItem?.isLinkedToSalesAgent && allowManageItem" class="product-linked-icon">{{ "GENERAL_TEXTS.LINKED" | translate
+        }}</span>
       <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
       <mat-menu #menu="matMenu">
         <button *ngIf="allowManageItem" mat-menu-item (click)="editProduct(productItem?.id)">

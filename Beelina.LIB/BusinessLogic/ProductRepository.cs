@@ -1,5 +1,6 @@
 ﻿using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
+using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
@@ -102,13 +103,14 @@ namespace Beelina.LIB.BusinessLogic
                                       !p.IsDelete
                                       && p.IsActive
                                       && ((productId > 0 && p.Id == productId) || productId == 0)
-                                      && (filterKeyWord != "" && (p.Name.Contains(filterKeyWord) || p.Code.Contains(filterKeyWord)) || filterKeyWord == "")
+                                      // && (filterKeyWord != "" && (p.Name.Contains(filterKeyWord) || p.Code.Contains(filterKeyWord)) || filterKeyWord == "")
                                       && (userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User || (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && pp != null))
 
                                     select new
                                     {
                                       Id = p.Id,
                                       ProductPerPanelId = (pp == null ? 0 : pp.Id),
+                                      IsLinkedToSalesAgent = (pp != null),
                                       Name = p.Name,
                                       Code = p.Code,
                                       IsTransferable = p.IsTransferable,
@@ -119,6 +121,22 @@ namespace Beelina.LIB.BusinessLogic
                                       ProductUnit = pu
                                     }).ToListAsync();
 
+      var filteredProductsFromRepo = (from p in productsFromRepo
+                                      where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
+                                      select new
+                                      {
+                                        Id = p.Id,
+                                        ProductPerPanelId = p.ProductPerPanelId,
+                                        IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                        Name = p.Name,
+                                        Code = p.Code,
+                                        IsTransferable = p.IsTransferable,
+                                        NumberOfUnits = p.NumberOfUnits,
+                                        Description = p.Description,
+                                        PricePerUnit = p.PricePerUnit,
+                                        ProductUnitId = p.ProductUnitId,
+                                        ProductUnit = p.ProductUnit,
+                                      }).ToList();
 
       // Gather products absolute stock quantity based on the stock audit records.
       var productStockAudits = await (from ps in _beelinaRepository.ClientDbContext.ProductStockAudits
@@ -137,7 +155,7 @@ namespace Beelina.LIB.BusinessLogic
                                       }).ToListAsync();
 
       // Join products with their corresponding absolute stock quantity.
-      var productsStocksAuditsPerProductPanel = (from p in productsFromRepo
+      var productsStocksAuditsPerProductPanel = (from p in filteredProductsFromRepo
                                                  join ps in productStockAudits
 
                                                  on new { Id = p.ProductPerPanelId } equals new { Id = ps.ProductStockPerPanelId }
@@ -148,6 +166,7 @@ namespace Beelina.LIB.BusinessLogic
                                                  {
                                                    Id = p.Id,
                                                    ProductPerPanelId = p.ProductPerPanelId,
+                                                   IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
                                                    Name = p.Name,
                                                    Code = p.Code,
                                                    IsTransferable = p.IsTransferable,
@@ -201,6 +220,7 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
+                                     IsLinkedToSalesAgent = p.IsLinkedToSalesAgent
                                    }).ToList();
 
       return finalProductsFromRepo;
