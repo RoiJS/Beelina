@@ -59,6 +59,7 @@ const GET_PRODUCTS_QUERY = gql`
         price
         numberOfUnits
         isTransferable
+        isLinkedToSalesAgent
         productUnit {
           id
           name
@@ -365,6 +366,7 @@ export class ProductService {
             product.isTransferable = productDto.isTransferable;
             product.numberOfUnits = productDto.numberOfUnits;
             product.productUnit = productDto.productUnit;
+            product.isLinkedToSalesAgent = productDto.isLinkedToSalesAgent;
             product.deductedStock =
               -productTransactionItems.find(
                 (pt) => pt.productId === productDto.id

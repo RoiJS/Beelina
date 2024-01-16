@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Beelina.LIB.Helpers.Extensions
 {
@@ -106,6 +107,13 @@ namespace Beelina.LIB.Helpers.Extensions
             }
 
             return result.ToString();
+        }
+
+        public static bool IsMatchAnyKeywords(this string input, string keywords)
+        {
+            string pattern = string.Join("|", keywords.ToLower().Split(' ').Select(Regex.Escape));
+            bool containsAnyKeyword = Regex.IsMatch(input.ToLower(), pattern);
+            return containsAnyKeyword;
         }
     }
 }

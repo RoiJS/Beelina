@@ -8,7 +8,18 @@
     display: flex;
     justify-content: space-between;
     background-color: $primary;
-    padding: 15px 10px 6px;
+    padding: 10px;
+  }
+
+  &__header-options {
+    display: flex;
+    align-items: center;
+
+    .product-linked-icon {
+      padding: 5px 12px;
+      background-color: $success;
+      border-radius: 10px;
+    }
   }
 
   &__body-container {

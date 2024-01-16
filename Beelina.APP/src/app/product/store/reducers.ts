@@ -24,7 +24,7 @@ export const reducers = createReducer(
     (state, action) =>
       <IProductState>{
         ...state,
-        isLoading: true,
+        isLoading: (state.endCursor === null),
       }
   ),
   on(

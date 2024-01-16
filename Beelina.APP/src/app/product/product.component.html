@@ -67,9 +67,9 @@
       "></app-search-field>
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
-      <cdk-virtual-scroll-viewport itemSize="30" orientation="vertical" class="list-container product-list">
+      <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item [productItem]="item" [allowManageItem]="
+          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [allowManageItem]="
               currentUserPermission >
                 getPermissionLevel(permissionLevelEnum.User) ||
               allowManageProductDetails
