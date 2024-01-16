@@ -15,6 +15,7 @@ export class Product extends Entity implements IModelNode {
   public withdrawalSlipNo: string;
   public isTransferable: boolean;
   public numberOfUnits: number;
+  public isLinkedToSalesAgent: boolean;
 
   get priceFormatted(): string {
     return NumberFormatter.formatCurrency(this.price);

@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
 {
@@ -12,6 +13,9 @@ namespace Beelina.LIB.Models
         public float PricePerUnit { get; set; }
         public bool IsTransferable { get; set; }
         public int NumberOfUnits { get; set; }
+
+        [NotMapped]
+        public bool IsLinkedToSalesAgent { get; set; }
 
         public double Price
         {
