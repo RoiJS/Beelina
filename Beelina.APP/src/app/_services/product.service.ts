@@ -71,6 +71,7 @@ const GET_PRODUCTS_QUERY = gql`
         hasPreviousPage
         startCursor
       }
+      totalCount
     }
   }
 `;
@@ -352,6 +353,7 @@ export class ProductService {
           const errors = result.errors;
           const endCursor = data.pageInfo.endCursor;
           const hasNextPage = data.pageInfo.hasNextPage;
+          const totalCount = data.totalCount;
           const productsDto = <Array<Product>>data.nodes;
 
           const products: Array<Product> = productsDto.map((productDto) => {
@@ -379,6 +381,7 @@ export class ProductService {
               endCursor,
               hasNextPage,
               products,
+              totalCount
             };
           }
 

@@ -26,7 +26,7 @@ import * as ProductActions from './store/actions';
 
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
-import { errorSelector, filterKeywordSelector, isLoadingSelector } from './store/selectors';
+import { errorSelector, filterKeywordSelector, isLoadingSelector, totalCountSelector } from './store/selectors';
 import { Product } from '../_models/product';
 
 import { ProductDataSource } from '../_models/datasources/product.datasource';
@@ -70,8 +70,10 @@ export class ProductComponent
     }
   >;
   private _selectedProduct: Product;
+  private _totalProductCount: number;
 
   currentSalesAgentId: number = 0;
+  private _filterKeyword: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -162,7 +164,15 @@ export class ProductComponent
     this._subscription.add(
       this.store.pipe(select(filterKeywordSelector))
         .subscribe((filterKeyword: string) => {
+          this._filterKeyword = filterKeyword;
           this.searchFieldComponent.value(filterKeyword)
+        })
+    );
+
+    this._subscription.add(
+      this.store.pipe(select(totalCountSelector))
+        .subscribe((totalCount: number) => {
+          this._totalProductCount = totalCount;
         })
     );
   }
@@ -435,6 +445,10 @@ export class ProductComponent
   }
 
   get filterKeyword(): string {
-    return this.searchFieldComponent?.value();
+    return this._filterKeyword;
+  }
+
+  get totalProducts(): number {
+    return this._totalProductCount;
   }
 }

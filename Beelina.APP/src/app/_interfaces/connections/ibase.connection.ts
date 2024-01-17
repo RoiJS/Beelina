@@ -6,4 +6,5 @@ export interface IBaseConnection {
   edges: IEdge[];
   nodes: IModelNode[];
   pageInfo: IPageInfo;
+  totalCount: number;
 }

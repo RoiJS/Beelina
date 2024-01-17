@@ -23,12 +23,14 @@ export class ProductEffects {
             (data: {
               endCursor: string;
               hasNextPage: boolean;
+              totalCount: number;
               products: Array<Product>;
             }) => {
               return ProductActions.getProductsActionSuccess({
                 products: data.products,
                 endCursor: data.endCursor,
                 hasNextPage: data.hasNextPage,
+                totalCount: data.totalCount,
               });
             }
           ),

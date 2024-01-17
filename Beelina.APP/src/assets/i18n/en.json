@@ -390,6 +390,9 @@
     "SEARCH_TEXT_FIELD": {
       "PLACEHOLDER": "Search product name or code..."
     },
+    "PRODUCT_SEARCH_RESULT_CONTAINER": {
+      "LABEL": "Search result matches"
+    },
     "PRODUCT_CARD_ITEM": {
       "NAME": "Name",
       "CODE": "Code",
