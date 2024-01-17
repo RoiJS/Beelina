@@ -13,7 +13,7 @@ namespace Beelina.LIB.Interfaces
         Task<Product> GetProductByCode(string productCode);
         Task<Product> CreateOrUpdateProduct(int userAccountId, ProductInput productInput, Product product);
         Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId);
-        Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId);
+        Task<List<ProductStockAuditItem>> GetProductStockAuditItems(int productId, int userAccountId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate);
         Task<List<Product>> GetProductsDetailList(int userId, string filterKeyWord = "");
         Task<Product> TransferProductStockFromOwnInventory(
             int userAccountId,

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.Interfaces;
@@ -11,7 +12,7 @@ namespace Beelina.API.Types.Query
     public class ProductQuery
     {
         [Authorize]
-        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50)]
+        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]
         public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, int userAccountId, string filterKeyword = "")
@@ -38,9 +39,10 @@ namespace Beelina.API.Types.Query
         [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
         [UseProjection]
         [UseFiltering]
-        public async Task<List<ProductStockAudit>> GetProductStockAudits([Service] IProductRepository<Product> productRepository, int productId, int userAccountId)
+        [UseSorting]
+        public async Task<List<ProductStockAuditItem>> GetProductStockAuditItems([Service] IProductRepository<Product> productRepository, int productId, StockAuditSourceEnum stockAuditSource, int userAccountId, string? fromDate, string? toDate)
         {
-            return await productRepository.GetProductStockAudits(productId, userAccountId);
+            return await productRepository.GetProductStockAuditItems(productId, userAccountId, stockAuditSource, fromDate, toDate);
         }
 
         [Authorize]

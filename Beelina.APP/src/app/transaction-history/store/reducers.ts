@@ -15,7 +15,7 @@ export const initialState: ITransactionDateState = {
   filterKeyword: '',
   fromDate: null,
   toDate: null,
-  sortOrder: SortOrderOptionsEnum.ASCENDING,
+  sortOrder: SortOrderOptionsEnum.DESCENDING,
   error: null,
 };
 

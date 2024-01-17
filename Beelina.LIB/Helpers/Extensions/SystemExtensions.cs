@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Beelina.LIB.Helpers.Extensions
 {
@@ -106,6 +107,42 @@ namespace Beelina.LIB.Helpers.Extensions
             }
 
             return result.ToString();
+        }
+
+        public static bool IsMatchAnyKeywords(this string input, string keywords)
+        {
+            input = input.ToLower();
+            keywords = keywords.ToLower();
+
+            string pattern = string.Join("|", keywords.ToLower().Split(' ').Select(Regex.Escape));
+            bool containsAnyKeyword = Regex.IsMatch(input.ToLower(), pattern);
+            return containsAnyKeyword || input.Contains(keywords);
+        }
+
+        public static int CalculatePrecision(this string input, string keywords)
+        {
+            // Convert input and keywords to lowercase
+            input = input.ToLower();
+            keywords = keywords.ToLower();
+
+            if (input.Contains(keywords))
+            {
+                // Calculate precision based on the number of matched characters
+                int commonCharacters = 0;
+                int minLength = Math.Min(input.Length, keywords.Length);
+
+                for (int i = 0; i < minLength; i++)
+                {
+                    if (input[i] == keywords[i])
+                    {
+                        commonCharacters++;
+                    }
+                }
+
+                return commonCharacters;
+            }
+
+            return 0; // Return 0 if no keywords are found
         }
     }
 }

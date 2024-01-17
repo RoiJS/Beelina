@@ -12,42 +12,41 @@ import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
 import * as TransactionDateStoreActions from '../transaction-history/store/actions';
-import * as TransactionHistoryStoreActions from '../transaction-history/store/actions';
 import {
   fromDateSelector,
   sortOrderSelector,
   toDateSelector,
 } from '../transaction-history/store/selectors';
 
-import { TransactionDatesDataSource } from '../_models/datasources/transaction-dates.datasource';
 import { FilterAndSortComponent } from '../shared/ui/filter-and-sort/filter-and-sort.component';
+import { BaseDataSource } from '../_models/datasources/base.datasource';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FilterAndSortTransactionsService {
-  private dateFromProp: string;
-  private dateToProp: string;
-  private sortOrderProp: string;
+export class BaseFilterAndSortService<T> {
+  protected dateFromProp: string;
+  protected dateToProp: string;
+  protected sortOrderProp: string;
 
-  private _fromDate: string;
-  private _toDate: string;
-  private _sortOrder: SortOrderOptionsEnum;
-  private _dataSource: TransactionDatesDataSource;
+  protected _fromDate: string;
+  protected _toDate: string;
+  protected _sortOrder: SortOrderOptionsEnum;
+  protected _dataSource: BaseDataSource<T>;
 
-  private subscription: Subscription = new Subscription();
+  protected subscription: Subscription = new Subscription();
 
-  private _dialogRef: MatBottomSheetRef<
+  protected _dialogRef: MatBottomSheetRef<
     FilterAndSortComponent,
     { dateFrom: string; dateTo: string; sortOrder: SortOrderOptionsEnum }
   >;
 
-  private _bottomSheet: MatBottomSheet;
+  protected _bottomSheet: MatBottomSheet;
 
   constructor(
-    private storageService: StorageService,
-    private store: Store<AppStateInterface>
-  ) {}
+    protected storageService: StorageService,
+    protected store: Store<AppStateInterface>
+  ) { }
 
   setProps(dateFromProp: string, dateToProp: string, sortOrderProp: string) {
     this.dateFromProp = dateFromProp;
@@ -58,9 +57,18 @@ export class FilterAndSortTransactionsService {
 
     const defaultSortOrder =
       this.storageService.getString(this.sortOrderProp) ||
-      SortOrderOptionsEnum.ASCENDING;
+      SortOrderOptionsEnum.DESCENDING;
     const defaultFromDate = this.storageService.getString(this.dateFromProp);
     const defaultToDate = this.storageService.getString(this.dateToProp);
+
+    this.setPropsSubscriptions(defaultSortOrder, defaultFromDate === 'null' ? null : defaultFromDate, defaultToDate === 'null' ? null : defaultToDate);
+
+    return this;
+  }
+
+  // Overriable
+  setPropsSubscriptions(defaultSortOrder: string, defaultFromDate: string, defaultToDate: string) {
+    this.subscription = new Subscription();
 
     this.subscription.add(
       this.store.select(fromDateSelector).subscribe((fromDate) => {
@@ -79,17 +87,11 @@ export class FilterAndSortTransactionsService {
       })
     );
 
-    this.subscription.add(
-      this.store.dispatch(
-        TransactionHistoryStoreActions.setSortAndfilterTransactionDatesAction({
-          sortOrder: <SortOrderOptionsEnum>defaultSortOrder,
-          dateStart: defaultFromDate === 'null' ? null : defaultFromDate,
-          dateEnd: defaultToDate === 'null' ? null : defaultToDate,
-        })
-      )
-    );
-
-    return this;
+    this.dispatchFilter({
+      sortOrder: <SortOrderOptionsEnum>defaultSortOrder,
+      dateFrom: defaultFromDate,
+      dateTo: defaultToDate,
+    });
   }
 
   setBottomSheet(bottomSheet: MatBottomSheet) {
@@ -97,7 +99,7 @@ export class FilterAndSortTransactionsService {
     return this;
   }
 
-  setDataSource(dataSource: TransactionDatesDataSource) {
+  setDataSource(dataSource: BaseDataSource<T>) {
     this._dataSource = dataSource;
     return this;
   }
@@ -119,25 +121,39 @@ export class FilterAndSortTransactionsService {
           dateTo: string;
           sortOrder: SortOrderOptionsEnum;
         }) => {
-          this.store.dispatch(
-            TransactionDateStoreActions.setSortAndfilterTransactionDatesAction({
-              dateStart: data.dateFrom,
-              dateEnd: data.dateTo,
-              sortOrder: data.sortOrder,
-            })
-          );
+          if (!data) return;
+          this.dispatchFilter(data);
 
           this.storageService.storeString(this.dateFromProp, data.dateFrom);
           this.storageService.storeString(this.dateToProp, data.dateTo);
           this.storageService.storeString(this.sortOrderProp, data.sortOrder);
 
-          this.store.dispatch(
-            TransactionDateStoreActions.resetTransactionDatesListState()
-          );
-
+          this.resetFilter();
           this._dataSource.fetchData();
         }
       );
+  }
+
+  // Overriable
+  dispatchFilter(data: {
+    dateFrom: string;
+    dateTo: string;
+    sortOrder: SortOrderOptionsEnum;
+  }) {
+    this.store.dispatch(
+      TransactionDateStoreActions.setSortAndfilterTransactionDatesAction({
+        dateStart: data.dateFrom,
+        dateEnd: data.dateTo,
+        sortOrder: data.sortOrder,
+      })
+    );
+  }
+
+  // Overriable
+  resetFilter() {
+    this.store.dispatch(
+      TransactionDateStoreActions.resetTransactionDatesListState()
+    );
   }
 
   destroy() {
@@ -145,7 +161,7 @@ export class FilterAndSortTransactionsService {
     this._dialogRef = null;
   }
 
-  get dataSource(): TransactionDatesDataSource {
+  get dataSource(): BaseDataSource<T> {
     return this._dataSource;
   }
 
@@ -153,7 +169,7 @@ export class FilterAndSortTransactionsService {
     return (
       this._fromDate !== null ||
       this._toDate !== null ||
-      this._sortOrder !== SortOrderOptionsEnum.ASCENDING
+      this._sortOrder !== SortOrderOptionsEnum.DESCENDING
     );
   }
 }

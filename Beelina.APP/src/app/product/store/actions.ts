@@ -9,6 +9,7 @@ export const getProductsActionSuccess = createAction(
     endCursor: string;
     hasNextPage: boolean;
     products: Array<Product>;
+    totalCount: number;
   }>()
 );
 

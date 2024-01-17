@@ -10,6 +10,8 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 
 import * as ProductStockAuditsActions from '../manage-product-stock-audit/store/actions';
 import { isLoadingSelector } from './store/selectors';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { StockAuditFilterService } from 'src/app/_services/stock-audit-filter.service';
 
 @Component({
   selector: 'app-manage-product-stock-audit',
@@ -26,32 +28,49 @@ export class ManageProductStockAuditComponent extends BaseComponent implements O
     private activatedRoute: ActivatedRoute,
     private store: Store<AppStateInterface>,
     private storageService: StorageService,
+    private bottomSheet: MatBottomSheet,
+    private stockAuditFilterService: StockAuditFilterService
   ) {
     super();
     this._productId = +this.activatedRoute.snapshot.paramMap.get('id');
     this._userAccountId = +this.storageService.getString('currentSalesAgentId');
+
+    this.stockAuditFilterService
+      .setBottomSheet(this.bottomSheet)
+      .setProps(
+        `dateStart_stockAuditItemsPage_${this._productId}`,
+        `dateEnd_stockAuditItemsPage_${this._productId}`,
+        `sortOrder_stockAuditItemsPage_${this._productId}`
+      )
+      .setDataSource(
+        new ProductStockAuditsDatasource(
+          this.store,
+          this._productId,
+          this._userAccountId,
+        )
+      );
+
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
-  ngOnInit() {
-    this._dataSource = new ProductStockAuditsDatasource(
-      this.store,
-      this._productId,
-      this._userAccountId
-    );
-  }
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.store.dispatch(
-      ProductStockAuditsActions.resetProductStockAuditsState()
+      ProductStockAuditsActions.resetProductStockAuditItemsState()
     );
+    this.stockAuditFilterService.destroy();
   }
 
-  updateStockAudit(id: number) {
-    console.log(id);
+  openFilter() {
+    this.stockAuditFilterService.openFilter();
   }
 
   get dataSource(): ProductStockAuditsDatasource {
-    return this._dataSource;
+    return <ProductStockAuditsDatasource>this.stockAuditFilterService.dataSource;
+  }
+
+  get isFilterActive(): boolean {
+    return this.stockAuditFilterService.isFilterActive;
   }
 }

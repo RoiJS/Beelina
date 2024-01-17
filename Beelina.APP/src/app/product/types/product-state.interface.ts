@@ -5,5 +5,6 @@ import { Product } from 'src/app/_models/product';
 
 export interface IProductState extends IBaseState, IBaseStateConnection {
   products: Array<Product>;
+  totalCount: number;
   textProductInventories: Array<Product>;
 }

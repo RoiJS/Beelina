@@ -14,9 +14,11 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
   @Input() hideHeader: boolean = false;
   @Input() hideImage: boolean = false;
   @Input() hideHeaderOptions: boolean = false;
+  @Input() filterKeyword: string = '';
   @Output() editItem = new EventEmitter<number>();
   @Output() deleteItem = new EventEmitter<number>();
   @Output() transferProduct = new EventEmitter<number>();
+  @Output() addStockQuantity = new EventEmitter<Product>();
   @Output() addItem = new EventEmitter<number>();
 
   constructor() {
@@ -37,7 +39,26 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
     this.transferProduct.emit(id);
   }
 
+  addProductStockQuantity() {
+    this.addStockQuantity.emit(this.productItem);
+  }
+
   addItemToCart(id: number) {
     this.addItem.emit(id);
+  }
+
+  highlightText(text: string) {
+    let formattedString = text;
+
+    if (this.filterKeyword.length === 0) return formattedString;
+    const keywords = this.filterKeyword.split(' ').filter(k => k.trim().length > 0);
+
+    for (const keyword of keywords) {
+      const textIndeces = this.findAllIndicesForMultiWordKeyword(formattedString, keyword);
+      if (!textIndeces || textIndeces.length === 0) continue;
+      formattedString = this.insertMarkAtIndex(formattedString, textIndeces?.[0]?.startIndex, textIndeces?.[0]?.endIndex);
+    }
+
+    return formattedString;
   }
 }

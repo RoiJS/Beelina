@@ -1,18 +1,18 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { TranslateModule } from '@ngx-translate/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { ManageProductStockAuditComponent } from './manage-product-stock-audit.component';
-import * as ProductStockAuditReducers from './store/reducers';
 import { ProductStockAuditEffects } from './store/effects';
+import * as ProductStockAuditReducers from './store/reducers';
 
 @NgModule({
   imports: [
@@ -20,6 +20,9 @@ import { ProductStockAuditEffects } from './store/effects';
     CustomUISharedModule,
     MatRippleModule,
     ScrollingModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatBottomSheetModule,
     StoreModule.forFeature('productStockAudits', ProductStockAuditReducers.reducers),
     EffectsModule.forFeature([ProductStockAuditEffects]),
     RouterModule.forChild([

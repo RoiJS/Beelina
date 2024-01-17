@@ -33,7 +33,10 @@ export class SearchFieldComponent implements OnInit {
     this._searchForm.get('filterKeyword').setValue('');
   }
 
-  value(): string {
+  value(filterKeyword: string = ''): string {
+    if (filterKeyword.length > 0) {
+      this._searchForm.get('filterKeyword').setValue(filterKeyword);
+    }
     return this._searchForm.get('filterKeyword').value;
   }
 

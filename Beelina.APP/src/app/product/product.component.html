@@ -66,15 +66,21 @@
         'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
       "></app-search-field>
 
+    <div class="product-total-count-container" *ngIf="filterKeyword?.length > 0">
+      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span><span
+        class="product-total-count-container__value">{{ totalProducts }} items</span>
+    </div>
+
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
-      <cdk-virtual-scroll-viewport itemSize="30" orientation="vertical" class="list-container product-list">
+      <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item [productItem]="item" [allowManageItem]="
+          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [allowManageItem]="
               currentUserPermission >
                 getPermissionLevel(permissionLevelEnum.User) ||
               allowManageProductDetails
             " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)" (addItem)="addItemToCart($event)"
-            (transferProduct)="transferProductInventory($event)"></app-product-card-item>
+            (transferProduct)="transferProductInventory($event)"
+            (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>

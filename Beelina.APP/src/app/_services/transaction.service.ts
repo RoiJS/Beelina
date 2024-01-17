@@ -457,7 +457,7 @@ export class TransactionService {
 
   getTransactioDates(transactionStatus: TransactionStatusEnum) {
     let cursor = null,
-      sortOrder = SortOrderOptionsEnum.ASCENDING,
+      sortOrder = SortOrderOptionsEnum.DESCENDING,
       fromDate = null,
       toDate = null;
 

@@ -6,6 +6,16 @@
   }
 }
 
+.product-total-count-container {
+
+  &__value {
+    padding: 5px 10px;
+    background-color: $primary;
+    border-radius: 15px;
+    color: $white;
+  }
+}
+
 .no-selected-sales-agent-label-container {
   display: flex;
   justify-content: space-around;
