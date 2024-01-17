@@ -16,6 +16,8 @@ namespace Beelina.LIB.Models
 
         [NotMapped]
         public bool IsLinkedToSalesAgent { get; set; }
+        [NotMapped]
+        public double SearchResultPercentage { get; set; }
 
         public double Price
         {

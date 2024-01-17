@@ -123,6 +123,7 @@ namespace Beelina.LIB.BusinessLogic
 
       var filteredProductsFromRepo = (from p in productsFromRepo
                                       where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
+
                                       select new
                                       {
                                         Id = p.Id,
@@ -130,13 +131,16 @@ namespace Beelina.LIB.BusinessLogic
                                         IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
                                         Name = p.Name,
                                         Code = p.Code,
+                                        SearchResultPercentage = p.Name.CalculatePrecision(filterKeyWord) + p.Code.CalculatePrecision(filterKeyWord),
                                         IsTransferable = p.IsTransferable,
                                         NumberOfUnits = p.NumberOfUnits,
                                         Description = p.Description,
                                         PricePerUnit = p.PricePerUnit,
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = p.ProductUnit,
-                                      }).ToList();
+                                      })
+                                      .OrderByDescending(p => p.SearchResultPercentage)
+                                      .ToList();
 
       // Gather products absolute stock quantity based on the stock audit records.
       var productStockAudits = await (from ps in _beelinaRepository.ClientDbContext.ProductStockAudits
@@ -176,7 +180,8 @@ namespace Beelina.LIB.BusinessLogic
                                                    ProductUnitId = p.ProductUnitId,
                                                    ProductUnit = p.ProductUnit,
                                                    StockAbsoluteQuantity = (ps == null ? 0 : ps.Quantity)
-                                                 }).ToList();
+                                                 })
+                                                 .ToList();
 
 
       // Gather product transactions per user account.
@@ -220,8 +225,9 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
-                                     IsLinkedToSalesAgent = p.IsLinkedToSalesAgent
-                                   }).ToList();
+                                     IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                   })
+                                  .ToList();
 
       return finalProductsFromRepo;
     }

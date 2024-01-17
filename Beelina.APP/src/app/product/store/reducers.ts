@@ -12,6 +12,7 @@ export const initialState: IProductState = {
   products: new Array<Product>(),
   textProductInventories: new Array<Product>(),
   endCursor: null,
+  totalCount: 0,
   filterKeyword: '',
   hasNextPage: false,
   error: null,
@@ -34,6 +35,7 @@ export const reducers = createReducer(
         ...state,
         isLoading: false,
         endCursor: action.endCursor,
+        totalCount: action.totalCount,
         products: state.products.concat(action.products),
       }
   ),

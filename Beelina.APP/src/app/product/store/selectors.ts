@@ -38,6 +38,11 @@ export const filterKeywordSelector = createSelector(
   (state) => state.filterKeyword
 );
 
+export const totalCountSelector = createSelector(
+  selectFeature,
+  (state) => state.totalCount
+);
+
 export const textInventoriesSelector = createSelector(
   selectFeature,
   (state) => state.textProductInventories
