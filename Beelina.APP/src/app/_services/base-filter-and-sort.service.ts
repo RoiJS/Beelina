@@ -57,7 +57,7 @@ export class BaseFilterAndSortService<T> {
 
     const defaultSortOrder =
       this.storageService.getString(this.sortOrderProp) ||
-      SortOrderOptionsEnum.ASCENDING;
+      SortOrderOptionsEnum.DESCENDING;
     const defaultFromDate = this.storageService.getString(this.dateFromProp);
     const defaultToDate = this.storageService.getString(this.dateToProp);
 
@@ -169,7 +169,7 @@ export class BaseFilterAndSortService<T> {
     return (
       this._fromDate !== null ||
       this._toDate !== null ||
-      this._sortOrder !== SortOrderOptionsEnum.ASCENDING
+      this._sortOrder !== SortOrderOptionsEnum.DESCENDING
     );
   }
 }

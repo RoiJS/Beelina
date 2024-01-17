@@ -39,7 +39,7 @@ export class FilterAndSortComponent implements OnInit {
     this._bottomSheetRef.dismiss({
       dateFrom: null,
       dateTo: null,
-      sortOrder: SortOrderOptionsEnum.ASCENDING,
+      sortOrder: SortOrderOptionsEnum.DESCENDING,
     });
   }
 
@@ -58,7 +58,7 @@ export class FilterAndSortComponent implements OnInit {
     const dateTo = dateToValue
       ? moment(dateToValue).format('YYYY-MM-DD')
       : null;
-    const sortOrder = sortOrderValue ?? SortOrderOptionsEnum.ASCENDING;
+    const sortOrder = sortOrderValue ?? SortOrderOptionsEnum.DESCENDING;
     this._bottomSheetRef.dismiss({ dateFrom, dateTo, sortOrder });
   }
 
