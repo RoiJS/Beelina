@@ -1,0 +1,30 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false"></app-tool-bar>
+<app-loader-layout [busy]="false">
+  <div class="page-container scale-in-center-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "DASHBOARD_ADMIN.INSIGHTS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+
+    <div class="insights-container">
+      <div class="panel insights-container__panel">
+        <div class="panel__header-section">
+          <label>Top 10 selling products</label>
+        </div>
+        <div class="panel__body-section">
+          <app-top-selling-products-chart></app-top-selling-products-chart>
+        </div>
+      </div>
+      <div class="panel insights-container__panel">
+        <div class="panel__header-section">
+          <label>All Top Selling products</label>
+        </div>
+        <div class="panel__body-section">
+          <app-top-selling-products-list></app-top-selling-products-list>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

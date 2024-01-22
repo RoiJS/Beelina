@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Enums;
+﻿using System.Security.Cryptography;
+using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
@@ -13,18 +14,21 @@ namespace Beelina.LIB.BusinessLogic
     private readonly IProductStockPerPanelRepository<ProductStockPerPanel> _productStockPerPanelRepository;
     private readonly IProductStockAuditRepository<ProductStockAudit> _productStockAuditRepository;
     private readonly IProductUnitRepository<ProductUnit> _productUnitRepository;
+    private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public ProductRepository(IBeelinaRepository<Product> beelinaRepository,
         IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
         IProductStockAuditRepository<ProductStockAudit> productStockAuditRepository,
         IProductUnitRepository<ProductUnit> productUnitRepository,
+        IUserAccountRepository<UserAccount> userAccountRepository,
         ICurrentUserService currentUserService)
         : base(beelinaRepository, beelinaRepository.ClientDbContext)
     {
       _productStockPerPanelRepository = productStockPerPanelRepository;
       _productStockAuditRepository = productStockAuditRepository;
       _productUnitRepository = productUnitRepository;
+      _userAccountRepository = userAccountRepository;
       _currentUserService = currentUserService;
     }
 
@@ -76,14 +80,7 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "")
     {
-      var userRetailModulePermission = await _beelinaRepository
-                .ClientDbContext
-                .UserPermission
-                .Where(u =>
-                    u.ModuleId == ModulesEnum.Retail
-                    && u.UserAccountId == _currentUserService.CurrentUserId
-                )
-                .FirstOrDefaultAsync();
+      var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Retail);
 
       // Gather products information with product stock per panel and product unit.
       // Only gets the products that the user has permission to see.
@@ -103,8 +100,8 @@ namespace Beelina.LIB.BusinessLogic
                                       !p.IsDelete
                                       && p.IsActive
                                       && ((productId > 0 && p.Id == productId) || productId == 0)
-                                      // && (filterKeyWord != "" && (p.Name.Contains(filterKeyWord) || p.Code.Contains(filterKeyWord)) || filterKeyWord == "")
-                                      && (userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User || (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && pp != null))
+                                      && (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Manager ||
+                                        ((userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User || userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Administrator) && pp != null))
 
                                     select new
                                     {
@@ -361,10 +358,13 @@ namespace Beelina.LIB.BusinessLogic
                                           && pp.UserAccountId == userAccountId
                                       )
                                       .Include(pp => pp.ProductStockAudits)
+                                      .ThenInclude(pa => pa.CreatedBy)
                                       .FirstOrDefaultAsync();
+
       return productStockAuditsFromRepo
             .ProductStockAudits
-            .Where(pa => pa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal)
+            // .Where(pa => pa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal)
+            .Where(pa => pa.IsActive)
             .OrderByDescending(ps => ps.DateCreated)
             .ToList();
     }

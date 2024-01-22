@@ -1,0 +1,31 @@
+<div class="panel sales-agent-container">
+  <div class="panel__details-group-panel">
+    <div class="panel__header-section">
+      <label>{{
+        "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_LIST_SECTION.TITLE"
+        | translate
+        }}</label>
+    </div>
+    <div class="panel__body-section">
+      <app-list-container [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="salesAgents?.length">
+        <cdk-virtual-scroll-viewport itemSize="10" class="list-container sales-agent-list">
+          <div *cdkVirtualFor="let salesAgent of salesAgents">
+            <div matRipple
+              [ngClass]="{ 'sales-agent-list__item-section--active': salesAgent?.id === currentSalesAgent, 'transition-color-animation': salesAgent?.id === currentSalesAgent }"
+              class="sales-agent-list__item-section list-container__item-section list-container__item-section--justify-content-space-between"
+              (click)="selectSalesAgentEvent(salesAgent)">
+              <div class="item-container">
+                <div class="item-container__user-image">
+                  <img src="../../../../assets/icons/user-icon.png" />
+                </div>
+                <div class="item-container__user-name">{{ salesAgent.fullname }}</div>
+                <mat-icon>keyboard_arrow_right</mat-icon>
+              </div>
+            </div>
+          </div>
+        </cdk-virtual-scroll-viewport>
+      </app-list-container>
+    </div>
+  </div>
+
+</div>

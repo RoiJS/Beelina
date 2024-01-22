@@ -184,6 +184,10 @@ body {
     &__body-section {
       padding: 15px;
 
+      mat-icon.icon-active {
+        color: $active;
+      }
+
       mat-form-field {
         width: 100%;
       }
@@ -445,7 +449,8 @@ button[color="primary"] {
   animation: slide-in-left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
-.sidenavbarbackgroundanimation {
+.sidenavbarbackgroundanimation,
+.transition-color-animation {
   -webkit-animation: color-change-2x 2s linear infinite alternate both;
   animation: color-change-2x 2s linear infinite alternate both;
 }

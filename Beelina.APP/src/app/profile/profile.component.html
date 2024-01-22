@@ -1,7 +1,7 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
-  <button mat-icon-button class="toolbar-option" (click)="saveProfile()">
+  <!-- <button mat-icon-button class="toolbar-option" (click)="saveProfile()">
     <mat-icon>save</mat-icon>
-  </button>
+  </button> -->
 </app-tool-bar>
 
 <app-loader-layout [busy]="isLoading">
@@ -86,6 +86,9 @@
               }}
             </mat-error>
           </mat-form-field>
+        </div>
+        <div class="panel__footer-section">
+          <button mat-raised-button color="primary" (click)="saveProfile()">Save</button>
         </div>
       </div>
     </div>

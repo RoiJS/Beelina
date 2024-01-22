@@ -24,6 +24,7 @@ import { ModuleEnum } from './_enum/module.enum';
 import { SwUpdate } from '@angular/service-worker';
 import { GeneralInformationService } from './_services/general-information.service';
 import { GeneralInformation } from './_models/general-information.model';
+import { PermissionLevelEnum } from './_enum/permission-level.enum';
 
 @Component({
   selector: 'app-root',
@@ -43,6 +44,7 @@ export class AppComponent
   isSystemUpdateActive: boolean;
   isOnline: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean = true;
 
   constructor(
     private authService: AuthService,
@@ -62,6 +64,8 @@ export class AppComponent
       this.sideDrawerService.setCurrentUserPrivileges(
         user?.getModulePrivilege(ModuleEnum.Retail)
       );
+      this._currentLoggedInUser = this.authService.user.value;
+      this.isAdmin = this.modulePrivilege(ModuleEnum.Retail) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
       this.menuDataSource.data = this.sideDrawerService.getMenus();
       this.isAuthenticated = (user !== null);
     });
@@ -91,6 +95,7 @@ export class AppComponent
     }
 
     if (name === 'MAIN_MENU.LOGOUT') {
+      if (this.isAdmin) this.uiService.toggleDrawer();
       this.authService.logout();
     }
   }

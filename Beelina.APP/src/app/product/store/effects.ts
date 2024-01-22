@@ -14,7 +14,7 @@ import * as ProductActions from './actions';
 
 @Injectable()
 export class ProductEffects {
-  paymentMethods$ = createEffect(() =>
+  products$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductActions.getProductsAction),
       switchMap(() => {

@@ -31,7 +31,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/apexcharts/dist/apexcharts.min.js"
+            ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"
           },
@@ -41,7 +43,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1.5mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",

@@ -125,5 +125,18 @@ namespace Beelina.LIB.BusinessLogic
             // Delete expired refresh tokens
             _beelinaRepository.ClientDbContext.RefreshTokens.RemoveRange(expiredRefreshTokens);
         }
+
+        public async Task<UserPermission> GetCurrentUsersPermissionLevel(int userId, ModulesEnum moduleId)
+        {
+            var userPermission = await _beelinaRepository.ClientDbContext.UserPermission
+                .Where(up =>
+                    up.UserAccountId == userId
+                    && up.ModuleId == moduleId
+                    && !up.IsDelete
+                    && up.IsActive)
+                .FirstOrDefaultAsync();
+
+            return userPermission;
+        }
     }
 }

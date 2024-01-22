@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,13 +8,18 @@ namespace Beelina.LIB.BusinessLogic
     public class ProductTransactionRepository
         : BaseRepository<ProductTransaction>, IProductTransactionRepository<ProductTransaction>
     {
-        private readonly ICurrentUserService currentUserService;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
 
-        public ProductTransactionRepository(IBeelinaRepository<ProductTransaction> beelinaRepository, ICurrentUserService currentUserService)
+        public ProductTransactionRepository(
+            IBeelinaRepository<ProductTransaction> beelinaRepository,
+            ICurrentUserService currentUserService,
+            IUserAccountRepository<UserAccount> userAccountRepository
+        )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
-            this.currentUserService = currentUserService;
-
+            _currentUserService = currentUserService;
+            _userAccountRepository = userAccountRepository;
         }
 
         public async Task<List<ProductTransaction>> GetProductTransactions(int transactionId)
@@ -27,13 +33,22 @@ namespace Beelina.LIB.BusinessLogic
             return productTransactionsFromRepo;
         }
 
-        public async Task<List<TransactionTopProduct>> GetTopProducts()
+        public async Task<List<TransactionTopProduct>> GetTopProducts(int userId)
         {
-            var topProductsFromRepo = await _beelinaRepository.ClientDbContext
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
+
+            var topProductsFromRepo = _beelinaRepository.ClientDbContext
                                                 .ProductTransactions
                                                 .Include(p => p.Transaction)
                                                 .Include(p => p.Product)
-                                                .Where(p => p.Transaction.CreatedById == currentUserService.CurrentUserId)
+                                                .Where(p =>
+                                                    !p.IsDelete
+                                                    && p.IsActive
+                                                    && (
+                                                        userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                                        (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && p.Transaction.CreatedById == userId)
+                                                    )
+                                                )
                                                 .GroupBy(p => new { p.ProductId, p.Product.Code, p.Product.Name })
                                                 .Select(p => new TransactionTopProduct
                                                 {
@@ -42,11 +57,94 @@ namespace Beelina.LIB.BusinessLogic
                                                     Name = p.Key.Name,
                                                     Count = p.Count()
                                                 })
-                                                .OrderByDescending(p => p.Count)
-                                                .Take(10)
-                                                .ToListAsync();
+                                                .OrderByDescending(p => p.Count);
 
-            return topProductsFromRepo;
+            if (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User)
+            {
+                return await topProductsFromRepo.Take(10).ToListAsync();
+            }
+            else
+            {
+                return await topProductsFromRepo.ToListAsync();
+            }
+        }
+
+        public async Task<List<TransactionTopProduct>> GetTopSellingProducts(int userId, string fromDate = "", string toDate = "")
+        {
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
+
+            var productTransactionsFromRepo = from t in _beelinaRepository.ClientDbContext.Transactions
+                                              join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                              on t.Id equals pt.TransactionId into productTransactionJoin
+                                              from ppt in productTransactionJoin
+
+                                              where
+                                                  t.IsActive
+                                                  && !t.IsDelete
+                                                  && ppt.IsActive
+                                                  && !ppt.IsDelete
+                                                  && t.Status == TransactionStatusEnum.Confirmed
+                                                  && (
+                                                      userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                                      (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && ppt.Transaction.CreatedById == userId)
+                                                  )
+
+                                              select new
+                                              {
+                                                  ProductId = ppt.ProductId,
+                                                  TransactionDate = ppt.Transaction.TransactionDate,
+                                                  Amount = ppt.Price * ppt.Quantity
+                                              };
+
+            var productTransactionsJoin = from t in productTransactionsFromRepo
+                                          join p in _beelinaRepository.ClientDbContext.Products
+                                          on t.ProductId equals p.Id into productJoin
+                                          from ptt in productJoin
+
+                                          select new
+                                          {
+                                              ProductId = t.ProductId,
+                                              ProductCode = ptt.Code,
+                                              ProductName = ptt.Name,
+                                              TransactionDate = t.TransactionDate,
+                                              Amount = t.Amount
+                                          };
+
+            if (!string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate))
+            {
+                fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+                if (!String.IsNullOrEmpty(fromDate))
+                {
+                    productTransactionsJoin = productTransactionsJoin.Where(t => t.TransactionDate >= Convert.ToDateTime(fromDate));
+                }
+
+                if (!String.IsNullOrEmpty(toDate))
+                {
+                    productTransactionsJoin = productTransactionsJoin.Where(t => t.TransactionDate <= Convert.ToDateTime(toDate));
+                }
+            }
+
+            var topProductsFromRepo = from t in productTransactionsJoin
+                                      group t by new { t.ProductId, t.ProductCode, t.ProductName } into g
+                                      select new TransactionTopProduct
+                                      {
+                                          Id = g.Key.ProductId,
+                                          Code = g.Key.ProductCode,
+                                          Name = g.Key.ProductName,
+                                          Count = g.Count(),
+                                          TotalAmount = g.Sum(s => s.Amount)
+                                      };
+
+            if (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User)
+            {
+                return await topProductsFromRepo.Take(10).ToListAsync();
+            }
+            else
+            {
+                return await topProductsFromRepo.ToListAsync();
+            }
         }
     }
 }

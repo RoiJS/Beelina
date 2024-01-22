@@ -9,10 +9,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
-import { MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { ProductRoutingModule } from './product.routing.module';
@@ -26,6 +27,7 @@ import * as CustomerStoresReducers from '../customer/store/reducers';
 import * as ProductReducers from '../product/store/reducers';
 import * as ProductUnitReducers from '../units/store/reducers';
 import * as ProductTransactionReducers from './add-to-cart-product/store/reducers';
+import * as TopSellingProductReducers from './top-products/store/reducers';
 
 import { BarangaysEffects } from '../barangays/store/effects';
 import { CustomerEffects } from '../customer/store/effects';
@@ -35,6 +37,7 @@ import { ProductTransactionsEffects } from './add-to-cart-product/store/effects'
 
 import { CartGuard } from '../_guards/cart.guard';
 import { AccountVerificationModule } from '../shared/account-verification/account-verification.module';
+import { TopSellingProductEffects } from './top-products/store/effects';
 
 @NgModule({
   imports: [
@@ -52,11 +55,14 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
     MatRippleModule,
     MatBottomSheetModule,
     MatSelectModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
     ReactiveFormsModule,
     StoreModule.forFeature('barangays', BarangayReducers.reducers),
     StoreModule.forFeature('products', ProductReducers.reducers),
     StoreModule.forFeature('productUnits', ProductUnitReducers.reducers),
     StoreModule.forFeature('customerStores', CustomerStoresReducers.reducers),
+    StoreModule.forFeature('topSellingProducts', TopSellingProductReducers.reducers),
     StoreModule.forFeature(
       'productTransactions',
       ProductTransactionReducers.reducers
@@ -67,6 +73,7 @@ import { AccountVerificationModule } from '../shared/account-verification/accoun
       ProductUnitEffects,
       CustomerEffects,
       ProductTransactionsEffects,
+      TopSellingProductEffects,
     ]),
     TranslateModule.forChild(),
   ],
