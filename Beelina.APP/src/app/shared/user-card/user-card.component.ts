@@ -22,7 +22,6 @@ export class UserCardComponent extends SharedComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private translateSerice: TranslateService,
-    private storageService: StorageService,
     override uiService: UIService
   ) {
     super(uiService);

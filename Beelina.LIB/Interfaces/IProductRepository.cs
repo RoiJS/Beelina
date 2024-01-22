@@ -23,6 +23,5 @@ namespace Beelina.LIB.Interfaces
             int sourceProductNumberOfUnits,
             int sourceNumberOfUnitsTransfered,
             TransferProductStockTypeEnum transferProductStockType);
-
     }
 }

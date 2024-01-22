@@ -101,8 +101,13 @@ export class AuthComponent extends BaseComponent implements OnInit {
     const userPermission = this.authService.user.value.getModulePrivilege(
       ModuleEnum.Retail
     );
-    if (userPermission > getPermissionLevelEnum(PermissionLevelEnum.User)) {
+
+    if (userPermission === getPermissionLevelEnum(PermissionLevelEnum.Manager)) {
       defaultLandingPage = '/product-catalogue';
+    }
+
+    if (userPermission === getPermissionLevelEnum(PermissionLevelEnum.Administrator)) {
+      defaultLandingPage = '/dashboard';
     }
 
     return defaultLandingPage;

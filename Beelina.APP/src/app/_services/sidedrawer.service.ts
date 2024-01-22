@@ -51,7 +51,7 @@ export class SidedrawerService {
         url: '/product-catalogue/product-list',
         icon: 'add_shopping_cart',
         minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.DRAFT_ORDERS',
@@ -89,10 +89,19 @@ export class SidedrawerService {
         maximumPermissionLevel: managerPermissionLevel,
       },
       {
+        name: 'MAIN_MENU.DASHBOARD',
+        url: '/dashboard',
+        icon: 'bar_chart',
+        minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+      },
+      {
         name: 'MAIN_MENU.MANUAL',
         url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
         icon: 'info',
         isExternalUrl: true,
+        minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
       },
       {
         name: 'MAIN_MENU.LOGOUT',

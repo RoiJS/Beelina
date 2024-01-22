@@ -9,5 +9,6 @@ namespace Beelina.LIB.Models
         public string Name { get; set; }
         public int Id { get; set; }
         public int Count { get; set; }
+        public double TotalAmount { get; set; }
     }
 }

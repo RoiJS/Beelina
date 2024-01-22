@@ -39,6 +39,7 @@
     "REPORTS": "Reports",
     "PROFILE": "Profile",
     "MANUAL": "User Manual",
+    "DASHBOARD": "Dashboard",
     "LOGOUT": "Logout"
   },
   "USER_TYPE": {
@@ -754,5 +755,51 @@
   },
   "LOADER_LAYOUT": {
     "LOADING_TEXT": "Loading. Please wait..."
+  },
+  "DASHBOARD_ADMIN": {
+    "TITLE": "Dashboard",
+    "HOME_PAGE": {
+      "TITLE": "Dashboard",
+      "DESCRIPTION": "This shows the total distribution of sales based on the date filer settings. The chart below shows the distribution of sales based on the date filter settings.",
+      "ORDER_TRANSACTION_DISTRIBUTION": {
+        "TITLE": "Order transactions: Sales agents distribution"
+      },
+      "CHART_SECTION": {
+        "TITLE": "Sales Date Distribution Chart",
+        "SERIES_LABEL": "Sales"
+      },
+      "CHART_FILTER_SECTION": {
+        "LABEL": "Total Sales Amount"
+      }
+    },
+    "DISTRIBUTION_PAGE": {
+      "TITLE": "Distribution",
+      "DESCRIPTION": "This page gives insights about the sales and current state of the sales agents product distribution.",
+      "SALES_AGENT_LIST_SECTION": {
+        "TITLE": "Active Sales Agents"
+      },
+      "SALES_AGENT_DETAILS_SECTION": {
+        "TITLE": " Sales Agent Distribution Data",
+        "SALES_INFORMATION_CONTAINER": {},
+        "PRODUCT_LIST_CONTAINER": {
+          "TITLE": "Product List",
+          "DESCRIPTION": "The list below shows the available products assigned to the selected sales agent."
+        },
+        "PRODUCT_STOCK_AUDIT_LIST_CONTAINER": {
+          "TITLE": "Product Stock Audit",
+          "DESCRIPTION": "The list below shows the product stock audit data for the selected product on the left panel."
+        }
+      }
+    },
+    "INSIGHTS_PAGE": {
+      "TITLE": "Insights",
+      "DESCRIPTION": "This page gives insights about the sales and current state of the sales agents product distribution.",
+      "TOP_SELLING_PRODUCTS_CHART_SECTION": {
+        "TITLE": "Top Selling Products"
+      },
+      "TOP_SELLING_PRODUCTS_LISTT_SECTION": {
+        "TITLE": "Top Selling Products"
+      }
+    }
   }
 }

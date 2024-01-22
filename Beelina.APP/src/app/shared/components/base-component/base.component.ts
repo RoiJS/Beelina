@@ -19,9 +19,10 @@ export class BaseComponent {
   protected _emptyTemplateType = EmptyEntityTemplateEnum;
   protected _permissionLevelEnum = PermissionLevelEnum;
   protected $isLoading: Observable<boolean>;
-  protected _currentUser: User;
+  protected _currentLoggedInUser: User;
 
-  constructor() {}
+  constructor() {
+  }
 
   getProductPhoto(name: string) {
     const products = [
@@ -76,7 +77,7 @@ export class BaseComponent {
   }
 
   modulePrivilege(module: ModuleEnum): number {
-    return this._currentUser.getModulePrivilege(module);
+    return this._currentLoggedInUser?.getModulePrivilege(module);
   }
   //#endregion
 

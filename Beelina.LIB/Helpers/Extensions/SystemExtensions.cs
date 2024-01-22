@@ -113,10 +113,9 @@ namespace Beelina.LIB.Helpers.Extensions
         {
             input = input.ToLower();
             keywords = keywords.ToLower();
+            string[] keywordArray = keywords.Split(' ');
 
-            string pattern = string.Join("|", keywords.ToLower().Split(' ').Select(Regex.Escape));
-            bool containsAnyKeyword = Regex.IsMatch(input.ToLower(), pattern);
-            return containsAnyKeyword || input.Contains(keywords);
+            return keywordArray.All(keyword => input.Contains(keyword)) || input.Contains(keywords);
         }
 
         public static int CalculatePrecision(this string input, string keywords)

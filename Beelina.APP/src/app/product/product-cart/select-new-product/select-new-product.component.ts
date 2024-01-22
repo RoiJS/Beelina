@@ -37,6 +37,7 @@ export class SelectNewProductComponent implements OnInit {
     this._productTransactions = data.productTransactions;
 
     this.store.dispatch(ProductActions.resetProductState());
+    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: '' }));
     this._dataSource = new ProductDataSource(this.store);
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));

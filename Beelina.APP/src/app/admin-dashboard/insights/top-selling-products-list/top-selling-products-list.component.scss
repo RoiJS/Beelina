@@ -1,0 +1,24 @@
+@import "../../../../app-variables";
+
+.top-products-list-container {
+  height: 65vh;
+
+  &__item-section {
+    display: flex;
+    justify-content: space-between;
+
+    .product-information {
+      font-weight: bold;
+    }
+
+    .product-number-of-transaction {
+      padding: 5px 10px;
+      background-color: $success;
+      color: $white;
+      border-radius: 15px;
+      display: block;
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+}
