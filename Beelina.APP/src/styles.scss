@@ -217,6 +217,13 @@ body {
 }
 /*#endregion*/
 
+/*#region BUTTON */
+button[mat-button],
+button[mat-raised-button] {
+  border-radius: 50px;
+}
+/*#endregion*/
+
 /*#region FORM DIALOG*/
 .dialog-container {
   padding: 15px;
@@ -382,6 +389,7 @@ app-tool-bar {
 }
 /*#endregion*/
 
+/*#region GLOBAL */
 .transactions-list,
 .product-stock-audit-list {
   height: 80vh;
@@ -429,6 +437,7 @@ button[color="primary"] {
 .autocomplete-option:hover {
   background-color: #f0f0f0;
 }
+/*#endregion*/
 
 /*#region ANIMATION CLASS HELPERS */
 .scale-in-center-animation {
