@@ -363,7 +363,6 @@ namespace Beelina.LIB.BusinessLogic
 
       return productStockAuditsFromRepo
             .ProductStockAudits
-            // .Where(pa => pa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal)
             .Where(pa => pa.IsActive)
             .OrderByDescending(ps => ps.DateCreated)
             .ToList();

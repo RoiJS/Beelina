@@ -54,12 +54,6 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
-    public async Task<List<TransactionTopProduct>> GetTopProducts([Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository, int userId)
-    {
-      return await productTransactionRepository.GetTopProducts(userId);
-    }
-
-    [Authorize]
     [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
     [UseProjection]
     [UseFiltering]

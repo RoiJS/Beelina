@@ -758,6 +758,14 @@
   },
   "DASHBOARD_ADMIN": {
     "TITLE": "Dashboard",
+    "MAIN_MENU": {
+      "HOME": "Home",
+      "DISTRIBUTION": "Distribution",
+      "WAREHOUSE": "Warehouse",
+      "INSIGHTS": "Insights",
+      "ACCOUNTS": "Accounts",
+      "LOGOUT": "Logout"
+    },
     "HOME_PAGE": {
       "TITLE": "Dashboard",
       "DESCRIPTION": "This shows the total distribution of sales based on the date filer settings. The chart below shows the distribution of sales based on the date filter settings.",
@@ -771,6 +779,14 @@
       "CHART_FILTER_SECTION": {
         "LABEL": "Total Sales Amount"
       }
+    },
+    "WAREHOUSE_PAGE": {
+      "TITLE": "Warehouse",
+      "DESCRIPTION": "This is the page where administrator can manage products available on the warehouse. Administrator can products from multiple warehouses"
+    },
+    "ACCOUNTS_PAGE": {
+      "TITLE": "Accounts",
+      "DESCRIPTION": "This is the page where administrator can user accounts information."
     },
     "DISTRIBUTION_PAGE": {
       "TITLE": "Distribution",
@@ -793,7 +809,7 @@
     },
     "INSIGHTS_PAGE": {
       "TITLE": "Insights",
-      "DESCRIPTION": "This page gives insights about the sales and current state of the sales agents product distribution.",
+      "DESCRIPTION": "This page gives administrator insights about the most frequently sold products.",
       "TOP_SELLING_PRODUCTS_CHART_SECTION": {
         "TITLE": "Top Selling Products"
       },

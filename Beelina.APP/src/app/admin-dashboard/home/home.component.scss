@@ -10,7 +10,10 @@
 
   &__body-section {
     height: 90%;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+    padding: 13px 0px;
   }
 
   &__chart-section {

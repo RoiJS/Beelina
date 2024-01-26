@@ -24,6 +24,8 @@ export class DistributionComponent extends BaseComponent implements OnInit {
   @ViewChild(ProductListComponent) productListComponent: ProductListComponent;
   @ViewChild(ProductStockAuditComponent) productStockAuditComponent: ProductStockAuditComponent;
 
+  salesChartViewLoading: boolean;
+
   private _currentSalesAgent: User;
 
   constructor(

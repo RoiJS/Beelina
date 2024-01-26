@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { ScreenNotSupportedComponent } from './screen-not-supported/screen-not-supported.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { ScreenNotSupportedComponent } from './screen-not-supported/screen-not-s
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
+    TranslateModule.forChild(),
     RouterModule.forChild([
       {
         path: '',
@@ -41,6 +43,10 @@ import { ScreenNotSupportedComponent } from './screen-not-supported/screen-not-s
           {
             path: 'insights',
             loadChildren: () => import('./insights/insights.module').then(m => m.InsightsModule),
+          },
+          {
+            path: 'accounts',
+            loadChildren: () => import('./accounts/accounts.module').then(m => m.AccountsModule),
           },
           {
             path: 'reports',

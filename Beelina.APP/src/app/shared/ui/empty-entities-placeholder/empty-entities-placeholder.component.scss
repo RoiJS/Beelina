@@ -3,6 +3,16 @@
   justify-content: space-around;
 }
 
-svg {
-  max-width: 600px;
+.empty-template {
+  &--for-large {
+    max-width: 600px;
+  }
+
+  &--for-medium {
+    max-width: 600px;
+  }
+
+  &--for-small {
+    max-width: 365px;
+  }
 }

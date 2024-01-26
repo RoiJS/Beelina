@@ -112,13 +112,18 @@ export class SalesPerAgentViewComponent extends SalesComponent implements OnInit
   loadTotalSalesChart(dateRange: {
     fromDate: string;
     toDate: string;
-  }) {
+  }, callback: Function) {
+    this._isLoading = true;
     this.transactionService
       .getTransactionSalesForAllPerDateRange(dateRange.fromDate, dateRange.toDate)
       .subscribe((salesFromAllAgents: Array<TransactionSalesPerSalesAgent>) => {
-        console.log(salesFromAllAgents);
+        this._isLoading = false;
         this.chartOptions.labels = salesFromAllAgents.map(x => x.salesAgentName);
         this.chartOptions.series = salesFromAllAgents.map(x => x.sales);
+
+        if (callback) {
+          callback();
+        }
       });
   }
 }

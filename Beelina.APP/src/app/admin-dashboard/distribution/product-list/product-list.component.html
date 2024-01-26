@@ -16,7 +16,8 @@
         class="product-total-count-container__value">{{ totalProducts }} items</span>
     </div>
 
-    <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="productDataSource?.itemCount">
+    <app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.PRODUCTS"
+      [count]="productDataSource?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container">
         <div *cdkVirtualFor="let item of productDataSource">
           <app-product-card-item [productItem]="item" [allowManageItem]="false" [filterKeyword]="filterKeyword"

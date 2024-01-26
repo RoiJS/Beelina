@@ -48,6 +48,7 @@ export class ProductListComponent extends BaseComponent implements OnInit, OnDes
   }
 
   ngOnDestroy() {
+    this._subscription.unsubscribe();
     this.resetProductList();
   }
 
