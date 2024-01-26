@@ -21,7 +21,10 @@
             <mat-tab-group mat-stretch-tabs="true" mat-align-tabs="start">
               <!-- Sales Tab View -->
               <mat-tab label="Sales">
-                <app-sales-information class="distribution-container__chart-filter-section"></app-sales-information>
+                <app-loader-layout [busy]="salesChartViewLoading">
+                  <app-sales-information (salesChartViewLoadingState)="salesChartViewLoading = $event"
+                    class="distribution-container__chart-filter-section"></app-sales-information>
+                </app-loader-layout>
               </mat-tab>
 
               <!-- Panel Tab View -->

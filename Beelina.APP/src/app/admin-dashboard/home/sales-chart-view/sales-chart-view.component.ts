@@ -117,7 +117,7 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
     super.ngOnInit();
   }
 
-  loadTotalSalesChart(userId: number, dateRanges: DateRange[]) {
+  loadTotalSalesChart(userId: number, dateRanges: DateRange[], callback: Function) {
     this.transactionService
       .getTransactionSalesPerDateRange(userId, dateRanges)
       .subscribe((transactionSalesPerDateRange: Array<SalesPerDateRange>) => {
@@ -130,6 +130,10 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
           }
         };
         this.chart.updateOptions(this.chartOptions);
+
+        if (callback) {
+          callback();
+        }
       });
   }
 }

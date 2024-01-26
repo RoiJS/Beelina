@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
@@ -15,6 +15,10 @@ import { SalesPerAgentViewComponent } from './sales-per-agent-view/sales-per-age
 export class HomeComponent extends SalesComponent implements OnInit, AfterViewInit {
   @ViewChild(SalesChartViewComponent) salesChartView: SalesChartViewComponent;
   @ViewChild(SalesPerAgentViewComponent) salesPerAgentChartView: SalesPerAgentViewComponent;
+
+  salesChartViewLoading: boolean;
+  salesPerAgentChartViewLoading: boolean;
+
   private userId: number;
 
   constructor(
@@ -36,14 +40,22 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
   }
 
   initChartView() {
-    this.salesChartView.loadTotalSalesChart(this.userId, this.dateRanges());
+    this.salesChartViewLoading = true;
+    this.salesChartView.loadTotalSalesChart(this.userId, this.dateRanges(), () => {
+      this.salesChartViewLoading = false;
+    });
     setTimeout(() => {
-      this.salesPerAgentChartView.loadTotalSalesChart(this.getDateRange(this._currentFilterOption))
+      this.salesPerAgentChartViewLoading = true;
+      this.salesPerAgentChartView.loadTotalSalesChart(this.getDateRange(this._currentFilterOption), () => {
+        this.salesPerAgentChartViewLoading = false;
+      })
     }, 500);
   }
 
   ngAfterViewInit() {
-    this.initChartView();
+    setTimeout(() => {
+      this.initChartView();
+    }, 0);
   }
 
   override setFilterOption(filterOption: DateFilterEnum) {

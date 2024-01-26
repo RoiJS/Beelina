@@ -15,7 +15,7 @@
         }" matBadgeColor="warn">filter_list</mat-icon>
     </button>
 
-    <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS"
+    <app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.PRODUCTS"
       [count]="productStockAuditDataSource.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" class="list-container product-stock-audit-list">
         <div *cdkVirtualFor="let item of productStockAuditDataSource">

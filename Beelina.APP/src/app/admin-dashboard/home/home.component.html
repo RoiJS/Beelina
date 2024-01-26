@@ -12,11 +12,12 @@
         {{ "DASHBOARD_ADMIN.HOME_PAGE.ORDER_TRANSACTION_DISTRIBUTION.TITLE" | translate }}
       </div>
       <div class="panel__body-section sales-container__body-section">
-        <div class="sales-per-agent-container">
-          <app-sales-per-agent-view></app-sales-per-agent-view>
-        </div>
+        <app-loader-layout [busy]="salesPerAgentChartViewLoading">
+          <div class="sales-per-agent-container">
+            <app-sales-per-agent-view></app-sales-per-agent-view>
+          </div>
+        </app-loader-layout>
       </div>
-
     </div>
     <div class="sales-container__chart-filter-section">
       <div class="panel sales-container__panel">
@@ -24,7 +25,9 @@
           {{ 'DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.TITLE' | translate }}
         </div>
         <div class="panel__body-section sales-container__body-section">
-          <app-sales-chart-view></app-sales-chart-view>
+          <app-loader-layout [busy]="salesChartViewLoading">
+            <app-sales-chart-view></app-sales-chart-view>
+          </app-loader-layout>
         </div>
       </div>
       <div class="panel sales-container__panel">

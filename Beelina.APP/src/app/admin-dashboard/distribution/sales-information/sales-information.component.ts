@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { User } from 'src/app/_models/user.model';
 
@@ -15,6 +15,10 @@ import { SalesChartViewComponent } from '../../home/sales-chart-view/sales-chart
 export class SalesInformationComponent extends SalesComponent implements OnInit {
   @ViewChild(SalesChartViewComponent) salesChartView: SalesChartViewComponent;
   private _currentSalesAgent: User;
+
+  @Output() salesChartViewLoadingState = new EventEmitter<boolean>(false);
+
+  salesChartViewLoading: boolean;
 
   constructor(
     protected override authService: AuthService,
@@ -34,7 +38,10 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
   }
 
   initChartView() {
-    this.salesChartView.loadTotalSalesChart(this._currentSalesAgent.id, this.dateRanges());
+    this.salesChartViewLoadingState.emit(true);
+    this.salesChartView.loadTotalSalesChart(this._currentSalesAgent.id, this.dateRanges(), () => {
+      this.salesChartViewLoadingState.emit(false);
+    });
   }
 
   calculateTotalSales(salesAgent: User) {
@@ -68,5 +75,11 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
   override monthChange(e) {
     this.getTransactionSales(DateFilterEnum.Monthly);
     this.initChartView();
+  }
+
+  override setFilterOption(filterOption: DateFilterEnum) {
+    this._currentFilterOption = filterOption;
+    this.initChartView();
+    this.getTransactionSales(filterOption);
   }
 }
