@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Models;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Models;
 
 namespace Beelina.LIB.Interfaces
 {
@@ -12,5 +13,6 @@ namespace Beelina.LIB.Interfaces
         RefreshToken GenerateNewRefreshToken();
         Task RemoveExpiredRefreshTokens();
         Task<List<UserAccount>> GetAllSalesAgents();
+        Task<UserPermission> GetCurrentUsersPermissionLevel(int userId, ModulesEnum moduleId);
     }
 }

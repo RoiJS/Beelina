@@ -31,6 +31,7 @@
     "apollo-angular": "^5.0.2",
     "graphql": "^16",
     "moment": "^2.29.4",
+    "ng-apexcharts": "^1.8.0",
     "ngrx-etc": "^7.0.1",
     "rxjs": "~7.5.0",
     "textarea-caret": "^3.1.0",

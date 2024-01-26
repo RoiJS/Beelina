@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { AuthGuard } from './_guards/auth.guard';
+import { AdminGuard } from './_guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -63,5 +64,11 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./profile/profile.module').then((m) => m.ProfileModule),
     canLoad: [AuthGuard],
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./admin-dashboard/admin-dashoard.module').then((m) => m.AdminDashoardModule),
+    canLoad: [AuthGuard, AdminGuard],
   },
 ];

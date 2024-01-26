@@ -10,6 +10,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { UIService } from 'src/app/_services/ui.service';
+import { AuthService } from 'src/app/_services/auth.service';
+
 import { BaseComponent } from '../base-component/base.component';
 
 @Component({
@@ -18,8 +20,7 @@ import { BaseComponent } from '../base-component/base.component';
 })
 export class SharedComponent
   extends BaseComponent
-  implements OnInit, OnDestroy, AfterViewChecked, AfterContentChecked
-{
+  implements OnInit, OnDestroy, AfterViewChecked, AfterContentChecked {
   protected _isHandset = false;
   protected _fragment: string | null = '';
 
@@ -62,7 +63,7 @@ export class SharedComponent
   ngAfterViewChecked(): void {
     try {
       document.querySelector('#' + this._fragment)?.scrollIntoView();
-    } catch (e) {}
+    } catch (e) { }
   }
 
   get isHandset(): boolean {

@@ -1,0 +1,47 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false"></app-tool-bar>
+<app-loader-layout [busy]="false">
+  <div class="page-container scale-in-center-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <div class="distribution-container">
+      <app-sales-agent-list class="distribution-container__sales-agent-section"
+        (selectSalesAgent)="showDetailsForSalesAgent($event)"
+        (initDefaultSalesAgent)="initDefaultSalesAgent($event)"></app-sales-agent-list>
+
+      <div class="panel distribution-container__panel">
+        <div class="panel__details-group-panel">
+          <div class="panel__header-section">
+            <label>{{ salesAgentDetails }}</label>
+          </div>
+          <div class="panel__body-section">
+            <mat-tab-group mat-stretch-tabs="true" mat-align-tabs="start">
+              <!-- Sales Tab View -->
+              <mat-tab label="Sales">
+                <app-loader-layout [busy]="salesChartViewLoading">
+                  <app-sales-information (salesChartViewLoadingState)="salesChartViewLoading = $event"
+                    class="distribution-container__chart-filter-section"></app-sales-information>
+                </app-loader-layout>
+              </mat-tab>
+
+              <!-- Panel Tab View -->
+              <mat-tab label="Panel">
+                <div class="distribution-container__panel-section">
+                  <app-product-list class="distribution-container__product-list-section"
+                    (selectItem)="showStockAudit($event)"></app-product-list>
+
+                  <app-product-stock-audit
+                    class="distribution-container__product-stock-audit"></app-product-stock-audit>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

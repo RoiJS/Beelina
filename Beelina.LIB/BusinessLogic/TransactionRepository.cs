@@ -8,20 +8,66 @@ namespace Beelina.LIB.BusinessLogic
     public class TransactionRepository
         : BaseRepository<Transaction>, ITransactionRepository<Transaction>
     {
-        private readonly ICurrentUserService currentUserService;
+        private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
+        private readonly ICurrentUserService _currentUserService;
 
-        public TransactionRepository(IBeelinaRepository<Transaction> beelinaRepository, ICurrentUserService currentUserService)
+        public TransactionRepository(
+            IBeelinaRepository<Transaction> beelinaRepository,
+            IUserAccountRepository<UserAccount> userAccountRepository,
+            ICurrentUserService currentUserService
+        )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
-            this.currentUserService = currentUserService;
+            _userAccountRepository = userAccountRepository;
+            _currentUserService = currentUserService;
         }
 
-        public async Task<TransactionSales> GetSales(string fromDate, string toDate)
+        public async Task<List<TotalSalesPerDateRange>> GetTotalSalePerDateRange(int userId, List<DateRange> dateRanges)
         {
-            var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, fromDate, toDate);
-            var badOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.BadOrder, fromDate, toDate);
+            var totalSalePerDateRanges = new List<TotalSalesPerDateRange>();
+
+            foreach (var dateRange in dateRanges)
+            {
+                var salesAgentSales = await GetSales(userId, dateRange.FromDate, dateRange.ToDate);
+                var dateRangeSales = new TotalSalesPerDateRange
+                {
+                    TotalSales = salesAgentSales.Sales,
+                    FromDate = dateRange.FromDate,
+                    ToDate = dateRange.ToDate,
+                    Label = dateRange.Label
+                };
+
+                totalSalePerDateRanges.Add(dateRangeSales);
+            }
+
+            return totalSalePerDateRanges;
+        }
+
+        public async Task<TransactionSales> GetSales(int userId, string fromDate, string toDate)
+        {
+            var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, userId, fromDate, toDate);
+            var badOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.BadOrder, userId, fromDate, toDate);
 
             return new TransactionSales { Sales = confirmedOrdersAmount.Sales - badOrdersAmount.Sales };
+        }
+
+        public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate)
+        {
+            var salesAgents = await _userAccountRepository.GetAllSalesAgents();
+            var salesPerSalesAgent = new List<TransactionSalesPerSalesAgent>();
+            foreach (var salesAgent in salesAgents)
+            {
+                var sales = new TransactionSalesPerSalesAgent();
+                var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, salesAgent.Id, fromDate, toDate);
+                var badOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.BadOrder, salesAgent.Id, fromDate, toDate);
+
+                sales.Id = salesAgent.Id;
+                sales.SalesAgentName = salesAgent.PersonFullName;
+                sales.Sales = confirmedOrdersAmount.Sales - badOrdersAmount.Sales;
+
+                salesPerSalesAgent.Add(sales);
+            }
+            return salesPerSalesAgent;
         }
 
         public async Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate)
@@ -40,7 +86,7 @@ namespace Beelina.LIB.BusinessLogic
                         && t.Status == status
                         && t.IsDelete == false
                         && t.IsActive
-                        && t.CreatedById == currentUserService.CurrentUserId
+                        && t.CreatedById == _currentUserService.CurrentUserId
 
                     select new
                     {
@@ -55,16 +101,16 @@ namespace Beelina.LIB.BusinessLogic
 
 
             var transactionsWithPaymentStatus = (from t in transactions
-                                                group t by new { t.Id, t.InvoiceNo, t.StoreId, t.StoreName, t.TransactionDate } into g
-                                                select new TransactionInformation
-                                                {
-                                                    Id = g.Key.Id,
-                                                    InvoiceNo = g.Key.InvoiceNo,
-                                                    StoreId = g.Key.StoreId,
-                                                    StoreName = g.Key.StoreName,
-                                                    TransactionDate = g.Key.TransactionDate,
-                                                    HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransactions.Status)) == 0
-                                                })
+                                                 group t by new { t.Id, t.InvoiceNo, t.StoreId, t.StoreName, t.TransactionDate } into g
+                                                 select new TransactionInformation
+                                                 {
+                                                     Id = g.Key.Id,
+                                                     InvoiceNo = g.Key.InvoiceNo,
+                                                     StoreId = g.Key.StoreId,
+                                                     StoreName = g.Key.StoreName,
+                                                     TransactionDate = g.Key.TransactionDate,
+                                                     HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransactions.Status)) == 0
+                                                 })
                                                 .ToList();
 
             return transactionsWithPaymentStatus;
@@ -81,7 +127,7 @@ namespace Beelina.LIB.BusinessLogic
                         t.Status == status
                         && t.IsDelete == false
                         && t.IsActive
-                        && t.CreatedById == currentUserService.CurrentUserId
+                        && t.CreatedById == _currentUserService.CurrentUserId
 
                     select new
                     {
@@ -144,7 +190,7 @@ namespace Beelina.LIB.BusinessLogic
 
                                      where
                                          t.Status == TransactionStatusEnum.BadOrder
-                                         && t.CreatedById == currentUserService.CurrentUserId
+                                         && t.CreatedById == _currentUserService.CurrentUserId
                                          && t.IsDelete == false
                                          && t.IsActive == true
                                          && t.StoreId == storeId
@@ -172,15 +218,21 @@ namespace Beelina.LIB.BusinessLogic
             return discountedSalesPerBadOrders;
         }
 
-        private async Task<TransactionSales> GetOrdersAmount(TransactionStatusEnum status, string fromDate, string toDate)
+        private async Task<TransactionSales> GetOrdersAmount(TransactionStatusEnum status, int userId, string fromDate, string toDate)
         {
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
+
             var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
                                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                                     on t.Id equals pt.TransactionId
 
                                     where
                                         t.Status == status
-                                        && t.CreatedById == currentUserService.CurrentUserId
+                                        // Get all orders if current user is Manager or Admininistrator
+                                        && (
+                                            userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                            (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                        )
                                         && t.IsDelete == false
 
                                     select new

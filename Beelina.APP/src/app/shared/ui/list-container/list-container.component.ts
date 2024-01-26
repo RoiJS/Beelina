@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enum';
+import { TemplateSizeEnum } from '../empty-entities-placeholder/empty-entities-placeholder.component';
 
 @Component({
   selector: 'app-list-container',
@@ -9,8 +10,9 @@ import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enu
 export class ListContainerComponent implements OnInit {
   @Input() count = 0;
   @Input() templateType: EmptyEntityTemplateEnum;
+  @Input() templateSize: TemplateSizeEnum = TemplateSizeEnum.LARGE;
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }

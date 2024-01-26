@@ -107,7 +107,7 @@ export class ProductComponent
         this.notificationService.openErrorNotification(this.translateService.instant('PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.LOAD_PRODUCT_LIST_ERROR_MESSAGE'));
       }
     })
-    this._currentUser = this.authService.user.value;
+    this._currentLoggedInUser = this.authService.user.value;
 
     this._subscription.add(
       this.store
@@ -129,10 +129,10 @@ export class ProductComponent
       this.currentUserPermission ===
       this.getPermissionLevel(PermissionLevelEnum.User)
     ) {
-      this.currentSalesAgentId = this._currentUser.id;
+      this.currentSalesAgentId = this._currentLoggedInUser.id;
       this.storageService.storeString(
         'currentSalesAgentId',
-        this._currentUser.id.toString()
+        this._currentLoggedInUser.id.toString()
       );
       this._dataSource = new ProductDataSource(this.store);
     } else {

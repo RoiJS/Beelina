@@ -29,6 +29,7 @@ import { environment } from '../environments/environment';
 import { ErrorInteceptorProvider } from './_services/error.interceptor.service';
 import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor.service';
 import { TemplatePageTitleStrategyService } from './_services/title-strategy.service';
+import { AdminGuard } from './_guards/admin.guard';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { TemplatePageTitleStrategyService } from './_services/title-strategy.ser
   ],
   providers: [
     AuthGuard,
+    AdminGuard,
     SecretKeyInterceptorProvider,
     ErrorInteceptorProvider,
     {

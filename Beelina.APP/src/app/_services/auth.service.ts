@@ -566,6 +566,21 @@ export class AuthService {
     );
   }
 
+  checkAdministratorAcces(): Observable<boolean> | Promise<boolean> | boolean {
+    return this._user.pipe(
+      take(1),
+      switchMap((user: User) => {
+        const isAdmin = user.getModulePrivilege(ModuleEnum.Retail) === 3;
+        return of(isAdmin);
+      }),
+      tap((isAdmin) => {
+        if (!isAdmin) {
+          this.routingService.replace(['/auth']);
+        }
+      })
+    );
+  }
+
   handleLogin(accessToken: string, refreshToken: string, expiresIn: Date) {
     const expirationDate = new Date(expiresIn);
 

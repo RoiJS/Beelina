@@ -78,8 +78,8 @@
               currentUserPermission >
                 getPermissionLevel(permissionLevelEnum.User) ||
               allowManageProductDetails
-            " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)" (addItem)="addItemToCart($event)"
-            (transferProduct)="transferProductInventory($event)"
+            " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
+            (selectItem)="addItemToCart($event)" (transferProduct)="transferProductInventory($event)"
             (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>

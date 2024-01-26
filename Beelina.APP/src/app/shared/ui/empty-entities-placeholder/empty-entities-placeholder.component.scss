@@ -1,0 +1,18 @@
+:host {
+  display: flex;
+  justify-content: space-around;
+}
+
+.empty-template {
+  &--for-large {
+    max-width: 600px;
+  }
+
+  &--for-medium {
+    max-width: 600px;
+  }
+
+  &--for-small {
+    max-width: 365px;
+  }
+}

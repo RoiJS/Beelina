@@ -8,6 +8,7 @@ import {
   getPermissionLevelEnum,
 } from 'src/app/_enum/permission-level.enum';
 import { User } from 'src/app/_models/user.model';
+import { TemplateSizeEnum } from '../../ui/empty-entities-placeholder/empty-entities-placeholder.component';
 
 @Component({
   selector: 'app-base-component',
@@ -16,12 +17,14 @@ import { User } from 'src/app/_models/user.model';
 })
 export class BaseComponent {
   protected _isLoading = false;
-  protected _emptyTemplateType = EmptyEntityTemplateEnum;
   protected _permissionLevelEnum = PermissionLevelEnum;
+  protected _emptyTemplateType = EmptyEntityTemplateEnum;
+  protected _templateSize = TemplateSizeEnum;
   protected $isLoading: Observable<boolean>;
-  protected _currentUser: User;
+  protected _currentLoggedInUser: User;
 
-  constructor() {}
+  constructor() {
+  }
 
   getProductPhoto(name: string) {
     const products = [
@@ -66,6 +69,10 @@ export class BaseComponent {
     return this._emptyTemplateType;
   }
 
+  get emptyEntityTemplateSizeEnum(): typeof TemplateSizeEnum {
+    return this._templateSize;
+  }
+
   //#region Permission Level related methods
   get permissionLevelEnum(): typeof PermissionLevelEnum {
     return this._permissionLevelEnum;
@@ -76,7 +83,7 @@ export class BaseComponent {
   }
 
   modulePrivilege(module: ModuleEnum): number {
-    return this._currentUser.getModulePrivilege(module);
+    return this._currentLoggedInUser?.getModulePrivilege(module);
   }
   //#endregion
 

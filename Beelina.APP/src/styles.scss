@@ -184,6 +184,10 @@ body {
     &__body-section {
       padding: 15px;
 
+      mat-icon.icon-active {
+        color: $active;
+      }
+
       mat-form-field {
         width: 100%;
       }
@@ -210,6 +214,13 @@ body {
       }
     }
   }
+}
+/*#endregion*/
+
+/*#region BUTTON */
+button[mat-button],
+button[mat-raised-button] {
+  border-radius: 50px;
 }
 /*#endregion*/
 
@@ -378,6 +389,7 @@ app-tool-bar {
 }
 /*#endregion*/
 
+/*#region GLOBAL */
 .transactions-list,
 .product-stock-audit-list {
   height: 80vh;
@@ -425,6 +437,7 @@ button[color="primary"] {
 .autocomplete-option:hover {
   background-color: #f0f0f0;
 }
+/*#endregion*/
 
 /*#region ANIMATION CLASS HELPERS */
 .scale-in-center-animation {
@@ -445,7 +458,8 @@ button[color="primary"] {
   animation: slide-in-left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
-.sidenavbarbackgroundanimation {
+.sidenavbarbackgroundanimation,
+.transition-color-animation {
   -webkit-animation: color-change-2x 2s linear infinite alternate both;
   animation: color-change-2x 2s linear infinite alternate both;
 }

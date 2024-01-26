@@ -1,11 +1,16 @@
 @import "../../app-variables";
 
+:host {
+  display: flex;
+  justify-content: space-around;
+}
+
 .offline-page-container {
-  background: $background-gradient;
   display: flex;
   justify-content: space-around;
   height: 100vh;
   padding: 0px 25px;
+  max-width: 500px;
 
   &__content {
     align-self: center;

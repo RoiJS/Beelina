@@ -10,6 +10,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { ProductCardItemComponent } from '../product/product-card-item/product-card-item.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
@@ -24,6 +25,8 @@ import { SearchFieldComponent } from './ui/search-field/search-field.component';
 import { TextInputAutocompleteContainerComponent } from './text-input-autocomplete/text-input-autocomplete-container.component';
 import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
 import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/text-input-autocomplete-menu.component';
+import { SalesChartViewComponent } from '../admin-dashboard/home/sales-chart-view/sales-chart-view.component';
+import { SalesPerAgentViewComponent } from '../admin-dashboard/home/sales-per-agent-view/sales-per-agent-view.component';
 
 @NgModule({
   imports: [
@@ -38,6 +41,7 @@ import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/te
     MatDatepickerModule,
     MatMenuModule,
     MatRippleModule,
+    NgApexchartsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
   ],
@@ -52,7 +56,9 @@ import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/te
     SearchFieldComponent,
     TextInputAutocompleteContainerComponent,
     TextInputAutocompleteDirective,
-    TextInputAutocompleteMenuComponent
+    TextInputAutocompleteMenuComponent,
+    SalesChartViewComponent,
+    SalesPerAgentViewComponent
   ],
   exports: [
     FilterAndSortComponent,
@@ -67,7 +73,10 @@ import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/te
     NotificationModule,
     TextInputAutocompleteContainerComponent,
     TextInputAutocompleteDirective,
-    TextInputAutocompleteMenuComponent
+    TextInputAutocompleteMenuComponent,
+    SalesChartViewComponent,
+    SalesPerAgentViewComponent,
+    NgApexchartsModule
   ],
 })
 export class CustomUISharedModule { }
