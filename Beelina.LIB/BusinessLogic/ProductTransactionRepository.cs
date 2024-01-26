@@ -33,42 +33,6 @@ namespace Beelina.LIB.BusinessLogic
             return productTransactionsFromRepo;
         }
 
-        public async Task<List<TransactionTopProduct>> GetTopProducts(int userId)
-        {
-            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
-
-            var topProductsFromRepo = _beelinaRepository.ClientDbContext
-                                                .ProductTransactions
-                                                .Include(p => p.Transaction)
-                                                .Include(p => p.Product)
-                                                .Where(p =>
-                                                    !p.IsDelete
-                                                    && p.IsActive
-                                                    && (
-                                                        userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
-                                                        (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && p.Transaction.CreatedById == userId)
-                                                    )
-                                                )
-                                                .GroupBy(p => new { p.ProductId, p.Product.Code, p.Product.Name })
-                                                .Select(p => new TransactionTopProduct
-                                                {
-                                                    Id = p.Key.ProductId,
-                                                    Code = p.Key.Code,
-                                                    Name = p.Key.Name,
-                                                    Count = p.Count()
-                                                })
-                                                .OrderByDescending(p => p.Count);
-
-            if (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User)
-            {
-                return await topProductsFromRepo.Take(10).ToListAsync();
-            }
-            else
-            {
-                return await topProductsFromRepo.ToListAsync();
-            }
-        }
-
         public async Task<List<TransactionTopProduct>> GetTopSellingProducts(int userId, string fromDate = "", string toDate = "")
         {
             var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
