@@ -29,7 +29,7 @@ export enum DateFilterEnum {
 })
 export class SalesComponent extends BaseComponent implements OnInit {
   protected _sales: number = 0;
-  protected _currentFilterOption: DateFilterEnum = DateFilterEnum.Daily;
+  protected _currentFilterOption: DateFilterEnum = DateFilterEnum.Monthly;
   protected _weekOptions: Array<string>;
   protected _monthOptions: Array<string> = [
     'January',
