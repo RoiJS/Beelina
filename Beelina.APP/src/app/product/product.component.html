@@ -71,6 +71,11 @@
         class="product-total-count-container__value">{{ totalProducts }} items</span>
     </div>
 
+    <div class="product-total-count-container" *ngIf="filterKeyword?.length === 0 && currentUserPermission === getPermissionLevel(permissionLevelEnum.User)">
+      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_COUNTER_CONTAINER.LABEL' | translate }}: </span><span
+        class="product-total-count-container__value">{{ totalProducts }} items</span>
+    </div>
+
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">

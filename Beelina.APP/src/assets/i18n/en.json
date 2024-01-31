@@ -394,6 +394,9 @@
     "PRODUCT_SEARCH_RESULT_CONTAINER": {
       "LABEL": "Search result matches"
     },
+    "PRODUCT_COUNTER_CONTAINER": {
+      "LABEL": "Total number of items"
+    },
     "PRODUCT_CARD_ITEM": {
       "NAME": "Name",
       "CODE": "Code",
