@@ -10,80 +10,60 @@
         <div class="panel__header-section">
           <label>{{
             "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE"
-              | translate
-          }}</label>
+            | translate
+            }}</label>
         </div>
         <div class="panel__body-section">
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="name" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="address" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
-            <input
-              type="text"
-              matInput
-              formControlName="paymentMethod"
-              [matAutocomplete]="paymentMethodAuto"
-            />
-
-            <mat-autocomplete #paymentMethodAuto="matAutocomplete">
-              <mat-option
-                *ngFor="let option of paymentMethodFilterOptions | async"
-                [value]="option.name"
-              >
-                {{ option.name }}
-              </mat-option>
-            </mat-autocomplete>
+            <mat-label>{{
+              "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <mat-select formControlName="paymentMethod">
+              <mat-option *ngFor="let paymentMethod of paymentMethodOptions" [value]="paymentMethod.name">{{
+                paymentMethod.name
+                }}</mat-option>
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <mat-select formControlName="outletType">
               <mat-option [value]="'KEY_ACCOUNT'">
                 {{
-                  "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT"
-                    | translate
+                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT"
+                | translate
                 }}
               </mat-option>
               <mat-option [value]="'GEN_TRADE'">
                 {{
-                  "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE"
-                    | translate
+                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE"
+                | translate
                 }}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input type="text" matInput formControlName="barangay" />
           </mat-form-field>
         </div>

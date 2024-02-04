@@ -32,7 +32,7 @@ export const reducers = createReducer(
         ...state,
         isLoading: false,
         endCursor: action.endCursor,
-        paymentMethods: state.paymentMethods.concat(action.paymentMethods),
+        paymentMethods: action.paymentMethods,
       }
   ),
   on(

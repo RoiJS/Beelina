@@ -111,7 +111,11 @@
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
               | translate
               }}:</mat-label>
-            <input type="text" matInput formControlName="paymentMethod" readonly />
+            <mat-select formControlName="paymentMethod">
+              <mat-option *ngFor="let paymentMethod of paymentMethodOptions" [value]="paymentMethod.id">{{
+                paymentMethod.name
+                }}</mat-option>
+            </mat-select>
           </mat-form-field>
           <mat-form-field class="transaction-date" appearance="fill">
             <mat-label>{{

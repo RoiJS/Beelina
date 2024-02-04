@@ -125,11 +125,13 @@ const GET_TRANSACTION = gql`
         hasUnpaidProductTransaction
         total
         balance
+        modeOfPayment
         store {
           id
           name
           address
           paymentMethod {
+            id
             name
           }
           barangay {
@@ -160,16 +162,15 @@ const GET_TRANSACTION = gql`
   }
 `;
 
-const MARK_TRANSACTION_AS_PAID = gql`
-  mutation ($transactionId: Int!) {
-    markTransactionAsPaid(input: { transactionId: $transactionId }) {
+const UPDATE_MODE_OF_PAYMENT = gql`
+  mutation ($transactionId: Int!, $modeOfPayment: Int!) {
+    updateModeOfPayment(input: { transactionId: $transactionId, modeOfPayment: $modeOfPayment }) {
       transaction {
         id
       }
     }
   }
 `;
-
 
 const GET_TOP_SELLING_PRODUCTS = gql`
   query(
@@ -249,6 +250,7 @@ export class Transaction extends Entity implements IModelNode {
   public transactionDate: Date;
   public dueDate: Date;
   public store: CustomerStore;
+  public modeOfPayment: number;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
@@ -312,6 +314,7 @@ export class TransactionDto {
   public invoiceNo: string;
   public discount: number;
   public storeId: number;
+  public modeOfPayment: number;
   public status: TransactionStatusEnum;
   public transactionDate: string;
   public dueDate: string;
@@ -348,6 +351,7 @@ export class TransactionService {
       invoiceNo: transaction.invoiceNo,
       discount: transaction.discount,
       storeId: transaction.storeId,
+      modeOfPayment: transaction.modeOfPayment,
       status: transaction.status,
       transactionDate: transaction.transactionDate,
       dueDate: transaction.dueDate,
@@ -484,6 +488,7 @@ export class TransactionService {
             transaction.dueDate = transactionFromRepo.transaction.dueDate;
             transaction.storeId = transactionFromRepo.transaction.storeId;
             transaction.store = transactionFromRepo.transaction.store;
+            transaction.modeOfPayment = transactionFromRepo.transaction.modeOfPayment;
             transaction.balance = transactionFromRepo.transaction.balance;
             transaction.total = transactionFromRepo.transaction.total;
             transaction.hasUnpaidProductTransaction =
@@ -738,23 +743,23 @@ export class TransactionService {
       );
   }
 
-
-  markTransactionAsPaid(transactionId: number) {
+  updateModeOfPayment(transactionId: number, modeOfPayment: number) {
     return this.apollo
       .mutate({
-        mutation: MARK_TRANSACTION_AS_PAID,
+        mutation: UPDATE_MODE_OF_PAYMENT,
         variables: {
           transactionId,
+          modeOfPayment
         },
       })
       .pipe(
         map(
           (
             result: MutationResult<{
-              markTransactionAsPaid: ITransactionOutput;
+              updateModeOfPayment: ITransactionOutput;
             }>
           ) => {
-            const output = result.data.markTransactionAsPaid;
+            const output = result.data.updateModeOfPayment;
             const payload = output.transaction;
             const errors = output.errors;
 
