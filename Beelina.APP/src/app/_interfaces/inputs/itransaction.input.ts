@@ -6,6 +6,7 @@ export interface ITransactionInput {
   invoiceNo: string;
   discount: number;
   storeId: number;
+  modeOfPayment: number;
   transactionDate: string;
   dueDate: string;
   status: TransactionStatusEnum;

@@ -33,7 +33,6 @@ export class EditCustomerDetailsComponent implements OnInit {
   private _customerForm: FormGroup;
 
   private _paymentMethodOptions: Array<PaymentMethod> = [];
-  private _paymentMethodFilterOptions: Observable<Array<PaymentMethod>>;
   private _paymentMethodOptionsSubscription: Subscription;
 
   private _storeId: number;
@@ -89,13 +88,6 @@ export class EditCustomerDetailsComponent implements OnInit {
       .subscribe((paymentMethods: Array<PaymentMethod>) => {
         this._paymentMethodOptions = paymentMethods;
       });
-
-    this._paymentMethodFilterOptions = this._customerForm
-      .get('paymentMethod')
-      .valueChanges.pipe(
-        startWith(''),
-        map((value) => this._filterPaymentMethods(value || ''))
-      );
   }
 
   ngOnDestroy(): void {
@@ -159,19 +151,11 @@ export class EditCustomerDetailsComponent implements OnInit {
     }
   }
 
-  private _filterPaymentMethods(value: string): Array<PaymentMethod> {
-    const filterValue = value?.toLowerCase();
-
-    return this._paymentMethodOptions.filter((option) =>
-      option.name?.toLowerCase().includes(filterValue)
-    );
-  }
-
   get customerForm(): FormGroup {
     return this._customerForm;
   }
 
-  get paymentMethodFilterOptions(): Observable<Array<PaymentMethod>> {
-    return this._paymentMethodFilterOptions;
+  get paymentMethodOptions(): Array<PaymentMethod> {
+    return this._paymentMethodOptions;
   }
 }

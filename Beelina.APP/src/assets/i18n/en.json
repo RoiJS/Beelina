@@ -155,8 +155,8 @@
         }
       },
       "PAYMENT_METHOD_CONTROL": {
-        "LABEL": "Payment Method",
-        "HINT": "Please specify payment method"
+        "LABEL": "Mode of Payment",
+        "HINT": "Please specify mode of payment"
       },
       "BARANGAY_CONTROL": {
         "LABEL": "Barangay/Branch",
@@ -183,8 +183,8 @@
         "HINT": "Please enter customer address"
       },
       "PAYMENT_METHOD_CONTROL": {
-        "LABEL": "Payment Method",
-        "HINT": "Please specify payment method"
+        "LABEL": "Mode of Payment",
+        "HINT": "Please specify mode of payment"
       },
       "OUTLET_TYPE_CONTROL": {
         "LABEL": "Outlet Type",
@@ -234,7 +234,7 @@
         "LABEL": "Address"
       },
       "PAYMENT_METHOD_CONTROL": {
-        "LABEL": "Payment Method"
+        "LABEL": "Mode of Payment"
       },
       "TRANSACTION_DATE_CONTROL": {
         "LABEL": "Transaction Date"
@@ -539,12 +539,12 @@
   "TRANSACTION_DETAILS_PAGE": {
     "TITLE": "Order Details",
     "DETAILS_SECTION": {},
-    "MARK_TRANSACTION_AS_PAID_DIALOG": {
-      "TITLE": "Mark as Paid",
-      "CONFIRM": "Are you sure to mark this transaction as paid?",
-      "SUCCESS_MESSAGE": "Selected transaction is now marked as paid.",
-      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later.",
-      "LOADING_MESSAGE": "Marking transaction as paid. Please wait..."
+    "UPDATE_MODE_OF_PAYMENT_DIALOG": {
+      "TITLE": "Update mode of payment",
+      "CONFIRM": "Are you sure to update mode of payment for this order transaction?",
+      "SUCCESS_MESSAGE": "Mode of payment has been successfully updated.",
+      "ERROR_MESSAGE": "Updating mode of payment failed. Please try again later.",
+      "LOADING_MESSAGE": "Updating mode of payment. Please wait..."
     }
   },
   "BAD_ORDER_DETAILS_PAGE": {

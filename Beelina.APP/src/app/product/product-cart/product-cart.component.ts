@@ -35,6 +35,7 @@ import * as BarangayActions from '../../barangays/store/actions';
 import * as CustomerActions from '../../customer/store/actions';
 import * as ProductActions from '../store/actions';
 import * as ProductTransactionActions from '../add-to-cart-product/store/actions';
+import * as PaymentMethodActions from '../../payment-methods/store/actions';
 
 import { CustomerStore } from 'src/app/_models/customer-store';
 
@@ -49,6 +50,8 @@ import { Barangay } from 'src/app/_models/barangay';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { PaymentMethod } from 'src/app/_models/payment-method';
+import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
 
 @Component({
   selector: 'app-product-cart',
@@ -64,6 +67,7 @@ export class ProductCartComponent
   private _customerStoreOptions: Array<CustomerStore> = [];
 
   private _barangayOptions: Array<Barangay> = [];
+  private _paymentMethodOptions: Array<PaymentMethod> = [];
 
   private _subscription: Subscription = new Subscription();
   private _selectedCustomer: CustomerStore;
@@ -101,7 +105,7 @@ export class ProductCartComponent
       barangay: ['', Validators.required],
       name: ['', Validators.required],
       address: [''],
-      paymentMethod: [''],
+      paymentMethod: [0, Validators.required],
       transactionDate: [new Date(), Validators.required],
       dueDate: [new Date(), Validators.required],
     });
@@ -119,7 +123,7 @@ export class ProductCartComponent
 
     nameControl.disable();
     addressControl.disable();
-    paymentMethodControl.disable();
+    // paymentMethodControl.disable();
 
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
 
@@ -140,6 +144,7 @@ export class ProductCartComponent
     this.store.dispatch(ProductActions.getProductsAction());
     this.store.dispatch(BarangayActions.getAllBarangayAction());
     this.store.dispatch(CustomerActions.getAllCustomerStoreAction());
+    this.store.dispatch(PaymentMethodActions.getPaymentMethodsAction());
 
     this._subscription.add(
       this.store
@@ -156,6 +161,12 @@ export class ProductCartComponent
           this._barangayOptions = barangays;
         })
     );
+
+    this._subscription.add(this.store
+      .pipe(select(paymentMethodsSelector))
+      .subscribe((paymentMethods: Array<PaymentMethod>) => {
+        this._paymentMethodOptions = paymentMethods;
+      }));
 
     this._subscription.add(
       this.store
@@ -207,7 +218,7 @@ export class ProductCartComponent
               .setValue(this._transaction.store.address);
             this._orderForm
               .get('paymentMethod')
-              .setValue(this._transaction.store.paymentMethod.name);
+              .setValue(this._transaction.modeOfPayment);
             this._orderForm
               .get('transactionDate')
               .setValue(this._transaction.transactionDate || new Date());
@@ -241,7 +252,7 @@ export class ProductCartComponent
         );
 
         addressControl.setValue('');
-        paymentMethodControl.setValue('');
+        paymentMethodControl.setValue(0);
 
         if (this._selectedCustomer) {
           this._orderForm
@@ -249,12 +260,10 @@ export class ProductCartComponent
             .setValue(this._selectedCustomer.address);
           this._orderForm
             .get('paymentMethod')
-            .setValue(this._selectedCustomer.paymentMethod.name);
+            .setValue(this._selectedCustomer.paymentMethod.id);
           addressControl.enable();
-          paymentMethodControl.enable();
         } else {
           addressControl.disable();
-          paymentMethodControl.disable();
         }
       })
     );
@@ -314,6 +323,7 @@ export class ProductCartComponent
       transaction.id = this._transactionId;
       transaction.storeId = this._selectedCustomer.id;
       transaction.status = TransactionStatusEnum.DRAFT;
+      transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
       transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
       transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
@@ -377,6 +387,7 @@ export class ProductCartComponent
       transaction.id = this._transactionId;
       transaction.storeId = this._selectedCustomer.id;
       transaction.status = TransactionStatusEnum.BAD_ORDER;
+      transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
       transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
       transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
@@ -482,6 +493,7 @@ export class ProductCartComponent
             transaction.discount = this._discountForm.get('discount').value;
             transaction.storeId = this._selectedCustomer.id;
             transaction.status = TransactionStatusEnum.CONFIRMED;
+            transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
             transaction.transactionDate = DateFormatter.format(
               this._orderForm.get('transactionDate').value
             );
@@ -598,6 +610,10 @@ export class ProductCartComponent
 
   get barangayOptions(): Array<Barangay> {
     return this._barangayOptions;
+  }
+
+  get paymentMethodOptions(): Array<PaymentMethod> {
+    return this._paymentMethodOptions;
   }
 
   get customerStoreOptions(): Array<CustomerStore> {
