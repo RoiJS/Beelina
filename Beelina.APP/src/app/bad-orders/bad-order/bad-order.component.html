@@ -14,7 +14,7 @@
         <div *cdkVirtualFor="let item of transactions">
           <div matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
-            (click)="goToTransaction(item.id)">
+            (click)="goToTransaction(item.id)" longPress (onLongPress)="openMenu(item)">
             <div>
               <span># {{ item.invoiceNo }}</span> - <span>{{ item.store.name }}</span>
             </div>

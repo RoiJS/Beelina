@@ -268,5 +268,14 @@ namespace Beelina.LIB.BusinessLogic
 
             return new TransactionSales { Sales = discountedSalesPerTransactions };
         }
+
+        public async Task DeleteOrderTransactions(List<int> transactionIds)
+        {
+            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t => transactionIds.Contains(t.Id))
+                                .ToListAsync();
+
+            DeleteMultipleEntities(transactionsFromRepo);
+        }
     }
 }

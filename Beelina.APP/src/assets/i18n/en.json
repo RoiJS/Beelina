@@ -532,6 +532,32 @@
     "TITLE": "Bad Orders",
     "DESCRIPTION": "This contains all registered bad orders."
   },
+  "TRANSACTION_OPTION_MENU": {
+    "GO_TO_ORDER_TRANSACTIONS": {
+      "LABEL": "View orders",
+      "DESCRIPTIONS": "See all orders for this date"
+    },
+    "DELETE_ORDER_DATE": {
+      "LABEL": "Delete orders",
+      "DESCRIPTIONS": "Delete all orders for this date"
+    },
+    "DELETE_ORDER": {
+      "LABEL": "Delete order",
+      "DESCRIPTIONS": "Delete selected order from the list"
+    },
+    "DELETE_TRANSACTION_BY_DATE_DIALOG": {
+      "TITLE": "Delete Orders",
+      "CONFIRM": "This will delete all orders for the selected date. Are you sure to proceed?",
+      "SUCCESS_MESSAGE": "Orders have been successfully deleted.",
+      "ERROR_MESSAGE": "Deleting orders failed. Please again later."
+    },
+    "DELETE_TRANSACTION_DIALOG": {
+      "TITLE": "Delete Order",
+      "CONFIRM": "Are you sure to delete selected order?",
+      "SUCCESS_MESSAGE": "Order has been successfully deleted.",
+      "ERROR_MESSAGE": "Deleting order failed. Please again later."
+    }
+  },
   "TRANSACTION_PAGE": {
     "TITLE": "Confirmed Orders",
     "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
