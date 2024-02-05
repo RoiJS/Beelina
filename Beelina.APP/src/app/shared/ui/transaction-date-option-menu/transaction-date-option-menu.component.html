@@ -1,0 +1,11 @@
+<mat-nav-list>
+  <a mat-list-item (click)="viewOrders()">
+    <span matListItemTitle>{{ "TRANSACTION_OPTION_MENU.GO_TO_ORDER_TRANSACTIONS.LABEL" | translate }}</span>
+    <span matLine>{{ "TRANSACTION_OPTION_MENU.GO_TO_ORDER_TRANSACTIONS.DESCRIPTIONS" | translate }}</span>
+  </a>
+
+  <a mat-list-item (click)="deleteOrders()">
+    <span matListItemTitle>{{ "TRANSACTION_OPTION_MENU.DELETE_ORDER_DATE.LABEL" | translate }}</span>
+    <span matLine>{{ "TRANSACTION_OPTION_MENU.DELETE_ORDER_DATE.DESCRIPTIONS" | translate }}</span>
+  </a>
+</mat-nav-list>

@@ -83,5 +83,20 @@ namespace Beelina.API.Types.Mutations
 
             return transactionFromRepo;
         }
+
+        [Authorize]
+        public async Task<List<TransactionInformation>> DeleteTransactionsByDate(
+                [Service] ITransactionRepository<Transaction> transactionRepository,
+                [Service] ICurrentUserService currentUserService,
+                TransactionStatusEnum transactionStatus,
+                string transactionDate)
+        {
+            var transactionsByDateFromRepo = await transactionRepository.GetTransactionsByDate(transactionStatus, transactionDate);
+            transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+            await transactionRepository.DeleteOrderTransactions(transactionsByDateFromRepo.Select(t => t.Id).ToList());
+            await transactionRepository.SaveChanges();
+
+            return transactionsByDateFromRepo;
+        }
     }
 }

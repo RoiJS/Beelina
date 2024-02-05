@@ -16,6 +16,7 @@ import * as TransactionDateStoreActions from '../transaction-history/store/actio
 import { isLoadingSelector } from '../transaction-history/store/selectors';
 
 import { BaseFilterAndSortService } from '../_services/base-filter-and-sort.service';
+import { TransactionByDateOptionsService } from '../_services/transaction-by-date-options.service';
 
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { TransactionDateInformation } from '../_services/transaction.service';
@@ -32,7 +33,8 @@ export class BadOrdersComponent
     private router: Router,
     private store: Store<AppStateInterface>,
     private bottomSheet: MatBottomSheet,
-    private filterAndSortTransactionsService: BaseFilterAndSortService<TransactionDateInformation>
+    private filterAndSortTransactionsService: BaseFilterAndSortService<TransactionDateInformation>,
+    private transactionByDateOptionsService: TransactionByDateOptionsService
   ) {
     super();
 
@@ -46,6 +48,9 @@ export class BadOrdersComponent
       .setDataSource(
         new TransactionDatesDataSource(this.store, TransactionStatusEnum.BAD_ORDER)
       );
+
+    this.transactionByDateOptionsService
+      .setBottomSheet(this.bottomSheet);
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
@@ -66,6 +71,10 @@ export class BadOrdersComponent
 
   openFilter() {
     this.filterAndSortTransactionsService.openFilter();
+  }
+
+  openMoreActions(transationDateInformation: TransactionDateInformation) {
+    this.transactionByDateOptionsService.openMenu(transationDateInformation, TransactionStatusEnum.BAD_ORDER);
   }
 
   get dataSource(): TransactionDatesDataSource {
