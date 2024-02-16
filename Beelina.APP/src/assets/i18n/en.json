@@ -596,7 +596,9 @@
       "PICK_MONTH": "Pick Month"
     },
     "SALES_PANEL": {
-      "LABEL": "Sales Amount"
+      "LABEL": "Sales Amount",
+      "CASH_ON_HAND_LABEL": "Cash Payment",
+      "CHEQUE_ON_HAND_LABEL":"Cheque Payment"
     }
   },
   "SIDE_DRAWER_SECTION": {
@@ -803,7 +805,9 @@
       },
       "CHART_SECTION": {
         "TITLE": "Sales Date Distribution Chart",
-        "SERIES_LABEL": "Sales"
+        "SALES_LABEL": "Sales",
+        "CASH_ON_HAND_LABEL": "Cash Payment",
+        "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
       },
       "CHART_FILTER_SECTION": {
         "LABEL": "Total Sales Amount"

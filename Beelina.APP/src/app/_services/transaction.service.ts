@@ -219,7 +219,10 @@ const GET_TOP_SELLING_PRODUCTS = gql`
 const GET_TRANSACTION_SALES = gql`
   query ($userId: Int!, $fromDate: String!, $toDate: String!) {
     transactionSales(userId: $userId, fromDate: $fromDate, toDate: $toDate) {
-      sales
+      totalSalesAmount
+      cashAmountOnHand
+      chequeAmountOnHand
+      totalAmountOnHand
     }
   }
 `;
@@ -231,6 +234,9 @@ const GET_TRANSACTION_SALES_PER_DATE_RANGE_QUERY = gql`
       toDate
       label
       totalSales
+      cashAmountOnHand
+      chequeAmountOnHand
+      totalAmountOnHand
     }
   }
 `;
@@ -317,7 +323,10 @@ export class TransactionDateInformation {
 }
 
 export class TransactionSales {
-  public sales: number;
+  public totalSalesAmount: number;
+  public cashAmountOnHand: number;
+  public chequeAmountOnHand: number;
+  public totalAmountOnHand: number;
 }
 
 export class TransactionDto {
