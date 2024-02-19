@@ -1,10 +1,10 @@
-﻿using Beelina.LIB.Enums;
-using Beelina.LIB.Interfaces;
-
-namespace Beelina.LIB.Models
+﻿namespace Beelina.LIB.Models
 {
     public class TransactionSales
     {
-       public double Sales { get; set; }
+        public double TotalSalesAmount { get; set; }
+        public double ChequeAmountOnHand { get; set; }
+        public double CashAmountOnHand { get; set; }
+        public double TotalAmountOnHand => ChequeAmountOnHand + CashAmountOnHand;
     }
 }

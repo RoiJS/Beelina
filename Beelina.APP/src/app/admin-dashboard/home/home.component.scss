@@ -80,17 +80,44 @@
     }
 
     .sales-information-panel {
-      padding: 4em 1em;
+      padding: 2em 1em;
       display: flex;
       justify-content: space-between;
+      flex-direction: column;
 
-      label {
-        font-size: 2em;
+      &__amount-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+
+        label {
+          font-size: 2em;
+        }
+
+        span {
+          font-size: 4em;
+          color: $primary;
+        }
       }
 
-      span {
-        font-size: 4em;
-        color: $primary;
+      &__amount-breakdown-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2em;
+
+        .amount-information {
+          display: flex;
+          gap: 1em;
+          justify-content: space-between;
+
+          label {
+            font-weight: 500;
+          }
+
+          span {
+            color: $primary;
+          }
+        }
       }
     }
   }

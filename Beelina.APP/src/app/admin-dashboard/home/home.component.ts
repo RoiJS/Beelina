@@ -1,10 +1,9 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
 import { DateFilterEnum, SalesComponent } from 'src/app/sales/sales.component';
 import { SalesChartViewComponent } from './sales-chart-view/sales-chart-view.component';
-import { TransactionSalesPerSalesAgent } from 'src/app/_models/sales-per-agent';
 import { SalesPerAgentViewComponent } from './sales-per-agent-view/sales-per-agent-view.component';
 
 @Component({
