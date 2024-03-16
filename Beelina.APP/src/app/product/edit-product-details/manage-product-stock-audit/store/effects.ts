@@ -39,6 +39,36 @@ export class ProductStockAuditEffects {
     )
   );
 
+  warehouseProductStockAudits$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductStockAuditActions.getWarehouseProductStockAuditsAction),
+      switchMap((action: { productId: number, warehouseId: number }) => {
+        return this.productService.getWarehouseProductStockAuditList(action.productId, action.warehouseId).pipe(
+          map(
+            (data: {
+              endCursor: string;
+              hasNextPage: boolean;
+              productStockAuditItems: Array<ProductStockAuditItem>;
+            }) => {
+              return ProductStockAuditActions.getProductStockAuditsActionSuccess({
+                productStockAuditItems: data.productStockAuditItems,
+                endCursor: data.endCursor,
+                hasNextPage: data.hasNextPage,
+              });
+            }
+          ),
+          catchError((error) =>
+            of(
+              ProductStockAuditActions.getProductStockAuditsActionError({
+                error: error.message,
+              })
+            )
+          )
+        );
+      })
+    )
+  );
+
   constructor(
     private actions$: Actions,
     private productService: ProductService

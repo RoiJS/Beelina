@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
-import { select, Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { map, Observable, startWith, Subscription } from 'rxjs';
+import { Observable, Subscription, map, startWith } from 'rxjs';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
@@ -15,15 +15,16 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
 
-import { isUpdateLoadingSelector } from '../store/selectors';
 import { productUnitsSelector } from 'src/app/units/store/selectors';
+import { isUpdateLoadingSelector } from '../store/selectors';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
-import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
-import { ProductUnit } from 'src/app/_models/product-unit';
+import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { Product } from 'src/app/_models/product';
-import { WithdrawalSlipNoDialogComponent } from '../withdrawal-slip-no-dialog/withdrawal-slip-no-dialog.component';
+import { ProductUnit } from 'src/app/_models/product-unit';
+import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
+import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 
 @Component({
   selector: 'app-add-product-details',
@@ -32,10 +33,10 @@ import { WithdrawalSlipNoDialogComponent } from '../withdrawal-slip-no-dialog/wi
 })
 export class AddProductDetailsComponent implements OnInit {
   private _dialogRef: MatBottomSheetRef<
-    WithdrawalSlipNoDialogComponent,
+    AddProductStockQuantityDialogComponent,
     {
       additionalStockQuantity: number;
-      withdrawalSlipNo: string;
+      transactionNo: string;
     }
   >;
   private _productForm: FormGroup;
@@ -43,7 +44,9 @@ export class AddProductDetailsComponent implements OnInit {
   private _productUnitFilterOptions: Observable<Array<ProductUnit>>;
   private _productUnitOptionsSubscription: Subscription;
   private _productAdditionalStockQuantitySubscription: Subscription;
-
+  private _productSource: ProductSourceEnum;
+  private _productSourceUpdateFunc: Array<string> = ["updateProductInformation", "updateWarehouseProductInformation"];
+  private _productSourceRedirectUrl: Array<string> = ['/product-catalogue', "/warehouse-products"];
   $isLoading: Observable<boolean>;
 
   constructor(
@@ -57,6 +60,9 @@ export class AddProductDetailsComponent implements OnInit {
     private translateService: TranslateService,
     private uniqueProductCodeValidator: UniqueProductCodeValidator
   ) {
+    const state = <any>this.router.getCurrentNavigation().extras.state;
+    this._productSource = <ProductSourceEnum>state.productSource;
+
     this._productForm = this.formBuilder.group(
       {
         code: [
@@ -70,7 +76,7 @@ export class AddProductDetailsComponent implements OnInit {
         ],
         name: ['', Validators.required],
         description: [''],
-        withdrawalSlipNo: [''],
+        transactionNo: [''],
         stockQuantity: [0],
         additionalStockQuantity: [0],
         pricePerUnit: [null, Validators.required],
@@ -124,7 +130,7 @@ export class AddProductDetailsComponent implements OnInit {
     product.code = this._productForm.get('code').value;
     product.description = this._productForm.get('description').value;
     product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
-    product.withdrawalSlipNo = this._productForm.get('withdrawalSlipNo').value;
+    product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
     product.isTransferable = this._productForm.get('isTransferable').value;
     product.numberOfUnits = this._productForm.get('numberOfUnits').value;
     product.pricePerUnit = this._productForm.get('pricePerUnit').value;
@@ -149,7 +155,7 @@ export class AddProductDetailsComponent implements OnInit {
                 state: true,
               })
             );
-            this.productService.updateProductInformation([product]).subscribe({
+            this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
               next: () => {
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.SUCCESS_MESSAGE'
@@ -159,7 +165,7 @@ export class AddProductDetailsComponent implements OnInit {
                     state: false,
                   })
                 );
-                this.router.navigate(['/product-catalogue']);
+                this.router.navigate([this._productSourceRedirectUrl[this._productSource]]);
               },
 
               error: () => {
@@ -180,10 +186,11 @@ export class AddProductDetailsComponent implements OnInit {
   }
 
   editStockQuantity() {
-    this._dialogRef = this.bottomSheet.open(WithdrawalSlipNoDialogComponent, {
+    this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
       data: {
         additionalStockQuantity: this._productForm.get('additionalStockQuantity').value,
-        withdrawalSlipNo: this._productForm.get('withdrawalSlipNo').value,
+        transactionNo: this._productForm.get('transactionNo').value,
+        productSource: this._productSource,
       },
     });
 
@@ -192,14 +199,15 @@ export class AddProductDetailsComponent implements OnInit {
       .subscribe(
         (data: {
           additionalStockQuantity: number;
-          withdrawalSlipNo: string;
+          transactionNo: string;
         }) => {
+          if (!data) return;
           this._productForm
             .get('additionalStockQuantity')
             .setValue(data.additionalStockQuantity);
           this._productForm
-            .get('withdrawalSlipNo')
-            .setValue(data.withdrawalSlipNo);
+            .get('transactionNo')
+            .setValue(data.transactionNo);
         }
       );
   }

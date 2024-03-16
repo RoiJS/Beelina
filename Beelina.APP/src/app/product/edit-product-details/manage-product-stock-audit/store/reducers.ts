@@ -14,7 +14,7 @@ export const initialState: IProductStockAuditState = {
   filterKeyword: '',
   fromDate: null,
   toDate: null,
-  sortOrder: SortOrderOptionsEnum.ASCENDING,
+  sortOrder: SortOrderOptionsEnum.DESCENDING,
   stockAuditSource: StockAuditSourceEnum.None,
   hasNextPage: false,
   error: null,

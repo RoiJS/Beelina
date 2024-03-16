@@ -20,6 +20,7 @@ namespace Beelina.API.Types.Mutations
             int userAccountId,
             List<ProductInput> productInputs)
         {
+            var warehouseId = 1;
             var productsFromRepo = new List<Product>();
 
             foreach (var productInput in productInputs)
@@ -37,7 +38,44 @@ namespace Beelina.API.Types.Mutations
 
                 try
                 {
-                    await productRepository.CreateOrUpdateProduct(userAccountId, productInput, productFromRepo);
+                    await productRepository.CreateOrUpdatePanelProduct(userAccountId, warehouseId, productInput, productFromRepo);
+                    productsFromRepo.Add(productFromRepo);
+                }
+                catch
+                {
+                    throw new ProductFailedRegisterException(productFromRepo.Name);
+                }
+            }
+
+            return productsFromRepo;
+        }
+
+        [Authorize]
+        [Error(typeof(ProductErrorFactory))]
+        public async Task<List<Product>> UpdateWarehouseProducts(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IMapper mapper,
+            int warehouseId,
+            List<ProductInput> productInputs)
+        {
+            var productsFromRepo = new List<Product>();
+
+            foreach (var productInput in productInputs)
+            {
+                var productFromRepo = await productRepository.GetEntity(productInput.Id).ToObjectAsync();
+
+                if (productFromRepo == null)
+                {
+                    productFromRepo = mapper.Map<Product>(productInput);
+                }
+                else
+                {
+                    mapper.Map(productInput, productFromRepo);
+                }
+
+                try
+                {
+                    await productRepository.CreateOrUpdateWarehouseProduct(warehouseId, productInput, productFromRepo);
                     productsFromRepo.Add(productFromRepo);
                 }
                 catch
@@ -80,8 +118,10 @@ namespace Beelina.API.Types.Mutations
                     int sourceNumberOfUnitsTransfered,
                     TransferProductStockTypeEnum transferProductStockType)
         {
+            var warehouseId = 1; // Will be implemented later
             return await productRepository.TransferProductStockFromOwnInventory(
                 userAccountId,
+                warehouseId,
                 sourceProductId,
                 destinationProductId,
                 destinationProductNumberOfUnits,

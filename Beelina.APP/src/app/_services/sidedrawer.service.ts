@@ -96,6 +96,20 @@ export class SidedrawerService {
         maximumPermissionLevel: administratorPermissionLevel,
       },
       {
+        name: 'MAIN_MENU.WAREHOUSE_PRODUCTS',
+        url: '/warehouse-products',
+        icon: 'add_shopping_cart',
+        minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+      },
+      {
+        name: 'MAIN_MENU.ACCOUNTS',
+        url: '/accounts',
+        icon: 'person_pin',
+        minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+      },
+      {
         name: 'MAIN_MENU.MANUAL',
         url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
         icon: 'info',

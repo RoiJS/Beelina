@@ -8,15 +8,19 @@ namespace Beelina.LIB.Interfaces
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
         Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "");
+        Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "");
         Task<Product> UpdateProduct(Product product);
         Task<Product> GetProductByUniqueCode(int productId, string productCode);
         Task<Product> GetProductByCode(string productCode);
-        Task<Product> CreateOrUpdateProduct(int userAccountId, ProductInput productInput, Product product);
+        Task<Product> CreateOrUpdatePanelProduct(int userAccountId, int warehouseId, ProductInput productInput, Product product);
+        Task<Product> CreateOrUpdateWarehouseProduct(int warehouseId, ProductInput productInput, Product product);
         Task<List<ProductStockAudit>> GetProductStockAudits(int productId, int userAccountId);
         Task<List<ProductStockAuditItem>> GetProductStockAuditItems(int productId, int userAccountId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate);
+        Task<List<ProductStockAuditItem>> GetWarehouseProductStockAuditItems(int productId, int warehouseId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate);
         Task<List<Product>> GetProductsDetailList(int userId, string filterKeyWord = "");
         Task<Product> TransferProductStockFromOwnInventory(
             int userAccountId,
+            int warehouseId,
             int sourceProductId,
             int destinationProductId,
             int destinationProductNumberOfUnits,

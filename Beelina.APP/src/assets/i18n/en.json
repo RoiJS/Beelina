@@ -33,6 +33,8 @@
     "BARANGAYS": "Barangays",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
+    "WAREHOUSE_PRODUCTS": "Warehouse Products",
+    "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Draft Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
     "BAD_ORDERS": "Bad Orders",
@@ -379,6 +381,10 @@
       "CONFIRM": "Are you sure to save product details?",
       "SUCCESS_MESSAGE": "New updates has been saved!",
       "ERROR_MESSAGE": "Updating product failed. Please again later."
+    },
+    "CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG": {
+      "TITLE": "Insufficient Item Stocks",
+      "ERROR_MESSAGE": "This product does not have enough stocks in the warehouse. There are only {0} stocks in the warehouse left."
     }
   },
   "PRODUCTS_CATALOGUE_PAGE": {
@@ -457,14 +463,23 @@
       }
     }
   },
-  "PRODUCT_STOCK_WITHDRAWAL_DIALOG": {
-    "TITLE": "Product Stock Withdrawal",
-    "FORM_CONTROL_SECTION": {
-      "WITHDRAWAL_SLIP_NO_CONTROL": {
-        "LABEL": "Withdrawal Slip No"
-      },
-      "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
-        "LABEL": "Additional Stock Quantity"
+  "ADD_PRODUCT_STOCK_QUANTITY_DIALOG": {
+    "FOR_PANEL": {
+      "TITLE": "Product Stock Withdrawal",
+      "FORM_CONTROL_SECTION": {
+        "TRANSACTION_NO": "Withdrawal Slip No",
+        "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
+          "LABEL": "Additional Stock Quantity"
+        }
+      }
+    },
+    "FOR_WAREHOUSE": {
+      "TITLE": "Product Stock Deposit",
+      "FORM_CONTROL_SECTION": {
+        "TRANSACTION_NO": "Transaction No",
+        "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
+          "LABEL": "Additional Stock Quantity"
+        }
       }
     }
   },
@@ -598,7 +613,7 @@
     "SALES_PANEL": {
       "LABEL": "Sales Amount",
       "CASH_ON_HAND_LABEL": "Cash Payment",
-      "CHEQUE_ON_HAND_LABEL":"Cheque Payment"
+      "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
     }
   },
   "SIDE_DRAWER_SECTION": {
@@ -760,14 +775,16 @@
         "FROM_WITHDRAWAL": "From Withdrawal",
         "MOVED_FROM_OTHER_PRODUCT_INVENTORY": "Moved From Other Product Inventory",
         "MOVED_TO_OTHER_PRODUCT_INVENTORY": "Moved To Other Product Inventory",
-        "ORDER_TRANSACTION": "Order Transaction"
+        "ORDER_TRANSACTION": "Order Transaction",
+        "ORDER_FROM_SUPPLIER": "Order From Supplier"
       },
       "SOURCE_LABEL": "Source",
       "QUANTITY_LABEL": "Quantity",
       "MODIFIED_DATE_LABEL": "Modified Date",
       "MODIFIED_BY_LABEL": "Modified By",
       "WITHDRAWAL_SLIP_NO_LABEL": "Withdrawal Slip No.",
-      "INVOICE_NO_LABEL": "Invoice No."
+      "INVOICE_NO_LABEL": "Invoice No.",
+      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No."
     }
   },
   "REPORT_SETTINGS_DIALOG": {
@@ -815,11 +832,11 @@
     },
     "WAREHOUSE_PAGE": {
       "TITLE": "Warehouse",
-      "DESCRIPTION": "This is the page where administrator can manage products available on the warehouse. Administrator can products from multiple warehouses"
+      "DESCRIPTION": "This is the page where administrator manages products from warehouse."
     },
     "ACCOUNTS_PAGE": {
       "TITLE": "Accounts",
-      "DESCRIPTION": "This is the page where administrator can user accounts information."
+      "DESCRIPTION": "This is the page where administrator can manage user accounts information."
     },
     "DISTRIBUTION_PAGE": {
       "TITLE": "Distribution",

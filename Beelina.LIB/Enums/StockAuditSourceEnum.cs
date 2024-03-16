@@ -7,5 +7,7 @@
         MovedFromOtherProductInventory = 2,
         MovedToOtherProductInventory = 3,
         OrderTransaction = 4,
+        OrderFromSupplier = 5,
+        ToWithdrawal = 6
     }
 }
