@@ -541,7 +541,7 @@ namespace Beelina.LIB.BusinessLogic
           productsFromRepo.Add(productFromRepo);
 
           // Commit transaction if all operations succeed
-          if (counter == (productInputs.Count - 1)) await transaction.RollbackAsync(cancellationToken);
+          if (counter == (productInputs.Count - 1)) await transaction.CommitAsync(cancellationToken);
           counter++;
         }
       }
