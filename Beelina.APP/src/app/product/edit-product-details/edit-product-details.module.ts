@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { EditProductDetailsComponent } from './edit-product-details.component';
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
-import { WithdrawalSlipNoDialogModule } from '../withdrawal-slip-no-dialog/withdrawal-slip-no-dialog.module';
+import { AddProductStockQuantityDialogModule } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.module';
 
 @NgModule({
   imports: [
@@ -23,7 +23,7 @@ import { WithdrawalSlipNoDialogModule } from '../withdrawal-slip-no-dialog/withd
     MatAutocompleteModule,
     MatSlideToggleModule,
     ReactiveFormsModule,
-    WithdrawalSlipNoDialogModule,
+    AddProductStockQuantityDialogModule,
     RouterModule.forChild([
       {
         path: '',

@@ -1,15 +1,12 @@
 <div class="product-stock-withdrawal-dialog-container">
   <div class="dialog-form-container__header">
-    <span>{{ "PRODUCT_STOCK_WITHDRAWAL_DIALOG.TITLE" | translate }}</span>
+    <span>{{ dialogTitle }}</span>
     <mat-icon (click)="onCancel()">cancel</mat-icon>
   </div>
   <div class="dialog-form-container__body" [formGroup]="productWithdrawalForm">
     <mat-form-field appearance="fill">
-      <mat-label>{{
-        "PRODUCT_STOCK_WITHDRAWAL_DIALOG.FORM_CONTROL_SECTION.WITHDRAWAL_SLIP_NO_CONTROL.LABEL"
-        | translate
-        }}:</mat-label>
-      <input matInput type="text" formControlName="withdrawalSlipNo" />
+      <mat-label>{{ fieldLabel }}:</mat-label>
+      <input matInput type="text" formControlName="transactionNo" />
     </mat-form-field>
 
     <mat-form-field appearance="fill">

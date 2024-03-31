@@ -7,6 +7,7 @@
 }
 
 .product-total-count-container {
+  height: 2em;
 
   &__value {
     padding: 5px 10px;
@@ -15,7 +16,6 @@
     color: $white;
   }
 }
-
 .no-selected-sales-agent-label-container {
   display: flex;
   justify-content: space-around;

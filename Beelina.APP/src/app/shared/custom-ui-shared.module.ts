@@ -32,12 +32,16 @@ import { NotificationModule } from './ui/notification/notification.module';
 import { SearchFieldComponent } from './ui/search-field/search-field.component';
 import { TransactionDateOptionMenuComponent } from './ui/transaction-date-option-menu/transaction-date-option-menu.component';
 import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/transaction-option-menu.component';
+import { BannerModule } from './ui/banner/banner.module';
+import { BadgeModule } from './ui/badge/badge.module';
 
 @NgModule({
   imports: [
     CommonModule,
     DialogModule,
     NotificationModule,
+    BannerModule,
+    BadgeModule,
     MatBadgeModule,
     MatIconModule,
     MatToolbarModule,
@@ -82,6 +86,8 @@ import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/tra
     SearchFieldComponent,
     DialogModule,
     NotificationModule,
+    BannerModule,
+    BadgeModule,
     TextInputAutocompleteContainerComponent,
     TextInputAutocompleteDirective,
     LongPressDirective,

@@ -63,10 +63,10 @@
                 </div>
 
                 <div class="product-transaction-information-status">
-                  <span class="product-transaction-information-status--paid" *ngIf="item?.isPaid">{{
-                    "GENERAL_TEXTS.PAID" | translate }}</span>
-                  <span class="product-transaction-information-status--unpaid" *ngIf="!item?.isPaid">{{
-                    "GENERAL_TEXTS.UNPAID" | translate }}</span>
+                  <app-badge *ngIf="item?.isPaid" [type]="bannerTypeEnum.SUCCESS"
+                    [textIdentifier]="'GENERAL_TEXTS.PAID'"></app-badge>
+                  <app-badge *ngIf="!item?.isPaid" [type]="bannerTypeEnum.ERROR"
+                    [textIdentifier]="'GENERAL_TEXTS.UNPAID'"></app-badge>
                 </div>
               </div>
             </mat-list-item>

@@ -15,6 +15,7 @@ export interface AppStateInterface {
   barangays: IBarangayState;
   productUnits: IProductUnitState;
   products: IProductState;
+  warehouseProducts: IProductState;
   productStockAudits: IProductStockAuditState;
   customerStores: ICustomerStoreState;
   transactionDates: ITransactionDateState;

@@ -2,6 +2,7 @@
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
+using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.AspNetCore.Authorization;
@@ -12,18 +13,39 @@ namespace Beelina.API.Types.Query
     public class ProductQuery
     {
         [Authorize]
-        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
-        [UseProjection]
-        [UseFiltering]
-        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, int userAccountId, string filterKeyword = "")
+        public async Task<List<Product>> UpdateProducts(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int userAccountId,
+            List<ProductInput> productInputs)
         {
-            return await productRepository.GetProducts(userAccountId, 0, filterKeyword);
+            var warehouseId = 1;
+            var savedProducts = new List<Product>();
+            try
+            {
+                savedProducts = await productRepository.CreateOrUpdatePanelProducts(userAccountId, warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("$Failed to register product: {ex.Message}");
+            }
+
+            return savedProducts;
         }
 
         [Authorize]
-        public async Task<IProductPayload> GetProduct([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, int productId, int userAccountId)
+        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int userAccountId, string filterKeyword = "")
         {
-            var productFromRepo = await productRepository.GetProducts(userAccountId, productId);
+            return await productRepository.GetProducts(userAccountId, 0, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
+        }
+
+        [Authorize]
+        public async Task<IProductPayload> GetProduct([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, int productId, int userAccountId)
+        {
+            var productFromRepo = await productRepository.GetProducts(userAccountId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
 
             if (productFromRepo == null || productFromRepo?.Count == 0)
             {

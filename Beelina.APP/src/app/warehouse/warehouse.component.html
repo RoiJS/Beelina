@@ -1,0 +1,40 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false"></app-tool-bar>
+
+<app-loader-layout [busy]="$isLoading | async">
+  <div class="page-container scale-in-center-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "WAREHOUSE_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "WAREHOUSE_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-search-field (onSearch)="onSearch($event)" [placeHolderTextIdentifier]="
+        'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "></app-search-field>
+
+    <div class="product-total-count-container" *ngIf="filterKeyword?.length > 0">
+      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span><span
+        class="product-total-count-container__value">{{ totalProducts }} items</span>
+    </div>
+
+    <div class="product-total-count-container" *ngIf="filterKeyword?.length === 0">
+      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_COUNTER_CONTAINER.LABEL' | translate }}: </span><span
+        class="product-total-count-container__value">{{ totalProducts }} items</span>
+    </div>
+
+
+    <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
+        <div *cdkVirtualFor="let item of dataSource">
+          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [allowTransferStocks]="false"
+            [allowManageItem]="true" (editItem)="editProduct($event)" (selectItem)="editProduct($event)"
+            (deleteItem)="deleteProduct($event)"
+            (addStockQuantity)="addProductStockQuantity($event  )"></app-product-card-item>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
+  </div>
+
+  <app-floating-button (tapButton)="productImport()" [icon]="'note_add'" [bottom]="155"></app-floating-button>
+  <app-floating-button (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
+</app-loader-layout>

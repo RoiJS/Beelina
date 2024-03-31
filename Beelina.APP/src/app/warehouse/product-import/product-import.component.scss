@@ -1,0 +1,60 @@
+@import "../../../app-variables";
+
+::ng-deep mat-step-header.mat-step-header {
+  pointer-events: none;
+}
+
+.import-product-stepper-container {
+  .select-file-section {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    margin-bottom: 1em;
+    flex-wrap: wrap-reverse;
+
+    &__file-upload-control {
+      min-width: 400px;
+    }
+
+    &__product-import-information-section {
+      flex: 1;
+
+      ul {
+        list-style-type: square;
+      }
+    }
+  }
+
+  .preview-data-section {
+    margin-bottom: 1em;
+
+    &__failed-products-banner {
+      margin-bottom: 1em;
+    }
+
+    &__grid-section {
+      .grid-container {
+        min-width: 500px;
+        overflow: auto;
+      }
+    }
+  }
+
+  .import-section {
+    margin-bottom: 2em;
+
+    &__import-information-banner {
+      margin: 1em 0;
+    }
+  }
+
+  &__button-options {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+  }
+
+  mat-paginator {
+    margin-top: 0.5em;
+  }
+}

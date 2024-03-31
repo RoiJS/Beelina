@@ -5,11 +5,15 @@ import { Product } from 'src/app/_models/product';
 import { IProductState } from '../types/product-state.interface';
 
 import * as ProductActions from './actions';
+import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
 
 export const initialState: IProductState = {
   isLoading: false,
   isUpdateLoading: false,
   products: new Array<Product>(),
+  importLoading: false,
+  importProductsResult: false,
+  importedProducts: new Array<IProductPayload>(),
   textProductInventories: new Array<Product>(),
   endCursor: null,
   totalCount: 0,
@@ -70,7 +74,7 @@ export const reducers = createReducer(
     (state, action) =>
       <IProductState>{
         ...state,
-        isLoading: action.state,
+        isUpdateLoading: action.state,
       }
   ),
   on(ProductActions.setSearchProductAction, (state, action) => ({

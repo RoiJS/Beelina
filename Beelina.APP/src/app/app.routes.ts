@@ -20,6 +20,18 @@ export const routes: Routes = [
     canLoad: [AuthGuard],
   },
   {
+    path: 'warehouse-products',
+    loadChildren: () =>
+      import('./warehouse/warehouse.module').then((m) => m.WarehouseModule),
+    canLoad: [AuthGuard],
+  },
+  {
+    path: 'accounts',
+    loadChildren: () =>
+      import('./accounts/accounts.module').then((m) => m.AccountsModule),
+    canLoad: [AuthGuard],
+  },
+  {
     path: 'barangays',
     loadChildren: () =>
       import('./barangays/barangays.module').then((m) => m.BarangaysModule),

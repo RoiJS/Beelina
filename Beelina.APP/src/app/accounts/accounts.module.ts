@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { WarehouseComponent } from './warehouse.component';
+import { AccountsComponent } from './accounts.component';
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -14,11 +14,11 @@ import { TranslateModule } from '@ngx-translate/core';
     RouterModule.forChild([
       {
         path: '',
-        component: WarehouseComponent,
-        outlet: 'adminDashboard'
+        component: AccountsComponent,
+        title: 'DASHBOARD_ADMIN.WAREHOUSE_PAGE.TITLE'
       }
     ])
   ],
-  declarations: [WarehouseComponent]
+  declarations: [AccountsComponent]
 })
-export class WarehouseModule { }
+export class AccountsModule { }

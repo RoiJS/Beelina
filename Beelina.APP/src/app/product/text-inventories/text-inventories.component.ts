@@ -32,6 +32,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
   private _showTextInventoriesTextAreaContainer: boolean = true;
   private _textInventoriesList: Product[];
   private _loadingLabel: string;
+  private _updateProductInformationSubscription: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -103,6 +104,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+    if (this._updateProductInformationSubscription) this._updateProductInformationSubscription.unsubscribe();
     this.store.dispatch(ProductActions.resetTextInventoriesState());
   }
 
@@ -122,7 +124,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
       ).subscribe((result: ButtonOptions) => {
         if (result === ButtonOptions.YES) {
           this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: true }));
-          this.productService.updateProductInformation(this._textInventoriesList).subscribe({
+          this._updateProductInformationSubscription =  this.productService.updateProductInformation(this._textInventoriesList).subscribe({
             next: () => {
               this.store.dispatch(ProductActions.resetProductState());
               this.store.dispatch(ProductActions.getProductsAction());
