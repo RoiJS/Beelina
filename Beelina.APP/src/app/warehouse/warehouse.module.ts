@@ -30,6 +30,10 @@ import { WarehouseComponent } from './warehouse.component';
       {
         path: '',
         component: WarehouseComponent,
+      },
+      {
+        path: 'product-import',
+        loadChildren: () => import('./product-import/product-import.module').then(p => p.ProductImportModule)
       }
     ])
   ],

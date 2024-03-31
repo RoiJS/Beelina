@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { catchError, map, of, switchMap, takeUntil, tap } from 'rxjs';
 
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
@@ -34,6 +34,7 @@ export class ProductEffects {
               });
             }
           ),
+          takeUntil(this.actions$.pipe(ofType(ProductActions.getProductsCancelAction))),
           catchError((error) =>
             of(
               ProductActions.getProductsActionError({

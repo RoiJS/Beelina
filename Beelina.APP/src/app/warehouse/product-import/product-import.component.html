@@ -1,0 +1,324 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
+
+<app-loader-layout [busy]="$isExtractionLoading | async">
+  <div class="page-container scale-in-center-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "WAREHOUSE_PRODUCT_IMPORT_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "WAREHOUSE_PRODUCT_IMPORT_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+
+    <mat-stepper class="import-product-stepper-container" linear #stepper>
+      <!-- # Select file section -->
+      <mat-step>
+        <ng-template matStepLabel>{{ "WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.TITLE" |
+          translate }}</ng-template>
+        <div class="select-file-section">
+          <div class="select-file-section__file-upload-control">
+            <ngx-awesome-uploader [adapter]="warehouseFilePickerAdapter" [fileMaxSize]="25" [fileExtensions]="['xlsx']"
+              [uploadType]="'single'" [enableAutoUpload]="false" (validationError)="onValidationError($event)">
+            </ngx-awesome-uploader>
+          </div>
+          <div class="select-file-section__product-import-information-section">
+            <app-banner [type]="bannerTypeEnum.INFO">
+              <p
+                [innerHTML]="translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.IMPORT_MECHANICS_INFORMATION_TEXTS.LABEL_1')">
+              </p>
+              <p
+                [innerHTML]="translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.IMPORT_MECHANICS_INFORMATION_TEXTS.LABEL_2')">
+              </p>
+              <span>
+                <ul>
+                  <li>
+                    <code>{{ 'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.FIELDS_SECTION.PRODUCT_CODE' | translate }}</code>
+                  </li>
+                  <li>
+                    <code>{{ 'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.FIELDS_SECTION.PRODUCT_NAME' | translate }}</code>
+                  </li>
+                  <li>
+                    <code>{{ 'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.FIELDS_SECTION.ADDITIONAL_QUANTITY' | translate }}</code>
+                  </li>
+                  <li>
+                    <code>{{ 'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.FIELDS_SECTION.PRICE_PER_UNIT' | translate }}</code>
+                  </li>
+                  <li>
+                    <code>{{ 'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.FIELDS_SECTION.PRODUCT_UNIT' | translate }}</code>
+                  </li>
+                  <li>
+                    <code>{{ 'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.FIELDS_SECTION.NUMBER_OF_UNITS' | translate }}</code>
+                  </li>
+                </ul>
+              </span>
+              <p
+                [innerHTML]="translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.IMPORT_MECHANICS_INFORMATION_TEXTS.LABEL_3')">
+              </p>
+              <p
+                [innerHTML]="translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.IMPORT_MECHANICS_INFORMATION_TEXTS.LABEL_4')">
+              </p>
+            </app-banner>
+          </div>
+        </div>
+        <div class="import-product-stepper-container__button-options">
+          <button mat-raised-button color="primary" (click)="extractFile()"
+            [disabled]="filePicker?.files?.length === 0"><mat-icon>cloud_upload</mat-icon>{{ "GENERAL_TEXTS.EXTRACT" |
+            translate }}</button>
+          <button mat-raised-button color="primary" mat-button matStepperNext
+            *ngIf="successProductImportsDatasource.data.length > 0"><mat-icon>arrow_forward</mat-icon>{{
+            "GENERAL_TEXTS.NEXT" | translate }}</button>
+        </div>
+      </mat-step>
+
+      <!-- # Preview Data section -->
+      <mat-step>
+        <ng-template matStepLabel>{{ "WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.TITLE" |
+          translate }}</ng-template>
+        <div class="preview-data-section">
+          <div class="preview-data-section__failed-products-banner"
+            *ngIf="failedProductImportsDatasource.data.length > 0">
+            <app-banner [type]="bannerTypeEnum.ERROR">
+              <span>
+                {{
+                translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.FAILED_PRODUCTS_EXTRACTED_SECTION.ERROR_BANNER_TEXT').replace('{0}',
+                failedProductImportsDatasource.data.length) }}
+              </span>
+            </app-banner>
+          </div>
+
+          <mat-accordion class="preview-data-section__grid-section">
+            <mat-expansion-panel [expanded]="failedProductImportsDatasource.data.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ failedProductImportsDatasource.data.length }} {{
+                  'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.FAILED_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.TITLE'
+                  | translate }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{
+                  'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.FAILED_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.DESCRIPTION'
+                  | translate }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <table mat-table [dataSource]="failedProductImportsDatasource" class="mat-elevation-z8">
+
+                <!--- Note that these columns can be defined in any order.
+                      The actual rendered columns are set as a property on the row definition" -->
+
+                <!-- Code Column -->
+                <ng-container matColumnDef="rowNumber">
+                  <th mat-header-cell *matHeaderCellDef>{{
+                    'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.FAILED_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.ROW_NUMBER'
+                    | translate }} </th>
+                  <td mat-cell *matCellDef="let element"> {{element.rowNumber}} </td>
+                </ng-container>
+
+                <!-- Message Column -->
+                <ng-container matColumnDef="message">
+                  <th mat-header-cell *matHeaderCellDef>{{
+                    'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.FAILED_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.MESSAGE'
+                    | translate }} </th>
+                  <td mat-cell *matCellDef="let element"> {{element.message}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="failedProductImportColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: failedProductImportColumns;"></tr>
+              </table>
+              <mat-paginator #failedProductImportPaginator [pageSizeOptions]="[100, 200, 500, 1000]"
+                showFirstLastButtons>
+              </mat-paginator>
+            </mat-expansion-panel>
+            <mat-expansion-panel [expanded]="failedProductImportsDatasource.data.length === 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ successProductImportsDatasource.data.length }} {{
+                  'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.SUCCESS_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.TITLE'
+                  | translate }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{
+                  'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.FAILED_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.DESCRIPTION'
+                  | translate }} </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="grid-container">
+                <table mat-table [dataSource]="successProductImportsDatasource" class="mat-elevation-z8">
+
+                  <!--- Note that these columns can be defined in any order.
+                      The actual rendered columns are set as a property on the row definition" -->
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef [style.width.px]="250"> </th>
+                    <td mat-cell *matCellDef="let element">
+                      <app-badge *ngIf="element.id > 0" [type]="bannerTypeEnum.WARNING"
+                        [textIdentifier]="'GENERAL_TEXTS.EXISTING'"></app-badge>
+                      <app-badge *ngIf="element.id === 0" [type]="bannerTypeEnum.SUCCESS"
+                        [textIdentifier]="'GENERAL_TEXTS.NEW'"></app-badge>
+                    </td>
+                  </ng-container>
+
+                  <!-- Code Column -->
+                  <ng-container matColumnDef="code">
+                    <th mat-header-cell *matHeaderCellDef [style.width.px]="250"> {{
+                      'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.SUCCESS_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.CODE'
+                      | translate }} </th>
+                    <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef [style.width.px]="400"> {{
+                      'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.SUCCESS_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.NAME'
+                      | translate }} </th>
+                    <td mat-cell *matCellDef="let element">
+                      <span *ngIf="element.id > 0 && element.name !== element.originalName; else onlyNameBlock">
+                        {{element.originalName}}<br />
+                        <mat-icon>arrow_downward</mat-icon><br />
+                        {{element.name}}
+                      </span>
+
+                      <ng-template #onlyNameBlock>
+                        {{element.name}}
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <!-- Quantity Column -->
+                  <ng-container matColumnDef="quantity">
+                    <th mat-header-cell *matHeaderCellDef [style.width.px]="250"> {{
+                      'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.SUCCESS_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.QUANTITY'
+                      | translate }} </th>
+                    <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
+                  </ng-container>
+
+                  <!-- Unit Column -->
+                  <ng-container matColumnDef="unit">
+                    <th mat-header-cell *matHeaderCellDef [style.width.px]="250"> {{
+                      'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.SUCCESS_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.UNIT'
+                      | translate }} </th>
+                    <td mat-cell *matCellDef="let element">
+                      <span
+                        *ngIf="element.id > 0 && element.unit !== null && element.unit.toLowerCase() !== element.originalUnit.toLowerCase(); else onlyUnitBlock">
+                        {{element.originalUnit}}<br />
+                        <mat-icon>arrow_downward</mat-icon><br />
+                        {{element.unit}}
+                      </span>
+
+                      <ng-template #onlyUnitBlock>
+                        {{element.unit}}
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <!-- Price Column -->
+                  <ng-container matColumnDef="price">
+                    <th mat-header-cell *matHeaderCellDef [style.width.px]="150"> {{
+                      'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.SUCCESS_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.PRICE'
+                      | translate }} </th>
+                    <td mat-cell *matCellDef="let element">
+                      <span
+                        *ngIf="element.id > 0 && element.price !== null && element.price !== element.originalPrice; else onlyPriceBlock">
+                        {{element.originalPrice}}<br />
+                        <mat-icon>arrow_downward</mat-icon><br />
+                        {{element.price}}
+                      </span>
+
+                      <ng-template #onlyPriceBlock>
+                        {{element.price}}
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <!-- Number of unit Column -->
+                  <ng-container matColumnDef="numberOfUnits">
+                    <th mat-header-cell *matHeaderCellDef [style.width.px]="250"> {{
+                      'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.SUCCESS_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.NUMBER_OF_UNITS'
+                      | translate }} </th>
+                    <td mat-cell *matCellDef="let element">
+                      <span
+                        *ngIf="element.id > 0 && element.numberOfUnits !== null && element.numberOfUnits !== element.originalNumberOfUnits; else onlyNumberOfUnitsBlock">
+                        {{element.originalNumberOfUnits}}<br />
+                        <mat-icon>arrow_downward</mat-icon><br />
+                        {{element.numberOfUnits}}
+                      </span>
+
+                      <ng-template #onlyNumberOfUnitsBlock>
+                        {{element.numberOfUnits}}
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="successProductImportColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: successProductImportColumns;"></tr>
+                </table>
+
+                <mat-paginator #successProductImportPaginator [pageSizeOptions]="[100, 200, 500, 1000]"
+                  showFirstLastButtons>
+                </mat-paginator>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+        <div class="import-product-stepper-container__button-options">
+          <button mat-raised-button matStepperPrevious><mat-icon>arrow_back</mat-icon>{{
+            'GENERAL_TEXTS.BACK'
+            | translate }}</button>
+          <button mat-raised-button color="primary" mat-button matStepperNext
+            [disabled]="successProductImportsDatasource.data.length === 0 || failedProductImportsDatasource.data.length > 0"><mat-icon>arrow_forward</mat-icon>{{
+            'GENERAL_TEXTS.NEXT'
+            | translate }}</button>
+        </div>
+      </mat-step>
+
+      <!-- # Import Products section -->
+      <mat-step>
+        <ng-template matStepLabel>{{
+          'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.THIRD_STEP_SECTION.TITLE'
+          | translate }}</ng-template>
+        <div class="import-section">
+          <div class="import-section__import-information-banner">
+            <app-banner [type]="bannerTypeEnum.INFO">
+              <p
+                [innerHTML]="translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.THIRD_STEP_SECTION.BANNER_INFO_SECTION.LABEL_1')">
+              </p>
+              <p
+                [innerHTML]="translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.THIRD_STEP_SECTION.BANNER_INFO_SECTION.LABEL_2')">
+              </p>
+            </app-banner>
+          </div>
+
+          <div class="scale-in-center-animation import-section__import-information-banner"
+            *ngIf="$isImportLoading | async">
+            <app-banner [type]="bannerTypeEnum.SUCCESS">
+              <span>
+                {{
+                translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.THIRD_STEP_SECTION.BANNER_IMPORT_IN_PROGRESS_SECTION.LABEL_1').replace('{0}',
+                successProductImportsDatasource.data.length)
+                }}
+              </span>
+            </app-banner>
+          </div>
+          <mat-progress-bar mode="indeterminate" *ngIf="$isImportLoading | async"
+            class="scale-in-center-animation"></mat-progress-bar>
+        </div>
+        <div class="import-product-stepper-container__button-options">
+          <button mat-raised-button matStepperPrevious><mat-icon>arrow_back</mat-icon>{{
+            'GENERAL_TEXTS.BACK'
+            | translate }}</button>
+          <button mat-raised-button color="primary"
+            [disabled]="!successProductImportsDatasource.data.length || ($isImportLoading | async)"
+            (click)="importProducts()"><mat-icon>cloud_upload</mat-icon>{{
+            'GENERAL_TEXTS.IMPORT'
+            | translate }}</button>
+          <button mat-raised-button color="warn" (click)="abortImport()"
+            [disabled]="!($isImportLoading | async)"><mat-icon>highlight_off</mat-icon>{{
+            'GENERAL_TEXTS.CANCEL'
+            | translate }}</button>
+          <button mat-raised-button (click)="resetImport()"><mat-icon>restore</mat-icon>{{
+            'GENERAL_TEXTS.RESET'
+            | translate }}</button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </div>
+</app-loader-layout>

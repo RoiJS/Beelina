@@ -94,6 +94,7 @@ services.AddGraphQLServer()
         .AddType<UserAccountNotExistsError>()
         .AddType<SystemUpdateActiveError>()
         .AddType<CheckProductCodeInformationResult>()
+        .AddType<UploadType>()
         .AddType<ClientNotExistsError>();
 
 // Register IOptions pattern for AppSettings section

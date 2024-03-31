@@ -22,6 +22,20 @@ export const isLoadingSelector = createSelector(
   selectFeature,
   (state) => state.isLoading
 );
+export const isImportLoadingSelector = createSelector(
+  selectFeature,
+  (state) => state.importLoading
+);
+
+export const importResultSelector = createSelector(
+  selectFeature,
+  (state) => state.importProductsResult
+);
+
+export const importedProductsSelector = createSelector(
+  selectFeature,
+  (state) => state.importedProducts
+);
 
 export const errorSelector = createSelector(
   selectFeature,

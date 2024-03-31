@@ -47,6 +47,7 @@ export class AddProductDetailsComponent implements OnInit {
   private _productSource: ProductSourceEnum;
   private _productSourceUpdateFunc: Array<string> = ["updateProductInformation", "updateWarehouseProductInformation"];
   private _productSourceRedirectUrl: Array<string> = ['/product-catalogue', "/warehouse-products"];
+  private _updateProductSubscription: Subscription;
   $isLoading: Observable<boolean>;
 
   constructor(
@@ -119,6 +120,7 @@ export class AddProductDetailsComponent implements OnInit {
 
   ngOnDestroy(): void {
     this._dialogRef = null;
+    if (this._updateProductSubscription) this._updateProductSubscription.unsubscribe();
     this._productUnitOptionsSubscription.unsubscribe();
     this._productAdditionalStockQuantitySubscription.unsubscribe();
     this.store.dispatch(ProductActions.resetProductState());
@@ -155,7 +157,7 @@ export class AddProductDetailsComponent implements OnInit {
                 state: true,
               })
             );
-            this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
+            this._updateProductSubscription = this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
               next: () => {
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.SUCCESS_MESSAGE'
@@ -226,5 +228,9 @@ export class AddProductDetailsComponent implements OnInit {
 
   get productUnitFilterOptions(): Observable<Array<ProductUnit>> {
     return this._productUnitFilterOptions;
+  }
+
+  get productSource(): ProductSourceEnum {
+    return this._productSource;
   }
 }

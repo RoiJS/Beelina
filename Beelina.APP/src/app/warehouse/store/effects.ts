@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, takeUntil } from 'rxjs';
 
 import { Product } from 'src/app/_models/product';
 import { ProductService } from 'src/app/_services/product.service';
 import * as ProductActions from './actions';
+import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
 
 @Injectable()
 export class WarehouseProductEffects {
@@ -28,6 +29,7 @@ export class WarehouseProductEffects {
               });
             }
           ),
+          takeUntil(this.actions$.pipe(ofType(ProductActions.getWarehouseProductsCancelAction))),
           catchError((error) =>
             of(
               ProductActions.getWarehouseProductsActionError({
@@ -36,6 +38,25 @@ export class WarehouseProductEffects {
             )
           )
         );
+      })
+    )
+  );
+
+  importWarehouseProducts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.importWarehouseProductsAction),
+      switchMap((action: { products: Array<Product> }) => {
+        return this.productService.updateWarehouseProductInformation(action.products).pipe(
+          map((importedProducts: Array<IProductPayload>) => ProductActions.importWarehouseProductsActionSuccess({ importedProducts })),
+          takeUntil(this.actions$.pipe(ofType(ProductActions.importWarehouseProductsCancelAction))),
+          catchError((error) =>
+            of(
+              ProductActions.importWarehouseProductsActionError({
+                error: error.message,
+              })
+            )
+          )
+        )
       })
     )
   );

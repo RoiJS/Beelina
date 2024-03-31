@@ -6,6 +6,9 @@
     "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
     "CONFIRM": "Confirm",
+    "EXTRACT": "Extract",
+    "IMPORT": "Import",
+    "NEXT": "Next",
     "BAD_ORDER": "Bad Order",
     "CLEAR": "Clear",
     "CANCEL": "Cancel",
@@ -25,7 +28,9 @@
     "TRANSFER_STOCK": "Transfer Stocks",
     "ADD_STOCK_QUANTITY": "Add Stock Quantity",
     "LINKED": "Linked",
-    "SAVE_CHANGES": "Save Changes"
+    "SAVE_CHANGES": "Save Changes",
+    "NEW": "New",
+    "EXISTING": "Existing"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -767,6 +772,92 @@
     "TITLE": "System Maintenance",
     "DESCRIPTION": "We are currently doing system maintenance and will be back shortly. Sorry for the inconvenience."
   },
+  "WAREHOUSE_PAGE": {
+    "TITLE": "Warehouse",
+    "DESCRIPTION": "This is the page where administrator manages products from warehouse."
+  },
+  "WAREHOUSE_PRODUCT_IMPORT_PAGE": {
+    "TITLE": "Product Import",
+    "DESCRIPTION": "Use this page to import product data from excel file. Follow the steps below to proceed.",
+    "IMPORT_PRODUCTS_SECTION": {
+      "FIRST_STEP_SECTION": {
+        "TITLE": "Select file",
+        "IMPORT_MECHANICS_INFORMATION_TEXTS": {
+          "LABEL_1": "Select an excel file <code>(.xlsx)</code> to extract products information that you want to import in Bizual. Before uploading the file, make sure that it is less than <b>25 MB</b> in size.",
+          "LABEL_2": "The file must also follow the column format below, otherwise it won't be able to read properly the content of the file.",
+          "LABEL_3": "If the code does not exists in Bizual, this will automatically create a new entry of the product in Bizual.",
+          "LABEL_4": "If the already exists, then it will try to update the item if there are new changes."
+        },
+        "FIELDS_SECTION": {
+          "PRODUCT_CODE": "Code",
+          "PRODUCT_NAME": "Name",
+          "ADDITIONAL_QUANTITY": "Additional Quantity",
+          "PRICE_PER_UNIT": "Price (Optional)",
+          "PRODUCT_UNIT": "Unit (Optional)",
+          "NUMBER_OF_UNITS": "Number Of Units (Optional)"
+        },
+        "EXTRACT_PROCESS_TEXT": "Extracting products. This might take some time depending on the number of products. Please wait..."
+      },
+      "SECOND_STEP_SECTION": {
+        "TITLE": "Preview Data",
+        "FAILED_PRODUCTS_EXTRACTED_SECTION": {
+          "ERROR_BANNER_TEXT": "{0} Error(s) found. Note that you cannot proceed with the import if there are any errors. Please check and fix the result below.",
+          "TABLE_RESULT_SECTION": {
+            "TITLE": "Error(s)",
+            "DESCRIPTION": "Extracted product information with problems. Please make sure that the data are correct.",
+            "FIELDS": {
+              "ROW_NUMBER": "Row Number",
+              "MESSAGE": "Message"
+            }
+          }
+        },
+        "SUCCESS_PRODUCTS_EXTRACTED_SECTION": {
+          "TABLE_RESULT_SECTION": {
+            "TITLE": "Extracted Product(s)",
+            "DESCRIPTION": "Extracted products from the uploaded excel files. Extracted product(s) here will be part of the import process.",
+            "FIELDS": {
+              "CODE": "Code",
+              "NAME": "Name",
+              "QUANTITY": "Quantity",
+              "UNIT": "Unit",
+              "PRICE": "Price",
+              "NUMBER_OF_UNITS": "Number Of Units"
+            }
+          }
+        }
+      },
+      "THIRD_STEP_SECTION": {
+        "TITLE": "Import",
+        "BANNER_INFO_SECTION": {
+          "LABEL_1": "To proceed with the importing of products, click the <b>Import</b> button below. This may take some time to process depending on the number of products so refrain from reloading or switching to other pages while the process is on going to avoid any issues. If you wish to abort the process just press <b>Cancel</b> button below.",
+          "LABEL_2": "<b>NOTE: This action cannot be reverted, so make sure to check if the data you are importing is correct.</b>"
+        },
+        "BANNER_IMPORT_IN_PROGRESS_SECTION": {
+          "LABEL_1": "Product import is in progress. Importing {0} product(s). Please wait.."
+        }
+      }
+    },
+    "SUCCESS_IMPORT_DIALOG": {
+      "TEXT": "Products have been imported successfully. Go to the product list to see them."
+    },
+    "UPLOAD_FILE_VALIDATION_DIALOG": {
+      "EXTENSION_ERROR_DIALOG": {
+        "TITLE": "Invalid file extension",
+        "DESCRIPTION": "Importing products only support .xlsx file type. Please select another file."
+      },
+      "SELECT_ERROR_DIALOG": {
+        "TITLE": "Unable to select file",
+        "DESCRIPTION": "Please remove current file before selecting new one."
+      },
+      "EXTRACT_FILE_ERROR_DIALOG": {
+        "TITLE": "Failed to extract"
+      }
+    }
+  },
+  "ACCOUNTS_PAGE": {
+    "TITLE": "Accounts",
+    "DESCRIPTION": "This is the page where administrator can manage user accounts information."
+  },
   "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
     "TITLE": "Product Stock Audit",
     "DESCRIPTION": "This is where product stock audit information can be managed.",
@@ -829,14 +920,6 @@
       "CHART_FILTER_SECTION": {
         "LABEL": "Total Sales Amount"
       }
-    },
-    "WAREHOUSE_PAGE": {
-      "TITLE": "Warehouse",
-      "DESCRIPTION": "This is the page where administrator manages products from warehouse."
-    },
-    "ACCOUNTS_PAGE": {
-      "TITLE": "Accounts",
-      "DESCRIPTION": "This is the page where administrator can manage user accounts information."
     },
     "DISTRIBUTION_PAGE": {
       "TITLE": "Distribution",

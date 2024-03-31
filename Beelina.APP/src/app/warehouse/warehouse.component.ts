@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,7 +11,6 @@ import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { WarehouseProductDataSource } from 'src/app/_models/datasources/warehouse-product.datasource';
 import { Product } from 'src/app/_models/product';
-import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { AddProductStockQuantityDialogComponent } from 'src/app/product/add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
@@ -26,7 +25,7 @@ import { filterKeywordSelector, isLoadingSelector, totalCountSelector } from './
   templateUrl: './warehouse.component.html',
   styleUrls: ['./warehouse.component.scss']
 })
-export class WarehouseComponent extends BaseComponent implements OnInit, AfterViewInit {
+export class WarehouseComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild(SearchFieldComponent) searchFieldComponent: SearchFieldComponent;
 
@@ -63,6 +62,11 @@ export class WarehouseComponent extends BaseComponent implements OnInit, AfterVi
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this._subscription.unsubscribe();
+    this.store.dispatch(WarehouseProductActions.getWarehouseProductsCancelAction());
   }
 
   ngAfterViewInit() {
@@ -208,6 +212,9 @@ export class WarehouseComponent extends BaseComponent implements OnInit, AfterVi
 
   addProduct() {
     this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Warehouse } });
+  }
+  productImport() {
+    this.router.navigate(['warehouse-products/product-import'], { state: { productSource: ProductSourceEnum.Warehouse } });
   }
 
   get dataSource(): WarehouseProductDataSource {

@@ -9,6 +9,7 @@ import {
 } from 'src/app/_enum/permission-level.enum';
 import { User } from 'src/app/_models/user.model';
 import { TemplateSizeEnum } from '../../ui/empty-entities-placeholder/empty-entities-placeholder.component';
+import { BannerTypeEnum } from '../../ui/banner/banner.component';
 
 @Component({
   selector: 'app-base-component',
@@ -20,6 +21,7 @@ export class BaseComponent {
   protected _permissionLevelEnum = PermissionLevelEnum;
   protected _emptyTemplateType = EmptyEntityTemplateEnum;
   protected _templateSize = TemplateSizeEnum;
+  protected _bannerType = BannerTypeEnum;
   protected $isLoading: Observable<boolean>;
   protected _currentLoggedInUser: User;
 
@@ -71,6 +73,10 @@ export class BaseComponent {
 
   get emptyEntityTemplateSizeEnum(): typeof TemplateSizeEnum {
     return this._templateSize;
+  }
+
+  get bannerTypeEnum(): typeof BannerTypeEnum {
+    return this._bannerType;
   }
 
   //#region Permission Level related methods

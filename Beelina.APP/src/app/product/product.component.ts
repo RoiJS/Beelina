@@ -159,6 +159,7 @@ export class ProductComponent
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+    this.store.dispatch(ProductActions.getProductsCancelAction());
     this._accountVerificationDialogRef = null;
     this._transferInventoryDialogRef = null;
   }

@@ -3,6 +3,8 @@ import { Product } from 'src/app/_models/product';
 
 export const getProductsAction = createAction('[Product] Get Products');
 
+export const getProductsCancelAction = createAction('[Product] Get Products Cancel');
+
 export const getProductsActionSuccess = createAction(
   '[Product] Get Product Success',
   props<{

@@ -3,7 +3,7 @@ import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { map, take } from 'rxjs';
+import { catchError, map, take } from 'rxjs';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
@@ -45,6 +45,9 @@ import { TransferProductStockTypeEnum } from '../_enum/transfer-product-stock-ty
 import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { ProductStockAuditItem } from '../_models/product-stock-audit-item';
 import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
+import { IExtractedProductsFileOutput } from '../_interfaces/outputs/iproduct-import-file.output';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 const GET_PRODUCTS_QUERY = gql`
   query ($userAccountId: Int!, $cursor: String, $filterKeyword: String) {
@@ -163,41 +166,23 @@ const GET_WAREHOUSE_PRODUCT_STORE = gql`
   }
 `;
 
-const UPDATE_PRODUCT_MUTATION = gql`
-  mutation($productInputs: [ProductInput!]!, $userAccountId: Int!) {
-    updateProducts(input: { productInputs: $productInputs, userAccountId:  $userAccountId }){
-      product {
-        name
-      }
-      errors {
-          __typename
-          ... on ProductFailedRegisterError {
-              message
-          }
-          ... on BaseError {
-              message
-          }
-        }
-      }
+const UPDATE_PRODUCT_QUERY = gql`
+  query($productInputs: [ProductInput!]!, $userAccountId: Int!) {
+    updateProducts(productInputs: $productInputs, userAccountId:  $userAccountId){
+      id
+      code
+      name
+    }
   }
 `;
 
-const UPDATE_WAREHOUSE_PRODUCT_MUTATION = gql`
-mutation($productInputs: [ProductInput!]!, $warehouseId: Int!) {
-  updateWarehouseProducts(input: { productInputs: $productInputs, warehouseId:  $warehouseId }){
-    product {
-      name
-    }
-    errors {
-        __typename
-        ... on ProductFailedRegisterError {
-            message
-        }
-        ... on BaseError {
-            message
-        }
-      }
-    }
+const UPDATE_WAREHOUSE_PRODUCT_QUERY = gql`
+query($productInputs: [ProductInput!]!, $warehouseId: Int!) {
+  updateWarehouseProducts(productInputs: $productInputs, warehouseId:  $warehouseId ){
+    id
+    code
+    name
+  }
 }
 `;
 
@@ -431,12 +416,50 @@ const TRANSFER_PRODUCT_STOCK_FROM_OWN_INVENTORY_QUERY = gql`
   }
 `;
 
+const EXTRACT_PRODUCT_FILE_QUERY = `
+  mutation ($warehouseId: Int!, $file: Upload!) {
+    extractProductsFile(input: { warehouseId: $warehouseId, file: $file }) {
+      errors {
+          __typename
+          ... on ExtractedProductsFileError {
+              message
+          }
+          ... on BaseError {
+              message
+          }
+      }
+      mapExtractedProductResult {
+        successExtractedProducts {
+          id
+          code
+          name
+          description
+          isTransferable
+          originalName
+          unit
+          price
+          numberOfUnits
+          quantity
+          originalUnit
+          originalPrice
+          originalNumberOfUnits
+        }
+        failedExtractedProducts {
+          rowNumber
+          message
+        }
+      }
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private _warehouseId: number = 1;
 
   constructor(
     private apollo: Apollo,
+    private http: HttpClient,
     private store: Store<AppStateInterface>,
     private storageService: StorageService
   ) { }
@@ -711,7 +734,6 @@ export class ProductService {
   }
 
   updateProductInformation(products: Array<Product>) {
-
     const productInputs = products.map((product: Product) => {
       return <IProductInput>{
         id: product.id,
@@ -733,29 +755,26 @@ export class ProductService {
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
     return this.apollo
-      .mutate({
-        mutation: UPDATE_PRODUCT_MUTATION,
+      .watchQuery({
+        query: UPDATE_PRODUCT_QUERY,
         variables: {
           productInputs,
           userAccountId,
         },
       })
+      .valueChanges
       .pipe(
-        map((result: MutationResult<{ updateProducts: IProductOutput }>) => {
-          const output = result.data.updateProducts;
+        map((result: ApolloQueryResult<{ products: Array<Product> }>) => {
+          const output = result.data;
           const payload = output.products;
-          const errors = output.errors;
 
           if (payload) {
             return payload;
           }
 
-          if (errors && errors.length > 0) {
-            throw new Error(errors[0].message);
-          }
-
           return null;
-        })
+        }),
+        catchError((error) => { throw new Error(error); })
       );
   }
 
@@ -781,29 +800,26 @@ export class ProductService {
     const warehouseId = this._warehouseId;
 
     return this.apollo
-      .mutate({
-        mutation: UPDATE_WAREHOUSE_PRODUCT_MUTATION,
+      .watchQuery({
+        query: UPDATE_WAREHOUSE_PRODUCT_QUERY,
         variables: {
           productInputs,
           warehouseId,
         },
       })
+      .valueChanges
       .pipe(
-        map((result: MutationResult<{ updateWarehouseProducts: IProductOutput }>) => {
-          const output = result.data.updateWarehouseProducts;
-          const payload = output.products;
-          const errors = output.errors;
+        map((result: ApolloQueryResult<{ updateWarehouseProducts: Array<Product> }>) => {
+          const output = result.data;
+          const payload = output.updateWarehouseProducts;
 
           if (payload) {
             return payload;
           }
 
-          if (errors && errors.length > 0) {
-            throw new Error(errors[0].message);
-          }
-
           return null;
-        })
+        }),
+        catchError((error) => { throw new Error(error); })
       );
   }
 
@@ -818,7 +834,7 @@ export class ProductService {
       .pipe(
         map((result: MutationResult<{ deleteProduct: IProductOutput }>) => {
           const output = result.data.deleteProduct;
-          const payload = output.products;
+          const payload = output.product;
           const errors = output.errors;
 
           if (payload) {
@@ -1302,16 +1318,58 @@ export class ProductService {
           sourceProductNumberOfUnits,
           sourceNumberOfUnitsTransfered,
           transferProductStockType
-        },
+        }
       })
       .pipe(
         map((result: MutationResult<{ transferProductStockFromOwnInventory: IProductOutput }>) => {
           const output = result.data.transferProductStockFromOwnInventory;
-          const payload = output.products;
+          const payload = output.product;
           const errors = output.errors;
 
           if (payload) {
             return payload;
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
+      );
+  }
+
+  extractProductsFile(
+    warehouseId: number,
+    file: File) {
+
+    var fd = new FormData();
+    var operations = {
+      query: EXTRACT_PRODUCT_FILE_QUERY,
+      variables: {
+        file: null,
+        warehouseId
+      }
+    }
+    var _map = {
+      file: ["variables.file"]
+    }
+    fd.append('operations', JSON.stringify(operations))
+    fd.append('map', JSON.stringify(_map))
+    fd.append('file', file, file.name)
+
+    return this.http.post<IExtractedProductsFileOutput>(environment.beelinaAPIEndPoint, fd)
+      .pipe(
+        map((result: IExtractedProductsFileOutput) => {
+          const data = result.data;
+          const output = data.extractProductsFile.mapExtractedProductResult;
+          const errors = data.extractProductsFile.errors;
+
+          if (output && output.successExtractedProducts && output.failedExtractedProducts) {
+            return {
+              successExtractedProducts: output.successExtractedProducts,
+              failedExtractedProducts: output.failedExtractedProducts
+            };
           }
 
           if (errors && errors.length > 0) {

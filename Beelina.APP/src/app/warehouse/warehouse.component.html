@@ -3,9 +3,9 @@
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container scale-in-center-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "DASHBOARD_ADMIN.WAREHOUSE_PAGE.TITLE" | translate }}</label><br />
+      <label>{{ "WAREHOUSE_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
-        "DASHBOARD_ADMIN.WAREHOUSE_PAGE.DESCRIPTION" | translate
+        "WAREHOUSE_PAGE.DESCRIPTION" | translate
         }}</span>
     </div>
     <app-search-field (onSearch)="onSearch($event)" [placeHolderTextIdentifier]="
@@ -35,6 +35,6 @@
     </app-list-container>
   </div>
 
-  <app-floating-button (tapButton)="addProduct()" [icon]="'note_add'" [bottom]="155"></app-floating-button>
+  <app-floating-button (tapButton)="productImport()" [icon]="'note_add'" [bottom]="155"></app-floating-button>
   <app-floating-button (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
 </app-loader-layout>
