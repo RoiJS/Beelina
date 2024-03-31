@@ -1,5 +1,5 @@
 @import "../../../../../app-variables";
 
-::ng-deep .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+::ng-deep .mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface {
   background-color: $success;
 }

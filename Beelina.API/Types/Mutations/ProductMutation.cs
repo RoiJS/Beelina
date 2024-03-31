@@ -1,8 +1,7 @@
-﻿using AutoMapper;
-using Beelina.LIB.Enums;
+﻿using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors.Factories;
 using Beelina.LIB.GraphQL.Exceptions;
-using Beelina.LIB.GraphQL.Types;
+using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.AspNetCore.Authorization;
@@ -12,43 +11,6 @@ namespace Beelina.API.Types.Mutations
     [ExtendObjectType("Mutation")]
     public class ProductMutation
     {
-        [Authorize]
-        [Error(typeof(ProductErrorFactory))]
-        public async Task<List<Product>> UpdateProducts(
-            [Service] IProductRepository<Product> productRepository,
-            [Service] IMapper mapper,
-            int userAccountId,
-            List<ProductInput> productInputs)
-        {
-            var productsFromRepo = new List<Product>();
-
-            foreach (var productInput in productInputs)
-            {
-                var productFromRepo = await productRepository.GetEntity(productInput.Id).ToObjectAsync();
-
-                if (productFromRepo == null)
-                {
-                    productFromRepo = mapper.Map<Product>(productInput);
-                }
-                else
-                {
-                    mapper.Map(productInput, productFromRepo);
-                }
-
-                try
-                {
-                    await productRepository.CreateOrUpdateProduct(userAccountId, productInput, productFromRepo);
-                    productsFromRepo.Add(productFromRepo);
-                }
-                catch
-                {
-                    throw new ProductFailedRegisterException(productFromRepo.Name);
-                }
-            }
-
-            return productsFromRepo;
-        }
-
         [Authorize]
         [Error(typeof(ProductErrorFactory))]
         public async Task<Product> DeleteProduct(
@@ -72,6 +34,7 @@ namespace Beelina.API.Types.Mutations
         [Authorize]
         public async Task<Product> TransferProductStockFromOwnInventory(
                     [Service] IProductRepository<Product> productRepository,
+                    [Service] IHttpContextAccessor httpContextAccessor,
                     int userAccountId,
                     int sourceProductId,
                     int destinationProductId,
@@ -80,15 +43,41 @@ namespace Beelina.API.Types.Mutations
                     int sourceNumberOfUnitsTransfered,
                     TransferProductStockTypeEnum transferProductStockType)
         {
+            var warehouseId = 1; // Will be implemented later
             return await productRepository.TransferProductStockFromOwnInventory(
                 userAccountId,
+                warehouseId,
                 sourceProductId,
                 destinationProductId,
                 destinationProductNumberOfUnits,
                 sourceProductNumberOfUnits,
                 sourceNumberOfUnitsTransfered,
-                transferProductStockType
+                transferProductStockType,
+                httpContextAccessor.HttpContext.RequestAborted
             );
+        }
+
+        [Authorize]
+        [Error(typeof(ProductErrorFactory))]
+        public async Task<MapExtractedProductResult> ExtractProductsFile(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int warehouseId,
+            IFile file)
+        {
+            try
+            {
+                await using Stream stream = file.OpenReadStream();
+                var extractProductFileService = new ExtractProductFileService(stream);
+                var extractedProducts = extractProductFileService.ReadFile();
+                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+                var mapExtractedProductsResult = productRepository.MapProductImport(extractedProducts, warehouseProductsFromRepo);
+                return mapExtractedProductsResult;
+            }
+            catch (Exception ex)
+            {
+                throw new ExtractProductFileException(ex.Message);
+            }
         }
     }
 }

@@ -1,0 +1,21 @@
+@import "../../app-variables";
+
+.container {
+  background: $primary-gradient;
+  height: 100%;
+}
+
+.product-list {
+  height: 72vh;
+}
+
+.product-total-count-container {
+  height: 2em;
+
+  &__value {
+    padding: 5px 10px;
+    background-color: $primary;
+    border-radius: 15px;
+    color: $white;
+  }
+}

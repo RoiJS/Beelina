@@ -42,7 +42,7 @@
             <input matInput type="text" formControlName="description" />
           </mat-form-field>
 
-          <div class="product-detail-panel__stock-quantity-control">
+          <div *ngIf="productSource !== 0" class="product-detail-panel__stock-quantity-control">
             <label class="stock-quantity-label">{{
               "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
               | translate

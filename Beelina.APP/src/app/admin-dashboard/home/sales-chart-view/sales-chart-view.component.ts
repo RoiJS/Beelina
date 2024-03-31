@@ -36,7 +36,15 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
     this.chartOptions = {
       series: [
         {
-          name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.SERIES_LABEL'),
+          name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.SALES_LABEL'),
+          data: []
+        },
+        {
+          name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.CASH_ON_HAND_LABEL'),
+          data: []
+        },
+        {
+          name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.CHEQUE_ON_HAND_LABEL'),
           data: []
         }
       ],
@@ -50,11 +58,13 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
           dataLabels: {
             position: "top"
           },
-          borderRadius: 5
+          horizontal: false,
+          columnWidth: "55%",
+          borderRadius: 2
         }
       },
       dataLabels: {
-        enabled: true,
+        enabled: false,
         formatter: function (val: number) {
           return NumberFormatter.formatCurrency(val).toString();
         },
@@ -93,8 +103,10 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
           offsetY: -35
         }
       },
-      fill: {
-        colors: ["#d89c2a", "#d89c2a"],
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ["transparent"]
       },
       yaxis: {
         axisBorder: {
@@ -123,6 +135,9 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
       .subscribe((transactionSalesPerDateRange: Array<SalesPerDateRange>) => {
         this.chartOptions.xaxis.categories = transactionSalesPerDateRange.map(x => x.label);
         this.chartOptions.series[0].data = transactionSalesPerDateRange.map(x => x.totalSales);
+        this.chartOptions.series[1].data = transactionSalesPerDateRange.map(x => x.cashAmountOnHand);
+        this.chartOptions.series[2].data = transactionSalesPerDateRange.map(x => x.chequeAmountOnHand);
+
         this.chartOptions = {
           ...this.chartOptions, // Preserve other options
           xaxis: {

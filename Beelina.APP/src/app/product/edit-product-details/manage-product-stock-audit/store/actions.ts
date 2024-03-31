@@ -7,6 +7,11 @@ export const getProductStockAuditsAction = createAction(
   props<{ productId: number; userAccountId: number }>()
 );
 
+export const getWarehouseProductStockAuditsAction = createAction(
+  '[Product Stock Audit] Get Warehouse Product Stock Audits',
+  props<{ productId: number; warehouseId: number }>()
+);
+
 export const getProductStockAuditsActionSuccess = createAction(
   '[Product Stock Audit] Get Product Stock Audits Success',
   props<{

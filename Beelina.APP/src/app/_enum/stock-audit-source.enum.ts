@@ -4,4 +4,5 @@ export enum StockAuditSourceEnum {
   MovedFromOtherProductInventory = 'MOVED_FROM_OTHER_PRODUCT_INVENTORY',
   MovedToOtherProductInventory = 'MOVED_TO_OTHER_PRODUCT_INVENTORY',
   OrderTransaction = 'ORDER_TRANSACTION',
+  OrderFromSupplier = 'ORDER_FROM_SUPPLIER',
 }

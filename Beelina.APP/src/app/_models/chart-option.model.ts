@@ -7,7 +7,8 @@ import {
   ApexTitleSubtitle,
   ApexXAxis,
   ApexFill,
-  ApexResponsive
+  ApexResponsive,
+  ApexStroke
 } from "ng-apexcharts";
 
 export type ChartOptions = {
@@ -19,5 +20,6 @@ export type ChartOptions = {
   xaxis: ApexXAxis;
   fill: ApexFill;
   title: ApexTitleSubtitle;
+  stroke: ApexStroke;
   responsive: ApexResponsive[];
 };

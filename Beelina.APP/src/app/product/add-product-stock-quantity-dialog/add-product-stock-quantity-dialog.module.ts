@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
-import { WithdrawalSlipNoDialogComponent } from './withdrawal-slip-no-dialog.component';
+import { AddProductStockQuantityDialogComponent } from './add-product-stock-quantity-dialog.component';
 
 @NgModule({
   imports: [
@@ -21,7 +21,7 @@ import { WithdrawalSlipNoDialogComponent } from './withdrawal-slip-no-dialog.com
     MatInputModule,
     TranslateModule.forChild(),
   ],
-  exports: [WithdrawalSlipNoDialogComponent],
-  declarations: [WithdrawalSlipNoDialogComponent],
+  exports: [AddProductStockQuantityDialogComponent],
+  declarations: [AddProductStockQuantityDialogComponent],
 })
-export class WithdrawalSlipNoDialogModule { }
+export class AddProductStockQuantityDialogModule { }

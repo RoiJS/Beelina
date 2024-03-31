@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+import { TransactionOptionsService } from 'src/app/_services/transaction-options.service';
 import {
   Transaction,
   TransactionService,
@@ -16,17 +18,25 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 })
 export class DraftTransactionComponent
   extends BaseComponent
-  implements OnInit
-{
+  implements OnInit {
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private bottomSheet: MatBottomSheet,
     private router: Router,
-    private transactionService: TransactionService
+    private transactionService: TransactionService,
+    private transactionOptionsService: TransactionOptionsService
   ) {
     super();
+
+    this.transactionOptionsService.setBottomSheet(this.bottomSheet);
+    this.transactionOptionsService.optionDismissedSub.subscribe((data: boolean) => {
+      if (data) {
+        this.ngOnInit();
+      }
+    });
   }
 
   ngOnInit() {
@@ -43,6 +53,11 @@ export class DraftTransactionComponent
   goToTransaction(transactionId: number) {
     this.router.navigate([`product-catalogue/product-cart/${transactionId}`]);
   }
+
+  openMenu(transaction: Transaction) {
+    this.transactionOptionsService.openMenu(transaction);
+  }
+
 
   get transationDate(): string {
     return DateFormatter.format(

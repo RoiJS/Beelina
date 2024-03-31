@@ -1,42 +1,26 @@
-<app-tool-bar
-  [title]="'GENERAL_TEXTS.BIZUAL' | translate"
-  [showBackButton]="false"
->
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
   <button mat-icon-button class="toolbar-option" (click)="openFilter()">
-    <mat-icon
-      [ngClass]="{
+    <mat-icon [ngClass]="{
         'icon-active': isFilterActive
-      }"
-      matBadgeColor="warn"
-      >filter_list</mat-icon
-    >
+      }" matBadgeColor="warn">filter_list</mat-icon>
   </button>
 </app-tool-bar>
 
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container">
     <div class="page-container__page-divider">
-      <label>{{ "DRAFT_TRANSACTIONS_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "DRAFT_TRANSACTIONS_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "DRAFT_TRANSACTIONS_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
 
-    <app-list-container
-      [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
-      [count]="dataSource.itemCount"
-    >
-      <cdk-virtual-scroll-viewport
-        itemSize="10"
-        class="list-container transactions-list"
-      >
+    <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="dataSource.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container transactions-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <div
-            matRipple
+          <div matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
-            (click)="goToTransactionDate(item.transactionDate)"
-          >
+            (click)="goToTransactionDate(item.transactionDate)" longPress (onLongPress)="openMoreActions(item)">
             <span>{{ item.transactionDateFormatted }}</span>
             <mat-icon>keyboard_arrow_right</mat-icon>
           </div>

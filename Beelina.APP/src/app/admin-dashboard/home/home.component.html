@@ -1,4 +1,4 @@
-<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false"></app-tool-bar>
+<app-tool-bar [title]="'DASHBOARD_ADMIN.HOME_PAGE.TITLE' | translate" [showBackButton]="false"></app-tool-bar>
 <div class="page-container scale-in-center-animation">
   <div class="page-container__page-divider scale-in-center-animation">
     <label>{{ "DASHBOARD_ADMIN.HOME_PAGE.TITLE" | translate }}</label><br />
@@ -92,10 +92,29 @@
               </div>
             </div>
             <div class="panel sales-information-panel">
-              <label>{{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}:</label>
-              <span class="scale-in-center-animation" *ngIf="!isLoading">{{
-                sales
-                }}</span>
+              <div class="sales-information-panel__amount-container">
+                <label>{{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}:</label>
+                <span class="scale-in-center-animation" *ngIf="!isLoading">{{
+                  sales
+                  }}</span>
+              </div>
+              <div *ngIf="!isLoading" class="sales-information-panel__amount-breakdown-container">
+                <div></div>
+                <div>
+                  <div class="amount-information">
+                    <label>{{ "SALES_PAGE.SALES_PANEL.CASH_ON_HAND_LABEL" | translate }}:</label>
+                    <span class="scale-in-center-animation">{{
+                      cashOnHand
+                      }}</span>
+                  </div>
+                  <div class="amount-information">
+                    <label>{{ "SALES_PAGE.SALES_PANEL.CHEQUE_ON_HAND_LABEL" | translate }}:</label>
+                    <span class="scale-in-center-animation">{{
+                      chequeOnHand
+                      }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

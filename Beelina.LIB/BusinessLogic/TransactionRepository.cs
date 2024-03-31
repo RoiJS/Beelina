@@ -31,7 +31,9 @@ namespace Beelina.LIB.BusinessLogic
                 var salesAgentSales = await GetSales(userId, dateRange.FromDate, dateRange.ToDate);
                 var dateRangeSales = new TotalSalesPerDateRange
                 {
-                    TotalSales = salesAgentSales.Sales,
+                    TotalSales = salesAgentSales.TotalSalesAmount,
+                    ChequeAmountOnHand = salesAgentSales.ChequeAmountOnHand,
+                    CashAmountOnHand = salesAgentSales.CashAmountOnHand,
                     FromDate = dateRange.FromDate,
                     ToDate = dateRange.ToDate,
                     Label = dateRange.Label
@@ -46,9 +48,15 @@ namespace Beelina.LIB.BusinessLogic
         public async Task<TransactionSales> GetSales(int userId, string fromDate, string toDate)
         {
             var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, userId, fromDate, toDate);
-            var badOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.BadOrder, userId, fromDate, toDate);
+            var chequeOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, userId, fromDate, toDate);
+            var cashOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, userId, fromDate, toDate);
 
-            return new TransactionSales { Sales = confirmedOrdersAmount.Sales - badOrdersAmount.Sales };
+            return new TransactionSales
+            {
+                TotalSalesAmount = confirmedOrdersAmount.TotalSalesAmount,
+                ChequeAmountOnHand = chequeOnHandAmount.TotalSalesAmount,
+                CashAmountOnHand = cashOnHandAmount.TotalSalesAmount
+            };
         }
 
         public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate)
@@ -59,11 +67,14 @@ namespace Beelina.LIB.BusinessLogic
             {
                 var sales = new TransactionSalesPerSalesAgent();
                 var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, salesAgent.Id, fromDate, toDate);
-                var badOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.BadOrder, salesAgent.Id, fromDate, toDate);
+                var chequeOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, salesAgent.Id, fromDate, toDate);
+                var cashOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, salesAgent.Id, fromDate, toDate);
 
                 sales.Id = salesAgent.Id;
                 sales.SalesAgentName = salesAgent.PersonFullName;
-                sales.Sales = confirmedOrdersAmount.Sales - badOrdersAmount.Sales;
+                sales.Sales = confirmedOrdersAmount.TotalSalesAmount;
+                sales.ChequeAmountOnHand = chequeOnHandAmount.TotalSalesAmount;
+                sales.CashAmountOnHand = cashOnHandAmount.TotalSalesAmount;
 
                 salesPerSalesAgent.Add(sales);
             }
@@ -98,7 +109,6 @@ namespace Beelina.LIB.BusinessLogic
                         ProductTransactions = pt
                     }
                 ).ToListAsync();
-
 
             var transactionsWithPaymentStatus = (from t in transactions
                                                  group t by new { t.Id, t.InvoiceNo, t.StoreId, t.StoreName, t.TransactionDate } into g
@@ -218,8 +228,9 @@ namespace Beelina.LIB.BusinessLogic
             return discountedSalesPerBadOrders;
         }
 
-        private async Task<TransactionSales> GetOrdersAmount(TransactionStatusEnum status, int userId, string fromDate, string toDate)
+        private async Task<TransactionSales> GetOrderPayments(TransactionStatusEnum status, ModeOfPaymentEnum paymentMethod, int userId, string fromDate, string toDate)
         {
+            var discountedSalesPerTransactions = 0.0;
             var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
 
             var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
@@ -228,13 +239,14 @@ namespace Beelina.LIB.BusinessLogic
 
                                     where
                                         t.Status == status
+                                        && t.ModeOfPayment == (int)paymentMethod
                                         // Get all orders if current user is Manager or Admininistrator
                                         && (
                                             userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
                                             (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
                                         )
                                         && t.IsDelete == false
-
+                                        && t.IsActive
                                     select new
                                     {
                                         Transaction = t,
@@ -255,18 +267,264 @@ namespace Beelina.LIB.BusinessLogic
             // Extract Sales per Transaction
             var salesPerTransactions = transactionSales
                         .GroupBy(
-                            t => new { t.Transaction.Id, t.Transaction.Discount }
+                            t => new { t.Transaction.Id, t.Transaction.InvoiceNo, t.Transaction.StoreId, t.Transaction.Discount }
                         ).Select(p => new
                         {
                             TransactionId = p.Key.Id,
+                            InvoiceNo = p.Key.InvoiceNo,
+                            StoreId = p.Key.StoreId,
                             Discount = p.Key.Discount,
                             TotalAmountPerTransaction = p.Sum(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity)
                         });
 
-            // Calculate Discounted Sales
-            var discountedSalesPerTransactions = await salesPerTransactions.SumAsync(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100));
 
-            return new TransactionSales { Sales = discountedSalesPerTransactions };
+            if (status == TransactionStatusEnum.Confirmed)
+            {
+                var salesPerTransactionsDiscounted = await salesPerTransactions
+                                    .GroupBy(
+                                        t => new { t.TransactionId, t.InvoiceNo, t.StoreId }
+                                    ).Select(p => new
+                                    {
+                                        TransactionId = p.Key.TransactionId,
+                                        InvoiceNo = p.Key.InvoiceNo,
+                                        StoreId = p.Key.StoreId,
+                                        TotalDiscountedAmountPerTransaction = p.Sum(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100))
+                                    }).ToListAsync();
+
+                var badOrders = (from t in _beelinaRepository.ClientDbContext.Transactions
+                                 join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                 on t.Id equals pt.TransactionId
+
+                                 join s in _beelinaRepository.ClientDbContext.Stores
+                                 on t.StoreId equals s.Id
+
+                                 where
+                                     t.Status == TransactionStatusEnum.BadOrder
+                                     // Get all orders if current user is Manager or Admininistrator
+                                     && (
+                                         userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                         (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                     )
+                                     && t.IsDelete == false
+
+                                 select new
+                                 {
+                                     Transaction = t,
+                                     Store = s,
+                                     ProductTransaction = pt
+                                 });
+
+                if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+                {
+                    fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                    toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+                    badOrders = badOrders.Where(t =>
+                            t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate)
+                            && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate)
+                    );
+                }
+
+                // Extract Sales per Transaction
+                var salesPerBadOrders = badOrders
+                            .GroupBy(
+                                t => new { t.Transaction.Id, t.Transaction.InvoiceNo, t.Transaction.StoreId, t.Transaction.Discount }
+                            ).Select(p => new
+                            {
+                                TransactionId = p.Key.Id,
+                                InvoiceNo = p.Key.InvoiceNo,
+                                StoreId = p.Key.StoreId,
+                                Discount = p.Key.Discount,
+                                TotalAmountPerTransaction = p.Sum(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity)
+                            });
+
+                var salesPerBadOrdersDiscounted = await salesPerBadOrders
+                        .GroupBy(
+                            t => new { t.TransactionId, t.InvoiceNo, t.StoreId }
+                        ).Select(p => new
+                        {
+                            TransactionId = p.Key.TransactionId,
+                            InvoiceNo = p.Key.InvoiceNo,
+                            StoreId = p.Key.StoreId,
+                            TotalDiscountedAmountPerTransaction = p.Sum(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100))
+                        }).ToListAsync();
+
+                var joinedOrders = from s in salesPerTransactionsDiscounted
+                                   join b in salesPerBadOrdersDiscounted
+
+                                   on new { InvoiceNo = s.InvoiceNo, StoreId = s.StoreId } equals new { InvoiceNo = b.InvoiceNo, StoreId = b.StoreId }
+                                   into ordersJoin
+                                   from oj in ordersJoin.DefaultIfEmpty()
+
+                                   select new
+                                   {
+                                       TotalAmountPerTransaction = oj == null ? s.TotalDiscountedAmountPerTransaction : s.TotalDiscountedAmountPerTransaction - oj.TotalDiscountedAmountPerTransaction
+                                   };
+
+                discountedSalesPerTransactions = joinedOrders.Sum(t => t.TotalAmountPerTransaction);
+
+                return new TransactionSales { TotalSalesAmount = discountedSalesPerTransactions };
+            }
+
+            // Calculate Discounted Sales
+            discountedSalesPerTransactions = await salesPerTransactions.SumAsync(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100));
+
+            return new TransactionSales { TotalSalesAmount = discountedSalesPerTransactions };
+        }
+
+        private async Task<TransactionSales> GetOrdersAmount(TransactionStatusEnum status, int userId, string fromDate, string toDate)
+        {
+            var discountedSalesPerTransactions = 0.0;
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
+
+            var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
+                                    join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                    on t.Id equals pt.TransactionId
+
+                                    join s in _beelinaRepository.ClientDbContext.Stores
+                                    on t.StoreId equals s.Id
+
+                                    where
+                                        t.Status == status
+                                        // Get all orders if current user is Manager or Admininistrator
+                                        && (
+                                            userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                            (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                        )
+                                        && t.IsDelete == false
+
+                                    select new
+                                    {
+                                        Transaction = t,
+                                        Store = s,
+                                        ProductTransaction = pt
+                                    });
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+                transactionSales = transactionSales.Where(t =>
+                        t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate)
+                        && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate)
+                );
+            }
+
+            // Extract Sales per Transaction
+            var salesPerTransactions = transactionSales
+                        .GroupBy(
+                            t => new { t.Transaction.Id, t.Transaction.InvoiceNo, t.Transaction.StoreId, t.Transaction.Discount }
+                        ).Select(p => new
+                        {
+                            TransactionId = p.Key.Id,
+                            InvoiceNo = p.Key.InvoiceNo,
+                            StoreId = p.Key.StoreId,
+                            Discount = p.Key.Discount,
+                            TotalAmountPerTransaction = p.Sum(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity)
+                        });
+
+            if (status == TransactionStatusEnum.Confirmed)
+            {
+                var salesPerTransactionsDiscounted = await salesPerTransactions
+                                    .GroupBy(
+                                        t => new { t.TransactionId, t.InvoiceNo, t.StoreId }
+                                    ).Select(p => new
+                                    {
+                                        TransactionId = p.Key.TransactionId,
+                                        InvoiceNo = p.Key.InvoiceNo,
+                                        StoreId = p.Key.StoreId,
+                                        TotalDiscountedAmountPerTransaction = p.Sum(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100))
+                                    }).ToListAsync();
+
+                var badOrders = (from t in _beelinaRepository.ClientDbContext.Transactions
+                                 join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                 on t.Id equals pt.TransactionId
+
+                                 join s in _beelinaRepository.ClientDbContext.Stores
+                                 on t.StoreId equals s.Id
+
+                                 where
+                                     t.Status == TransactionStatusEnum.BadOrder
+                                     // Get all orders if current user is Manager or Admininistrator
+                                     && (
+                                         userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                         (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                     )
+                                     && t.IsDelete == false
+
+                                 select new
+                                 {
+                                     Transaction = t,
+                                     Store = s,
+                                     ProductTransaction = pt
+                                 });
+
+                if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+                {
+                    fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                    toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+                    badOrders = badOrders.Where(t =>
+                            t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate)
+                            && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate)
+                    );
+                }
+
+                // Extract Sales per Transaction
+                var salesPerBadOrders = badOrders
+                            .GroupBy(
+                                t => new { t.Transaction.Id, t.Transaction.InvoiceNo, t.Transaction.StoreId, t.Transaction.Discount }
+                            ).Select(p => new
+                            {
+                                TransactionId = p.Key.Id,
+                                InvoiceNo = p.Key.InvoiceNo,
+                                StoreId = p.Key.StoreId,
+                                Discount = p.Key.Discount,
+                                TotalAmountPerTransaction = p.Sum(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity)
+                            });
+
+                var salesPerBadOrdersDiscounted = await salesPerBadOrders
+                        .GroupBy(
+                            t => new { t.TransactionId, t.InvoiceNo, t.StoreId }
+                        ).Select(p => new
+                        {
+                            TransactionId = p.Key.TransactionId,
+                            InvoiceNo = p.Key.InvoiceNo,
+                            StoreId = p.Key.StoreId,
+                            TotalDiscountedAmountPerTransaction = p.Sum(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100))
+                        }).ToListAsync();
+
+                var joinedOrders = from s in salesPerTransactionsDiscounted
+                                   join b in salesPerBadOrdersDiscounted
+
+                                   on new { InvoiceNo = s.InvoiceNo, StoreId = s.StoreId } equals new { InvoiceNo = b.InvoiceNo, StoreId = b.StoreId }
+                                   into ordersJoin
+                                   from oj in ordersJoin.DefaultIfEmpty()
+
+                                   select new
+                                   {
+                                       TotalAmountPerTransaction = oj == null ? s.TotalDiscountedAmountPerTransaction : s.TotalDiscountedAmountPerTransaction - oj.TotalDiscountedAmountPerTransaction
+                                   };
+
+                discountedSalesPerTransactions = joinedOrders.Sum(t => t.TotalAmountPerTransaction);
+
+                return new TransactionSales { TotalSalesAmount = discountedSalesPerTransactions };
+            }
+
+            // Calculate Discounted Sales
+            discountedSalesPerTransactions = await salesPerTransactions.SumAsync(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100));
+
+            return new TransactionSales { TotalSalesAmount = discountedSalesPerTransactions };
+        }
+
+        public async Task DeleteOrderTransactions(List<int> transactionIds)
+        {
+            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t => transactionIds.Contains(t.Id))
+                                .ToListAsync();
+
+            DeleteMultipleEntities(transactionsFromRepo);
         }
     }
 }

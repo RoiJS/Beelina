@@ -9,8 +9,8 @@ import {
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
 
-import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
 import { AccountVerificationComponent } from '../shared/account-verification/account-verification.component';
+import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
 import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
 
 import { ProductService } from '../_services/product.service';
@@ -24,23 +24,26 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import * as ProductTransactionActions from './add-to-cart-product/store/actions';
 import * as ProductActions from './store/actions';
 
+import { Product } from '../_models/product';
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
 import { errorSelector, filterKeywordSelector, isLoadingSelector, totalCountSelector } from './store/selectors';
-import { Product } from '../_models/product';
 
-import { ProductDataSource } from '../_models/datasources/product.datasource';
-import { BaseComponent } from '../shared/components/base-component/base.component';
-import { AuthService } from '../_services/auth.service';
-import { NotificationService } from '../shared/ui/notification/notification.service';
-import { User } from '../_models/user.model';
 import { ModuleEnum } from '../_enum/module.enum';
 import {
   PermissionLevelEnum,
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
+import { ProductSourceEnum } from '../_enum/product-source.enum';
+import { ProductDataSource } from '../_models/datasources/product.datasource';
+import { InsufficientProductQuantity } from '../_models/insufficient-product-quantity';
+import { User } from '../_models/user.model';
+import { AuthService } from '../_services/auth.service';
+import { BaseComponent } from '../shared/components/base-component/base.component';
+import { NotificationService } from '../shared/ui/notification/notification.service';
+
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
-import { WithdrawalSlipNoDialogComponent } from './withdrawal-slip-no-dialog/withdrawal-slip-no-dialog.component';
+import { AddProductStockQuantityDialogComponent } from './add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 
 @Component({
   selector: 'app-product',
@@ -61,12 +64,11 @@ export class ProductComponent
   private _accountVerificationDialogRef: MatBottomSheetRef<AccountVerificationComponent>;
   private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
   private _salesAgents: Array<User>;
-  private _productList: Array<Product> = [];
   private _dialogRef: MatBottomSheetRef<
-    WithdrawalSlipNoDialogComponent,
+    AddProductStockQuantityDialogComponent,
     {
       additionalStockQuantity: number;
-      withdrawalSlipNo: string;
+      transactionNo: string;
     }
   >;
   private _selectedProduct: Product;
@@ -74,6 +76,7 @@ export class ProductComponent
 
   currentSalesAgentId: number = 0;
   private _filterKeyword: string;
+  private _warehouseId: number = 1;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -156,6 +159,7 @@ export class ProductComponent
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+    this.store.dispatch(ProductActions.getProductsCancelAction());
     this._accountVerificationDialogRef = null;
     this._transferInventoryDialogRef = null;
   }
@@ -182,7 +186,7 @@ export class ProductComponent
   }
 
   editProduct(id: number) {
-    this.router.navigate([`product-catalogue/edit-product/${id}`]);
+    this.router.navigate([`product-catalogue/edit-product/${id}`], { state: { productSource: ProductSourceEnum.Panel } });
   }
 
   deleteProduct(id: number) {
@@ -217,7 +221,7 @@ export class ProductComponent
   }
 
   addProduct() {
-    this.router.navigate(['product-catalogue/add-product']);
+    this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Panel } });
   }
 
   addItemToCart(productId: number) {
@@ -345,10 +349,11 @@ export class ProductComponent
 
   addProductStockQuantity(product: Product) {
     this._selectedProduct = product;
-    this._dialogRef = this.bottomSheet.open(WithdrawalSlipNoDialogComponent, {
+    this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
       data: {
         additionalStockQuantity: 0,
-        withdrawalSlipNo: '',
+        transactionNo: '',
+        productSource: ProductSourceEnum.Panel
       },
     });
 
@@ -357,69 +362,90 @@ export class ProductComponent
       .subscribe(
         (data: {
           additionalStockQuantity: number;
-          withdrawalSlipNo: string;
+          transactionNo: string;
+          productSource: ProductSourceEnum;
         }) => {
-          if (data.additionalStockQuantity === 0) return;
+          if (!data || data.additionalStockQuantity === 0) return;
 
-          this.dialogService.openConfirmation(
-            this.translateService.instant(
-              'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.TITLE',
-            ),
-            this.translateService.instant(
-              'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.CONFIRM',
-            )
-          ).subscribe((result: ButtonOptions) => {
-            if (result === ButtonOptions.YES) {
+          this.productService
+            .checkWarehouseProductStockQuantity(this._selectedProduct.id, this._warehouseId, data.additionalStockQuantity)
+            .subscribe((insufficientStocks: Array<InsufficientProductQuantity>) => {
+              if (insufficientStocks.length > 0) {
+                this.dialogService
+                  .openAlert(
+                    this.translateService.instant(
+                      'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.TITLE'
+                    ),
+                    this.translateService.instant(
+                      'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.ERROR_MESSAGE'
+                    ).replace("{0}", insufficientStocks[0].currentQuantity.toString())
+                  )
+                return;
+              } else {
+                updateStockValue();
+              }
+            });
 
-              this.store.dispatch(
-                ProductActions.setUpdateProductLoadingState({
-                  state: true,
+          const updateStockValue = () => {
+            this.dialogService.openConfirmation(
+              this.translateService.instant(
+                'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.TITLE',
+              ),
+              this.translateService.instant(
+                'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.CONFIRM',
+              )
+            ).subscribe((result: ButtonOptions) => {
+              if (result === ButtonOptions.YES) {
+
+                this.store.dispatch(
+                  ProductActions.setUpdateProductLoadingState({
+                    state: true,
+                  })
+                );
+
+                const product = new Product();
+                product.id = this._selectedProduct.id;
+                product.name = this._selectedProduct.name;
+                product.code = this._selectedProduct.code;
+                product.description = this._selectedProduct.description;
+                product.stockQuantity = data.additionalStockQuantity;
+                product.withdrawalSlipNo = data.transactionNo;
+                product.isTransferable = this._selectedProduct.isTransferable;
+                product.numberOfUnits = this._selectedProduct.numberOfUnits;
+                product.pricePerUnit = this._selectedProduct.pricePerUnit;
+                product.productUnit.name = this._selectedProduct.productUnit.name;
+
+                this.productService.updateProductInformation([product]).subscribe({
+                  next: () => {
+                    this.notificationService.openSuccessNotification(this.translateService.instant(
+                      'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.SUCCESS_MESSAGE'
+                    ));
+                    this.store.dispatch(
+                      ProductActions.setUpdateProductLoadingState({
+                        state: false,
+                      })
+                    );
+
+                    this.store.dispatch(ProductActions.resetProductState());
+                    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
+                    this.store.dispatch(ProductActions.getProductsAction());
+                  },
+
+                  error: () => {
+                    this.notificationService.openErrorNotification(this.translateService.instant(
+                      'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.ERROR_MESSAGE'
+                    ));
+
+                    this.store.dispatch(
+                      ProductActions.setUpdateProductLoadingState({
+                        state: false,
+                      })
+                    );
+                  },
                 })
-              );
-
-              const product = new Product();
-              product.id = this._selectedProduct.id;
-              product.name = this._selectedProduct.name;
-              product.code = this._selectedProduct.code;
-              product.description = this._selectedProduct.description;
-              product.stockQuantity = data.additionalStockQuantity;
-              product.withdrawalSlipNo = data.withdrawalSlipNo;
-              product.isTransferable = this._selectedProduct.isTransferable;
-              product.numberOfUnits = this._selectedProduct.numberOfUnits;
-              product.pricePerUnit = this._selectedProduct.pricePerUnit;
-              product.productUnit.name = this._selectedProduct.productUnit.name;
-              console.log(product);
-
-              this.productService.updateProductInformation([product]).subscribe({
-                next: () => {
-                  this.notificationService.openSuccessNotification(this.translateService.instant(
-                    'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.SUCCESS_MESSAGE'
-                  ));
-                  this.store.dispatch(
-                    ProductActions.setUpdateProductLoadingState({
-                      state: false,
-                    })
-                  );
-
-                  this.store.dispatch(ProductActions.resetProductState());
-                  this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
-                  this.store.dispatch(ProductActions.getProductsAction());
-                },
-
-                error: () => {
-                  this.notificationService.openErrorNotification(this.translateService.instant(
-                    'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.ERROR_MESSAGE'
-                  ));
-
-                  this.store.dispatch(
-                    ProductActions.setUpdateProductLoadingState({
-                      state: false,
-                    })
-                  );
-                },
-              })
-            }
-          })
+              }
+            })
+          }
         }
       );
   }

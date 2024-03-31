@@ -15,6 +15,7 @@ namespace Beelina.LIB.Models
         public int SourceProductNumberOfUnits { get; set; }
         public int DestinationProductStockPerPanelId { get; set; }
         public TransferProductStockTypeEnum TransferProductStockType { get; set; }
+        public int WarehouseId { get; set; }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

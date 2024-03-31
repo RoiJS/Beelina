@@ -58,7 +58,9 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
       .getTransactionSales(userId, dateFilters.fromDate, dateFilters.toDate)
       .subscribe((transactionSales: TransactionSales) => {
         this._isLoading = false;
-        this._sales = transactionSales.sales;
+        this._sales = transactionSales.totalSalesAmount;
+        this._cashOnHand = transactionSales.cashAmountOnHand;
+        this._chequeOnHand = transactionSales.chequeAmountOnHand;
       });
   }
 

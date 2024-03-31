@@ -19,5 +19,6 @@ namespace Beelina.LIB.Interfaces
         Task<List<TotalSalesPerDateRange>> GetTotalSalePerDateRange(int userId, List<DateRange> dateRanges);
 
         Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate);
+        Task DeleteOrderTransactions(List<int> transactionIds);
     }
 }

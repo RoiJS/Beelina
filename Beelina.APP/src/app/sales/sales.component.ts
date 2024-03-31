@@ -29,6 +29,8 @@ export enum DateFilterEnum {
 })
 export class SalesComponent extends BaseComponent implements OnInit {
   protected _sales: number = 0;
+  protected _cashOnHand: number = 0;
+  protected _chequeOnHand: number = 0;
   protected _currentFilterOption: DateFilterEnum = DateFilterEnum.Monthly;
   protected _weekOptions: Array<string>;
   protected _monthOptions: Array<string> = [
@@ -84,7 +86,9 @@ export class SalesComponent extends BaseComponent implements OnInit {
       .getTransactionSales(userId, dateFilters.fromDate, dateFilters.toDate)
       .subscribe((transactionSales: TransactionSales) => {
         this._isLoading = false;
-        this._sales = transactionSales.sales;
+        this._sales = transactionSales.totalSalesAmount;
+        this._cashOnHand = transactionSales.cashAmountOnHand;
+        this._chequeOnHand = transactionSales.chequeAmountOnHand;
       });
   }
 
@@ -261,6 +265,14 @@ export class SalesComponent extends BaseComponent implements OnInit {
 
   get sales(): string {
     return NumberFormatter.formatCurrency(this._sales);
+  }
+
+  get cashOnHand(): string {
+    return NumberFormatter.formatCurrency(this._cashOnHand);
+  }
+
+  get chequeOnHand(): string {
+    return NumberFormatter.formatCurrency(this._chequeOnHand);
   }
 
   get filterForm(): FormGroup {

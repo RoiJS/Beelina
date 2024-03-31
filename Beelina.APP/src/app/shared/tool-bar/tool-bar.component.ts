@@ -91,6 +91,10 @@ export class ToolBarComponent
   }
 
   get company(): string {
-    return this._company;
+    return this.isAdmin ? `${this._company} - ` : '';
+  }
+
+  get formattedTitle(): string {
+    return `${this.company} ${this.title}`;
   }
 }

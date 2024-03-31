@@ -40,6 +40,7 @@ export class SecretKeyInterceptorService implements HttpInterceptor {
       setHeaders: {
         'App-Secret-Token': appSecretToken,
         Authorization: `Bearer ${this.tokenGetter()}`,
+        'ngsw-bypass': '' // This is to make sure HTTP requests are cached via the service worker.
       },
     });
 

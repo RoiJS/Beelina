@@ -1,10 +1,5 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
-  <button
-    mat-icon-button
-    class="toolbar-option"
-    aria-label="Update Customer"
-    (click)="updateCustomer()"
-  >
+  <button mat-icon-button class="toolbar-option" aria-label="Update Customer" (click)="updateCustomer()">
     <mat-icon>save</mat-icon>
   </button>
 </app-tool-bar>
@@ -15,82 +10,61 @@
         <div class="panel__header-section">
           <label>{{
             "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE"
-              | translate
-          }}</label>
+            | translate
+            }}</label>
         </div>
         <div class="panel__body-section">
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="name" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.ADDRESS_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input matInput type="text" formControlName="address" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
-            <input
-              type="text"
-              placeholder="Pick one"
-              aria-label="Number"
-              matInput
-              formControlName="paymentMethod"
-              [matAutocomplete]="auto"
-            />
+            <mat-label>{{
+              "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
 
-            <mat-autocomplete #auto="matAutocomplete">
-              <mat-option
-                *ngFor="let option of paymentMethodFilterOptions | async"
-                [value]="option.name"
-              >
-                {{ option.name }}
-              </mat-option>
-            </mat-autocomplete>
+            <mat-select formControlName="paymentMethod">
+              <mat-option *ngFor="let paymentMethod of paymentMethodOptions" [value]="paymentMethod.name">{{
+                paymentMethod.name
+                }}</mat-option>
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <mat-select formControlName="outletType">
               <mat-option [value]="'KEY_ACCOUNT'">
                 {{
-                  "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT"
-                    | translate
+                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT"
+                | translate
                 }}
               </mat-option>
               <mat-option [value]="'GEN_TRADE'">
                 {{
-                  "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE"
-                    | translate
+                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE"
+                | translate
                 }}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label
-              >{{
-                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
-                  | translate
-              }}:</mat-label
-            >
+            <mat-label>{{
+              "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.BARANGAY_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
             <input type="text" matInput formControlName="barangay" />
           </mat-form-field>
         </div>

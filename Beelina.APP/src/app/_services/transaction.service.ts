@@ -41,6 +41,7 @@ import {
 import { DateRange } from '../_models/date-range';
 import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
+import { ITransactionInformationOutput } from '../_interfaces/outputs/itransaction-information.output';
 
 const REGISTER_TRANSACTION_MUTATION = gql`
   mutation ($transactionInput: TransactionInput!) {
@@ -57,6 +58,16 @@ const DELETE_TRANSACTION = gql`
     deleteTransaction(input: { transactionId: $transactionId }) {
       transaction {
         id
+      }
+    }
+  }
+`;
+
+const DELETE_TRANSACTIONS_BY_DATE = gql`
+  mutation($transactionStatus: TransactionStatusEnum!, $transactionDate: String!) {
+    deleteTransactionsByDate(input: { transactionStatus: $transactionStatus, transactionDate: $transactionDate }) {
+      transactionInformation {
+          id
       }
     }
   }
@@ -125,11 +136,13 @@ const GET_TRANSACTION = gql`
         hasUnpaidProductTransaction
         total
         balance
+        modeOfPayment
         store {
           id
           name
           address
           paymentMethod {
+            id
             name
           }
           barangay {
@@ -160,16 +173,15 @@ const GET_TRANSACTION = gql`
   }
 `;
 
-const MARK_TRANSACTION_AS_PAID = gql`
-  mutation ($transactionId: Int!) {
-    markTransactionAsPaid(input: { transactionId: $transactionId }) {
+const UPDATE_MODE_OF_PAYMENT = gql`
+  mutation ($transactionId: Int!, $modeOfPayment: Int!) {
+    updateModeOfPayment(input: { transactionId: $transactionId, modeOfPayment: $modeOfPayment }) {
       transaction {
         id
       }
     }
   }
 `;
-
 
 const GET_TOP_SELLING_PRODUCTS = gql`
   query(
@@ -207,7 +219,10 @@ const GET_TOP_SELLING_PRODUCTS = gql`
 const GET_TRANSACTION_SALES = gql`
   query ($userId: Int!, $fromDate: String!, $toDate: String!) {
     transactionSales(userId: $userId, fromDate: $fromDate, toDate: $toDate) {
-      sales
+      totalSalesAmount
+      cashAmountOnHand
+      chequeAmountOnHand
+      totalAmountOnHand
     }
   }
 `;
@@ -219,6 +234,9 @@ const GET_TRANSACTION_SALES_PER_DATE_RANGE_QUERY = gql`
       toDate
       label
       totalSales
+      cashAmountOnHand
+      chequeAmountOnHand
+      totalAmountOnHand
     }
   }
 `;
@@ -249,6 +267,7 @@ export class Transaction extends Entity implements IModelNode {
   public transactionDate: Date;
   public dueDate: Date;
   public store: CustomerStore;
+  public modeOfPayment: number;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
@@ -304,7 +323,10 @@ export class TransactionDateInformation {
 }
 
 export class TransactionSales {
-  public sales: number;
+  public totalSalesAmount: number;
+  public cashAmountOnHand: number;
+  public chequeAmountOnHand: number;
+  public totalAmountOnHand: number;
 }
 
 export class TransactionDto {
@@ -312,6 +334,7 @@ export class TransactionDto {
   public invoiceNo: string;
   public discount: number;
   public storeId: number;
+  public modeOfPayment: number;
   public status: TransactionStatusEnum;
   public transactionDate: string;
   public dueDate: string;
@@ -348,6 +371,7 @@ export class TransactionService {
       invoiceNo: transaction.invoiceNo,
       discount: transaction.discount,
       storeId: transaction.storeId,
+      modeOfPayment: transaction.modeOfPayment,
       status: transaction.status,
       transactionDate: transaction.transactionDate,
       dueDate: transaction.dueDate,
@@ -425,6 +449,38 @@ export class TransactionService {
       );
   }
 
+  deleteTransactionsByDate(transactionStatus: TransactionStatusEnum, transactionDate: string) {
+    return this.apollo
+      .mutate({
+        mutation: DELETE_TRANSACTIONS_BY_DATE,
+        variables: {
+          transactionStatus,
+          transactionDate
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{ deleteTransactionsByDate: ITransactionInformationOutput }>
+          ) => {
+            const output = result.data.deleteTransactionsByDate;
+            const payload = output.transactionInformation;
+            const errors = output.errors;
+
+            if (payload) {
+              return payload;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return null;
+          }
+        )
+      );
+  }
+
   getTransactionsByDate(
     transactionDate: string,
     status: TransactionStatusEnum
@@ -484,6 +540,7 @@ export class TransactionService {
             transaction.dueDate = transactionFromRepo.transaction.dueDate;
             transaction.storeId = transactionFromRepo.transaction.storeId;
             transaction.store = transactionFromRepo.transaction.store;
+            transaction.modeOfPayment = transactionFromRepo.transaction.modeOfPayment;
             transaction.balance = transactionFromRepo.transaction.balance;
             transaction.total = transactionFromRepo.transaction.total;
             transaction.hasUnpaidProductTransaction =
@@ -738,23 +795,23 @@ export class TransactionService {
       );
   }
 
-
-  markTransactionAsPaid(transactionId: number) {
+  updateModeOfPayment(transactionId: number, modeOfPayment: number) {
     return this.apollo
       .mutate({
-        mutation: MARK_TRANSACTION_AS_PAID,
+        mutation: UPDATE_MODE_OF_PAYMENT,
         variables: {
           transactionId,
+          modeOfPayment
         },
       })
       .pipe(
         map(
           (
             result: MutationResult<{
-              markTransactionAsPaid: ITransactionOutput;
+              updateModeOfPayment: ITransactionOutput;
             }>
           ) => {
-            const output = result.data.markTransactionAsPaid;
+            const output = result.data.updateModeOfPayment;
             const payload = output.transaction;
             const errors = output.errors;
 

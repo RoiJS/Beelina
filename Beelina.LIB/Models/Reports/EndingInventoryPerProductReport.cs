@@ -28,7 +28,14 @@ namespace Beelina.LIB.Models.Reports
 
             var reportOutput = new EndingInventoryPerProductReportOutput
             {
-                ListOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new EndingInventoryPerProductReportOutputList
+                HeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new EndingInventoryPerProductReportOutputHeader
+                {
+                    SalesAgentName = row.Field<string>("SalesAgentName"),
+                    FromDate = row.Field<string>("FromDate"),
+                    ToDate = row.Field<string>("ToDate"),
+                }).FirstOrDefault(),
+
+                ListOutput = reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new EndingInventoryPerProductReportOutputList
                 {
                     Code = row.Field<string>("Code"),
                     Name = row.Field<string>("Name"),
@@ -36,6 +43,8 @@ namespace Beelina.LIB.Models.Reports
                     BeginningStocksValue = row.Field<decimal>("BeginningStocksValue"),
                     EndingStocks = row.Field<int>("EndingStocks"),
                     EndingStocksValue = row.Field<decimal>("EndingStocksValue"),
+                    SoldStocks = row.Field<int>("SoldStocks"),
+                    SoldStocksValue = row.Field<decimal>("SoldStocksValue"),
                 }).ToList()
             };
 
@@ -46,7 +55,11 @@ namespace Beelina.LIB.Models.Reports
             {
                 var worksheet = package.Workbook.Worksheets["Sheet1"];
 
-                var cellNumber = 2;
+                worksheet.Cells["B1"].Value = reportOutput.HeaderOutput.SalesAgentName;
+                worksheet.Cells["B2"].Value = reportOutput.HeaderOutput.FromDate;
+                worksheet.Cells["B3"].Value = reportOutput.HeaderOutput.ToDate;
+
+                var cellNumber = 6;
                 foreach (var item in reportOutput.ListOutput)
                 {
                     worksheet.Cells[$"A{cellNumber}"].Value = item.Code;
@@ -55,6 +68,8 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"D{cellNumber}"].Value = item.BeginningStocksValue;
                     worksheet.Cells[$"E{cellNumber}"].Value = item.EndingStocks;
                     worksheet.Cells[$"F{cellNumber}"].Value = item.EndingStocksValue;
+                    worksheet.Cells[$"G{cellNumber}"].Value = item.SoldStocks;
+                    worksheet.Cells[$"H{cellNumber}"].Value = item.SoldStocksValue;
                     cellNumber++;
                 }
 
@@ -76,11 +91,25 @@ namespace Beelina.LIB.Models.Reports
 
     public class EndingInventoryPerProductReportOutput : BaseReportOutput
     {
+        public EndingInventoryPerProductReportOutputHeader HeaderOutput { get; set; }
         public List<EndingInventoryPerProductReportOutputList> ListOutput { get; set; }
 
         public EndingInventoryPerProductReportOutput() : base()
         {
+            HeaderOutput = new EndingInventoryPerProductReportOutputHeader();
             ListOutput = new List<EndingInventoryPerProductReportOutputList>();
+        }
+    }
+
+    public class EndingInventoryPerProductReportOutputHeader
+    {
+        public string SalesAgentName { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+
+        public EndingInventoryPerProductReportOutputHeader()
+        {
+
         }
     }
 
@@ -93,6 +122,8 @@ namespace Beelina.LIB.Models.Reports
         public decimal BeginningStocksValue { get; set; }
         public int EndingStocks { get; set; }
         public decimal EndingStocksValue { get; set; }
+        public int SoldStocks { get; set; }
+        public decimal SoldStocksValue { get; set; }
 
         public EndingInventoryPerProductReportOutputList()
         {

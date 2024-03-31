@@ -66,7 +66,7 @@ export class BaseFilterAndSortService<T> {
     return this;
   }
 
-  // Overriable
+  // Overridable
   setPropsSubscriptions(defaultSortOrder: string, defaultFromDate: string, defaultToDate: string) {
     this.subscription = new Subscription();
 

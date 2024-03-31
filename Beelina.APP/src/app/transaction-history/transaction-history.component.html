@@ -1,52 +1,30 @@
-<app-tool-bar
-  [title]="'GENERAL_TEXTS.BIZUAL' | translate"
-  [showBackButton]="false"
->
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
   <button mat-icon-button class="toolbar-option" (click)="openFilter()">
-    <mat-icon
-      [ngClass]="{
+    <mat-icon [ngClass]="{
         'icon-active': isFilterActive
-      }"
-      matBadgeColor="warn"
-      >filter_list</mat-icon
-    >
+      }" matBadgeColor="warn">filter_list</mat-icon>
   </button>
 </app-tool-bar>
 
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "TRANSACTION_HISTORY_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "TRANSACTION_HISTORY_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "TRANSACTION_HISTORY_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
 
-    <app-list-container
-      [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
-      [count]="dataSource.itemCount"
-    >
-      <cdk-virtual-scroll-viewport
-        itemSize="10"
-        class="list-container transaction-history-list transactions-list"
-      >
+    <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="dataSource.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container transaction-history-list transactions-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <div
-            matRipple
+          <div matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
-            [ngClass]="{ unpaid: !item.allTransactionsPaid }"
-            (click)="goToTransactionDate(item.transactionDate)"
-          >
+            [ngClass]="{ unpaid: !item.allTransactionsPaid }" (click)="goToTransactionDate(item.transactionDate)">
             <span>{{ item.transactionDateFormatted }}</span>
-            <div
-              class="transaction-history-list__unpaid-transactions-count-container"
-            >
-              <span
-                class="unpaid-transactions-counter"
-                *ngIf="item.numberOfUnPaidTransactions > 0"
-                >{{ item.numberOfUnPaidTransactions }}</span
-              >
+            <div class="transaction-history-list__unpaid-transactions-count-container">
+              <span class="unpaid-transactions-counter" *ngIf="item.numberOfUnPaidTransactions > 0">{{
+                item.numberOfUnPaidTransactions }}</span>
               <mat-icon>keyboard_arrow_right</mat-icon>
             </div>
           </div>
