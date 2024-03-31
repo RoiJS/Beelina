@@ -4,9 +4,7 @@
       matBadgeColor="warn" aria-hidden="false">add_shopping_cart</mat-icon>
 
     <div class="product-item__header-options" *ngIf="!hideHeaderOptions">
-      <span *ngIf="productItem?.isLinkedToSalesAgent && allowManageItem" class="product-linked-icon">{{
-        "GENERAL_TEXTS.LINKED" | translate
-        }}</span>
+      <app-badge *ngIf="productItem?.isLinkedToSalesAgent && allowManageItem" [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'GENERAL_TEXTS.LINKED'"></app-badge>
       <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
       <mat-menu #menu="matMenu">
         <button *ngIf="allowManageItem" mat-menu-item (click)="editProduct(productItem?.id)">
