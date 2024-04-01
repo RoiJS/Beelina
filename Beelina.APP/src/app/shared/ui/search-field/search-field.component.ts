@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class SearchFieldComponent implements OnInit {
   @Input() placeHolderTextIdentifier: string = '';
   @Output() onSearch = new EventEmitter<string>();
+  @Output() onClear = new EventEmitter<string>();
 
   private _searchForm: FormGroup;
 
@@ -31,6 +32,7 @@ export class SearchFieldComponent implements OnInit {
 
   clear() {
     this._searchForm.get('filterKeyword').setValue('');
+    this.onClear.emit('');
   }
 
   value(filterKeyword: string = ''): string {
