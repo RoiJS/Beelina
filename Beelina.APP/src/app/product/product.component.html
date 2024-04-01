@@ -79,11 +79,17 @@
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [allowManageItem]="
+          <app-product-card-item
+            [productItem]="item"
+            [filterKeyword]="filterKeyword"
+            [hideDeductionCounterIcon]="currentUserPermission >
+            getPermissionLevel(permissionLevelEnum.User)"
+            [allowManageItem]="
               currentUserPermission >
                 getPermissionLevel(permissionLevelEnum.User) ||
               allowManageProductDetails
-            " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
+            "
+            (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
             (selectItem)="addItemToCart($event)" (transferProduct)="transferProductInventory($event)"
             (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
         </div>

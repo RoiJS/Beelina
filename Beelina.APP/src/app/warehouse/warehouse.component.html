@@ -26,10 +26,16 @@
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [allowTransferStocks]="false"
-            [allowManageItem]="true" (editItem)="editProduct($event)" (selectItem)="editProduct($event)"
+          <app-product-card-item
+            [hideDeductionCounterIcon]="true"
+            [productItem]="item"
+            [filterKeyword]="filterKeyword"
+            [allowTransferStocks]="false"
+            [allowManageItem]="true"
+            (editItem)="editProduct($event)"
+            (selectItem)="editProduct($event)"
             (deleteItem)="deleteProduct($event)"
-            (addStockQuantity)="addProductStockQuantity($event  )"></app-product-card-item>
+            (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>
