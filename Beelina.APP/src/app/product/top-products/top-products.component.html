@@ -15,7 +15,8 @@
         <div *cdkVirtualFor="let item of dataSource">
           <div matRipple class="list-container__item-section top-products-list-container__item-section">
             <span class="product-information"><span>({{ item.code }})</span> - {{ item.name }}</span>
-            <span class="product-number-of-transaction">{{ item.count }}</span>
+            <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.SUCCESS"
+              [label]="item.totalAmountFormatted"></app-badge>
           </div>
         </div>
       </cdk-virtual-scroll-viewport>
