@@ -75,7 +75,7 @@ export class SidedrawerService {
         maximumPermissionLevel: userPermissionLevel,
       },
       {
-        name: 'MAIN_MENU.BARANGAYS',
+        name: 'MAIN_MENU.CUSTOMERS',
         url: '/barangays',
         icon: 'place',
         minimumPermissionLevel: userPermissionLevel,
