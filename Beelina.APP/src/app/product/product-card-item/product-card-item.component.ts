@@ -15,6 +15,7 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
   @Input() hideHeader: boolean = false;
   @Input() hideImage: boolean = false;
   @Input() hideHeaderOptions: boolean = false;
+  @Input() hideDeductionCounterIcon: boolean = false;
   @Input() filterKeyword: string = '';
   @Output() editItem = new EventEmitter<number>();
   @Output() deleteItem = new EventEmitter<number>();
