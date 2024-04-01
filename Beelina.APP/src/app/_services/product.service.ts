@@ -125,6 +125,7 @@ const GET_PRODUCT_STORE = gql`
         name
         code
         description
+        defaultPrice
         stockQuantity
         pricePerUnit
         price
