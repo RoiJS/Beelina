@@ -319,6 +319,10 @@ export class ProductComponent
     this.store.dispatch(ProductActions.getProductsAction());
   }
 
+  onClear() {
+    this.onSearch('');
+  }
+
   switchSaleAgent(e) {
     this.storageService.storeString('currentSalesAgentId', e.value.toString());
     this.currentSalesAgentId = e.value;
