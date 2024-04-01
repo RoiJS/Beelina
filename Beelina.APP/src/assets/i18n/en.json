@@ -368,7 +368,7 @@
       },
       "PRICE_PER_UNIT_CONTROL": {
         "LABEL": "Price",
-        "HINT": "Please specify price"
+        "HINT": "<b>NOTE:</b> Default value based on warehouse price."
       },
       "UNIT_CONTROL": {
         "LABEL": "Unit",
