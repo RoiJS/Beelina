@@ -437,6 +437,11 @@ button[color="primary"] {
 .autocomplete-option:hover {
   background-color: #f0f0f0;
 }
+
+.no-visibility {
+  visibility: hidden;
+}
+
 /*#endregion*/
 
 /*#region ANIMATION CLASS HELPERS */

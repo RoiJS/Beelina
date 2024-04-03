@@ -56,6 +56,10 @@ export class BarangaysComponent
     this.store.dispatch(BarangaysStoreActions.getBarangaysAction());
   }
 
+  onClear() {
+    this.onSearch('');
+  }
+
   addBarangay() {
     this.openBarangayDialog(new Barangay());
   }

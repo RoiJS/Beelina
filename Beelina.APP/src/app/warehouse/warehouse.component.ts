@@ -94,6 +94,10 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
   }
 
+  onClear() {
+    this.onSearch('');
+  }
+
   editProduct(id: number) {
     this.router.navigate([`product-catalogue/edit-product/${id}`], { state: { productSource: ProductSourceEnum.Warehouse } });
   }

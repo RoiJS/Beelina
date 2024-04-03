@@ -43,7 +43,11 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        public async Task<IProductPayload> GetProduct([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, int productId, int userAccountId)
+        public async Task<IProductPayload> GetProduct(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IProductStockPerWarehouseRepository<ProductStockPerWarehouse> productStockPerWarehouseRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IMapper mapper, int productId, int userAccountId)
         {
             var productFromRepo = await productRepository.GetProducts(userAccountId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
 
@@ -53,6 +57,13 @@ namespace Beelina.API.Types.Query
             }
 
             var productResult = mapper.Map<ProductInformationResult>(productFromRepo?[0]);
+
+            // Set default price based on warehouse price.
+            if (productResult.Price == 0)
+            {
+                var productStockWarehouseFromRepo = await productStockPerWarehouseRepository.GetProductStockPerWarehouse(productId, 1);
+                productResult.DefaultPrice = productStockWarehouseFromRepo.PricePerUnit;
+            }
 
             return productResult;
         }
@@ -78,6 +89,14 @@ namespace Beelina.API.Types.Query
         {
             var productFromRepo = await productRepository.GetProductByUniqueCode(productId, productCode);
             return new CheckProductCodeInformationResult(productFromRepo != null);
+        }
+
+        [Authorize]
+        public async Task<double> GetInventoryPanelTotalValue([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int userAccountId)
+        {
+            var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+            var inventoryTotalValue = productsFromRepo.Sum(x => x.StockQuantity * x.Price);
+            return inventoryTotalValue;
         }
     }
 }

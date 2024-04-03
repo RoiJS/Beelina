@@ -5,5 +5,6 @@ namespace Beelina.LIB.GraphQL.Results
 {
     public class ProductInformationResult : Product, IProductPayload
     {
+        public float DefaultPrice { get; set; }
     }
 }

@@ -105,6 +105,10 @@ export class CustomerComponent
     );
   }
 
+  onClear() {
+    this.onSearch('');
+  }
+
   onGoBack() {
     this.router.navigate([`/barangays`]);
   }

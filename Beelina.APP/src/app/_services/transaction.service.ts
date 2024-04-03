@@ -704,6 +704,7 @@ export class TransactionService {
             topProducts.id = stockAudit.id;
             topProducts.code = stockAudit.code;
             topProducts.name = stockAudit.name;
+            topProducts.count = stockAudit.count;
             topProducts.totalAmount = stockAudit.totalAmount;
             return topProducts;
           });

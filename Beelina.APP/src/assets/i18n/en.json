@@ -331,7 +331,7 @@
         "LABEL": "Stock Quantity Transferable"
       },
       "NUMBER_OF_UNITS_CONTROL": {
-        "LABEL": "Number of units"
+        "LABEL": "Quantity per unit"
       }
     },
     "SAVE_NEW_PRODUCT_DIALOG": {
@@ -368,7 +368,7 @@
       },
       "PRICE_PER_UNIT_CONTROL": {
         "LABEL": "Price",
-        "HINT": "Please specify price"
+        "HINT": "<b>NOTE:</b> Default value based on warehouse price."
       },
       "UNIT_CONTROL": {
         "LABEL": "Unit",
@@ -378,7 +378,7 @@
         "LABEL": "Stock Quantity Transferable"
       },
       "NUMBER_OF_UNITS_CONTROL": {
-        "LABEL": "Number of units"
+        "LABEL": "Quantity per unit"
       }
     },
     "EDIT_PRODUCT_DIALOG": {
@@ -407,6 +407,9 @@
     },
     "PRODUCT_COUNTER_CONTAINER": {
       "LABEL": "Total number of items"
+    },
+    "PRODUCTS_TOTAL_VALUE_CONTAINER": {
+      "LABEL": "Total Value"
     },
     "PRODUCT_CARD_ITEM": {
       "NAME": "Name",
@@ -501,7 +504,7 @@
       },
       "BULK_TO_PIECES_CONTROL": {
         "NUMBER_OF_UNITS_CONTROL": {
-          "LABEL": "Specify number of units per __PRODUCT_UNIT__",
+          "LABEL": "Specify quantity per __PRODUCT_UNIT__",
           "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
         },
         "PRODUCT_DESTINATION_CONTROL": {
@@ -515,7 +518,7 @@
       },
       "PIECES_TO_BULK_CONTROL": {
         "NUMBER_OF_UNITS_CONTROL": {
-          "LABEL": "Number of units per __PRODUCT_UNIT__",
+          "LABEL": "Quantity per __PRODUCT_UNIT__",
           "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
         },
         "PRODUCT_DESTINATION_CONTROL": {
@@ -536,8 +539,8 @@
     },
     "TRANSFER_PRODUCT_STOCK_INVALID_DIALOG": {
       "TITLE": "Invalid quantity to be transfered",
-      "QUANTITY_LESS_THAN_ERROR_MESSAGE": "Unable to proceed. The quantity to be transfered must be greater than or equal to the number of units of the destination product.",
-      "QUANTITY_INDIVISIBLE_ERROR_MESSAGE": "Unable to proceed. The quantity must be perfectly divisible by the number of units in the destination product."
+      "QUANTITY_LESS_THAN_ERROR_MESSAGE": "Unable to proceed. The quantity to be transfered must be greater than or equal to the 'Quantity per unit' of the destination product.",
+      "QUANTITY_INDIVISIBLE_ERROR_MESSAGE": "Unable to proceed. The quantity must be perfectly divisible by the 'Quantity per unit' in the destination product."
     }
   },
   "TRANSACTION_HISTORY_PAGE": {
@@ -794,7 +797,7 @@
           "ADDITIONAL_QUANTITY": "Additional Quantity",
           "PRICE_PER_UNIT": "Price (Optional)",
           "PRODUCT_UNIT": "Unit (Optional)",
-          "NUMBER_OF_UNITS": "Number Of Units (Optional)"
+          "NUMBER_OF_UNITS": "Quantity per unit (Optional)"
         },
         "EXTRACT_PROCESS_TEXT": "Extracting products. This might take some time depending on the number of products. Please wait..."
       },
@@ -821,7 +824,7 @@
               "QUANTITY": "Quantity",
               "UNIT": "Unit",
               "PRICE": "Price",
-              "NUMBER_OF_UNITS": "Number Of Units"
+              "NUMBER_OF_UNITS": "Quantity per unit"
             }
           }
         }

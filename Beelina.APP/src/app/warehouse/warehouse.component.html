@@ -8,28 +8,30 @@
         "WAREHOUSE_PAGE.DESCRIPTION" | translate
         }}</span>
     </div>
-    <app-search-field (onSearch)="onSearch($event)" [placeHolderTextIdentifier]="
+    <app-search-field (onSearch)="onSearch($event)" (onClear)="onClear()" [placeHolderTextIdentifier]="
         'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
       "></app-search-field>
 
-    <div class="product-total-count-container" *ngIf="filterKeyword?.length > 0">
-      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span><span
-        class="product-total-count-container__value">{{ totalProducts }} items</span>
-    </div>
+    <div class="product-list-status-bar-container">
+      <div class="product-list-status-bar-container__search-result-counter-section" *ngIf="filterKeyword?.length > 0">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+      </div>
 
-    <div class="product-total-count-container" *ngIf="filterKeyword?.length === 0">
-      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_COUNTER_CONTAINER.LABEL' | translate }}: </span><span
-        class="product-total-count-container__value">{{ totalProducts }} items</span>
+      <div class="product-list-status-bar-container__total-products-counter-section"
+        *ngIf="filterKeyword?.length === 0">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_COUNTER_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+      </div>
     </div>
-
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [allowTransferStocks]="false"
-            [allowManageItem]="true" (editItem)="editProduct($event)" (selectItem)="editProduct($event)"
-            (deleteItem)="deleteProduct($event)"
-            (addStockQuantity)="addProductStockQuantity($event  )"></app-product-card-item>
+          <app-product-card-item [hideDeductionCounterIcon]="true" [productItem]="item" [filterKeyword]="filterKeyword"
+            [allowTransferStocks]="false" [allowManageItem]="true" (editItem)="editProduct($event)"
+            (selectItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
+            (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>

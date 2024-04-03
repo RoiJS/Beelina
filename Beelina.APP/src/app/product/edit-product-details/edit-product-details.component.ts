@@ -66,8 +66,8 @@ export class EditProductDetailsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private notificationService: NotificationService,
-    private translateService: TranslateService,
-    private uniqueProductCodeValidator: UniqueProductCodeValidator
+    private uniqueProductCodeValidator: UniqueProductCodeValidator,
+    public translateService: TranslateService,
   ) {
     const state = <any>this.router.getCurrentNavigation().extras.state;
     this._productSource = <ProductSourceEnum>state.productSource;
@@ -115,10 +115,15 @@ export class EditProductDetailsComponent implements OnInit {
         this._productForm.get('code').setValue(product.code);
         this._productForm.get('description').setValue(product.description);
         this._productForm.get('stockQuantity').setValue(product.stockQuantity);
-        this._productForm.get('pricePerUnit').setValue(product.price);
         this._productForm.get('isTransferable').setValue(product.isTransferable);
         this._productForm.get('numberOfUnits').setValue(product.numberOfUnits);
         this._productForm.get('productUnit').setValue(product.productUnit.name);
+
+        if (this.showDefaultPrice) {
+          this._productForm.get('pricePerUnit').setValue(product?.defaultPrice);
+        } else {
+          this._productForm.get('pricePerUnit').setValue(product.price);
+        }
       });
 
     this._productUnitOptionsSubscription = this.store
@@ -285,5 +290,9 @@ export class EditProductDetailsComponent implements OnInit {
 
   get productUnitFilterOptions(): Observable<Array<ProductUnit>> {
     return this._productUnitFilterOptions;
+  }
+
+  get showDefaultPrice(): boolean {
+    return this._productDetails?.defaultPrice > 0 && this._productSource === ProductSourceEnum.Panel;
   }
 }

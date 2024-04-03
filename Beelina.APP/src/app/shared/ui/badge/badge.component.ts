@@ -11,6 +11,7 @@ import { BannerTypeEnum } from '../banner/banner.component';
 export class BadgeComponent implements OnInit {
   @Input() type: BannerTypeEnum;
   @Input() textIdentifier: string = '';
+  @Input() label: string = '';
 
   constructor(private translateService: TranslateService) { }
 
@@ -18,6 +19,6 @@ export class BadgeComponent implements OnInit {
   }
 
   get text(): string {
-    return this.translateService.instant(this.textIdentifier);
+    return this.textIdentifier.length > 0 ? this.translateService.instant(this.textIdentifier) : this.label;
   }
 }
