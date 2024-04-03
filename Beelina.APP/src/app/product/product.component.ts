@@ -44,6 +44,7 @@ import { NotificationService } from '../shared/ui/notification/notification.serv
 
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
 import { AddProductStockQuantityDialogComponent } from './add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
+import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 
 @Component({
   selector: 'app-product',
@@ -73,6 +74,8 @@ export class ProductComponent
   >;
   private _selectedProduct: Product;
   private _totalProductCount: number;
+  private _totalProductValue: string;
+  private _totalProductValueSubscription: Subscription;
 
   currentSalesAgentId: number = 0;
   private _filterKeyword: string;
@@ -137,6 +140,7 @@ export class ProductComponent
         'currentSalesAgentId',
         this._currentLoggedInUser.id.toString()
       );
+      this.calculateTotalInventoryValue();
       this._dataSource = new ProductDataSource(this.store);
     } else {
       this.productService.getSalesAgentsList().subscribe({
@@ -148,6 +152,7 @@ export class ProductComponent
               'currentSalesAgentId'
             );
 
+            this.calculateTotalInventoryValue();
             this._dataSource = new ProductDataSource(this.store);
           }
         },
@@ -159,6 +164,7 @@ export class ProductComponent
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+    if (this._totalProductValueSubscription) this._totalProductValueSubscription.unsubscribe();
     this.store.dispatch(ProductActions.getProductsCancelAction());
     this._accountVerificationDialogRef = null;
     this._transferInventoryDialogRef = null;
@@ -323,6 +329,14 @@ export class ProductComponent
     this.onSearch('');
   }
 
+  calculateTotalInventoryValue() {
+    this._totalProductValueSubscription = this.productService.getPanelInventoryTotalValue().subscribe({
+      next: (data: number) => {
+        this._totalProductValue = NumberFormatter.formatCurrency(data);
+      },
+    })
+  }
+
   switchSaleAgent(e) {
     this.storageService.storeString('currentSalesAgentId', e.value.toString());
     this.currentSalesAgentId = e.value;
@@ -331,6 +345,7 @@ export class ProductComponent
       ProductTransactionActions.initializeProductTransactions()
     );
 
+    this.calculateTotalInventoryValue();
     if (!this._dataSource) {
       this._dataSource = new ProductDataSource(this.store);
     } else {
@@ -480,5 +495,9 @@ export class ProductComponent
 
   get totalProducts(): number {
     return this._totalProductCount;
+  }
+
+  get totalProductValue(): string {
+    return this._totalProductValue;
   }
 }

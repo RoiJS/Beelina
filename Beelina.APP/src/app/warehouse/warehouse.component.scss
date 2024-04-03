@@ -9,13 +9,23 @@
   height: 72vh;
 }
 
-.product-total-count-container {
-  height: 2em;
+.product-list-status-bar-container {
+  min-height: 2em;
+  display: flex;
+  gap: 1em;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.5em;
 
-  &__value {
-    padding: 5px 10px;
-    background-color: $primary;
-    border-radius: 15px;
-    color: $white;
+  &__total-value-section,
+  &__total-products-counter-section,
+  &__search-result-counter-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .value {
+      min-width: 80px;
+    }
   }
 }

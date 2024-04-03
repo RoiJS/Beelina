@@ -90,5 +90,13 @@ namespace Beelina.API.Types.Query
             var productFromRepo = await productRepository.GetProductByUniqueCode(productId, productCode);
             return new CheckProductCodeInformationResult(productFromRepo != null);
         }
+
+        [Authorize]
+        public async Task<double> GetInventoryPanelTotalValue([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int userAccountId)
+        {
+            var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+            var inventoryTotalValue = productsFromRepo.Sum(x => x.StockQuantity * x.Price);
+            return inventoryTotalValue;
+        }
     }
 }

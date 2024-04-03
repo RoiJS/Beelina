@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
@@ -46,8 +47,13 @@ import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { ProductStockAuditItem } from '../_models/product-stock-audit-item';
 import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 import { IExtractedProductsFileOutput } from '../_interfaces/outputs/iproduct-import-file.output';
-import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+
+const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
+query($userAccountId: Int!) {
+  inventoryPanelTotalValue(userAccountId: $userAccountId)
+}
+`;
 
 const GET_PRODUCTS_QUERY = gql`
   query ($userAccountId: Int!, $cursor: String, $filterKeyword: String) {
@@ -1379,6 +1385,30 @@ export class ProductService {
 
           return null;
         })
+      );
+  }
+
+  getPanelInventoryTotalValue() {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
+    return this.apollo
+      .watchQuery({
+        query: GET_PRODUCT_TOTAL_INVENTORY_VALUE,
+        variables: {
+          userAccountId,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              inventoryPanelTotalValue: number;
+            }>
+          ) => {
+            const data = result.data.inventoryPanelTotalValue;
+            return data;
+          }
+        )
       );
   }
 }

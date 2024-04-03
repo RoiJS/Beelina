@@ -9,6 +9,8 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 import * as ProductActions from '../../../product/store/actions';
 
 import { filterKeywordSelector, isLoadingSelector, totalCountSelector } from 'src/app/product/store/selectors';
+import { ProductService } from 'src/app/_services/product.service';
+import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 
 @Component({
   selector: 'app-product-list',
@@ -22,9 +24,12 @@ export class ProductListComponent extends BaseComponent implements OnInit, OnDes
   private _filterKeyword: string;
   private _totalProductCount: number;
   private _subscription: Subscription = new Subscription();
+  private _totalProductValue: string;
+  private _totalProductValueSubscription: Subscription;
 
   constructor(
     private store: Store<AppStateInterface>,
+    private productService: ProductService,
   ) {
     super();
     this.store.dispatch(ProductActions.resetProductState());
@@ -49,6 +54,7 @@ export class ProductListComponent extends BaseComponent implements OnInit, OnDes
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+    if (this._totalProductValueSubscription) this._totalProductValueSubscription.unsubscribe();
     this.resetProductList();
   }
 
@@ -58,6 +64,7 @@ export class ProductListComponent extends BaseComponent implements OnInit, OnDes
 
   initProductList() {
     this.resetProductList();
+    this.calculateTotalInventoryValue();
     this._productDataSource = new ProductDataSource(this.store);
   }
 
@@ -67,6 +74,18 @@ export class ProductListComponent extends BaseComponent implements OnInit, OnDes
       ProductActions.setSearchProductAction({ keyword: filterKeyword })
     );
     this.store.dispatch(ProductActions.getProductsAction());
+  }
+
+  onClear() {
+    this.searchProduct('');
+  }
+
+  calculateTotalInventoryValue() {
+    this._totalProductValueSubscription = this.productService.getPanelInventoryTotalValue().subscribe({
+      next: (data: number) => {
+        this._totalProductValue = NumberFormatter.formatCurrency(data);
+      },
+    })
   }
 
   selectItemEvent(id: number) {
@@ -83,5 +102,9 @@ export class ProductListComponent extends BaseComponent implements OnInit, OnDes
 
   get totalProducts(): number {
     return this._totalProductCount;
+  }
+
+  get totalProductValue(): string {
+    return this._totalProductValue;
   }
 }
