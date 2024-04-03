@@ -51,7 +51,10 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<Client> GetCompanyInfoByName(string companyName)
         {
-            var companyInfo = await _beelinaRepository.SystemDbContext.Clients.FirstOrDefaultAsync(c => c.Name == companyName);
+            var companyInfo = await _beelinaRepository
+                                        .SystemDbContext
+                                        .Clients
+                                        .FirstOrDefaultAsync(c => c.Name == companyName && c.IsActive && !c.IsDelete);
 
             return companyInfo;
         }
