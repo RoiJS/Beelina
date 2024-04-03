@@ -62,7 +62,11 @@ namespace Beelina.API.Types.Query
             if (productResult.Price == 0)
             {
                 var productStockWarehouseFromRepo = await productStockPerWarehouseRepository.GetProductStockPerWarehouse(productId, 1);
-                productResult.DefaultPrice = productStockWarehouseFromRepo.PricePerUnit;
+
+                if (productStockWarehouseFromRepo != null)
+                {
+                    productResult.DefaultPrice = productStockWarehouseFromRepo.Price;
+                }
             }
 
             return productResult;
