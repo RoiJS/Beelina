@@ -408,6 +408,9 @@
     "PRODUCT_COUNTER_CONTAINER": {
       "LABEL": "Total number of items"
     },
+    "PRODUCTS_TOTAL_VALUE_CONTAINER": {
+      "LABEL": "Total Value"
+    },
     "PRODUCT_CARD_ITEM": {
       "NAME": "Name",
       "CODE": "Code",

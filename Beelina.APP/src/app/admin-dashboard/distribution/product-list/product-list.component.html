@@ -7,13 +7,19 @@
         "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.PRODUCT_LIST_CONTAINER.DESCRIPTION" | translate
         }}</span>
     </div>
-    <app-search-field (onSearch)="searchProduct($event)" [placeHolderTextIdentifier]="
-'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
-"></app-search-field>
+    <app-search-field (onSearch)="searchProduct($event)" (onClear)="onClear()"
+      [placeHolderTextIdentifier]="'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'"></app-search-field>
 
-    <div class="product-total-count-container" *ngIf="filterKeyword?.length > 0">
-      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span><span
-        class="product-total-count-container__value">{{ totalProducts }} items</span>
+    <div class="product-list-status-bar-container">
+      <div class="product-list-status-bar-container__total-value-section" *ngIf="totalProductValue">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCTS_TOTAL_VALUE_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductValue"></app-badge>
+      </div>
+
+      <div class="product-list-status-bar-container__total-products-counter-section" *ngIf="filterKeyword?.length > 0">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+      </div>
     </div>
 
     <app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.PRODUCTS"
