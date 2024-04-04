@@ -7,6 +7,7 @@ import { IProductState } from '../product/types/product-state.interface';
 import { IProductStockAuditState } from '../product/edit-product-details/manage-product-stock-audit/store/types/product-state.interface';
 import { ITransactionDateState } from '../transaction-history/types/transaction-dates-state.interface';
 import { IProductUnitState } from '../units/types/product-unit-state.interface';
+import { ITopSellingProductsState } from '../product/top-products/store/top-selling-product-state.interface';
 
 export interface AppStateInterface {
   authCredentials: ILoginAuthCredentialsState;
@@ -14,8 +15,10 @@ export interface AppStateInterface {
   barangays: IBarangayState;
   productUnits: IProductUnitState;
   products: IProductState;
+  warehouseProducts: IProductState;
   productStockAudits: IProductStockAuditState;
   customerStores: ICustomerStoreState;
   transactionDates: ITransactionDateState;
+  topSellingProducts: ITopSellingProductsState;
   productTransactions: IProductTransactionState;
 }

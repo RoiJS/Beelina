@@ -8,12 +8,17 @@ namespace Beelina.LIB.Interfaces
     {
         Task<Transaction> RegisterTransaction(Transaction transaction);
 
-        Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum statuse, string fromDate, string toDate);
+        Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);
 
         Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);
 
-        Task<TransactionSales> GetSales(string fromDate, string toDate);
+        Task<TransactionSales> GetSales(int userId, string fromDate, string toDate);
 
         Task<double> GetBadOrderAmount(string transactionNo, int storeId);
+
+        Task<List<TotalSalesPerDateRange>> GetTotalSalePerDateRange(int userId, List<DateRange> dateRanges);
+
+        Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate);
+        Task DeleteOrderTransactions(List<int> transactionIds);
     }
 }

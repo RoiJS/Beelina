@@ -1,3 +1,5 @@
+@import "../../../app-variables";
+
 .product-detail-panel {
   &__stock-quantity-control {
     display: flex;
@@ -18,4 +20,8 @@
   &__transferrable {
     padding: 1em 0 2em;
   }
+}
+
+mat-hint {
+  color: $primary;
 }

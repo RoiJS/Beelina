@@ -6,6 +6,9 @@
     "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
     "CONFIRM": "Confirm",
+    "EXTRACT": "Extract",
+    "IMPORT": "Import",
+    "NEXT": "Next",
     "BAD_ORDER": "Bad Order",
     "CLEAR": "Clear",
     "CANCEL": "Cancel",
@@ -25,7 +28,9 @@
     "TRANSFER_STOCK": "Transfer Stocks",
     "ADD_STOCK_QUANTITY": "Add Stock Quantity",
     "LINKED": "Linked",
-    "SAVE_CHANGES": "Save Changes"
+    "SAVE_CHANGES": "Save Changes",
+    "NEW": "New",
+    "EXISTING": "Existing"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -33,12 +38,15 @@
     "BARANGAYS": "Barangays",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
+    "WAREHOUSE_PRODUCTS": "Warehouse Products",
+    "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Draft Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
     "BAD_ORDERS": "Bad Orders",
     "REPORTS": "Reports",
     "PROFILE": "Profile",
     "MANUAL": "User Manual",
+    "DASHBOARD": "Dashboard",
     "LOGOUT": "Logout"
   },
   "USER_TYPE": {
@@ -154,8 +162,8 @@
         }
       },
       "PAYMENT_METHOD_CONTROL": {
-        "LABEL": "Payment Method",
-        "HINT": "Please specify payment method"
+        "LABEL": "Mode of Payment",
+        "HINT": "Please specify mode of payment"
       },
       "BARANGAY_CONTROL": {
         "LABEL": "Barangay/Branch",
@@ -182,8 +190,8 @@
         "HINT": "Please enter customer address"
       },
       "PAYMENT_METHOD_CONTROL": {
-        "LABEL": "Payment Method",
-        "HINT": "Please specify payment method"
+        "LABEL": "Mode of Payment",
+        "HINT": "Please specify mode of payment"
       },
       "OUTLET_TYPE_CONTROL": {
         "LABEL": "Outlet Type",
@@ -233,7 +241,7 @@
         "LABEL": "Address"
       },
       "PAYMENT_METHOD_CONTROL": {
-        "LABEL": "Payment Method"
+        "LABEL": "Mode of Payment"
       },
       "TRANSACTION_DATE_CONTROL": {
         "LABEL": "Transaction Date"
@@ -323,7 +331,7 @@
         "LABEL": "Stock Quantity Transferable"
       },
       "NUMBER_OF_UNITS_CONTROL": {
-        "LABEL": "Number of units"
+        "LABEL": "Quantity per unit"
       }
     },
     "SAVE_NEW_PRODUCT_DIALOG": {
@@ -360,7 +368,7 @@
       },
       "PRICE_PER_UNIT_CONTROL": {
         "LABEL": "Price",
-        "HINT": "Please specify price"
+        "HINT": "<b>NOTE:</b> Default value based on warehouse price."
       },
       "UNIT_CONTROL": {
         "LABEL": "Unit",
@@ -370,7 +378,7 @@
         "LABEL": "Stock Quantity Transferable"
       },
       "NUMBER_OF_UNITS_CONTROL": {
-        "LABEL": "Number of units"
+        "LABEL": "Quantity per unit"
       }
     },
     "EDIT_PRODUCT_DIALOG": {
@@ -378,6 +386,10 @@
       "CONFIRM": "Are you sure to save product details?",
       "SUCCESS_MESSAGE": "New updates has been saved!",
       "ERROR_MESSAGE": "Updating product failed. Please again later."
+    },
+    "CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG": {
+      "TITLE": "Insufficient Item Stocks",
+      "ERROR_MESSAGE": "This product does not have enough stocks in the warehouse. There are only {0} stocks in the warehouse left."
     }
   },
   "PRODUCTS_CATALOGUE_PAGE": {
@@ -392,6 +404,12 @@
     },
     "PRODUCT_SEARCH_RESULT_CONTAINER": {
       "LABEL": "Search result matches"
+    },
+    "PRODUCT_COUNTER_CONTAINER": {
+      "LABEL": "Total number of items"
+    },
+    "PRODUCTS_TOTAL_VALUE_CONTAINER": {
+      "LABEL": "Total Value"
     },
     "PRODUCT_CARD_ITEM": {
       "NAME": "Name",
@@ -453,14 +471,23 @@
       }
     }
   },
-  "PRODUCT_STOCK_WITHDRAWAL_DIALOG": {
-    "TITLE": "Product Stock Withdrawal",
-    "FORM_CONTROL_SECTION": {
-      "WITHDRAWAL_SLIP_NO_CONTROL": {
-        "LABEL": "Withdrawal Slip No"
-      },
-      "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
-        "LABEL": "Additional Stock Quantity"
+  "ADD_PRODUCT_STOCK_QUANTITY_DIALOG": {
+    "FOR_PANEL": {
+      "TITLE": "Product Stock Withdrawal",
+      "FORM_CONTROL_SECTION": {
+        "TRANSACTION_NO": "Withdrawal Slip No",
+        "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
+          "LABEL": "Additional Stock Quantity"
+        }
+      }
+    },
+    "FOR_WAREHOUSE": {
+      "TITLE": "Product Stock Deposit",
+      "FORM_CONTROL_SECTION": {
+        "TRANSACTION_NO": "Transaction No",
+        "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
+          "LABEL": "Additional Stock Quantity"
+        }
       }
     }
   },
@@ -477,7 +504,7 @@
       },
       "BULK_TO_PIECES_CONTROL": {
         "NUMBER_OF_UNITS_CONTROL": {
-          "LABEL": "Specify number of units per __PRODUCT_UNIT__",
+          "LABEL": "Specify quantity per __PRODUCT_UNIT__",
           "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
         },
         "PRODUCT_DESTINATION_CONTROL": {
@@ -491,7 +518,7 @@
       },
       "PIECES_TO_BULK_CONTROL": {
         "NUMBER_OF_UNITS_CONTROL": {
-          "LABEL": "Number of units per __PRODUCT_UNIT__",
+          "LABEL": "Quantity per __PRODUCT_UNIT__",
           "HINT": "This value specifies how many items does the product unit can contain. For example, a box can contains 10 pieces of items."
         },
         "PRODUCT_DESTINATION_CONTROL": {
@@ -512,8 +539,8 @@
     },
     "TRANSFER_PRODUCT_STOCK_INVALID_DIALOG": {
       "TITLE": "Invalid quantity to be transfered",
-      "QUANTITY_LESS_THAN_ERROR_MESSAGE": "Unable to proceed. The quantity to be transfered must be greater than or equal to the number of units of the destination product.",
-      "QUANTITY_INDIVISIBLE_ERROR_MESSAGE": "Unable to proceed. The quantity must be perfectly divisible by the number of units in the destination product."
+      "QUANTITY_LESS_THAN_ERROR_MESSAGE": "Unable to proceed. The quantity to be transfered must be greater than or equal to the 'Quantity per unit' of the destination product.",
+      "QUANTITY_INDIVISIBLE_ERROR_MESSAGE": "Unable to proceed. The quantity must be perfectly divisible by the 'Quantity per unit' in the destination product."
     }
   },
   "TRANSACTION_HISTORY_PAGE": {
@@ -528,6 +555,32 @@
     "TITLE": "Bad Orders",
     "DESCRIPTION": "This contains all registered bad orders."
   },
+  "TRANSACTION_OPTION_MENU": {
+    "GO_TO_ORDER_TRANSACTIONS": {
+      "LABEL": "View orders",
+      "DESCRIPTIONS": "See all orders for this date"
+    },
+    "DELETE_ORDER_DATE": {
+      "LABEL": "Delete orders",
+      "DESCRIPTIONS": "Delete all orders for this date"
+    },
+    "DELETE_ORDER": {
+      "LABEL": "Delete order",
+      "DESCRIPTIONS": "Delete selected order from the list"
+    },
+    "DELETE_TRANSACTION_BY_DATE_DIALOG": {
+      "TITLE": "Delete Orders",
+      "CONFIRM": "This will delete all orders for the selected date. Are you sure to proceed?",
+      "SUCCESS_MESSAGE": "Orders have been successfully deleted.",
+      "ERROR_MESSAGE": "Deleting orders failed. Please again later."
+    },
+    "DELETE_TRANSACTION_DIALOG": {
+      "TITLE": "Delete Order",
+      "CONFIRM": "Are you sure to delete selected order?",
+      "SUCCESS_MESSAGE": "Order has been successfully deleted.",
+      "ERROR_MESSAGE": "Deleting order failed. Please again later."
+    }
+  },
   "TRANSACTION_PAGE": {
     "TITLE": "Confirmed Orders",
     "DESCRIPTION": "This shows the list of customers that have transactions for the selected date."
@@ -535,12 +588,12 @@
   "TRANSACTION_DETAILS_PAGE": {
     "TITLE": "Order Details",
     "DETAILS_SECTION": {},
-    "MARK_TRANSACTION_AS_PAID_DIALOG": {
-      "TITLE": "Mark as Paid",
-      "CONFIRM": "Are you sure to mark this transaction as paid?",
-      "SUCCESS_MESSAGE": "Selected transaction is now marked as paid.",
-      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later.",
-      "LOADING_MESSAGE": "Marking transaction as paid. Please wait..."
+    "UPDATE_MODE_OF_PAYMENT_DIALOG": {
+      "TITLE": "Update mode of payment",
+      "CONFIRM": "Are you sure to update mode of payment for this order transaction?",
+      "SUCCESS_MESSAGE": "Mode of payment has been successfully updated.",
+      "ERROR_MESSAGE": "Updating mode of payment failed. Please try again later.",
+      "LOADING_MESSAGE": "Updating mode of payment. Please wait..."
     }
   },
   "BAD_ORDER_DETAILS_PAGE": {
@@ -566,7 +619,9 @@
       "PICK_MONTH": "Pick Month"
     },
     "SALES_PANEL": {
-      "LABEL": "Sales Amount"
+      "LABEL": "Sales Amount",
+      "CASH_ON_HAND_LABEL": "Cash Payment",
+      "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
     }
   },
   "SIDE_DRAWER_SECTION": {
@@ -720,6 +775,92 @@
     "TITLE": "System Maintenance",
     "DESCRIPTION": "We are currently doing system maintenance and will be back shortly. Sorry for the inconvenience."
   },
+  "WAREHOUSE_PAGE": {
+    "TITLE": "Warehouse",
+    "DESCRIPTION": "This is the page where administrator manages products from warehouse."
+  },
+  "WAREHOUSE_PRODUCT_IMPORT_PAGE": {
+    "TITLE": "Product Import",
+    "DESCRIPTION": "Use this page to import product data from excel file. Follow the steps below to proceed.",
+    "IMPORT_PRODUCTS_SECTION": {
+      "FIRST_STEP_SECTION": {
+        "TITLE": "Select file",
+        "IMPORT_MECHANICS_INFORMATION_TEXTS": {
+          "LABEL_1": "Select an excel file <code>(.xlsx)</code> to extract products information that you want to import in Bizual. Before uploading the file, make sure that it is less than <b>25 MB</b> in size.",
+          "LABEL_2": "The file must also follow the column format below, otherwise it won't be able to read properly the content of the file.",
+          "LABEL_3": "If the code does not exists in Bizual, this will automatically create a new entry of the product in Bizual.",
+          "LABEL_4": "If the already exists, then it will try to update the item if there are new changes."
+        },
+        "FIELDS_SECTION": {
+          "PRODUCT_CODE": "Code",
+          "PRODUCT_NAME": "Name",
+          "ADDITIONAL_QUANTITY": "Additional Quantity",
+          "PRICE_PER_UNIT": "Price (Optional)",
+          "PRODUCT_UNIT": "Unit (Optional)",
+          "NUMBER_OF_UNITS": "Quantity per unit (Optional)"
+        },
+        "EXTRACT_PROCESS_TEXT": "Extracting products. This might take some time depending on the number of products. Please wait..."
+      },
+      "SECOND_STEP_SECTION": {
+        "TITLE": "Preview Data",
+        "FAILED_PRODUCTS_EXTRACTED_SECTION": {
+          "ERROR_BANNER_TEXT": "{0} Error(s) found. Note that you cannot proceed with the import if there are any errors. Please check and fix the result below.",
+          "TABLE_RESULT_SECTION": {
+            "TITLE": "Error(s)",
+            "DESCRIPTION": "Extracted product information with problems. Please make sure that the data are correct.",
+            "FIELDS": {
+              "ROW_NUMBER": "Row Number",
+              "MESSAGE": "Message"
+            }
+          }
+        },
+        "SUCCESS_PRODUCTS_EXTRACTED_SECTION": {
+          "TABLE_RESULT_SECTION": {
+            "TITLE": "Extracted Product(s)",
+            "DESCRIPTION": "Extracted products from the uploaded excel files. Extracted product(s) here will be part of the import process.",
+            "FIELDS": {
+              "CODE": "Code",
+              "NAME": "Name",
+              "QUANTITY": "Quantity",
+              "UNIT": "Unit",
+              "PRICE": "Price",
+              "NUMBER_OF_UNITS": "Quantity per unit"
+            }
+          }
+        }
+      },
+      "THIRD_STEP_SECTION": {
+        "TITLE": "Import",
+        "BANNER_INFO_SECTION": {
+          "LABEL_1": "To proceed with the importing of products, click the <b>Import</b> button below. This may take some time to process depending on the number of products so refrain from reloading or switching to other pages while the process is on going to avoid any issues. If you wish to abort the process just press <b>Cancel</b> button below.",
+          "LABEL_2": "<b>NOTE: This action cannot be reverted, so make sure to check if the data you are importing is correct.</b>"
+        },
+        "BANNER_IMPORT_IN_PROGRESS_SECTION": {
+          "LABEL_1": "Product import is in progress. Importing {0} product(s). Please wait.."
+        }
+      }
+    },
+    "SUCCESS_IMPORT_DIALOG": {
+      "TEXT": "Products have been imported successfully. Go to the product list to see them."
+    },
+    "UPLOAD_FILE_VALIDATION_DIALOG": {
+      "EXTENSION_ERROR_DIALOG": {
+        "TITLE": "Invalid file extension",
+        "DESCRIPTION": "Importing products only support .xlsx file type. Please select another file."
+      },
+      "SELECT_ERROR_DIALOG": {
+        "TITLE": "Unable to select file",
+        "DESCRIPTION": "Please remove current file before selecting new one."
+      },
+      "EXTRACT_FILE_ERROR_DIALOG": {
+        "TITLE": "Failed to extract"
+      }
+    }
+  },
+  "ACCOUNTS_PAGE": {
+    "TITLE": "Accounts",
+    "DESCRIPTION": "This is the page where administrator can manage user accounts information."
+  },
   "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
     "TITLE": "Product Stock Audit",
     "DESCRIPTION": "This is where product stock audit information can be managed.",
@@ -728,14 +869,16 @@
         "FROM_WITHDRAWAL": "From Withdrawal",
         "MOVED_FROM_OTHER_PRODUCT_INVENTORY": "Moved From Other Product Inventory",
         "MOVED_TO_OTHER_PRODUCT_INVENTORY": "Moved To Other Product Inventory",
-        "ORDER_TRANSACTION": "Order Transaction"
+        "ORDER_TRANSACTION": "Order Transaction",
+        "ORDER_FROM_SUPPLIER": "Order From Supplier"
       },
       "SOURCE_LABEL": "Source",
       "QUANTITY_LABEL": "Quantity",
       "MODIFIED_DATE_LABEL": "Modified Date",
       "MODIFIED_BY_LABEL": "Modified By",
       "WITHDRAWAL_SLIP_NO_LABEL": "Withdrawal Slip No.",
-      "INVOICE_NO_LABEL": "Invoice No."
+      "INVOICE_NO_LABEL": "Invoice No.",
+      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No."
     }
   },
   "REPORT_SETTINGS_DIALOG": {
@@ -754,5 +897,61 @@
   },
   "LOADER_LAYOUT": {
     "LOADING_TEXT": "Loading. Please wait..."
+  },
+  "DASHBOARD_ADMIN": {
+    "TITLE": "Dashboard",
+    "MAIN_MENU": {
+      "HOME": "Home",
+      "DISTRIBUTION": "Distribution",
+      "WAREHOUSE": "Warehouse",
+      "INSIGHTS": "Insights",
+      "ACCOUNTS": "Accounts",
+      "LOGOUT": "Logout"
+    },
+    "HOME_PAGE": {
+      "TITLE": "Dashboard",
+      "DESCRIPTION": "This shows the total distribution of sales based on the date filer settings. The chart below shows the distribution of sales based on the date filter settings.",
+      "ORDER_TRANSACTION_DISTRIBUTION": {
+        "TITLE": "Order transactions: Sales agents distribution"
+      },
+      "CHART_SECTION": {
+        "TITLE": "Sales Date Distribution Chart",
+        "SALES_LABEL": "Sales",
+        "CASH_ON_HAND_LABEL": "Cash Payment",
+        "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
+      },
+      "CHART_FILTER_SECTION": {
+        "LABEL": "Total Sales Amount"
+      }
+    },
+    "DISTRIBUTION_PAGE": {
+      "TITLE": "Distribution",
+      "DESCRIPTION": "This page gives insights about the sales and current state of the sales agents product distribution.",
+      "SALES_AGENT_LIST_SECTION": {
+        "TITLE": "Active Sales Agents"
+      },
+      "SALES_AGENT_DETAILS_SECTION": {
+        "TITLE": " Sales Agent Distribution Data",
+        "SALES_INFORMATION_CONTAINER": {},
+        "PRODUCT_LIST_CONTAINER": {
+          "TITLE": "Product List",
+          "DESCRIPTION": "The list below shows the available products assigned to the selected sales agent."
+        },
+        "PRODUCT_STOCK_AUDIT_LIST_CONTAINER": {
+          "TITLE": "Product Stock Audit",
+          "DESCRIPTION": "The list below shows the product stock audit data for the selected product on the left panel."
+        }
+      }
+    },
+    "INSIGHTS_PAGE": {
+      "TITLE": "Insights",
+      "DESCRIPTION": "This page gives administrator insights about the most frequently sold products.",
+      "TOP_SELLING_PRODUCTS_CHART_SECTION": {
+        "TITLE": "Top Selling Products"
+      },
+      "TOP_SELLING_PRODUCTS_LISTT_SECTION": {
+        "TITLE": "Top Selling Products"
+      }
+    }
   }
 }

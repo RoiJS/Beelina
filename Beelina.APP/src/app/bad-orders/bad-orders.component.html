@@ -8,7 +8,7 @@
         'icon-active': isFilterActive
       }"
       matBadgeColor="warn"
-      >search</mat-icon
+      >filter_list</mat-icon
     >
   </button>
 </app-tool-bar>
@@ -36,6 +36,7 @@
             matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
             (click)="goToTransactionDate(item.transactionDate)"
+            longPress (onLongPress)="openMoreActions(item)"
           >
             <span>{{ item.transactionDateFormatted }}</span>
             <mat-icon>keyboard_arrow_right</mat-icon>

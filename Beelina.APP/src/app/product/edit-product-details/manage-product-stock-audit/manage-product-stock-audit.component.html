@@ -2,7 +2,7 @@
   <button mat-icon-button class="toolbar-option" (click)="openFilter()">
     <mat-icon [ngClass]="{
         'icon-active': isFilterActive
-      }" matBadgeColor="warn">search</mat-icon>
+      }" matBadgeColor="warn">filter_list</mat-icon>
   </button>
 </app-tool-bar>
 
@@ -42,12 +42,19 @@
                   *ngIf="item.stockAuditSource === 'ORDER_TRANSACTION'">{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_TYPE.ORDER_TRANSACTION' |
                   translate }}</span>
+                <span
+                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--order-from-supplier"
+                  *ngIf="item.stockAuditSource === 'ORDER_FROM_SUPPLIER'">{{
+                  'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_TYPE.ORDER_FROM_SUPPLIER' |
+                  translate }}</span>
               </div>
               <div class="product-stock-audit-list__info-section">
                 <span *ngIf="item.stockAuditSource === 'FROM_WITHDRAWAL'"><b>{{
                     'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.WITHDRAWAL_SLIP_NO_LABEL' | translate }}:</b></span>
                 <span *ngIf="item.stockAuditSource === 'ORDER_TRANSACTION'"><b>{{
                     'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.INVOICE_NO_LABEL' | translate }}:</b></span>
+                <span *ngIf="item.stockAuditSource === 'ORDER_FROM_SUPPLIER'"><b>{{
+                    'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.PURCHASED_ORDER_NO_LABEL' | translate }}:</b></span>
                 {{ item.transactionNumber }}
               </div>
               <div class="product-stock-audit-list__info-section"><b>{{

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+import { AuthService } from 'src/app/_services/auth.service';
 import {
   Transaction,
   TransactionService,

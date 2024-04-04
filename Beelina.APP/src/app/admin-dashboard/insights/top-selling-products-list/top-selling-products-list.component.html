@@ -1,0 +1,18 @@
+<div>
+  <button mat-icon-button class="toolbar-option" (click)="openFilter()">
+    <mat-icon [ngClass]="{
+        'icon-active': isFilterActive
+      }" matBadgeColor="warn">filter_list</mat-icon>
+  </button>
+
+  <app-list-container [templateType]="emptyEntityTemplateEnum.TOP_PRODUCTS" [count]="dataSource?.itemCount">
+    <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-products-list-container">
+      <div *cdkVirtualFor="let item of dataSource">
+        <div matRipple class="list-container__item-section top-products-list-container__item-section">
+          <span class="product-information"><span>({{ item.code }})</span> - {{ item.name }}</span>
+          <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.SUCCESS" [label]="item.totalAmountFormatted"></app-badge>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </app-list-container>
+</div>

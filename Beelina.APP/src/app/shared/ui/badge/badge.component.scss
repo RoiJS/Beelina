@@ -1,0 +1,36 @@
+@import "../../../../app-variables";
+
+.app-badge {
+  border-radius: 20px;
+  border-style: solid;
+  border-width: 2px;
+  display: block;
+  font-size: 12px;
+  padding: 3px;
+  text-align: center;
+  width: auto;
+
+  &--error {
+    background-color: $error-bg-color;
+    border-color: $error-border-color;
+    color: $error-border-color;
+  }
+
+  &--success {
+    background-color: $success-bg-color;
+    border-color: $success-border-color;
+    color: $success-border-color;
+  }
+
+  &--info {
+    background-color: $info-bg-color;
+    border-color: $info-border-color;
+    color: $info-border-color;
+  }
+
+  &--warning {
+    background-color: $warning-bg-color;
+    border-color: $warning-border-color;
+    color: $warning-border-color;
+  }
+}

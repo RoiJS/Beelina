@@ -20,5 +20,10 @@ namespace Beelina.LIB.GraphQL.Errors.Factories
         {
             return new ProductStockAuditNotExistsError(ex.Id);
         }
+        
+        public ExtractedProductsFileError CreateErrorFrom(ExtractProductFileException ex)
+        {
+            return new ExtractedProductsFileError(ex.Message);
+        }
     }
 }

@@ -11,14 +11,17 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 export class ProductCardItemComponent extends BaseComponent implements OnInit {
   @Input() productItem: Product;
   @Input() allowManageItem: boolean = false;
+  @Input() allowTransferStocks: boolean = true;
   @Input() hideHeader: boolean = false;
   @Input() hideImage: boolean = false;
   @Input() hideHeaderOptions: boolean = false;
+  @Input() hideDeductionCounterIcon: boolean = false;
   @Input() filterKeyword: string = '';
   @Output() editItem = new EventEmitter<number>();
   @Output() deleteItem = new EventEmitter<number>();
   @Output() transferProduct = new EventEmitter<number>();
   @Output() addStockQuantity = new EventEmitter<Product>();
+  @Output() selectItem = new EventEmitter<number>();
   @Output() addItem = new EventEmitter<number>();
 
   constructor() {
@@ -44,7 +47,7 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
   }
 
   addItemToCart(id: number) {
-    this.addItem.emit(id);
+    this.selectItem.emit(id);
   }
 
   highlightText(text: string) {

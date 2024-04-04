@@ -45,10 +45,10 @@ export class PaymentMethodService {
   getPaymentMethods() {
     let cursor = null;
 
-    this.store
-      .select(endCursorSelector)
-      .pipe(take(1))
-      .subscribe((currentCursor) => (cursor = currentCursor));
+    // this.store
+    //   .select(endCursorSelector)
+    //   .pipe(take(1))
+    //   .subscribe((currentCursor) => (cursor = currentCursor));
 
     return this.apollo
       .watchQuery({

@@ -1,0 +1,31 @@
+@import "../../app-variables";
+
+.container {
+  background: $primary-gradient;
+  height: 100%;
+}
+
+.product-list {
+  height: 72vh;
+}
+
+.product-list-status-bar-container {
+  min-height: 2em;
+  display: flex;
+  gap: 1em;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.5em;
+
+  &__total-value-section,
+  &__total-products-counter-section,
+  &__search-result-counter-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .value {
+      min-width: 80px;
+    }
+  }
+}

@@ -3,6 +3,7 @@
   justify-content: space-between;
   margin-bottom: 15px;
   gap: 1em;
+  position: relative;
 
   .txt-search-field {
     flex: 1;
@@ -10,5 +11,12 @@
     padding: 12px;
     font-size: 15px;
     border-radius: 22px;
+  }
+
+  &__clear-icon {
+    position: absolute;
+    right: 88px;
+    top: 15px;
+    cursor: pointer;
   }
 }

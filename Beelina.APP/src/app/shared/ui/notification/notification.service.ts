@@ -16,7 +16,8 @@ export class NotificationService {
     this.snackBar.openFromComponent(SuccessNotificationComponent, {
       data: {
         message
-      }
+      },
+      panelClass: ['success-snackbar']
     })
   }
 
@@ -24,7 +25,8 @@ export class NotificationService {
     this.snackBar.openFromComponent(ErrorNotificationComponent, {
       data: {
         message
-      }
+      },
+      panelClass: ['error-snackbar']
     })
   }
 
@@ -32,7 +34,8 @@ export class NotificationService {
     this.snackBar.openFromComponent(WarningNotificationComponent, {
       data: {
         message
-      }
+      },
+      panelClass: ['warning-snackbar']
     })
   }
 }

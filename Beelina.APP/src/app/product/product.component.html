@@ -62,43 +62,59 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <app-search-field (onSearch)="onSearch($event)" [placeHolderTextIdentifier]="
+    <app-search-field (onSearch)="onSearch($event)" (onClear)="onClear()" [placeHolderTextIdentifier]="
         'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
       "></app-search-field>
 
-    <div class="product-total-count-container" *ngIf="filterKeyword?.length > 0">
-      <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span><span
-        class="product-total-count-container__value">{{ totalProducts }} items</span>
+    <div class="product-list-status-bar-container">
+      <div class="product-list-status-bar-container__total-value-section" *ngIf="totalProductValue">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCTS_TOTAL_VALUE_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductValue"></app-badge>
+      </div>
+
+      <div class="product-list-status-bar-container__search-result-counter-section" *ngIf="filterKeyword?.length > 0">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+      </div>
+
+      <div class="product-list-status-bar-container__total-products-counter-section"
+        *ngIf="filterKeyword?.length === 0 && currentUserPermission === getPermissionLevel(permissionLevelEnum.User)">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_COUNTER_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+      </div>
     </div>
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [allowManageItem]="
+          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [hideDeductionCounterIcon]="currentUserPermission >
+            getPermissionLevel(permissionLevelEnum.User)" [allowManageItem]="
               currentUserPermission >
                 getPermissionLevel(permissionLevelEnum.User) ||
               allowManageProductDetails
-            " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)" (addItem)="addItemToCart($event)"
-            (transferProduct)="transferProductInventory($event)"
+            " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
+            (selectItem)="addItemToCart($event)" (transferProduct)="transferProductInventory($event)"
             (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>
+
     <div *ngIf="
         currentSalesAgentId === 0 &&
         currentUserPermission > getPermissionLevel(permissionLevelEnum.User)
       " class="no-selected-sales-agent-label-container">
-      <div class="no-selected-sales-agent-label">
-        <mat-icon>person_pin</mat-icon>
-        <label>{{
-          "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.HINT" | translate
-          }}</label>
-      </div>
+      <app-empty-entities-placeholder [templateType]="emptyEntityTemplateEnum.SALES_AGENTS"
+        [templateSize]="emptyEntityTemplateSizeEnum.SMALL"></app-empty-entities-placeholder>
+
+      <app-banner class="no-selected-sales-agent-label-container__label" [type]="bannerTypeEnum.WARNING">{{
+        "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.HINT" |
+        translate }}</app-banner>
+
     </div>
   </div>
 
   <app-floating-button *ngIf="
-      currentUserPermission > getPermissionLevel(permissionLevelEnum.User) ||
+      (currentSalesAgentId > 0 && currentUserPermission > getPermissionLevel(permissionLevelEnum.User)) ||
       allowManageProductDetails
     " (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
 </app-loader-layout>

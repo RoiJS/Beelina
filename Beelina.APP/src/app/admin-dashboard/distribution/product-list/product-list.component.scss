@@ -1,0 +1,30 @@
+@import "../../../../app-variables";
+
+.product-list-container {
+  &__page-container {
+    background: $white;
+
+    .list-container {
+      height: 42vh;
+    }
+  }
+}
+
+.product-list-status-bar-container {
+  height: 2em;
+  display: flex;
+  gap: 1em;
+  width: 100%;
+  justify-content: space-between;
+
+  &__total-value-section,
+  &__total-products-counter-section,
+  &__search-result-counter-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .value {
+      min-width: 80px;
+    }
+  }
+}

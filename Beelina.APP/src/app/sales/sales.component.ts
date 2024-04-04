@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import moment from 'moment';
+import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
@@ -10,6 +11,10 @@ import {
   TransactionService,
 } from '../_services/transaction.service';
 import { BaseComponent } from '../shared/components/base-component/base.component';
+import { AuthService } from '../_services/auth.service';
+import { errorCodes } from '@apollo/client/invariantErrorCodes';
+import { DateRange } from '../_models/date-range';
+import { SalesPerDateRange } from '../_models/sales-per-date-range';
 
 export enum DateFilterEnum {
   Daily = 1,
@@ -23,10 +28,12 @@ export enum DateFilterEnum {
   styleUrls: ['./sales.component.scss'],
 })
 export class SalesComponent extends BaseComponent implements OnInit {
-  private _sales: number = 0;
-  private _currentFilterOption: DateFilterEnum = DateFilterEnum.Daily;
-  private _weekOptions: Array<string>;
-  private _monthOptions: Array<string> = [
+  protected _sales: number = 0;
+  protected _cashOnHand: number = 0;
+  protected _chequeOnHand: number = 0;
+  protected _currentFilterOption: DateFilterEnum = DateFilterEnum.Monthly;
+  protected _weekOptions: Array<string>;
+  protected _monthOptions: Array<string> = [
     'January',
     'February',
     'March',
@@ -41,11 +48,12 @@ export class SalesComponent extends BaseComponent implements OnInit {
     'December',
   ];
 
-  private _filterForm: FormGroup;
+  protected _filterForm: FormGroup;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private transactionService: TransactionService
+    protected authService: AuthService,
+    protected formBuilder: FormBuilder,
+    protected transactionService: TransactionService
   ) {
     super();
     const currentYear = new Date().getFullYear();
@@ -71,15 +79,19 @@ export class SalesComponent extends BaseComponent implements OnInit {
   }
 
   getTransactionSales(filterOption: DateFilterEnum) {
+    const userId = this.authService.userId;
     const dateFilters = this.getDateRange(filterOption);
     this._isLoading = true;
     this.transactionService
-      .getTransactionSales(dateFilters.fromDate, dateFilters.toDate)
+      .getTransactionSales(userId, dateFilters.fromDate, dateFilters.toDate)
       .subscribe((transactionSales: TransactionSales) => {
         this._isLoading = false;
-        this._sales = transactionSales.sales;
+        this._sales = transactionSales.totalSalesAmount;
+        this._cashOnHand = transactionSales.cashAmountOnHand;
+        this._chequeOnHand = transactionSales.chequeAmountOnHand;
       });
   }
+
 
   setFilterOption(filterOption: DateFilterEnum) {
     this._currentFilterOption = filterOption;
@@ -130,7 +142,78 @@ export class SalesComponent extends BaseComponent implements OnInit {
     };
   }
 
-  private getWeekNumber(d: Date) {
+  getDateRanges(filterType: DateFilterEnum, duration: number): DateRange[] {
+    if (filterType === DateFilterEnum.Daily) {
+      return this.getStartDateAndEndDate(this._filterForm.get('day').value, duration);
+    } else if (filterType === DateFilterEnum.Weekly) {
+      return this.getDateRangeFromWeekNumber(this._filterForm.get('week').value + 1, duration);
+    } else if (filterType === DateFilterEnum.Monthly) {
+      return this.getDateRangesForMonths(this._filterForm.get('month').value, duration);
+    } else {
+      throw new Error('Invalid date filter type');
+    }
+  }
+
+  private getStartDateAndEndDate(startDate: string, numberOfDays: number): DateRange[] {
+    const dates: DateRange[] = [];
+    const start = moment(startDate);
+
+    for (let i = numberOfDays - 1; i >= 0; i--) {
+      const current = start.clone().add(-i, 'days');
+      dates.push(<DateRange>{
+        fromDate: current.format('YYYY-MM-DD'),
+        toDate: current.format('YYYY-MM-DD'),
+        label: current.format('MMM DD, YYYY'),
+      });
+    }
+    return dates;
+  }
+
+  private getDateRangeFromWeekNumber(currentWeek: number, numberOfWeeks: number): DateRange[] {
+    const dateRanges: DateRange[] = [];
+
+    for (let i = numberOfWeeks - 1; i >= 0; i--) {
+      const weekStartDate = this.getDateOfWeek(currentWeek - i, new Date().getFullYear());
+      const weekEndDate = new Date(weekStartDate);
+      weekEndDate.setDate(weekStartDate.getDate() + 6); // Add 6 days to get the end date of the week
+
+      const numberOfAvailableWeeks = this.weeksInYear(weekStartDate.getFullYear());
+      let weekNumber = numberOfAvailableWeeks + ((currentWeek - 1) - (i - 1));
+      if (weekNumber > numberOfAvailableWeeks) {
+        weekNumber = weekNumber % numberOfAvailableWeeks;
+      }
+      dateRanges.push((<DateRange>{
+        fromDate: DateFormatter.format(weekStartDate),
+        toDate: DateFormatter.format(weekEndDate),
+        label: `Week ${weekNumber}`
+      }));
+    }
+
+    return dateRanges;
+  }
+
+  private getDateRangesForMonths(currentMonth: number, numberOfMonths: number): DateRange[] {
+    const dateRanges: DateRange[] = [];
+
+    // for (let i = 0; i < numberOfMonths; i++) {
+    for (let i = numberOfMonths - 1; i >= 0; i--) {
+      const monthToCalculate = Math.abs((currentMonth + 12) - i);
+      const year = (new Date()).getFullYear() + Math.floor((monthToCalculate - 12) / 12);
+      const month = monthToCalculate % 12;
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0); // Set day as 0 to get the last day of the currentMonth
+
+      dateRanges.push(<DateRange>{
+        fromDate: DateFormatter.format(startDate),
+        toDate: DateFormatter.format(endDate),
+        label: `${this._monthOptions[month]}`
+      });
+    }
+
+    return dateRanges;
+  }
+
+  protected getWeekNumber(d: Date) {
     // Copy date so don't modify original
     d = new Date(+d);
     d.setHours(0, 0, 0, 0);
@@ -147,7 +230,7 @@ export class SalesComponent extends BaseComponent implements OnInit {
     return [d.getFullYear(), weekNo];
   }
 
-  private weeksInYear(year) {
+  protected weeksInYear(year) {
     var month = 11,
       day = 31,
       week;
@@ -162,7 +245,7 @@ export class SalesComponent extends BaseComponent implements OnInit {
     return week;
   }
 
-  private getDateOfWeek(w, y) {
+  protected getDateOfWeek(w, y) {
     var d = 1 + (w - 1) * 7; // 1st of January + 7 days for each week
 
     return new Date(y, 0, d);
@@ -182,6 +265,14 @@ export class SalesComponent extends BaseComponent implements OnInit {
 
   get sales(): string {
     return NumberFormatter.formatCurrency(this._sales);
+  }
+
+  get cashOnHand(): string {
+    return NumberFormatter.formatCurrency(this._cashOnHand);
+  }
+
+  get chequeOnHand(): string {
+    return NumberFormatter.formatCurrency(this._chequeOnHand);
   }
 
   get filterForm(): FormGroup {

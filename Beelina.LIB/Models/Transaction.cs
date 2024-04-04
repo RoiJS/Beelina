@@ -11,6 +11,7 @@ namespace Beelina.LIB.Models
         public DateTime DueDate { get; set; }
         public Store Store { get; set; }
         public TransactionStatusEnum Status { get; set; }
+        public int ModeOfPayment { get; set; }
 
         public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
         public string InvoiceNo { get; set; }

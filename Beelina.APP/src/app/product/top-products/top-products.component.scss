@@ -12,11 +12,7 @@
     }
 
     .product-number-of-transaction {
-      padding: 2px;
-      background-color: #4fa94f;
-      color: $white;
-      border-radius: 15px;
-      width: 40px;
+      min-width: 100px;
       display: block;
       text-align: center;
       font-weight: bold;

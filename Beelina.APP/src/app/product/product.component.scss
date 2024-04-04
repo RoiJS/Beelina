@@ -6,25 +6,33 @@
   }
 }
 
-.product-total-count-container {
+.product-list-status-bar-container {
+  min-height: 2em;
+  display: flex;
+  gap: 1em;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.5em;
 
-  &__value {
-    padding: 5px 10px;
-    background-color: $primary;
-    border-radius: 15px;
-    color: $white;
+  &__total-value-section,
+  &__total-products-counter-section,
+  &__search-result-counter-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .value {
+      min-width: 80px;
+    }
   }
 }
 
 .no-selected-sales-agent-label-container {
   display: flex;
-  justify-content: space-around;
-  height: 400px;
-  align-items: center;
+  flex-direction: column;
 
-  .no-selected-sales-agent-label {
-    display: flex;
-    align-items: center;
+  &__label {
+    align-self: center;
   }
 }
 

@@ -1,0 +1,18 @@
+@import "../../../../app-variables";
+
+.top-products-list-container {
+  height: 65vh;
+
+  &__item-section {
+    display: flex;
+    justify-content: space-between;
+
+    .product-information {
+      font-weight: bold;
+    }
+
+    .product-number-of-transaction {
+      min-width: 100px;
+    }
+  }
+}

@@ -54,25 +54,42 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
-    public async Task<List<TransactionTopProduct>> GetTopProducts([Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository)
+    [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<List<TransactionTopProduct>> GetTopSellingProducts([Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository, int userId, string? fromDate, string? toDate)
     {
-      return await productTransactionRepository.GetTopProducts();
+      return await productTransactionRepository.GetTopSellingProducts(userId, fromDate, toDate);
     }
 
     [Authorize]
-    public async Task<TransactionSales> GetTransactionSales([Service] ITransactionRepository<Transaction> transactionRepository, string fromDate, string toDate)
+    public async Task<TransactionSales> GetTransactionSales([Service] ITransactionRepository<Transaction> transactionRepository, int userId, string fromDate, string toDate)
     {
-      return await transactionRepository.GetSales(fromDate, toDate);
+      return await transactionRepository.GetSales(userId, fromDate, toDate);
+    }
+
+    [Authorize]
+    public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent([Service] ITransactionRepository<Transaction> transactionRepository, string fromDate, string toDate)
+    {
+      return await transactionRepository.GetSalesForAllSalesAgent(fromDate, toDate);
+    }
+
+    [Authorize]
+    public async Task<List<TotalSalesPerDateRange>> GetTransactionSalesPerDateRange([Service] ITransactionRepository<Transaction> transactionRepository, int userId, List<DateRange> dateRanges)
+    {
+      return await transactionRepository.GetTotalSalePerDateRange(userId, dateRanges);
     }
 
     [Authorize]
     public async Task<List<InsufficientProductQuantity>> ValidateProductionTransactionsQuantities(
             [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
             List<ProductTransactionInput> productTransactionsInputs,
             int userAccountId)
     {
       var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0);
+      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
 
       foreach (Product product in productsFromRepo)
       {

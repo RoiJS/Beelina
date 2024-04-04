@@ -1,0 +1,124 @@
+@import "../../../app-variables";
+
+.sales-container {
+  display: flex;
+  gap: 1em;
+
+  &__panel {
+    padding: 1em;
+  }
+
+  &__body-section {
+    height: 90%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+    padding: 13px 0px;
+  }
+
+  &__chart-section {
+    width: 40%;
+
+    .sales-per-agent-container {
+      display: flex;
+      height: 100%;
+      align-items: center;
+    }
+  }
+
+  &__chart-filter-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1em;
+    align-items: center;
+    width: 60%;
+
+    .chart-filter-container {
+      width: 800px;
+
+      .title {
+        font-size: 1.5em;
+      }
+
+      .sales-date-filter-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 15px;
+        height: 3em;
+
+        &__filter-options {
+          background-color: #b3c3c3;
+          color: $white;
+          flex: 1;
+          text-align: center;
+          padding: 10px;
+          border-radius: 15px;
+          font-size: 1.2em;
+          cursor: pointer;
+
+          &--active {
+            background-color: $primary;
+          }
+        }
+      }
+
+      .sales-date-filter-options {
+        mat-form-field {
+          width: 100%;
+          font-size: 1.2em;
+        }
+      }
+
+      .sales-date-filter-options {
+        mat-form-field {
+          width: 100%;
+          font-size: 1.2em;
+        }
+      }
+    }
+
+    .sales-information-panel {
+      padding: 2em 1em;
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+
+      &__amount-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+
+        label {
+          font-size: 2em;
+        }
+
+        span {
+          font-size: 4em;
+          color: $primary;
+        }
+      }
+
+      &__amount-breakdown-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2em;
+
+        .amount-information {
+          display: flex;
+          gap: 1em;
+          justify-content: space-between;
+
+          label {
+            font-weight: 500;
+          }
+
+          span {
+            color: $primary;
+          }
+        }
+      }
+    }
+  }
+}

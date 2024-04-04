@@ -1,12 +1,26 @@
 <mat-toolbar>
-  <button type="button" mat-icon-button (click)="toggleDrawer()" *ngIf="isHandset && !canGoBack">
-    <mat-icon class="sidenav-toggle-icon">menu</mat-icon>
-  </button>
-  <button type="button" mat-icon-button (click)="onGoBack()" *ngIf="canGoBack">
-    <mat-icon class="sidenav-toggle-icon">keyboard_arrow_left</mat-icon>
-  </button>
+  <div class="toolbar-container">
+    <button type="button" mat-icon-button (click)="toggleDrawer()" *ngIf="isHandset && !canGoBack">
+      <mat-icon class="sidenav-toggle-icon">menu</mat-icon>
+    </button>
+    <button type="button" mat-icon-button (click)="onGoBack()" *ngIf="canGoBack">
+      <mat-icon class="sidenav-toggle-icon">keyboard_arrow_left</mat-icon>
+    </button>
 
-  <span class="title">{{ title }}</span>
-  <span class="toolbar-option-spacer"></span>
-  <ng-content></ng-content>
+    <span class="title">{{ formattedTitle }}</span>
+    <span class="toolbar-option-spacer"></span>
+    <ng-content></ng-content>
+  </div>
+  <!-- <div class="toolbar-container" *ngIf="isAdmin">
+    <button type="button" mat-icon-button (click)="toggleDrawer()" *ngIf="!canGoBack">
+      <mat-icon class="sidenav-toggle-icon">menu</mat-icon>
+    </button>
+    <button type="button" mat-icon-button (click)="onGoBack()" *ngIf="canGoBack">
+      <mat-icon class="sidenav-toggle-icon">keyboard_arrow_left</mat-icon>
+    </button>
+    <span class="title">{{ company }} {{ 'MAIN_MENU.DASHBOARD' | translate }}</span>
+    <span class="toolbar-option-spacer"></span>
+    <span class="title">{{ title }}</span>
+    <ng-content></ng-content>
+  </div> -->
 </mat-toolbar>

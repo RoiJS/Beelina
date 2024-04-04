@@ -1,11 +1,12 @@
 <div matRipple class="product-item list-container__card-item">
   <div *ngIf="!hideHeader" class="list-container__card-item-header product-item__header">
-    <mat-icon [matBadge]="productItem?.deductedStock" [matBadgeHidden]="productItem?.deductedStock === 0"
-      matBadgeColor="warn" aria-hidden="false">add_shopping_cart</mat-icon>
+    <mat-icon [ngClass]="{ 'no-visibility': hideDeductionCounterIcon }" [matBadge]="productItem?.deductedStock"
+      [matBadgeHidden]="productItem?.deductedStock === 0" matBadgeColor="warn"
+      aria-hidden="false">add_shopping_cart</mat-icon>
 
     <div class="product-item__header-options" *ngIf="!hideHeaderOptions">
-      <span *ngIf="productItem?.isLinkedToSalesAgent && allowManageItem" class="product-linked-icon">{{ "GENERAL_TEXTS.LINKED" | translate
-        }}</span>
+      <app-badge class="product-linked-icon" *ngIf="productItem?.isLinkedToSalesAgent && allowManageItem" [type]="bannerTypeEnum.SUCCESS"
+        [textIdentifier]="'GENERAL_TEXTS.LINKED'"></app-badge>
       <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
       <mat-menu #menu="matMenu">
         <button *ngIf="allowManageItem" mat-menu-item (click)="editProduct(productItem?.id)">
@@ -15,7 +16,8 @@
         <button *ngIf="allowManageItem" mat-menu-item (click)="deleteProduct(productItem?.id)">
           <mat-icon>delete</mat-icon> {{ "GENERAL_TEXTS.REMOVE" | translate }}
         </button>
-        <button [disabled]="!productItem?.isTransferable || productItem?.stockQuantity === 0" mat-menu-item
+        <button *ngIf="allowTransferStocks"
+          [disabled]="(!productItem?.isTransferable || productItem?.stockQuantity === 0)" mat-menu-item
           (click)="transferProductInventory(productItem?.id)">
           <mat-icon>move_to_inbox</mat-icon> {{ "GENERAL_TEXTS.TRANSFER_STOCK" | translate }}
         </button>

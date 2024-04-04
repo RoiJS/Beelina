@@ -47,23 +47,7 @@
           align-self: center;
           text-align: center;
 
-          span {
-            padding: 2px;
-
-            color: $white;
-            border-radius: 15px;
-            width: 50px;
-            display: block;
-            font-size: 12px;
-          }
-
-          &--paid {
-            background-color: $success;
-          }
-
-          &--unpaid {
-            background-color: $error;
-          }
+          min-width: 70px;
         }
       }
     }
@@ -75,6 +59,10 @@
       width: 100%;
       font-size: 15px;
       font-weight: bold;
+    }
+
+    .product-transaction-mode-of-payment-information {
+      margin-top: 1.5em;
     }
   }
 

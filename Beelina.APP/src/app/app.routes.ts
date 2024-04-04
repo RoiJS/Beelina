@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { AuthGuard } from './_guards/auth.guard';
+import { AdminGuard } from './_guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,18 @@ export const routes: Routes = [
     path: 'product-catalogue',
     loadChildren: () =>
       import('./product/product.module').then((m) => m.ProductModule),
+    canLoad: [AuthGuard],
+  },
+  {
+    path: 'warehouse-products',
+    loadChildren: () =>
+      import('./warehouse/warehouse.module').then((m) => m.WarehouseModule),
+    canLoad: [AuthGuard],
+  },
+  {
+    path: 'accounts',
+    loadChildren: () =>
+      import('./accounts/accounts.module').then((m) => m.AccountsModule),
     canLoad: [AuthGuard],
   },
   {
@@ -63,5 +76,11 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./profile/profile.module').then((m) => m.ProfileModule),
     canLoad: [AuthGuard],
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./admin-dashboard/admin-dashoard.module').then((m) => m.AdminDashoardModule),
+    canLoad: [AuthGuard, AdminGuard],
   },
 ];

@@ -10,19 +10,20 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, filter } from 'rxjs';
+import { filter } from 'rxjs';
 
 import { SharedComponent } from './shared/components/shared/shared.component';
 
-import { IMenu } from './_interfaces/imenu';
-import { AppVersionService } from './_services/app-version.service';
-
-import { AuthService } from './_services/auth.service';
-import { SidedrawerService } from './_services/sidedrawer.service';
-import { UIService } from './_services/ui.service';
 import { ModuleEnum } from './_enum/module.enum';
-import { SwUpdate } from '@angular/service-worker';
+import { PermissionLevelEnum } from './_enum/permission-level.enum';
+import { AppVersionService } from './_services/app-version.service';
+import { AuthService } from './_services/auth.service';
 import { GeneralInformationService } from './_services/general-information.service';
+import { SidedrawerService } from './_services/sidedrawer.service';
+import { StorageService } from './_services/storage.service';
+import { UIService } from './_services/ui.service';
+
+import { IMenu } from './_interfaces/imenu';
 import { GeneralInformation } from './_models/general-information.model';
 
 @Component({
@@ -43,12 +44,14 @@ export class AppComponent
   isSystemUpdateActive: boolean;
   isOnline: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean = true;
 
   constructor(
     private authService: AuthService,
     private appVersionService: AppVersionService,
     private router: Router,
     private sideDrawerService: SidedrawerService,
+    private storageService: StorageService,
     private translateService: TranslateService,
     private generalInformationService: GeneralInformationService,
     protected override uiService: UIService
@@ -62,8 +65,20 @@ export class AppComponent
       this.sideDrawerService.setCurrentUserPrivileges(
         user?.getModulePrivilege(ModuleEnum.Retail)
       );
+      this._currentLoggedInUser = user;
+      this.isAdmin = this.modulePrivilege(ModuleEnum.Retail) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
       this.menuDataSource.data = this.sideDrawerService.getMenus();
       this.isAuthenticated = (user !== null);
+
+      if (
+        this.modulePrivilege(ModuleEnum.Retail) ===
+        this.getPermissionLevel(PermissionLevelEnum.User)
+      ) {
+        this.storageService.storeString(
+          'currentSalesAgentId',
+          this._currentLoggedInUser.id.toString()
+        );
+      }
     });
 
     this.initRouterEvents();
@@ -91,6 +106,7 @@ export class AppComponent
     }
 
     if (name === 'MAIN_MENU.LOGOUT') {
+      if (this.isAdmin) this.uiService.toggleDrawer();
       this.authService.logout();
     }
   }

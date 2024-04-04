@@ -1,0 +1,124 @@
+<app-tool-bar [title]="'DASHBOARD_ADMIN.HOME_PAGE.TITLE' | translate" [showBackButton]="false"></app-tool-bar>
+<div class="page-container scale-in-center-animation">
+  <div class="page-container__page-divider scale-in-center-animation">
+    <label>{{ "DASHBOARD_ADMIN.HOME_PAGE.TITLE" | translate }}</label><br />
+    <span class="page-information-description">{{
+      "DASHBOARD_ADMIN.HOME_PAGE.DESCRIPTION" | translate
+      }}</span>
+  </div>
+  <div class="sales-container">
+    <div class="panel sales-container__panel sales-container__chart-section">
+      <div class="panel__header-section">
+        {{ "DASHBOARD_ADMIN.HOME_PAGE.ORDER_TRANSACTION_DISTRIBUTION.TITLE" | translate }}
+      </div>
+      <div class="panel__body-section sales-container__body-section">
+        <app-loader-layout [busy]="salesPerAgentChartViewLoading">
+          <div class="sales-per-agent-container">
+            <app-sales-per-agent-view></app-sales-per-agent-view>
+          </div>
+        </app-loader-layout>
+      </div>
+    </div>
+    <div class="sales-container__chart-filter-section">
+      <div class="panel sales-container__panel">
+        <div class="panel__header-section">
+          {{ 'DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.TITLE' | translate }}
+        </div>
+        <div class="panel__body-section sales-container__body-section">
+          <app-loader-layout [busy]="salesChartViewLoading">
+            <app-sales-chart-view></app-sales-chart-view>
+          </app-loader-layout>
+        </div>
+      </div>
+      <div class="panel sales-container__panel">
+        <div class="panel__header-section">
+          {{ 'DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.TITLE' | translate }}
+        </div>
+        <div class="panel__body-section sales-container__body-section">
+          <div class="chart-filter-container">
+            <div class="sales-date-filter-container">
+              <div class="sales-date-filter-container__filter-options" [ngClass]="{
+                'sales-date-filter-container__filter-options--active':
+                  currentFilterOption === 1
+              }" (click)="setFilterOption(1)">
+                {{ "GENERAL_TEXTS.DAILY" | translate }}
+              </div>
+              <div class="sales-date-filter-container__filter-options" [ngClass]="{
+                'sales-date-filter-container__filter-options--active':
+                  currentFilterOption === 2
+              }" (click)="setFilterOption(2)">
+                {{ "GENERAL_TEXTS.WEEKLY" | translate }}
+              </div>
+              <div class="sales-date-filter-container__filter-options" [ngClass]="{
+                'sales-date-filter-container__filter-options--active':
+                  currentFilterOption === 3
+              }" (click)="setFilterOption(3)">
+                {{ "GENERAL_TEXTS.MONTHLY" | translate }}
+              </div>
+            </div>
+
+            <div class="sales-date-filter-options" [formGroup]="filterForm">
+              <div *ngIf="currentFilterOption === 1">
+                <mat-form-field class="transaction-date" appearance="fill">
+                  <mat-label>{{
+                    "SALES_PAGE.FILTER_OPTIONS_PANEL.PICK_DATE" | translate
+                    }}:</mat-label>
+                  <input matInput (dateChange)="dateChange($event)" [matDatepicker]="picker" formControlName="day" />
+                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div *ngIf="currentFilterOption === 2">
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "SALES_PAGE.FILTER_OPTIONS_PANEL.PICK_WEEK" | translate
+                    }}:</mat-label>
+                  <mat-select formControlName="week" (selectionChange)="weekChange($event)">
+                    <mat-option *ngFor="let week of weekOptions; index as i" [value]="i">{{ week }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div *ngIf="currentFilterOption === 3">
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "SALES_PAGE.FILTER_OPTIONS_PANEL.PICK_MONTH" | translate
+                    }}:</mat-label>
+                  <mat-select formControlName="month" (selectionChange)="monthChange($event)">
+                    <mat-option *ngFor="let month of monthlyOptions; index as i" [value]="i">{{ month }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="panel sales-information-panel">
+              <div class="sales-information-panel__amount-container">
+                <label>{{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}:</label>
+                <span class="scale-in-center-animation" *ngIf="!isLoading">{{
+                  sales
+                  }}</span>
+              </div>
+              <div *ngIf="!isLoading" class="sales-information-panel__amount-breakdown-container">
+                <div></div>
+                <div>
+                  <div class="amount-information">
+                    <label>{{ "SALES_PAGE.SALES_PANEL.CASH_ON_HAND_LABEL" | translate }}:</label>
+                    <span class="scale-in-center-animation">{{
+                      cashOnHand
+                      }}</span>
+                  </div>
+                  <div class="amount-information">
+                    <label>{{ "SALES_PAGE.SALES_PANEL.CHEQUE_ON_HAND_LABEL" | translate }}:</label>
+                    <span class="scale-in-center-animation">{{
+                      chequeOnHand
+                      }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

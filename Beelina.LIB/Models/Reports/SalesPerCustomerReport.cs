@@ -29,7 +29,15 @@ namespace Beelina.LIB.Models.Reports
 
             var reportOutput = new SalesPerCustomerReportOutput
             {
-                ListOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new SalesPerCustomerReportOutputList
+                HeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new SalesPerCustomerReportOutputHeader
+                {
+                    SalesAgentName = row.Field<string>("SalesAgentName"),
+                    FromDate = row.Field<string>("FromDate"),
+                    ToDate = row.Field<string>("ToDate"),
+                }).FirstOrDefault(),
+
+
+                ListOutput = reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new SalesPerCustomerReportOutputList
                 {
                     StoreName = row.Field<string>("StoreName"),
                     InvoiceNo = row.Field<string>("InvoiceNo"),
@@ -48,7 +56,11 @@ namespace Beelina.LIB.Models.Reports
             {
                 var worksheet = package.Workbook.Worksheets["Sheet1"];
 
-                var cellNumber = 2;
+                worksheet.Cells["B1"].Value = reportOutput.HeaderOutput.SalesAgentName;
+                worksheet.Cells["B2"].Value = reportOutput.HeaderOutput.FromDate;
+                worksheet.Cells["B3"].Value = reportOutput.HeaderOutput.ToDate;
+
+                var cellNumber = 6;
                 foreach (var item in reportOutput.ListOutput)
                 {
                     worksheet.Cells[$"A{cellNumber}"].Value = item.StoreName;
@@ -71,11 +83,25 @@ namespace Beelina.LIB.Models.Reports
 
     public class SalesPerCustomerReportOutput : BaseReportOutput
     {
+        public SalesPerCustomerReportOutputHeader HeaderOutput { get; set; }
         public List<SalesPerCustomerReportOutputList> ListOutput { get; set; }
 
         public SalesPerCustomerReportOutput() : base()
         {
+            HeaderOutput = new SalesPerCustomerReportOutputHeader();
             ListOutput = new List<SalesPerCustomerReportOutputList>();
+        }
+    }
+
+    public class SalesPerCustomerReportOutputHeader
+    {
+        public string SalesAgentName { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+
+        public SalesPerCustomerReportOutputHeader()
+        {
+
         }
     }
 

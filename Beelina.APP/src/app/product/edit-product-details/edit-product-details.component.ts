@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription, map, startWith } from 'rxjs';
-import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
@@ -21,9 +21,12 @@ import { ProductUnit } from 'src/app/_models/product-unit';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 
+import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
+import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
+
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
-import { WithdrawalSlipNoDialogComponent } from '../withdrawal-slip-no-dialog/withdrawal-slip-no-dialog.component';
 
 @Component({
   selector: 'app-edit-product-details',
@@ -32,10 +35,10 @@ import { WithdrawalSlipNoDialogComponent } from '../withdrawal-slip-no-dialog/wi
 })
 export class EditProductDetailsComponent implements OnInit {
   private _dialogRef: MatBottomSheetRef<
-    WithdrawalSlipNoDialogComponent,
+    AddProductStockQuantityDialogComponent,
     {
       additionalStockQuantity: number;
-      withdrawalSlipNo: string;
+      transactionNo: string;
     }
   >;
   private _productForm: FormGroup;
@@ -45,6 +48,12 @@ export class EditProductDetailsComponent implements OnInit {
   private _productUnitOptionsSubscription: Subscription;
   private _productAdditionalStockQuantitySubscription: Subscription;
   private _productId: number;
+  private _productSource: ProductSourceEnum;
+  private _productSourceUpdateFunc: Array<string> = ["updateProductInformation", "updateWarehouseProductInformation"];
+  private _productSourceGetFunc: Array<string> = ["getProduct", "getWarehouseProduct"];
+  private _productSourceRedirectUrl: Array<string> = ['/product-catalogue', "/warehouse-products"];
+  private _updateProductSubscription: Subscription;
+  private _warehouseId: number = 1;
 
   $isLoading: Observable<boolean>;
 
@@ -57,9 +66,12 @@ export class EditProductDetailsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private notificationService: NotificationService,
-    private translateService: TranslateService,
-    private uniqueProductCodeValidator: UniqueProductCodeValidator
+    private uniqueProductCodeValidator: UniqueProductCodeValidator,
+    public translateService: TranslateService,
   ) {
+    const state = <any>this.router.getCurrentNavigation().extras.state;
+    this._productSource = <ProductSourceEnum>state.productSource;
+
     this._productForm = this.formBuilder.group(
       {
         code: [
@@ -73,7 +85,7 @@ export class EditProductDetailsComponent implements OnInit {
         ],
         name: ['', Validators.required],
         description: [''],
-        withdrawalSlipNo: [''],
+        transactionNo: [''],
         stockQuantity: [0],
         additionalStockQuantity: [0],
         pricePerUnit: [null, Validators.required],
@@ -96,18 +108,22 @@ export class EditProductDetailsComponent implements OnInit {
 
     this.uniqueProductCodeValidator.productId = this._productId;
 
-    this.productService
-      .getProduct(this._productId)
+    this.productService[this._productSourceGetFunc[this._productSource]](this._productId)
       .subscribe((product: ProductInformationResult) => {
         this._productDetails = product;
         this._productForm.get('name').setValue(product.name);
         this._productForm.get('code').setValue(product.code);
         this._productForm.get('description').setValue(product.description);
         this._productForm.get('stockQuantity').setValue(product.stockQuantity);
-        this._productForm.get('pricePerUnit').setValue(product.price);
         this._productForm.get('isTransferable').setValue(product.isTransferable);
         this._productForm.get('numberOfUnits').setValue(product.numberOfUnits);
         this._productForm.get('productUnit').setValue(product.productUnit.name);
+
+        if (this.showDefaultPrice) {
+          this._productForm.get('pricePerUnit').setValue(product?.defaultPrice);
+        } else {
+          this._productForm.get('pricePerUnit').setValue(product.price);
+        }
       });
 
     this._productUnitOptionsSubscription = this.store
@@ -127,20 +143,21 @@ export class EditProductDetailsComponent implements OnInit {
       .get('additionalStockQuantity')
       .valueChanges
       .subscribe((value) => {
-        const newStockQuantity = value + this._productForm.get('stockQuantity').value;
+        const newStockQuantity = value + this._productDetails.stockQuantity;
         this._productForm.get('stockQuantity').setValue(newStockQuantity);
       });
   }
 
   ngOnDestroy(): void {
     this._dialogRef = null;
+    if (this._updateProductSubscription) this._updateProductSubscription.unsubscribe();
     this._productUnitOptionsSubscription.unsubscribe();
     this._productAdditionalStockQuantitySubscription.unsubscribe();
     this.store.dispatch(ProductActions.resetProductState());
   }
 
   manageProductStockAudit() {
-    this.router.navigate([`product-catalogue/edit-product/${this._productId}/manage-product-stock-audit`]);
+    this.router.navigate([`product-catalogue/edit-product/${this._productId}/manage-product-stock-audit`], { state: { productSource: this._productSource } });
   }
 
   saveProduct() {
@@ -150,7 +167,7 @@ export class EditProductDetailsComponent implements OnInit {
     product.code = this._productForm.get('code').value;
     product.description = this._productForm.get('description').value;
     product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
-    product.withdrawalSlipNo = this._productForm.get('withdrawalSlipNo').value;
+    product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
     product.isTransferable = this._productForm.get('isTransferable').value;
     product.numberOfUnits = this._productForm.get('numberOfUnits').value;
     product.pricePerUnit = this._productForm.get('pricePerUnit').value;
@@ -175,7 +192,7 @@ export class EditProductDetailsComponent implements OnInit {
                 state: true,
               })
             );
-            this.productService.updateProductInformation([product]).subscribe({
+            this._updateProductSubscription = this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
               next: () => {
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.SUCCESS_MESSAGE'
@@ -185,7 +202,7 @@ export class EditProductDetailsComponent implements OnInit {
                     state: false,
                   })
                 );
-                this.router.navigate(['/product-catalogue']);
+                this.router.navigate([this._productSourceRedirectUrl[this._productSource]]);
               },
 
               error: () => {
@@ -206,10 +223,11 @@ export class EditProductDetailsComponent implements OnInit {
   }
 
   editStockQuantity() {
-    this._dialogRef = this.bottomSheet.open(WithdrawalSlipNoDialogComponent, {
+    this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
       data: {
         additionalStockQuantity: this._productForm.get('additionalStockQuantity').value,
-        withdrawalSlipNo: this._productForm.get('withdrawalSlipNo').value,
+        transactionNo: this._productForm.get('transactionNo').value,
+        productSource: this._productSource,
       },
     });
 
@@ -218,14 +236,42 @@ export class EditProductDetailsComponent implements OnInit {
       .subscribe(
         (data: {
           additionalStockQuantity: number;
-          withdrawalSlipNo: string;
+          transactionNo: string;
         }) => {
-          this._productForm
-            .get('additionalStockQuantity')
-            .setValue(data.additionalStockQuantity);
-          this._productForm
-            .get('withdrawalSlipNo')
-            .setValue(data.withdrawalSlipNo);
+          if (!data) return;
+
+          const updateAdditionalStockValue = () => {
+            this._productForm
+              .get('additionalStockQuantity')
+              .setValue(data.additionalStockQuantity);
+
+            this._productForm
+              .get('transactionNo')
+              .setValue(data.transactionNo);
+          }
+
+          if (this._productSource == ProductSourceEnum.Panel) {
+            this.productService
+              .checkWarehouseProductStockQuantity(this._productId, this._warehouseId, data.additionalStockQuantity)
+              .subscribe((insufficientStocks: Array<InsufficientProductQuantity>) => {
+                if (insufficientStocks.length > 0) {
+                  this.dialogService
+                    .openAlert(
+                      this.translateService.instant(
+                        'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.TITLE'
+                      ),
+                      this.translateService.instant(
+                        'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.ERROR_MESSAGE'
+                      ).replace("{0}", insufficientStocks[0].currentQuantity.toString())
+                    )
+                  return;
+                } else {
+                  updateAdditionalStockValue();
+                }
+              });
+          } else {
+            updateAdditionalStockValue();
+          }
         }
       );
   }
@@ -244,5 +290,9 @@ export class EditProductDetailsComponent implements OnInit {
 
   get productUnitFilterOptions(): Observable<Array<ProductUnit>> {
     return this._productUnitFilterOptions;
+  }
+
+  get showDefaultPrice(): boolean {
+    return this._productDetails?.defaultPrice > 0 && this._productSource === ProductSourceEnum.Panel;
   }
 }

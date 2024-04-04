@@ -63,10 +63,10 @@
                 </div>
 
                 <div class="product-transaction-information-status">
-                  <span class="product-transaction-information-status--paid" *ngIf="item?.isPaid">{{
-                    "GENERAL_TEXTS.PAID" | translate }}</span>
-                  <span class="product-transaction-information-status--unpaid" *ngIf="!item?.isPaid">{{
-                    "GENERAL_TEXTS.UNPAID" | translate }}</span>
+                  <app-badge *ngIf="item?.isPaid" [type]="bannerTypeEnum.SUCCESS"
+                    [textIdentifier]="'GENERAL_TEXTS.PAID'"></app-badge>
+                  <app-badge *ngIf="!item?.isPaid" [type]="bannerTypeEnum.ERROR"
+                    [textIdentifier]="'GENERAL_TEXTS.UNPAID'"></app-badge>
                 </div>
               </div>
             </mat-list-item>
@@ -100,12 +100,24 @@
             <span>{{ "GENERAL_TEXTS.NET_TOTAL" | translate }}</span>
             <span>{{ transaction.netTotalFormatted }}</span>
           </div>
-        </div>
 
+          <div class="product-transaction-mode-of-payment-information" [formGroup]="transactionForm">
+            <mat-form-field appearance="fill">
+              <mat-label>{{
+                "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.PAYMENT_METHOD_CONTROL.LABEL"
+                | translate
+                }}:</mat-label>
+              <mat-select formControlName="paymentMethod">
+                <mat-option *ngFor="let paymentMethod of paymentMethodOptions" [value]="paymentMethod.id">{{
+                  paymentMethod.name
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
         <div class="panel__footer-section transaction-details-panel__footer-section">
-          <button mat-raised-button color="primary" (click)="markTransactionAsPaid()"
-            [disabled]="!transaction?.hasUnpaidProductTransaction">
-            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+          <button mat-raised-button color="primary" (click)="saveTransaction()">
+            {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
           </button>
         </div>
       </div>

@@ -1,0 +1,35 @@
+<div class="product-list-container">
+  <div class="page-container product-list-container__page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.PRODUCT_LIST_CONTAINER.TITLE" | translate
+        }}</label><br />
+      <span class="page-information-description">{{
+        "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.PRODUCT_LIST_CONTAINER.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-search-field (onSearch)="searchProduct($event)" (onClear)="onClear()"
+      [placeHolderTextIdentifier]="'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'"></app-search-field>
+
+    <div class="product-list-status-bar-container">
+      <div class="product-list-status-bar-container__total-value-section" *ngIf="totalProductValue">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCTS_TOTAL_VALUE_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductValue"></app-badge>
+      </div>
+
+      <div class="product-list-status-bar-container__total-products-counter-section" *ngIf="filterKeyword?.length > 0">
+        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+      </div>
+    </div>
+
+    <app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.PRODUCTS"
+      [count]="productDataSource?.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container">
+        <div *cdkVirtualFor="let item of productDataSource">
+          <app-product-card-item [productItem]="item" [allowManageItem]="false" [filterKeyword]="filterKeyword"
+            [hideHeaderOptions]="true" (selectItem)="selectItemEvent($event)"></app-product-card-item>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
+  </div>
+</div>
