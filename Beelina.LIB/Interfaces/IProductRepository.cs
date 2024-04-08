@@ -30,6 +30,17 @@ namespace Beelina.LIB.Interfaces
             TransferProductStockTypeEnum transferProductStockType,
             CancellationToken cancellationToken);
 
+        Task<Product> TransferWarehouseProductStockFromOwnInventory(
+            int userAccountId,
+            int warehouseId,
+            int sourceProductId,
+            int destinationProductId,
+            int destinationProductNumberOfUnits,
+            int sourceProductNumberOfUnits,
+            int sourceNumberOfUnitsTransfered,
+            TransferProductStockTypeEnum transferProductStockType,
+            CancellationToken cancellationToken);
+
         MapExtractedProductResult MapProductImport(ExtractProductResult productImportResult, IList<Product> warehouseProductsFromRepo);
     }
 }

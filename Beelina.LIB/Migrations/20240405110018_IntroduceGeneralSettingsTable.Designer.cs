@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations
 {
     [DbContext(typeof(BeelinaClientDataContext))]
-    partial class BeelinaClientDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240405110018_IntroduceGeneralSettingsTable")]
+    partial class IntroduceGeneralSettingsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -469,9 +471,6 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
-                    b.Property<int>("DestinationProductStockPerWarehouseId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -487,16 +486,7 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("SourceProductNumberOfUnits")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SourceProductStockPerWarehouseId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockAuditSource")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransferProductStockType")
                         .HasColumnType("int");
 
                     b.Property<int?>("UpdatedById")
@@ -832,9 +822,6 @@ namespace Beelina.LIB.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WarehouseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

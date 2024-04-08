@@ -17,6 +17,7 @@ namespace Beelina.LIB.BusinessLogic
     private readonly IProductStockAuditRepository<ProductStockAudit> _productStockAuditRepository;
     private readonly IProductUnitRepository<ProductUnit> _productUnitRepository;
     private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
+    private readonly IGeneralSettingRepository<GeneralSetting> _generalSettingRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public ProductRepository(IBeelinaRepository<Product> beelinaRepository,
@@ -85,152 +86,164 @@ namespace Beelina.LIB.BusinessLogic
     public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default)
     {
       var finalProductsFromRepo = new List<Product>();
+      var generalSetting = await _beelinaRepository
+                                  .ClientDbContext
+                                  .GeneralSettings
+                                  .FirstOrDefaultAsync(cancellationToken);
+
       try
       {
-        var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Retail);
+        if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
+        {
+          var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Retail);
 
-        // Gather products information with product stock per panel and product unit.
-        // Only gets the products that the user has permission to see.
-        var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
-                                      join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+          // Gather products information with product stock per panel and product unit.
+          // Only gets the products that the user has permission to see.
+          var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
+                                        join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
 
-                                      on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
-                                      into productStockJoin
-                                      from pp in productStockJoin.DefaultIfEmpty()
+                                        on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
+                                        into productStockJoin
+                                        from pp in productStockJoin.DefaultIfEmpty()
 
-                                      join pu in _beelinaRepository.ClientDbContext.ProductUnits
-                                          on p.ProductUnitId equals pu.Id
-                                          into productUnitJoin
-                                      from pu in productUnitJoin.DefaultIfEmpty()
+                                        join pu in _beelinaRepository.ClientDbContext.ProductUnits
+                                            on p.ProductUnitId equals pu.Id
+                                            into productUnitJoin
+                                        from pu in productUnitJoin.DefaultIfEmpty()
 
-                                      where
-                                        !p.IsDelete
-                                        && p.IsActive
-                                        && ((productId > 0 && p.Id == productId) || productId == 0)
-                                        && (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Manager ||
-                                          ((userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User || userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Administrator) && pp != null))
-
-                                      select new
-                                      {
-                                        Id = p.Id,
-                                        ProductPerPanelId = (pp == null ? 0 : pp.Id),
-                                        IsLinkedToSalesAgent = (pp != null),
-                                        Name = p.Name,
-                                        Code = p.Code,
-                                        IsTransferable = p.IsTransferable,
-                                        NumberOfUnits = p.NumberOfUnits,
-                                        Description = p.Description,
-                                        PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
-                                        ProductUnitId = p.ProductUnitId,
-                                        ProductUnit = pu
-                                      }).ToListAsync(cancellationToken);
-
-        var filteredProductsFromRepo = (from p in productsFromRepo
-                                        where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
+                                        where
+                                          !p.IsDelete
+                                          && p.IsActive
+                                          && ((productId > 0 && p.Id == productId) || productId == 0)
+                                          && (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Manager ||
+                                            ((userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User || userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Administrator) && pp != null))
 
                                         select new
                                         {
                                           Id = p.Id,
-                                          ProductPerPanelId = p.ProductPerPanelId,
-                                          IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                          ProductPerPanelId = (pp == null ? 0 : pp.Id),
+                                          IsLinkedToSalesAgent = (pp != null),
                                           Name = p.Name,
                                           Code = p.Code,
-                                          SearchResultPercentage = p.Name.CalculatePrecision(filterKeyWord) + p.Code.CalculatePrecision(filterKeyWord),
                                           IsTransferable = p.IsTransferable,
                                           NumberOfUnits = p.NumberOfUnits,
                                           Description = p.Description,
-                                          PricePerUnit = p.PricePerUnit,
+                                          PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                           ProductUnitId = p.ProductUnitId,
-                                          ProductUnit = p.ProductUnit,
-                                        })
-                                        .OrderByDescending(p => p.SearchResultPercentage)
-                                        .ToList();
-
-        // Gather products absolute stock quantity based on the stock audit records.
-        var productStockAudits = await (from ps in _beelinaRepository.ClientDbContext.ProductStockAudits
-
-                                        where
-                                            !ps.IsDelete
-                                            && ps.IsActive
-
-                                        group ps by new { ps.ProductStockPerPanelId } into g
-
-                                        select new
-                                        {
-                                          ProductStockPerPanelId = g.Key.ProductStockPerPanelId,
-                                          Quantity = g.Sum(ps => ps.Quantity)
+                                          ProductUnit = pu
                                         }).ToListAsync(cancellationToken);
 
-        // Join products with their corresponding absolute stock quantity.
-        var productsStocksAuditsPerProductPanel = (from p in filteredProductsFromRepo
-                                                   join ps in productStockAudits
+          var filteredProductsFromRepo = (from p in productsFromRepo
+                                          where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
 
-                                                   on new { Id = p.ProductPerPanelId } equals new { Id = ps.ProductStockPerPanelId }
-                                                   into productStockAuditJoin
-                                                   from ps in productStockAuditJoin.DefaultIfEmpty()
+                                          select new
+                                          {
+                                            Id = p.Id,
+                                            ProductPerPanelId = p.ProductPerPanelId,
+                                            IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                            Name = p.Name,
+                                            Code = p.Code,
+                                            SearchResultPercentage = p.Name.CalculatePrecision(filterKeyWord) + p.Code.CalculatePrecision(filterKeyWord),
+                                            IsTransferable = p.IsTransferable,
+                                            NumberOfUnits = p.NumberOfUnits,
+                                            Description = p.Description,
+                                            PricePerUnit = p.PricePerUnit,
+                                            ProductUnitId = p.ProductUnitId,
+                                            ProductUnit = p.ProductUnit,
+                                          })
+                                          .OrderByDescending(p => p.SearchResultPercentage)
+                                          .ToList();
 
-                                                   select new
-                                                   {
-                                                     Id = p.Id,
-                                                     ProductPerPanelId = p.ProductPerPanelId,
-                                                     IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
-                                                     Name = p.Name,
-                                                     Code = p.Code,
-                                                     IsTransferable = p.IsTransferable,
-                                                     NumberOfUnits = p.NumberOfUnits,
-                                                     Description = p.Description,
-                                                     PricePerUnit = p.PricePerUnit,
-                                                     ProductUnitId = p.ProductUnitId,
-                                                     ProductUnit = p.ProductUnit,
-                                                     StockAbsoluteQuantity = (ps == null ? 0 : ps.Quantity)
-                                                   })
-                                                   .ToList();
+          // Gather products absolute stock quantity based on the stock audit records.
+          var productStockAudits = await (from ps in _beelinaRepository.ClientDbContext.ProductStockAudits
+
+                                          where
+                                              !ps.IsDelete
+                                              && ps.IsActive
+
+                                          group ps by new { ps.ProductStockPerPanelId } into g
+
+                                          select new
+                                          {
+                                            ProductStockPerPanelId = g.Key.ProductStockPerPanelId,
+                                            Quantity = g.Sum(ps => ps.Quantity)
+                                          }).ToListAsync(cancellationToken);
+
+          // Join products with their corresponding absolute stock quantity.
+          var productsStocksAuditsPerProductPanel = (from p in filteredProductsFromRepo
+                                                     join ps in productStockAudits
+
+                                                     on new { Id = p.ProductPerPanelId } equals new { Id = ps.ProductStockPerPanelId }
+                                                     into productStockAuditJoin
+                                                     from ps in productStockAuditJoin.DefaultIfEmpty()
+
+                                                     select new
+                                                     {
+                                                       Id = p.Id,
+                                                       ProductPerPanelId = p.ProductPerPanelId,
+                                                       IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                                       Name = p.Name,
+                                                       Code = p.Code,
+                                                       IsTransferable = p.IsTransferable,
+                                                       NumberOfUnits = p.NumberOfUnits,
+                                                       Description = p.Description,
+                                                       PricePerUnit = p.PricePerUnit,
+                                                       ProductUnitId = p.ProductUnitId,
+                                                       ProductUnit = p.ProductUnit,
+                                                       StockAbsoluteQuantity = (ps == null ? 0 : ps.Quantity)
+                                                     })
+                                                     .ToList();
 
 
-        // Gather product transactions per user account.
-        var transactionsPerSalesAgent = await (from t in _beelinaRepository.ClientDbContext.Transactions
-                                               join pt in _beelinaRepository.ClientDbContext.ProductTransactions
-                                               on t.Id equals pt.TransactionId
+          // Gather product transactions per user account.
+          var transactionsPerSalesAgent = await (from t in _beelinaRepository.ClientDbContext.Transactions
+                                                 join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                                 on t.Id equals pt.TransactionId
 
-                                               where
-                                                    t.CreatedById == userId
-                                                    && t.Status == Enums.TransactionStatusEnum.Confirmed // Make sure only included confirmed transactions
-                                                   && !t.IsDelete
-                                                   && t.IsActive
-                                                   && !pt.IsDelete
-                                                   && pt.IsActive
+                                                 where
+                                                      t.CreatedById == userId
+                                                      && t.Status == Enums.TransactionStatusEnum.Confirmed // Make sure only included confirmed transactions
+                                                     && !t.IsDelete
+                                                     && t.IsActive
+                                                     && !pt.IsDelete
+                                                     && pt.IsActive
 
-                                               group pt by new { pt.ProductId } into g
+                                                 group pt by new { pt.ProductId } into g
 
-                                               select new
-                                               {
-                                                 ProductId = g.Key.ProductId,
-                                                 Quantity = g.Sum(pt => pt.Quantity)
-                                               }).ToListAsync(cancellationToken);
+                                                 select new
+                                                 {
+                                                   ProductId = g.Key.ProductId,
+                                                   Quantity = g.Sum(pt => pt.Quantity)
+                                                 }).ToListAsync(cancellationToken);
 
-        // Join product information with their corresponding actual stock quantity
-        finalProductsFromRepo = (from p in productsStocksAuditsPerProductPanel
-                                 join t in transactionsPerSalesAgent
+          // Join product information with their corresponding actual stock quantity
+          finalProductsFromRepo = (from p in productsStocksAuditsPerProductPanel
+                                   join t in transactionsPerSalesAgent
 
-                                 on new { Id = p.Id } equals new { Id = t.ProductId }
-                                 into productTransactionJoin
-                                 from pt in productTransactionJoin.DefaultIfEmpty()
+                                   on new { Id = p.Id } equals new { Id = t.ProductId }
+                                   into productTransactionJoin
+                                   from pt in productTransactionJoin.DefaultIfEmpty()
 
-                                 select new Product
-                                 {
-                                   Id = p.Id,
-                                   Name = p.Name,
-                                   Code = p.Code,
-                                   IsTransferable = p.IsTransferable,
-                                   NumberOfUnits = p.NumberOfUnits,
-                                   Description = p.Description,
-                                   PricePerUnit = p.PricePerUnit,
-                                   ProductUnitId = p.ProductUnitId,
-                                   ProductUnit = p.ProductUnit,
-                                   StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
-                                   IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
-                                 })
-                                .ToList();
+                                   select new Product
+                                   {
+                                     Id = p.Id,
+                                     Name = p.Name,
+                                     Code = p.Code,
+                                     IsTransferable = p.IsTransferable,
+                                     NumberOfUnits = p.NumberOfUnits,
+                                     Description = p.Description,
+                                     PricePerUnit = p.PricePerUnit,
+                                     ProductUnitId = p.ProductUnitId,
+                                     ProductUnit = p.ProductUnit,
+                                     StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
+                                     IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                   })
+                                  .ToList();
+        }
+        else
+        {
+          return await GetWarehouseProducts(1, productId, filterKeyWord, cancellationToken);
+        }
       }
       catch (TaskCanceledException ex)
       {
@@ -243,6 +256,10 @@ namespace Beelina.LIB.BusinessLogic
     public async Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default)
     {
       var finalProductsFromRepo = new List<Product>();
+      var generalSetting = await _beelinaRepository
+                                  .ClientDbContext
+                                  .GeneralSettings
+                                  .FirstOrDefaultAsync(cancellationToken);
       try
       {
         // Get products base list
@@ -272,6 +289,7 @@ namespace Beelina.LIB.BusinessLogic
                                         Code = p.Code,
                                         NumberOfUnits = p.NumberOfUnits,
                                         Description = p.Description,
+                                        IsTransferable = p.IsTransferable,
                                         PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = pu
@@ -293,102 +311,181 @@ namespace Beelina.LIB.BusinessLogic
                                           PricePerUnit = p.PricePerUnit,
                                           ProductUnitId = p.ProductUnitId,
                                           ProductUnit = p.ProductUnit,
+                                          IsTransferable = p.IsTransferable,
                                         })
                                         .OrderByDescending(p => p.SearchResultPercentage)
                                         .ToList();
 
-        // Get product stock audit based on order from supplier
-        var warehouseProductStockAuditsFinal = await (from pw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
-                                                      join pwa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
+        if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
+        {
+          // Get product stock audit
+          var warehouseProductStockAuditsFinal = await (from pw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
+                                                        join pwa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
 
-                                                      on new { Id = pw.Id } equals new { Id = pwa.ProductStockPerWarehouseId }
-                                                      into warehouseProductStockJoin
-                                                      from pws in warehouseProductStockJoin.DefaultIfEmpty()
+                                                        on new { Id = pw.Id } equals new { Id = pwa.ProductStockPerWarehouseId }
+                                                        into warehouseProductStockJoin
+                                                        from pws in warehouseProductStockJoin.DefaultIfEmpty()
 
-                                                      where
-                                                          pw.WarehouseId == warehouseId
-                                                          && pws.StockAuditSource == StockAuditSourceEnum.OrderFromSupplier
-                                                          && !pw.IsDelete
-                                                          && pw.IsActive
-                                                          && !pws.IsDelete
-                                                          && pws.IsActive
+                                                        where
+                                                            pw.WarehouseId == warehouseId
+                                                            && !pw.IsDelete
+                                                            && pw.IsActive
+                                                            && !pws.IsDelete
+                                                            && pws.IsActive
 
-                                                      group pws by new { pws.ProductStockPerWarehouse.ProductId } into g
+                                                        group pws by new { pws.ProductStockPerWarehouse.ProductId } into g
 
-                                                      select new
+                                                        select new
+                                                        {
+                                                          ProductId = g.Key.ProductId,
+                                                          Quantity = g.Sum(ps => ps.Quantity)
+                                                        }).ToListAsync(cancellationToken);
+
+          // Get panel product stock tied to the warehouse products
+          var panelProductStockFromWithdrawals = await (from pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                                                        join pa in _beelinaRepository.ClientDbContext.ProductStockAudits
+
+                                                        on new { ProductStockPerPanelId = pp.Id } equals new { ProductStockPerPanelId = pa.ProductStockPerPanelId }
+                                                        into productStockAuditPerPanelJoin
+                                                        from ppa in productStockAuditPerPanelJoin.DefaultIfEmpty()
+
+                                                        where
+                                                              ppa.WarehouseId == warehouseId
+                                                              && ppa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal
+                                                              && !pp.IsDelete
+                                                              && pp.IsActive
+
+                                                        select new
+                                                        {
+                                                          ProductId = pp.ProductId,
+                                                          Quantity = (ppa == null ? 0 : -ppa.Quantity),
+                                                        }).ToListAsync(cancellationToken);
+
+          var panelProductStockFromWithdrawalsGrouped = (from pp in panelProductStockFromWithdrawals
+                                                         group pp by pp.ProductId into g
+                                                         select new
+                                                         {
+                                                           ProductId = g.Key,
+                                                           Quantity = g.Sum(q => q.Quantity),
+                                                         }).ToList();
+
+          var panelProductWithdrawalStockAuditsFinal = (from fp in filteredProductsFromRepo
+                                                        join pp in panelProductStockFromWithdrawalsGrouped
+
+                                                        on new { ProductId = fp.Id } equals new { ProductId = pp.ProductId }
+                                                        into productStockWithdrawalsPerPanelJoin
+                                                        from pwp in productStockWithdrawalsPerPanelJoin.DefaultIfEmpty()
+
+                                                        select new
+                                                        {
+                                                          ProductId = fp.Id,
+                                                          Quantity = (pwp != null ? pwp.Quantity : 0),
+                                                        }).ToList();
+
+          var overallWarehouseProductStockAudits = warehouseProductStockAuditsFinal
+                                                      .Union(panelProductWithdrawalStockAuditsFinal)
+                                                      .GroupBy(p => p.ProductId)
+                                                      .Select(p => new
                                                       {
-                                                        ProductId = g.Key.ProductId,
-                                                        Quantity = g.Sum(ps => ps.Quantity)
-                                                      }).ToListAsync(cancellationToken);
-
-        // Get panel product stock tied to the warehouse products
-        var panelProductStockFromWithdrawals = await (from pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
-                                                      join pa in _beelinaRepository.ClientDbContext.ProductStockAudits
-
-                                                      on new { ProductStockPerPanelId = pp.Id } equals new { ProductStockPerPanelId = pa.ProductStockPerPanelId }
-                                                      into productStockAuditPerPanelJoin
-                                                      from ppa in productStockAuditPerPanelJoin.DefaultIfEmpty()
-
-                                                      where
-                                                            ppa.WarehouseId == warehouseId
-                                                            && ppa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal
-                                                            && !pp.IsDelete
-                                                            && pp.IsActive
-
-                                                      select new
-                                                      {
-                                                        ProductId = pp.ProductId,
-                                                        Quantity = (ppa == null ? 0 : -ppa.Quantity),
-                                                      }).ToListAsync(cancellationToken);
-
-        var panelProductStockFromWithdrawalsGrouped = (from pp in panelProductStockFromWithdrawals
-                                                       group pp by pp.ProductId into g
-                                                       select new
-                                                       {
-                                                         ProductId = g.Key,
-                                                         Quantity = g.Sum(q => q.Quantity),
-                                                       }).ToList();
-
-        var panelProductWithdrawalStockAuditsFinal = (from fp in filteredProductsFromRepo
-                                                      join pp in panelProductStockFromWithdrawalsGrouped
-
-                                                      on new { ProductId = fp.Id } equals new { ProductId = pp.ProductId }
-                                                      into productStockWithdrawalsPerPanelJoin
-                                                      from pwp in productStockWithdrawalsPerPanelJoin.DefaultIfEmpty()
-
-                                                      select new
-                                                      {
-                                                        ProductId = fp.Id,
-                                                        Quantity = (pwp != null ? pwp.Quantity : 0),
+                                                        ProductId = p.Key,
+                                                        Quantity = p.Sum(q => q.Quantity)
                                                       }).ToList();
 
-        var overallWarehouseProductStockAudits = warehouseProductStockAuditsFinal
-                                                    .Union(panelProductWithdrawalStockAuditsFinal)
-                                                    .GroupBy(p => p.ProductId)
-                                                    .Select(p => new
-                                                    {
-                                                      ProductId = p.Key,
-                                                      Quantity = p.Sum(q => q.Quantity)
-                                                    }).ToList();
+          // Join products with their corresponding absolute stock quantity.
+          finalProductsFromRepo = (from p in filteredProductsFromRepo
+                                   join owsa in overallWarehouseProductStockAudits
+                                   on new { Id = p.Id } equals new { Id = owsa.ProductId }
 
-        // Join products with their corresponding absolute stock quantity.
-        finalProductsFromRepo = (from p in filteredProductsFromRepo
-                                 join owsa in overallWarehouseProductStockAudits
-                                 on new { Id = p.Id } equals new { Id = owsa.ProductId }
+                                   select new Product
+                                   {
+                                     Id = p.Id,
+                                     Name = p.Name,
+                                     Code = p.Code,
+                                     NumberOfUnits = p.NumberOfUnits,
+                                     Description = p.Description,
+                                     PricePerUnit = p.PricePerUnit,
+                                     ProductUnitId = p.ProductUnitId,
+                                     ProductUnit = p.ProductUnit,
+                                     StockQuantity = owsa.Quantity,
+                                     IsTransferable = p.IsTransferable,
+                                   })
+                                  .ToList();
+        }
+        else
+        {
+          // Get product stock audit
+          var warehouseProductStockAuditsFinal = await (from pw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
+                                                        join pwa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
 
-                                 select new Product
-                                 {
-                                   Id = p.Id,
-                                   Name = p.Name,
-                                   Code = p.Code,
-                                   NumberOfUnits = p.NumberOfUnits,
-                                   Description = p.Description,
-                                   PricePerUnit = p.PricePerUnit,
-                                   ProductUnitId = p.ProductUnitId,
-                                   ProductUnit = p.ProductUnit,
-                                   StockQuantity = owsa.Quantity,
-                                 })
-                                    .ToList();
+                                                        on new { Id = pw.Id } equals new { Id = pwa.ProductStockPerWarehouseId }
+                                                        into warehouseProductStockJoin
+                                                        from pws in warehouseProductStockJoin.DefaultIfEmpty()
+
+                                                        where
+                                                            pw.WarehouseId == warehouseId
+                                                            && !pw.IsDelete
+                                                            && pw.IsActive
+                                                            && !pws.IsDelete
+                                                            && pws.IsActive
+
+                                                        group pws by new { pws.ProductStockPerWarehouse.ProductId } into g
+
+                                                        select new
+                                                        {
+                                                          ProductId = g.Key.ProductId,
+                                                          Quantity = g.Sum(ps => ps.Quantity)
+                                                        }).ToListAsync(cancellationToken);
+
+          // Gather product transactions per user account.
+          var orderTransactions = await (from t in _beelinaRepository.ClientDbContext.Transactions
+                                         join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                         on t.Id equals pt.TransactionId
+
+                                         where
+                                             t.Status == Enums.TransactionStatusEnum.Confirmed // Make sure only included confirmed transactions
+                                             && !t.IsDelete
+                                             && t.IsActive
+                                             && !pt.IsDelete
+                                             && pt.IsActive
+
+                                         group pt by new { pt.ProductId } into g
+
+                                         select new
+                                         {
+                                           ProductId = g.Key.ProductId,
+                                           Quantity = -g.Sum(pt => pt.Quantity)
+                                         }).ToListAsync(cancellationToken);
+
+          var overallWarehouseProductStockAudits = warehouseProductStockAuditsFinal
+                                                                .Union(orderTransactions)
+                                                                .GroupBy(p => p.ProductId)
+                                                                .Select(p => new
+                                                                {
+                                                                  ProductId = p.Key,
+                                                                  Quantity = p.Sum(q => q.Quantity)
+                                                                }).ToList();
+
+          // Join products with their corresponding absolute stock quantity.
+          finalProductsFromRepo = (from p in filteredProductsFromRepo
+                                   join owsa in overallWarehouseProductStockAudits
+                                   on new { Id = p.Id } equals new { Id = owsa.ProductId }
+
+                                   select new Product
+                                   {
+                                     Id = p.Id,
+                                     Name = p.Name,
+                                     Code = p.Code,
+                                     IsTransferable = p.IsTransferable,
+                                     NumberOfUnits = p.NumberOfUnits,
+                                     Description = p.Description,
+                                     PricePerUnit = p.PricePerUnit,
+                                     ProductUnitId = p.ProductUnitId,
+                                     ProductUnit = p.ProductUnit,
+                                     StockQuantity = owsa.Quantity,
+                                   })
+                                  .ToList();
+        }
+
       }
       catch (TaskCanceledException ex)
       {
@@ -680,34 +777,11 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<List<ProductStockAuditItem>> GetWarehouseProductStockAuditItems(int productId, int warehouseId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate)
     {
-      var panelProductStockFromWithdrawals = await (from pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
-                                                    join pa in _beelinaRepository.ClientDbContext.ProductStockAudits
+      var generalSetting = await _beelinaRepository
+                                  .ClientDbContext
+                                  .GeneralSettings
+                                  .FirstOrDefaultAsync();
 
-                                                    on new { ProductStockPerPanelId = pp.Id } equals new { ProductStockPerPanelId = pa.ProductStockPerPanelId }
-                                                    into productStockAuditPerPanelJoin
-                                                    from pa in productStockAuditPerPanelJoin.DefaultIfEmpty()
-
-                                                    join u in _beelinaRepository.ClientDbContext.UserAccounts
-                                                    on pa.CreatedById equals u.Id
-
-                                                    where
-                                                          pp.ProductId == productId
-                                                          && pa.WarehouseId == warehouseId
-                                                          && pa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal
-                                                          && !pp.IsDelete
-                                                          && pp.IsActive
-                                                          && !pa.IsDelete
-                                                          && pa.IsActive
-
-                                                    select new ProductStockAuditItem
-                                                    {
-                                                      Id = pa.Id,
-                                                      Quantity = (pa == null ? 0 : -pa.Quantity),
-                                                      StockAuditSource = pa.StockAuditSource,
-                                                      TransactionNumber = (pa.WithdrawalSlipNo ?? ""),
-                                                      ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
-                                                      ModifiedDate = pa.DateCreated
-                                                    }).ToListAsync();
 
       var productStockAuditItemsFromRepo = await (from ps in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
                                                   join pa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
@@ -737,7 +811,71 @@ namespace Beelina.LIB.BusinessLogic
                                                     ModifiedDate = pa.DateCreated
                                                   }).ToListAsync();
 
-      productStockAuditItemsFromRepo.AddRange(panelProductStockFromWithdrawals);
+      if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
+      {
+        var panelProductStockFromWithdrawals = await (from pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                                                      join pa in _beelinaRepository.ClientDbContext.ProductStockAudits
+
+                                                      on new { ProductStockPerPanelId = pp.Id } equals new { ProductStockPerPanelId = pa.ProductStockPerPanelId }
+                                                      into productStockAuditPerPanelJoin
+                                                      from pa in productStockAuditPerPanelJoin.DefaultIfEmpty()
+
+                                                      join u in _beelinaRepository.ClientDbContext.UserAccounts
+                                                      on pa.CreatedById equals u.Id
+
+                                                      where
+                                                            pp.ProductId == productId
+                                                            && pa.WarehouseId == warehouseId
+                                                            && pa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal
+                                                            && !pp.IsDelete
+                                                            && pp.IsActive
+                                                            && !pa.IsDelete
+                                                            && pa.IsActive
+
+                                                      select new ProductStockAuditItem
+                                                      {
+                                                        Id = pa.Id,
+                                                        Quantity = (pa == null ? 0 : -pa.Quantity),
+                                                        StockAuditSource = pa.StockAuditSource,
+                                                        TransactionNumber = (pa.WithdrawalSlipNo ?? ""),
+                                                        ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
+                                                        ModifiedDate = pa.DateCreated
+                                                      }).ToListAsync();
+
+
+        productStockAuditItemsFromRepo.AddRange(panelProductStockFromWithdrawals);
+      }
+      else
+      {
+        var productTransactionsAuditItems = await (from t in _beelinaRepository.ClientDbContext.Transactions
+                                                   join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+
+                                                   on new { Id = t.Id } equals new { Id = pt.TransactionId }
+                                                   into transactionJoin
+                                                   from tj in transactionJoin.DefaultIfEmpty()
+
+                                                   join u in _beelinaRepository.ClientDbContext.UserAccounts
+                                                   on t.CreatedById equals u.Id
+
+                                                   where
+                                                     t.Status == Enums.TransactionStatusEnum.Confirmed
+                                                     && tj.ProductId == productId
+                                                     && t.IsActive
+                                                     && !t.IsDelete
+
+                                                   select new ProductStockAuditItem
+                                                   {
+                                                     Id = t.Id,
+                                                     Quantity = -tj.Quantity,
+                                                     StockAuditSource = StockAuditSourceEnum.OrderTransaction,
+                                                     TransactionNumber = t.InvoiceNo,
+                                                     ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
+                                                     ModifiedDate = tj.DateCreated
+                                                   }).ToListAsync();
+
+        productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
+      }
+
 
       if (stockAuditSource != StockAuditSourceEnum.None)
       {
@@ -765,85 +903,96 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<List<ProductStockAuditItem>> GetProductStockAuditItems(int productId, int userAccountId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate)
     {
-      var productStockAuditItemsFromRepo = await (from ps in _beelinaRepository.ClientDbContext.ProductStockPerPanels
-                                                  join pa in _beelinaRepository.ClientDbContext.ProductStockAudits
+      var generalSetting = await _beelinaRepository
+                                  .ClientDbContext
+                                  .GeneralSettings
+                                  .FirstOrDefaultAsync();
 
-                                                  on new { Id = ps.Id } equals new { Id = pa.ProductStockPerPanelId }
-                                                  into productStockAuditJoin
-                                                  from pa in productStockAuditJoin.DefaultIfEmpty()
-
-                                                  join u in _beelinaRepository.ClientDbContext.UserAccounts
-                                                  on pa.CreatedById equals u.Id
-
-                                                  where
-                                                    ps.ProductId == productId
-                                                    && ps.UserAccountId == userAccountId
-                                                    && pa.IsActive
-                                                    && !pa.IsDelete
-
-                                                  select new ProductStockAuditItem
-                                                  {
-                                                    Id = pa.Id,
-                                                    Quantity = pa.Quantity,
-                                                    StockAuditSource = pa.StockAuditSource,
-                                                    TransactionNumber = pa.WithdrawalSlipNo,
-                                                    ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
-                                                    ModifiedDate = pa.DateCreated
-                                                  }).ToListAsync();
-
-
-      var productTransactionsAuditItems = await (from t in _beelinaRepository.ClientDbContext.Transactions
-                                                 join pt in _beelinaRepository.ClientDbContext.ProductTransactions
-
-                                                 on new { Id = t.Id } equals new { Id = pt.TransactionId }
-                                                 into transactionJoin
-                                                 from tj in transactionJoin.DefaultIfEmpty()
-
-                                                 join u in _beelinaRepository.ClientDbContext.UserAccounts
-                                                 on t.CreatedById equals u.Id
-
-                                                 where
-                                                   t.CreatedById == userAccountId
-                                                   && t.Status == Enums.TransactionStatusEnum.Confirmed
-                                                   && tj.ProductId == productId
-                                                   && t.IsActive
-                                                   && !t.IsDelete
-
-                                                 select new ProductStockAuditItem
-                                                 {
-                                                   Id = t.Id,
-                                                   Quantity = -tj.Quantity,
-                                                   StockAuditSource = StockAuditSourceEnum.OrderTransaction,
-                                                   TransactionNumber = t.InvoiceNo,
-                                                   ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
-                                                   ModifiedDate = tj.DateCreated
-                                                 }).ToListAsync();
-
-
-      productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
-
-      if (stockAuditSource != StockAuditSourceEnum.None)
+      if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
       {
-        productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.StockAuditSource == stockAuditSource).ToList();
-      }
+        var productStockAuditItemsFromRepo = await (from ps in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                                                    join pa in _beelinaRepository.ClientDbContext.ProductStockAudits
 
-      if (!string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate))
-      {
-        fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
-        toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                                                    on new { Id = ps.Id } equals new { Id = pa.ProductStockPerPanelId }
+                                                    into productStockAuditJoin
+                                                    from pa in productStockAuditJoin.DefaultIfEmpty()
 
-        if (!String.IsNullOrEmpty(fromDate))
+                                                    join u in _beelinaRepository.ClientDbContext.UserAccounts
+                                                    on pa.CreatedById equals u.Id
+
+                                                    where
+                                                      ps.ProductId == productId
+                                                      && ps.UserAccountId == userAccountId
+                                                      && pa.IsActive
+                                                      && !pa.IsDelete
+
+                                                    select new ProductStockAuditItem
+                                                    {
+                                                      Id = pa.Id,
+                                                      Quantity = pa.Quantity,
+                                                      StockAuditSource = pa.StockAuditSource,
+                                                      TransactionNumber = pa.WithdrawalSlipNo,
+                                                      ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
+                                                      ModifiedDate = pa.DateCreated
+                                                    }).ToListAsync();
+
+        var productTransactionsAuditItems = await (from t in _beelinaRepository.ClientDbContext.Transactions
+                                                   join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+
+                                                   on new { Id = t.Id } equals new { Id = pt.TransactionId }
+                                                   into transactionJoin
+                                                   from tj in transactionJoin.DefaultIfEmpty()
+
+                                                   join u in _beelinaRepository.ClientDbContext.UserAccounts
+                                                   on t.CreatedById equals u.Id
+
+                                                   where
+                                                     t.CreatedById == userAccountId
+                                                     && t.Status == Enums.TransactionStatusEnum.Confirmed
+                                                     && tj.ProductId == productId
+                                                     && t.IsActive
+                                                     && !t.IsDelete
+
+                                                   select new ProductStockAuditItem
+                                                   {
+                                                     Id = t.Id,
+                                                     Quantity = -tj.Quantity,
+                                                     StockAuditSource = StockAuditSourceEnum.OrderTransaction,
+                                                     TransactionNumber = t.InvoiceNo,
+                                                     ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
+                                                     ModifiedDate = tj.DateCreated
+                                                   }).ToListAsync();
+
+
+        productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
+
+        if (stockAuditSource != StockAuditSourceEnum.None)
         {
-          productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.ModifiedDate >= Convert.ToDateTime(fromDate)).ToList();
+          productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.StockAuditSource == stockAuditSource).ToList();
         }
 
-        if (!String.IsNullOrEmpty(toDate))
+        if (!string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate))
         {
-          productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.ModifiedDate <= Convert.ToDateTime(toDate)).ToList();
-        }
-      }
+          fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+          toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
 
-      return productStockAuditItemsFromRepo;
+          if (!String.IsNullOrEmpty(fromDate))
+          {
+            productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.ModifiedDate >= Convert.ToDateTime(fromDate)).ToList();
+          }
+
+          if (!String.IsNullOrEmpty(toDate))
+          {
+            productStockAuditItemsFromRepo = productStockAuditItemsFromRepo.Where(t => t.ModifiedDate <= Convert.ToDateTime(toDate)).ToList();
+          }
+        }
+
+        return productStockAuditItemsFromRepo;
+      }
+      else
+      {
+        return await GetWarehouseProductStockAuditItems(productId, 1, stockAuditSource, fromDate, toDate);
+      }
     }
 
     public async Task<ProductStockAudit> GetProductStockAudit(int productStockAuditId)
@@ -960,6 +1109,122 @@ namespace Beelina.LIB.BusinessLogic
           WarehouseId = warehouseId
         };
         await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(sourceProductStockAudit);
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+      }
+      catch
+      {
+        // Rollback the transaction if any operation fails
+        await transaction.RollbackAsync(cancellationToken);
+        throw;
+      }
+
+      return sourceProductFromRepo[0];
+    }
+
+    public async Task<Product> TransferWarehouseProductStockFromOwnInventory(
+      int userAccountId,
+      int warehouseId,
+      int sourceProductId,
+      int destinationProductId,
+      int destinationProductNumberOfUnits,
+      int sourceProductNumberOfUnits,
+      int sourceNumberOfUnitsTransfered,
+      TransferProductStockTypeEnum transferProductStockType,
+      CancellationToken cancellationToken)
+    {
+      SetCurrentUserId(userAccountId);
+
+      var sourceProductFromRepo = await GetWarehouseProducts(warehouseId, sourceProductId, "", cancellationToken);
+      var destinationProductFromRepo = await GetWarehouseProducts(warehouseId, destinationProductId, "", cancellationToken);
+
+      if (!sourceProductFromRepo[0].IsTransferable) return sourceProductFromRepo[0];
+
+      using var transaction = _beelinaRepository.ClientDbContext.Database.BeginTransaction();
+      try
+      {
+        var sourceProductStockPerPanel = await _productStockPerWarehouseRepository.GetProductStockPerWarehouse(sourceProductId, warehouseId);
+        var destinationProductStockPerWarehouse = await _productStockPerWarehouseRepository.GetProductStockPerWarehouse(destinationProductId, warehouseId);
+        var destinationNumberOfUnitsReceived = 0;
+        var productNumberOfUnits = 0;
+        var productId = 0;
+
+        // Identify which type of transfer stock.
+        if (transferProductStockType == TransferProductStockTypeEnum.BulkToPiece)
+        {
+          destinationNumberOfUnitsReceived = sourceProductNumberOfUnits * sourceNumberOfUnitsTransfered;
+          productNumberOfUnits = sourceProductNumberOfUnits;
+          productId = sourceProductFromRepo[0].Id;
+        }
+        else
+        {
+          destinationNumberOfUnitsReceived = sourceNumberOfUnitsTransfered / destinationProductNumberOfUnits;
+          productNumberOfUnits = destinationProductNumberOfUnits;
+          productId = destinationProductFromRepo[0].Id;
+        }
+
+        // Part 1 - Make sure to update the source product
+        var productFromRepo = await _beelinaRepository
+                              .ClientDbContext
+                              .Products
+                              .Where(p => p.Id == productId)
+                              .FirstOrDefaultAsync();
+        productFromRepo.NumberOfUnits = productNumberOfUnits;
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+
+        // Part 2 - Insert audit entry for the destination product
+        if (destinationProductStockPerWarehouse != null && destinationProductStockPerWarehouse.Id > 0)
+        {
+          var destinationProductStockAudit = new ProductStockWarehouseAudit
+          {
+            ProductStockPerWarehouseId = destinationProductStockPerWarehouse.Id,
+            Quantity = destinationNumberOfUnitsReceived,
+            StockAuditSource = StockAuditSourceEnum.MovedFromOtherProductInventory,
+            SourceProductStockPerWarehouseId = sourceProductStockPerPanel.Id,
+            SourceProductNumberOfUnits = sourceProductNumberOfUnits,
+            TransferProductStockType = transferProductStockType,
+            PurchaseOrderNumber = String.Empty,
+          };
+          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(destinationProductStockAudit);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        }
+        else
+        {
+          destinationProductStockPerWarehouse = new ProductStockPerWarehouse
+          {
+            ProductId = destinationProductId,
+            WarehouseId = warehouseId,
+            PricePerUnit = destinationProductFromRepo[0].PricePerUnit
+          };
+
+          await _beelinaRepository.ClientDbContext.ProductStockPerWarehouse.AddAsync(destinationProductStockPerWarehouse);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+
+          var destinationProductStockAudit = new ProductStockWarehouseAudit
+          {
+            ProductStockPerWarehouseId = destinationProductStockPerWarehouse.Id,
+            Quantity = destinationNumberOfUnitsReceived,
+            StockAuditSource = StockAuditSourceEnum.MovedFromOtherProductInventory,
+            SourceProductStockPerWarehouseId = sourceProductStockPerPanel.Id,
+            SourceProductNumberOfUnits = sourceProductNumberOfUnits,
+            TransferProductStockType = transferProductStockType,
+            PurchaseOrderNumber = String.Empty,
+          };
+          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(destinationProductStockAudit);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        }
+
+        // Part 3 - Insert audit entry for the source product
+        var sourceProductStockAudit = new ProductStockWarehouseAudit
+        {
+          ProductStockPerWarehouseId = sourceProductStockPerPanel.Id,
+          Quantity = -sourceNumberOfUnitsTransfered,
+          StockAuditSource = StockAuditSourceEnum.MovedToOtherProductInventory,
+          DestinationProductStockPerWarehouseId = destinationProductStockPerWarehouse.Id,
+          TransferProductStockType = transferProductStockType,
+          PurchaseOrderNumber = String.Empty,
+        };
+        await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(sourceProductStockAudit);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
       }
