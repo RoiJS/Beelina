@@ -2,6 +2,7 @@
 {
     public static class BeelinaClaimTypes
     {
+        public const string AppSecretToken = "appSecretToken";
         public const string FirstName = "firstName";
         public const string MiddleName = "middleName";
         public const string LastName = "lastName";

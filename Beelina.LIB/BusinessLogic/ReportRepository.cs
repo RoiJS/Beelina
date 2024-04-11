@@ -50,14 +50,26 @@ namespace Beelina.LIB.BusinessLogic
                 )
                 .FirstOrDefaultAsync();
 
-            var reportsFromRepo = await _beelinaRepository.SystemDbContext.Reports
-                                    .Where(r =>
-                                    r.ModuleId == ModulesEnum.Retail
-                                    && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
-                                    && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
-                                    && r.IsActive
-                                    && !r.IsDelete
-                                ).ToListAsync();
+            var tenantId = await _beelinaRepository.SystemDbContext.Clients
+                        .Where(c => c.DBHashName == _currentUserService.AppSecretToken)
+                        .Select(c => c.Id)
+                        .FirstOrDefaultAsync();
+
+            var reportsFromRepo = await (from r in _beelinaRepository.SystemDbContext.Reports
+                                         join rc in _beelinaRepository.SystemDbContext.ReportCustomerCustoms
+                                         on new { Id = r.Id } equals new { Id = rc.ReportId }
+
+                                         into reportCustomJoin
+                                         from rc in reportCustomJoin.DefaultIfEmpty()
+
+                                         where
+                                           (!r.Custom || (r.Custom && rc.ClientId == tenantId && rc != null))
+                                           && r.ModuleId == ModulesEnum.Retail
+                                           && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
+                                           && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
+                                           && r.IsActive
+                                           && !r.IsDelete
+                                         select r).ToListAsync();
 
             return reportsFromRepo;
         }

@@ -82,13 +82,6 @@ export class SidedrawerService {
         maximumPermissionLevel: userPermissionLevel,
       },
       {
-        name: 'MAIN_MENU.REPORTS',
-        url: '/reports',
-        icon: 'bar_chart',
-        minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: managerPermissionLevel,
-      },
-      {
         name: 'MAIN_MENU.DASHBOARD',
         url: '/dashboard',
         icon: 'bar_chart',
@@ -100,6 +93,13 @@ export class SidedrawerService {
         url: '/warehouse-products',
         icon: 'add_shopping_cart',
         minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+      },
+      {
+        name: 'MAIN_MENU.REPORTS',
+        url: '/reports',
+        icon: 'bar_chart',
+        minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
       },
       // {
