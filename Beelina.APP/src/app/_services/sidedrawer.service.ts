@@ -109,14 +109,14 @@ export class SidedrawerService {
       //   minimumPermissionLevel: administratorPermissionLevel,
       //   maximumPermissionLevel: administratorPermissionLevel,
       // },
-      {
-        name: 'MAIN_MENU.MANUAL',
-        url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
-        icon: 'error_outline',
-        isExternalUrl: true,
-        minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: managerPermissionLevel,
-      },
+      // {
+      //   name: 'MAIN_MENU.MANUAL',
+      //   url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
+      //   icon: 'error_outline',
+      //   isExternalUrl: true,
+      //   minimumPermissionLevel: userPermissionLevel,
+      //   maximumPermissionLevel: managerPermissionLevel,
+      // },
       {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',

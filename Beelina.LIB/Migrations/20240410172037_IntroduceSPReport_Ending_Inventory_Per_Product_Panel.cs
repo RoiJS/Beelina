@@ -19,6 +19,7 @@ CREATE OR ALTER PROCEDURE [dbo].[Report_Ending_Inventory_Per_Product_Panel]
 	, @endDate VARCHAR(10) = NULL
 	, @userId INT = 0
 	, @warehouseId INT = 1
+	, @businessModel INT = 1
 AS
 BEGIN
 	
@@ -29,7 +30,7 @@ BEGIN
 			, ot.[Name]
 			, SUM(ot.SoldQuantity) AS SoldQuantity
 		FROM
-			dbo.TVF_OrderTransactions(@userId, @warehouseId) ot
+			dbo.TVF_OrderTransactions(@userId, @warehouseId, @businessModel) ot
 		WHERE
 			TransactionDate < CONVERT(DATE, @startDate) 
 		GROUP BY
@@ -78,7 +79,7 @@ BEGIN
 			, ot.[Name]
 			, SUM(ot.SoldQuantity) AS SoldQuantity
 		FROM
-			dbo.TVF_OrderTransactions(@userId, @warehouseId) ot
+			dbo.TVF_OrderTransactions(@userId, @warehouseId, @businessModel) ot
 		WHERE
 			TransactionDate BETWEEN @startDate AND @endDate
 		GROUP BY

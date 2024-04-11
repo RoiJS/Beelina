@@ -6,6 +6,6 @@ namespace Beelina.LIB.Interfaces
     public interface IGeneralSettingRepository<TEntity>
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
-        
+        Task<GeneralSetting> GetGeneralSettings();
     }
 }

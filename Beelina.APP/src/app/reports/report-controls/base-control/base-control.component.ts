@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class BaseControlComponent implements OnInit {
   protected controlLabelIdentifier: string;
+  protected hide: boolean;
 
   constructor(protected translateService: TranslateService) {}
 
@@ -23,6 +24,10 @@ export class BaseControlComponent implements OnInit {
 
   setControlLabelIdentifier(controlLabelIdentifier: string) {
     this.controlLabelIdentifier = controlLabelIdentifier;
+  }
+
+  setControlVisibility(show: boolean) {
+    this.hide = !show;
   }
 
   get controLabel(): string {

@@ -34,13 +34,14 @@ migrationBuilder.Sql(@"
 -- Modified Date: 2024-04-11
 -- Description: Introduce ending inventory data from Warehouse
 -- =============================================
--- EXEC Report_Ending_Inventory_Per_Product @startDate = '2023-12-01', @endDate = '2024-12-29', @userId = 5, @warehouseId = 1
+-- EXEC Report_Ending_Inventory_Per_Product @startDate = '2024-04-01', @endDate = '2024-04-13', @userId = 5, @warehouseId = 1
 
 ALTER PROCEDURE [dbo].[Report_Ending_Inventory_Per_Product]
 	@startDate VARCHAR(10) = NULL
 	, @endDate VARCHAR(10) = NULL
-	, @userId INT = 0
+	, @salesAgentId INT = 0
 	, @warehouseId INT = 1
+	, @userId INT = 0
 AS
 BEGIN
 
@@ -48,12 +49,7 @@ BEGIN
 	DECLARE @businessModel AS INT
 
 	SET @businessModel = COALESCE((SELECT BusinessModel FROM GeneralSettings), 1)
-
-	-- Set user id = 0 when business model is Warehouse Monitoring
-	IF @businessModel = 2
-		SET @userId = 0
-
-	SET @salesAgentName = COALESCE((SELECT CONCAT(u.FirstName, ' ', u.LastName) FROM UserAccounts u WHERE Id = @userId), '')
+	SET @salesAgentName = COALESCE((SELECT CONCAT(u.FirstName, ' ', u.LastName) FROM UserAccounts u WHERE Id = @salesAgentId), '')
 
     -- (1) Report Header
 	SELECT
@@ -63,9 +59,9 @@ BEGIN
 	
 	-- (2) Report Data
 	IF @businessModel = 1 
-		EXEC Report_Ending_Inventory_Per_Product_Panel @startDate, @endDate, @userId, @warehouseId
+		EXEC Report_Ending_Inventory_Per_Product_Panel @startDate, @endDate, @salesAgentId, @warehouseId, @businessModel
 	ELSE
-		EXEC Report_Ending_Inventory_Per_Product_Warehouse @startDate, @endDate, @userId, @warehouseId
+		EXEC Report_Ending_Inventory_Per_Product_Warehouse @startDate, @endDate, @salesAgentId, @warehouseId, @businessModel
 
 END
 GO

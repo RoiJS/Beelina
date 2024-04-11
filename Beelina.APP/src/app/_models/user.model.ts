@@ -1,3 +1,4 @@
+import { BusinessModelEnum } from '../_enum/business-model.enum';
 import { GenderEnum } from '../_enum/gender.enum';
 import { ModuleEnum } from '../_enum/module.enum';
 import {
@@ -16,6 +17,7 @@ export class User {
   public password: string;
   public gender: GenderEnum;
   public emailAddress: string;
+  public businessModel: BusinessModelEnum;
   public credentials: UserCredentials;
   public userPermissions: UserModulePermission[];
 

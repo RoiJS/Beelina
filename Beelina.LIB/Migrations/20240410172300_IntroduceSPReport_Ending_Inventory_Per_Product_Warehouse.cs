@@ -14,14 +14,17 @@ migrationBuilder.Sql(@"
 -- Create date: 2024-04-11
 -- Description:	Ending inventory data from warehouse
 -- =============================================
-CREATE OR ALTER PROCEDURE [dbo].[Report_Ending_Inventory_Per_Product_Warehouse]
+CREATE OR ALTER   PROCEDURE [dbo].[Report_Ending_Inventory_Per_Product_Warehouse]
 	@startDate VARCHAR(10) = NULL
 	, @endDate VARCHAR(10) = NULL
 	, @userId INT = 0
 	, @warehouseId INT = 1
+	, @businessModel INT = 1
 AS
 BEGIN
 	
+	DECLARE @panelPrivileges AS INT = (SELECT PermissionLevel FROM UserPermission WHERE UserAccountId = @userId)
+
 	;WITH PreviousOrderTransactionsPerProduct AS (
 		SELECT 
 			ot.ProductId
@@ -29,7 +32,7 @@ BEGIN
 			, ot.[Name]
 			, SUM(ot.SoldQuantity) AS SoldQuantity
 		FROM
-			dbo.TVF_OrderTransactions(@userId, @warehouseId) ot
+			dbo.TVF_OrderTransactions(@userId, @warehouseId, @businessModel) ot
 		WHERE
 			TransactionDate < CONVERT(DATE, @startDate) 
 		GROUP BY
@@ -78,7 +81,7 @@ BEGIN
 			, ot.[Name]
 			, SUM(ot.SoldQuantity) AS SoldQuantity
 		FROM
-			dbo.TVF_OrderTransactions(@userId, @warehouseId) ot
+			dbo.TVF_OrderTransactions(@userId, @warehouseId, @businessModel) ot
 		WHERE
 			TransactionDate BETWEEN @startDate AND @endDate
 		GROUP BY
@@ -128,9 +131,9 @@ BEGIN
 			, p.[Name]
 			, pu.[Name] AS UnitName
 			, (COALESCE(pp.RemainingStock, 0) + COALESCE(c.Stock, 0)) AS BeginningStocks
-			, (COALESCE(pp.RemainingStock, 0) + COALESCE(c.Stock, 0)) * COALESCE(ps.PricePerUnit, 0) AS BeginningStocksValue
+			, (COALESCE(pp.RemainingStock, 0) + COALESCE(c.Stock, 0)) * COALESCE((CASE WHEN @panelPrivileges > 1 THEN pw.PricePerUnit ELSE ps.PricePerUnit END), 0) AS BeginningStocksValue
 			, (COALESCE(pp.RemainingStock, 0) + COALESCE(c.Stock, 0) - COALESCE(cp.SoldQuantity, 0)) AS EndingStocks
-			, (COALESCE(pp.RemainingStock, 0) + COALESCE(c.Stock, 0) - COALESCE(cp.SoldQuantity, 0)) * COALESCE(ps.PricePerUnit, 0) AS EndingStocksValue
+			, (COALESCE(pp.RemainingStock, 0) + COALESCE(c.Stock, 0) - COALESCE(cp.SoldQuantity, 0)) * COALESCE((CASE WHEN @panelPrivileges > 1 THEN pw.PricePerUnit ELSE ps.PricePerUnit END), 0) AS EndingStocksValue
 			--, pp.PricePerUnit
 			--, pp.RemainingStock
 			--, c.Stock
@@ -140,8 +143,11 @@ BEGIN
 
 			Products p
 
-			LEFT JOIN ProductStockPerWarehouse ps
-			ON p.Id = ps.ProductId
+			LEFT JOIN ProductStockPerPanels ps
+			ON p.Id = ps.ProductId AND ps.UserAccountId = @userId
+
+			LEFT JOIN ProductStockPerWarehouse pw
+			ON p.Id = pw.ProductId
 
 			LEFT JOIN CurrentAbsoluteWarehouseStocksPerProduct c
 			ON p.Id = c.ProductId 
@@ -172,10 +178,8 @@ BEGIN
 		EndingStocksPerWarehouseProductReport ep
 	WHERE
 		ep.BeginningStocks <> 0 and ep.EndingStocks <> 0
-
 END	
-GO
-");
+GO");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

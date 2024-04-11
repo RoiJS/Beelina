@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations.BeelinaData
 {
     [DbContext(typeof(BeelinaDataContext))]
-    partial class BeelinaDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240411143242_IntroduceColumnsOnlyAvailableOnBusinessModelForMinimumPrivilegeAndOnlyAvailableOnBusinessModelOnTableReportControlsRelation")]
+    partial class IntroduceColumnsOnlyAvailableOnBusinessModelForMinimumPrivilegeAndOnlyAvailableOnBusinessModelOnTableReportControlsRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,9 +204,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.Property<string>("NameTextIdentifier")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("OnlyAvailableOnBusinessModel")
-                        .HasColumnType("int");
 
                     b.Property<string>("ReportClass")
                         .HasColumnType("nvarchar(max)");

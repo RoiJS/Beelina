@@ -17,6 +17,10 @@ import { BaseControlComponent } from '../report-controls/base-control/base-contr
 import { componentsRegistry } from '../report-controls/components-registry';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { AuthService } from 'src/app/_services/auth.service';
+import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { getBusinessModelEnum } from 'src/app/_enum/business-model.enum';
+import { getPermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
 
 @Component({
   selector: 'app-report-details',
@@ -40,6 +44,7 @@ export class ReportDetailsComponent
   private _loadingLabel: string;
 
   constructor(
+    private authService: AuthService,
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
     private notificationService: NotificationService,
@@ -68,13 +73,20 @@ export class ReportDetailsComponent
             `REPORTS_PAGE.REPORTS_INFORMATION.${report.descriptionTextIdentifier}`
           );
 
-          this._reportInformation.reportControlsRelations.forEach(
+          this._reportInformation.reportControlsRelations.sort((a, b) => { if (a.order > b.order) return 1; else return -1; }).forEach(
             (relation: ReportControlsRelation) => {
               const componentName = `${relation.reportControl.name}Control`;
               const componentId = relation.reportControlId;
               const controlLabelIdentifier =
                 relation.reportControl.labelIdentifier;
-              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier);
+
+              const userPrivileges = this.authService.user.value.getModulePrivilege(ModuleEnum.Retail);
+              const businessModel = this.authService.businessModel;
+
+              const show = (!relation.onlyAvailableOnBusinessModel && !relation.onlyAvailableOnBusinessModelForMinimumPrivilege) || (businessModel === getBusinessModelEnum(relation.onlyAvailableOnBusinessModel?.toString())
+                && userPrivileges >= getPermissionLevelEnum(relation.onlyAvailableOnBusinessModelForMinimumPrivilege));
+
+              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show);
             }
           );
         });
@@ -91,7 +103,8 @@ export class ReportDetailsComponent
   private attachComponentDynamically(
     id: number,
     componentName: string,
-    controlLabelIdentifier: string
+    controlLabelIdentifier: string,
+    show: boolean
   ) {
     // Attach the component to the ViewContainerRef
     const componentRef = this.container.createComponent(
@@ -99,6 +112,7 @@ export class ReportDetailsComponent
     );
     const componentRefInstance = componentRef.instance as BaseControlComponent;
     componentRefInstance.setControlLabelIdentifier(controlLabelIdentifier);
+    componentRefInstance.setControlVisibility(show);
 
     this.controlComponents.push({
       id: id,

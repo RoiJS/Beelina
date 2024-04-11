@@ -1,5 +1,6 @@
 ﻿using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Beelina.LIB.BusinessLogic
 {
@@ -10,6 +11,11 @@ namespace Beelina.LIB.BusinessLogic
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
 
+        }
+
+        public async Task<GeneralSetting> GetGeneralSettings()
+        {
+            return await _beelinaRepository.ClientDbContext.GeneralSettings.FirstOrDefaultAsync();
         }
     }
 }

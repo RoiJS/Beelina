@@ -11,5 +11,6 @@
         public const string EmailAddress = "emailAddress";
         public const string RetailModulePrivilege = "retailModulePrivilege";
         public const string DateCreated = "dateCreated";
+        public const string BusinessModel = "businessModel";
     }
 }

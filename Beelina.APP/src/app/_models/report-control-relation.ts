@@ -1,3 +1,5 @@
+import { BusinessModelEnum } from '../_enum/business-model.enum';
+import { PermissionLevelEnum } from '../_enum/permission-level.enum';
 import { ReportControl } from './report-control';
 
 export class ReportControlsRelation {
@@ -5,6 +7,9 @@ export class ReportControlsRelation {
   reportControlId: number;
   order: number;
   defaultValue: string;
+  onlyAvailableOnBusinessModel: BusinessModelEnum;
+  onlyAvailableOnBusinessModelForMinimumPrivilege: PermissionLevelEnum;
+
   reportControl: ReportControl;
 
   constructor() {

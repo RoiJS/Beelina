@@ -3,12 +3,12 @@
 /*#region SIDENAV BAR */
 .sidenav-header {
   width: 100%;
-  height: 250px;
+  height: 300px;
   background: $primary-gradient;
   display: flex;
   justify-content: space-around;
   flex-direction: column;
-
+  overflow: hidden;
   img {
     width: 100%;
     height: auto;

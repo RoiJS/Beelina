@@ -80,6 +80,7 @@ namespace Beelina.API.Types.Mutations
             [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IUserAccountRepository<UserAccount> userAccountRepository,
             [Service] IGeneralInformationRepository<GeneralInformation> generalInformationRepository,
+            [Service] IGeneralSettingRepository<GeneralSetting> generalSettingRepository,
             [Service] IOptions<ApplicationSettings> appSettings,
             LoginInput loginInput)
         {
@@ -93,8 +94,9 @@ namespace Beelina.API.Types.Mutations
             if (generalInformation.SystemUpdateStatus)
                 throw new SystemUpdateActiveException();
 
+            var generalSetting = await generalSettingRepository.GetGeneralSettings();
             var appSecretToken = httpContextAccessor.HttpContext.Request.Headers["App-Secret-Token"].ToString();
-            var accessToken = GenerateAccessToken(appSettings, userFromRepo, appSecretToken);
+            var accessToken = GenerateAccessToken(appSettings, generalSetting, userFromRepo, appSecretToken);
             var refreshToken = userAccountRepository.GenerateNewRefreshToken();
 
             userFromRepo.RefreshTokens.Add(refreshToken);
@@ -118,6 +120,7 @@ namespace Beelina.API.Types.Mutations
             [Service] IOptions<ApplicationSettings> appSettings,
             [Service] IUserAccountRepository<UserAccount> userAccountRepository,
             [Service] IRefreshTokenRepository<RefreshToken> refreshTokenRepository,
+            [Service] IGeneralSettingRepository<GeneralSetting> generalSettingRepository,
             RefreshAccountInput refreshAccountInput)
         {
             var userId = GetUserIdFromAccessToken(appSettings, refreshAccountInput.AccessToken);
@@ -139,9 +142,10 @@ namespace Beelina.API.Types.Mutations
             {
                 throw new InvalidRefreshTokenException();
             }
-
+            
+            var generalSetting = await generalSettingRepository.GetGeneralSettings();
             var appSecretToken = httpContextAccessor.HttpContext.Request.Headers["App-Secret-Token"].ToString();
-            var newAccessToken = GenerateAccessToken(appSettings, userFromRepo, appSecretToken);
+            var newAccessToken = GenerateAccessToken(appSettings, generalSetting, userFromRepo, appSecretToken);
             var userRefreshTokenFromRepo = await refreshTokenRepository.GetRefreshToken(refreshAccountInput.RefreshToken);
             var newRefreshToken = userAccountRepository.GenerateNewRefreshToken();
 
@@ -160,7 +164,7 @@ namespace Beelina.API.Types.Mutations
             };
         }
 
-        private string GenerateAccessToken(IOptions<ApplicationSettings> appSettings, UserAccount user, string appSecretToken)
+        private string GenerateAccessToken(IOptions<ApplicationSettings> appSettings, GeneralSetting generalSetting, UserAccount user, string appSecretToken)
         {
             var retailModulePrivilege = user.UserPermissions.Where(u => u.ModuleId == ModulesEnum.Retail).FirstOrDefault();
 
@@ -174,6 +178,7 @@ namespace Beelina.API.Types.Mutations
                 new (BeelinaClaimTypes.Gender, ((int)user.Gender).ToString()),
                 new (BeelinaClaimTypes.Username, user.Username),
                 new (BeelinaClaimTypes.EmailAddress, user.EmailAddress),
+                new (BeelinaClaimTypes.BusinessModel, ((int)generalSetting.BusinessModel).ToString()),
             };
 
             if (retailModulePrivilege is not null)

@@ -41,6 +41,11 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<IList<Report>> GetAllReports()
         {
+            var generalSetting = await _beelinaRepository
+                                  .ClientDbContext
+                                  .GeneralSettings
+                                  .FirstOrDefaultAsync();
+
             var userRetailModulePermission = await _beelinaRepository
                 .ClientDbContext
                 .UserPermission
@@ -64,6 +69,7 @@ namespace Beelina.LIB.BusinessLogic
 
                                          where
                                            (!r.Custom || (r.Custom && rc.ClientId == tenantId && rc != null))
+                                           &&  ((r.OnlyAvailableOnBusinessModel == null) || (r.OnlyAvailableOnBusinessModel != null && r.OnlyAvailableOnBusinessModel == generalSetting.BusinessModel))
                                            && r.ModuleId == ModulesEnum.Retail
                                            && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
                                            && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel

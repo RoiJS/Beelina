@@ -93,67 +93,68 @@ namespace Beelina.LIB.BusinessLogic
 
       try
       {
-        if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
-        {
-          var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Retail);
 
-          // Gather products information with product stock per panel and product unit.
-          // Only gets the products that the user has permission to see.
-          var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
-                                        join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+        var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Retail);
 
-                                        on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
-                                        into productStockJoin
-                                        from pp in productStockJoin.DefaultIfEmpty()
+        // Gather products information with product stock per panel and product unit.
+        // Only gets the products that the user has permission to see.
+        var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
+                                      join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
 
-                                        join pu in _beelinaRepository.ClientDbContext.ProductUnits
-                                            on p.ProductUnitId equals pu.Id
-                                            into productUnitJoin
-                                        from pu in productUnitJoin.DefaultIfEmpty()
+                                      on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
+                                      into productStockJoin
+                                      from pp in productStockJoin.DefaultIfEmpty()
 
-                                        where
-                                          !p.IsDelete
-                                          && p.IsActive
-                                          && ((productId > 0 && p.Id == productId) || productId == 0)
-                                          && (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Manager ||
-                                            ((userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User || userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Administrator) && pp != null))
+                                      join pu in _beelinaRepository.ClientDbContext.ProductUnits
+                                          on p.ProductUnitId equals pu.Id
+                                          into productUnitJoin
+                                      from pu in productUnitJoin.DefaultIfEmpty()
+
+                                      where
+                                        !p.IsDelete
+                                        && p.IsActive
+                                        && ((productId > 0 && p.Id == productId) || productId == 0)
+                                        && (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Manager ||
+                                          ((userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User || userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Administrator) && pp != null))
+
+                                      select new
+                                      {
+                                        Id = p.Id,
+                                        ProductPerPanelId = (pp == null ? 0 : pp.Id),
+                                        IsLinkedToSalesAgent = (pp != null),
+                                        Name = p.Name,
+                                        Code = p.Code,
+                                        IsTransferable = p.IsTransferable,
+                                        NumberOfUnits = p.NumberOfUnits,
+                                        Description = p.Description,
+                                        PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
+                                        ProductUnitId = p.ProductUnitId,
+                                        ProductUnit = pu
+                                      }).ToListAsync(cancellationToken);
+
+        var filteredProductsFromRepo = (from p in productsFromRepo
+                                        where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
 
                                         select new
                                         {
                                           Id = p.Id,
-                                          ProductPerPanelId = (pp == null ? 0 : pp.Id),
-                                          IsLinkedToSalesAgent = (pp != null),
+                                          ProductPerPanelId = p.ProductPerPanelId,
+                                          IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
                                           Name = p.Name,
                                           Code = p.Code,
+                                          SearchResultPercentage = p.Name.CalculatePrecision(filterKeyWord) + p.Code.CalculatePrecision(filterKeyWord),
                                           IsTransferable = p.IsTransferable,
                                           NumberOfUnits = p.NumberOfUnits,
                                           Description = p.Description,
-                                          PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
+                                          PricePerUnit = p.PricePerUnit,
                                           ProductUnitId = p.ProductUnitId,
-                                          ProductUnit = pu
-                                        }).ToListAsync(cancellationToken);
+                                          ProductUnit = p.ProductUnit,
+                                        })
+                                        .OrderByDescending(p => p.SearchResultPercentage)
+                                        .ToList();
 
-          var filteredProductsFromRepo = (from p in productsFromRepo
-                                          where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
-
-                                          select new
-                                          {
-                                            Id = p.Id,
-                                            ProductPerPanelId = p.ProductPerPanelId,
-                                            IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
-                                            Name = p.Name,
-                                            Code = p.Code,
-                                            SearchResultPercentage = p.Name.CalculatePrecision(filterKeyWord) + p.Code.CalculatePrecision(filterKeyWord),
-                                            IsTransferable = p.IsTransferable,
-                                            NumberOfUnits = p.NumberOfUnits,
-                                            Description = p.Description,
-                                            PricePerUnit = p.PricePerUnit,
-                                            ProductUnitId = p.ProductUnitId,
-                                            ProductUnit = p.ProductUnit,
-                                          })
-                                          .OrderByDescending(p => p.SearchResultPercentage)
-                                          .ToList();
-
+        if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
+        {
           // Gather products absolute stock quantity based on the stock audit records.
           var productStockAudits = await (from ps in _beelinaRepository.ClientDbContext.ProductStockAudits
 
@@ -242,7 +243,26 @@ namespace Beelina.LIB.BusinessLogic
         }
         else
         {
-          return await GetWarehouseProducts(1, productId, filterKeyWord, cancellationToken);
+          var warehouseProducts = await GetWarehouseProducts(1, productId, filterKeyWord, cancellationToken);
+          finalProductsFromRepo = (from p in filteredProductsFromRepo
+                                         join wp in warehouseProducts
+                                         on p.Id equals wp.Id
+
+                                         select new Product
+                                         {
+                                           Id = p.Id,
+                                           Name = p.Name,
+                                           Code = p.Code,
+                                           IsTransferable = p.IsTransferable,
+                                           NumberOfUnits = p.NumberOfUnits,
+                                           Description = p.Description,
+                                           PricePerUnit = p.PricePerUnit,
+                                           ProductUnitId = p.ProductUnitId,
+                                           ProductUnit = p.ProductUnit,
+                                           StockQuantity = wp.StockQuantity,
+                                           IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                         })
+                                        .ToList();
         }
       }
       catch (TaskCanceledException ex)

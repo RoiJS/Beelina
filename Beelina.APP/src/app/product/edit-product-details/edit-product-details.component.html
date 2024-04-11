@@ -50,7 +50,8 @@
               "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
               | translate
               }}: <span class="stock-quantity-value">{{ productForm.get("stockQuantity").value }}</span></label>
-            <button mat-raised-button color="primary" (click)="editStockQuantity()"> {{ "GENERAL_TEXTS.EDIT" | translate
+            <button *ngIf="businessModel === 1" mat-raised-button color="primary" (click)="editStockQuantity()"> {{
+              "GENERAL_TEXTS.EDIT" | translate
               }}</button>
           </div>
           <mat-form-field appearance="fill">

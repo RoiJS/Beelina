@@ -1,4 +1,4 @@
-<div [formGroup]="form">
+<div [ngClass]="{ 'no-display': hide }" [formGroup]="form">
   <mat-form-field appearance="fill">
     <mat-label>{{ controLabel }}:</mat-label>
     <mat-select formControlName="salesAgent">
