@@ -23,13 +23,15 @@ import { OfflineComponent } from './offline/offline.component';
 import { SystemUpdateComponent } from './system-update/system-update.component';
 
 import { AuthGuard } from './_guards/auth.guard';
+import { AdminGuard } from './_guards/admin.guard';
+import { AccessGuard } from './_guards/access.guard';
+
 import { translateLoaderFactory } from './_loaders/translate.loader';
 
 import { environment } from '../environments/environment';
 import { ErrorInteceptorProvider } from './_services/error.interceptor.service';
 import { SecretKeyInterceptorProvider } from './_services/secret-key.interceptor.service';
 import { TemplatePageTitleStrategyService } from './_services/title-strategy.service';
-import { AdminGuard } from './_guards/admin.guard';
 
 @NgModule({
   declarations: [
@@ -73,6 +75,7 @@ import { AdminGuard } from './_guards/admin.guard';
   providers: [
     AuthGuard,
     AdminGuard,
+    AccessGuard,
     SecretKeyInterceptorProvider,
     ErrorInteceptorProvider,
     {
@@ -83,4 +86,4 @@ import { AdminGuard } from './_guards/admin.guard';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

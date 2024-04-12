@@ -8,7 +8,6 @@
   display: flex;
   justify-content: space-around;
   flex-direction: column;
-  overflow: hidden;
   img {
     width: 100%;
     height: auto;
@@ -16,7 +15,7 @@
 }
 
 mat-tree {
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 mat-tree-node[aria-level="1"] {
