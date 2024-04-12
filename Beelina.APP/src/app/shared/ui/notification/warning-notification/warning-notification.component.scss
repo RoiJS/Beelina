@@ -1,5 +1,17 @@
 @import "../../../../../app-variables";
 
+
 ::ng-deep .mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__surface {
-  background-color: $warning;
+  background-color: $warning-bg-color;
 }
+
+::ng-deep .mat-mdc-snack-bar-container.warning-snackbar {
+  border: 3px solid $warning-border-color;
+  border-radius: 5px;
+  color: $alt-text-color;
+}
+
+::ng-deep .mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__label {
+  color: $alt-text-color;
+}
+

@@ -7,88 +7,64 @@
     </div>
 
     <div class="login-form-container">
-      <div class="lock-icon">
-        <mat-icon class="flip-in-ver-left-animation">lock</mat-icon>
-      </div>
-
       <div class="login-form">
-        <form
-          [formGroup]="authForm"
-          (ngSubmit)="onSubmit()"
-          class="form_container"
-        >
-          <div class="title_container">
-            <p class="title">
-              {{ "AUTH_PAGE.MAIN_LABEL" | translate }}
-            </p>
-            <span class="subtitle">{{
-              "AUTH_PAGE.SUB_LABEL" | translate
-            }}</span>
+        <div class="login-form-section">
+          <div class="lock-icon">
+            <mat-icon class="flip-in-ver-left-animation">lock</mat-icon>
           </div>
-          <div class="input_container">
-            <label class="input_label" for="company_field"
-              >{{
+          <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="form_container">
+            <div class="title_container">
+              <p class="title">
+                {{ "AUTH_PAGE.MAIN_LABEL" | translate }}
+              </p>
+              <span class="subtitle">{{
+                "AUTH_PAGE.SUB_LABEL" | translate
+                }}</span>
+            </div>
+            <div class="input_container">
+              <label class="input_label" for="company_field">{{
                 "AUTH_PAGE.AUTH_FORM.COMPANY_FIELD.LABEL" | translate
-              }}:</label
-            >
-            <mat-icon class="icon">work_outline</mat-icon>
-            <input
-              [placeholder]="companyFieldPlaceHolder"
-              name="input-name"
-              type="text"
-              class="input_field"
-              id="company_field"
-              formControlName="company"
-            />
-          </div>
-          <div class="input_container">
-            <label class="input_label" for="username_field"
-              >{{
+                }}:</label>
+              <mat-icon class="icon">work_outline</mat-icon>
+              <input [placeholder]="companyFieldPlaceHolder" name="input-name" type="text" class="input_field"
+                id="company_field" formControlName="company" />
+            </div>
+            <div class="input_container">
+              <label class="input_label" for="username_field">{{
                 "AUTH_PAGE.AUTH_FORM.USERNAME_FIELD.LABEL" | translate
-              }}:</label
-            >
-            <mat-icon class="icon">alternate_email</mat-icon>
-            <input
-              [placeholder]="usernameFieldPlaceHolder"
-              name="input-name"
-              type="text"
-              class="input_field"
-              id="username_field"
-              formControlName="username"
-            />
-          </div>
-          <div class="input_container">
-            <label class="input_label" for="password_field"
-              >{{
+                }}:</label>
+              <mat-icon class="icon">alternate_email</mat-icon>
+              <input [placeholder]="usernameFieldPlaceHolder" name="input-name" type="text" class="input_field"
+                id="username_field" formControlName="username" />
+            </div>
+            <div class="input_container">
+              <label class="input_label" for="password_field">{{
                 "AUTH_PAGE.AUTH_FORM.PASSWORD_FIELD.LABEL" | translate
-              }}:</label
-            >
-            <mat-icon class="icon">vpn_key</mat-icon>
-            <input
-              [placeholder]="passwordFieldPlaceHolder"
-              name="input-name"
-              type="password"
-              class="input_field"
-              id="password_field"
-              formControlName="password"
-            />
-          </div>
+                }}:</label>
+              <mat-icon class="icon">vpn_key</mat-icon>
+              <input [placeholder]="passwordFieldPlaceHolder" name="input-name" type="password" class="input_field"
+                id="password_field" formControlName="password" />
+            </div>
 
-          <div class="login-form-buttons">
-            <button mat-button mat-raised-button color="primary" type="submit">
-              {{ "AUTH_PAGE.AUTH_FORM.LOGIN_BUTTON.LABEL" | translate }}
-            </button>
-          </div>
-        </form>
+            <div class="login-form-buttons">
+              <button mat-button mat-raised-button color="primary" type="submit">
+                {{ "AUTH_PAGE.AUTH_FORM.LOGIN_BUTTON.LABEL" | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="!isHandset" class="login-placeholder-section">
+          <app-placeholder-entities [templateType]="emptyEntityTemplateEnum.LOGIN"
+            [templateSize]="emptyEntityTemplateSizeEnum.MEDIUM"></app-placeholder-entities>
+        </div>
       </div>
     </div>
 
     <div class="login-footer">
       <div class="login-footer-copyright-section">
         <label>{{ appVersion }}</label>
-        <label class="login-footer-copyright-label"
-          ><mat-icon>copyright</mat-icon>{{ copyRightText }}</label
-        >
+        <label class="login-footer-copyright-label"><mat-icon>copyright</mat-icon>{{ copyRightText }}</label>
       </div>
     </div>
   </div>

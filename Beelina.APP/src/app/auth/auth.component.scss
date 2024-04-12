@@ -41,6 +41,7 @@
       background-color: $white;
       border-radius: 100%;
       margin-bottom: -50px;
+      margin-top: -50px;
       z-index: 1;
 
       mat-icon {
@@ -59,14 +60,23 @@
     .login-form {
       align-self: center;
       display: flex;
-      flex-direction: column;
       justify-content: flex-end;
-      width: 25em;
       border-radius: 10px;
       background: $background-gradient;
+      box-shadow: 0px 106px 42px rgba(0, 0, 0, 0.01),
+        0px 59px 36px rgba(0, 0, 0, 0.05), 0px 26px 26px rgba(0, 0, 0, 0.09),
+        0px 7px 15px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1);
 
-      form {
-        padding: 65px 20px 20px;
+      .login-form-section {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .login-placeholder-section {
+        width: 500px;
+        background: $primary-gradient;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
       }
 
       .login-form-buttons {
@@ -88,11 +98,8 @@
       align-items: center;
       justify-content: center;
       gap: 15px;
-      padding: 50px 40px 20px 40px;
-      box-shadow: 0px 106px 42px rgba(0, 0, 0, 0.01),
-        0px 59px 36px rgba(0, 0, 0, 0.05), 0px 26px 26px rgba(0, 0, 0, 0.09),
-        0px 7px 15px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1);
-      border-radius: 11px;
+      padding: 100px 40px 20px 40px;
+     border-radius: 11px;
       font-family: "Inter", sans-serif;
     }
 

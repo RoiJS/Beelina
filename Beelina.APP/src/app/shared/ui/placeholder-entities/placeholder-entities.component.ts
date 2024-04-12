@@ -1,14 +1,18 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PlaceholderEntityTemplateEnum } from 'src/app/_enum/placeholder-entity-template.enum';
-import { TemplateSizeEnum } from '../placeholder-entities/placeholder-entities.component';
+
+export enum TemplateSizeEnum {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
+};
 
 @Component({
-  selector: 'app-list-container',
-  templateUrl: './list-container.component.html',
-  styleUrls: ['./list-container.component.scss'],
+  selector: 'app-placeholder-entities',
+  templateUrl: './placeholder-entities.component.html',
+  styleUrls: ['./placeholder-entities.component.scss'],
 })
-export class ListContainerComponent implements OnInit {
-  @Input() count = 0;
+export class PlaceholderEntitiesComponent implements OnInit {
   @Input() templateType: PlaceholderEntityTemplateEnum;
   @Input() templateSize: TemplateSizeEnum = TemplateSizeEnum.LARGE;
 
