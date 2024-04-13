@@ -9,7 +9,7 @@ namespace Beelina.LIB.Interfaces
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
         Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default);
-        Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default);
+        Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default, List<FilteredProduct> filteredProducts = null);
         Task<Product> UpdateProduct(Product product);
         Task<Product> GetProductByUniqueCode(int productId, string productCode);
         Task<Product> GetProductByCode(string productCode);

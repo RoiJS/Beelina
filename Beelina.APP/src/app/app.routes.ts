@@ -19,7 +19,7 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./product/product.module').then((m) => m.ProductModule),
     canLoad: [AuthGuard],
-    canActivate: [AccessGuard]
+    // canActivate: [AccessGuard]
   },
   {
     path: 'warehouse-products',

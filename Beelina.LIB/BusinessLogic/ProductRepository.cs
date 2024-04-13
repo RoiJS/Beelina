@@ -135,7 +135,7 @@ namespace Beelina.LIB.BusinessLogic
         var filteredProductsFromRepo = (from p in productsFromRepo
                                         where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
 
-                                        select new
+                                        select new FilteredProduct
                                         {
                                           Id = p.Id,
                                           ProductPerPanelId = p.ProductPerPanelId,
@@ -243,25 +243,25 @@ namespace Beelina.LIB.BusinessLogic
         }
         else
         {
-          var warehouseProducts = await GetWarehouseProducts(1, productId, filterKeyWord, cancellationToken);
+          var warehouseProducts = await GetWarehouseProducts(1, productId, filterKeyWord, cancellationToken, filteredProductsFromRepo);
           finalProductsFromRepo = (from p in filteredProductsFromRepo
-                                         join wp in warehouseProducts
-                                         on p.Id equals wp.Id
+                                   join wp in warehouseProducts
+                                   on p.Id equals wp.Id
 
-                                         select new Product
-                                         {
-                                           Id = p.Id,
-                                           Name = p.Name,
-                                           Code = p.Code,
-                                           IsTransferable = p.IsTransferable,
-                                           NumberOfUnits = p.NumberOfUnits,
-                                           Description = p.Description,
-                                           PricePerUnit = p.PricePerUnit,
-                                           ProductUnitId = p.ProductUnitId,
-                                           ProductUnit = p.ProductUnit,
-                                           StockQuantity = wp.StockQuantity,
-                                           IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
-                                         })
+                                   select new Product
+                                   {
+                                     Id = p.Id,
+                                     Name = p.Name,
+                                     Code = p.Code,
+                                     IsTransferable = p.IsTransferable,
+                                     NumberOfUnits = p.NumberOfUnits,
+                                     Description = p.Description,
+                                     PricePerUnit = p.PricePerUnit,
+                                     ProductUnitId = p.ProductUnitId,
+                                     ProductUnit = p.ProductUnit,
+                                     StockQuantity = wp.StockQuantity,
+                                     IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                   })
                                         .ToList();
         }
       }
@@ -273,68 +273,79 @@ namespace Beelina.LIB.BusinessLogic
       return finalProductsFromRepo;
     }
 
-    public async Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default)
+    public async Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default, List<FilteredProduct> filteredProducts = null)
     {
       var finalProductsFromRepo = new List<Product>();
+      var filteredProductsFromRepo = new List<FilteredProduct>();
+
       var generalSetting = await _beelinaRepository
                                   .ClientDbContext
                                   .GeneralSettings
                                   .FirstOrDefaultAsync(cancellationToken);
       try
       {
-        // Get products base list
-        var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
-                                      join pw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
 
-                                      on new { Id = p.Id, WarehouseId = warehouseId } equals new { Id = pw.ProductId, WarehouseId = pw.WarehouseId }
-                                      into productStockJoin
-                                      from pp in productStockJoin.DefaultIfEmpty()
+        if (filteredProducts == null)
+        {
+          // Get products base list
+          var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
+                                        join pw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
 
-                                      join pu in _beelinaRepository.ClientDbContext.ProductUnits
-                                          on p.ProductUnitId equals pu.Id
-                                          into productUnitJoin
-                                      from pu in productUnitJoin.DefaultIfEmpty()
+                                        on new { Id = p.Id, WarehouseId = warehouseId } equals new { Id = pw.ProductId, WarehouseId = pw.WarehouseId }
+                                        into productStockJoin
+                                        from pp in productStockJoin.DefaultIfEmpty()
 
-                                      where
-                                        !p.IsDelete
-                                        && p.IsActive
-                                        && ((productId > 0 && p.Id == productId) || productId == 0)
+                                        join pu in _beelinaRepository.ClientDbContext.ProductUnits
+                                            on p.ProductUnitId equals pu.Id
+                                            into productUnitJoin
+                                        from pu in productUnitJoin.DefaultIfEmpty()
 
-                                      select new
-                                      {
-                                        Id = p.Id,
-                                        WarehouseId = (pp == null ? 0 : pp.WarehouseId),
-                                        ProductPerWarehouseId = (pp == null ? 0 : pp.Id),
-                                        Name = p.Name,
-                                        Code = p.Code,
-                                        NumberOfUnits = p.NumberOfUnits,
-                                        Description = p.Description,
-                                        IsTransferable = p.IsTransferable,
-                                        PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
-                                        ProductUnitId = p.ProductUnitId,
-                                        ProductUnit = pu
-                                      }).ToListAsync(cancellationToken);
-        // Filter product list
-        var filteredProductsFromRepo = (from p in productsFromRepo
-                                        where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
+                                        where
+                                          !p.IsDelete
+                                          && p.IsActive
+                                          && ((productId > 0 && p.Id == productId) || productId == 0)
 
                                         select new
                                         {
                                           Id = p.Id,
-                                          WarehouseId = p.WarehouseId,
+                                          WarehouseId = (pp == null ? 0 : pp.WarehouseId),
+                                          ProductPerWarehouseId = (pp == null ? 0 : pp.Id),
                                           Name = p.Name,
                                           Code = p.Code,
-                                          ProductPerWarehouseId = p.ProductPerWarehouseId,
-                                          SearchResultPercentage = p.Name.CalculatePrecision(filterKeyWord) + p.Code.CalculatePrecision(filterKeyWord),
                                           NumberOfUnits = p.NumberOfUnits,
                                           Description = p.Description,
-                                          PricePerUnit = p.PricePerUnit,
-                                          ProductUnitId = p.ProductUnitId,
-                                          ProductUnit = p.ProductUnit,
                                           IsTransferable = p.IsTransferable,
-                                        })
-                                        .OrderByDescending(p => p.SearchResultPercentage)
-                                        .ToList();
+                                          PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
+                                          ProductUnitId = p.ProductUnitId,
+                                          ProductUnit = pu
+                                        }).ToListAsync(cancellationToken);
+          // Filter product list
+          filteredProductsFromRepo = (from p in productsFromRepo
+                                      where (filterKeyWord != "" && (p.Name.IsMatchAnyKeywords(filterKeyWord) || p.Code.IsMatchAnyKeywords(filterKeyWord)) || filterKeyWord == "")
+
+                                      select new FilteredProduct
+                                      {
+                                        Id = p.Id,
+                                        WarehouseId = p.WarehouseId,
+                                        Name = p.Name,
+                                        Code = p.Code,
+                                        ProductPerWarehouseId = p.ProductPerWarehouseId,
+                                        SearchResultPercentage = p.Name.CalculatePrecision(filterKeyWord) + p.Code.CalculatePrecision(filterKeyWord),
+                                        NumberOfUnits = p.NumberOfUnits,
+                                        Description = p.Description,
+                                        PricePerUnit = p.PricePerUnit,
+                                        ProductUnitId = p.ProductUnitId,
+                                        ProductUnit = p.ProductUnit,
+                                        IsTransferable = p.IsTransferable,
+                                      })
+                                      .OrderByDescending(p => p.SearchResultPercentage)
+                                      .ToList();
+        }
+        else
+        {
+          filteredProductsFromRepo = filteredProducts;
+        }
+
 
         if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
         {
