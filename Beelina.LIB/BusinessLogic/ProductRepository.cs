@@ -901,7 +901,7 @@ namespace Beelina.LIB.BusinessLogic
                                                      StockAuditSource = StockAuditSourceEnum.OrderTransaction,
                                                      TransactionNumber = t.InvoiceNo,
                                                      ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
-                                                     ModifiedDate = tj.DateCreated
+                                                     ModifiedDate = t.DateCreated
                                                    }).ToListAsync();
 
         productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
@@ -991,7 +991,7 @@ namespace Beelina.LIB.BusinessLogic
                                                      StockAuditSource = StockAuditSourceEnum.OrderTransaction,
                                                      TransactionNumber = t.InvoiceNo,
                                                      ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
-                                                     ModifiedDate = tj.DateCreated
+                                                     ModifiedDate = t.DateCreated
                                                    }).ToListAsync();
 
 
