@@ -1,5 +1,15 @@
 @import "../../../../../app-variables";
 
 ::ng-deep .mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface {
-  background-color: $success;
+  background-color: $success-bg-color;
+}
+
+::ng-deep .mat-mdc-snack-bar-container.success-snackbar {
+  border: 3px solid $success-border-color;
+  border-radius: 5px;
+  color: $alt-text-color;
+}
+
+::ng-deep .mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__label {
+  color: $alt-text-color;
 }

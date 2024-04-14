@@ -12,6 +12,7 @@ namespace Beelina.LIB.Models
         public Store Store { get; set; }
         public TransactionStatusEnum Status { get; set; }
         public int ModeOfPayment { get; set; }
+        public int WarehouseId { get; set; } = 1; // Default to the first warehouse
 
         public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
         public string InvoiceNo { get; set; }

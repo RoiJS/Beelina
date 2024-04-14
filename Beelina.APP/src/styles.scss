@@ -142,7 +142,7 @@ body {
 
     .page-information-description {
       font-size: 12px;
-      color: #707070;
+      color: $alt-text-color;
     }
   }
 
@@ -440,6 +440,10 @@ button[color="primary"] {
 
 .no-visibility {
   visibility: hidden;
+}
+
+.no-display {
+  display: none;
 }
 
 /*#endregion*/

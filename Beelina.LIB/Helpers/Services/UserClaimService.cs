@@ -14,6 +14,15 @@ namespace Beelina.LIB.Helpers.Services
             _claimsPrincipal = claimsPrincipal;
         }
 
+        public string AppSecretToken
+        {
+            get
+            {
+                var appSecretToken = _claimsPrincipal.Identity.GetUserClaim(BeelinaClaimTypes.AppSecretToken).ToString();
+                return appSecretToken;
+            }
+        }
+        
         public int CurrentUserId
         {
             get

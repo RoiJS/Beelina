@@ -10,21 +10,23 @@ import { map, switchMap, take, tap } from 'rxjs/operators';
 import { RoutingService } from './routing.service';
 import { StorageService } from './storage.service';
 
-import { GenderEnum } from '../_enum/gender.enum';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
-import { ILoginInput } from '../_interfaces/inputs/ilogin.input';
-import { IAuthenticationOutput } from '../_interfaces/outputs/ilogin.output';
-import { IClientInformationQueryPayload } from '../_interfaces/payloads/iclient-information-query.payload';
 import { AuthToken } from '../_models/auth-token.model';
-import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
 import { User } from '../_models/user.model';
 
+import { BusinessModelEnum } from '../_enum/business-model.enum';
+import { GenderEnum } from '../_enum/gender.enum';
 import { ModuleEnum } from '../_enum/module.enum';
 import { PermissionLevelEnum } from '../_enum/permission-level.enum';
+
+import { IAuthenticationOutput } from '../_interfaces/outputs/ilogin.output';
 import { IUserAccountInput } from '../_interfaces/inputs/iuser-account.input';
+import { ILoginInput } from '../_interfaces/inputs/ilogin.input';
 import { IUserPermissionInput } from '../_interfaces/inputs/iuser-permission.input';
 import { IUpdateAccountOutput } from '../_interfaces/outputs/iupdate-account.output';
 import { IUserAccountInformationQueryPayload } from '../_interfaces/payloads/iuser-account-information-query.payload';
+import { IClientInformationQueryPayload } from '../_interfaces/payloads/iclient-information-query.payload';
+import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
 import { UserAccountNotExistsError } from '../_models/errors/user-account-not-exists.error';
 import { CheckUsernameInformationResult } from '../_models/results/check-usernamee-information-result';
 import { UserAccountInformationResult } from '../_models/results/user-account-information-result';
@@ -212,6 +214,22 @@ export class AuthService {
 
   get authToken() {
     return this._tokenInfo.asObservable();
+  }
+
+  get userId(): number {
+    const tokenDecrypted = this._jwtHelper.decodeToken(
+      this._tokenInfo.value.token
+    );
+
+    return parseInt(tokenDecrypted.nameid);
+  }
+
+  get businessModel(): BusinessModelEnum {
+    const tokenDecrypted = this._jwtHelper.decodeToken(
+      this._tokenInfo.value.token
+    );
+
+    return <BusinessModelEnum>(parseInt(tokenDecrypted.businessModel));
   }
 
   login(username: string, password: string) {
@@ -595,6 +613,7 @@ export class AuthService {
     user.username = currentUser.username;
     user.gender = parseInt(currentUser.gender);
     user.emailAddress = currentUser.emailAddress;
+    user.businessModel = parseInt(currentUser.businessModel);
 
     // Keep user permission per module
     // (1) Retail Module
@@ -617,13 +636,6 @@ export class AuthService {
     this._currentUsername.next(user.username);
   }
 
-  get userId(): number {
-    const tokenDecrypted = this._jwtHelper.decodeToken(
-      this._tokenInfo.value.token
-    );
-
-    return parseInt(tokenDecrypted.nameid);
-  }
 
   checkUsernameExists(userId: number, username: string) {
     return this.apollo
@@ -651,4 +663,6 @@ export class AuthService {
         )
       );
   }
+
+
 }

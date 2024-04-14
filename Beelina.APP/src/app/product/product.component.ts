@@ -355,7 +355,7 @@ export class ProductComponent
 
   transferProductInventory(productId: number) {
     this._transferInventoryDialogRef = this.bottomSheet.open(TransferProductInventoryComponent, {
-      data: { productId },
+      data: { productId, productSource: ProductSourceEnum.Panel },
     });
     this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {

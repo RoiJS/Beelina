@@ -83,7 +83,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients", (string)null);
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GeneralInformation", b =>
@@ -117,7 +117,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeneralInformations", (string)null);
+                    b.ToTable("GeneralInformations");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>
@@ -162,7 +162,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("GlobalErrorLogs", (string)null);
+                    b.ToTable("GlobalErrorLogs");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Report", b =>
@@ -203,6 +203,9 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<string>("NameTextIdentifier")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OnlyAvailableOnBusinessModel")
+                        .HasColumnType("int");
+
                     b.Property<string>("ReportClass")
                         .HasColumnType("nvarchar(max)");
 
@@ -217,7 +220,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControl", b =>
@@ -260,7 +263,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportControls", (string)null);
+                    b.ToTable("ReportControls");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControlsRelation", b =>
@@ -292,6 +295,12 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("OnlyAvailableOnBusinessModel")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OnlyAvailableOnBusinessModelForMinimumPrivilege")
+                        .HasColumnType("int");
+
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
@@ -307,7 +316,48 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportControlsRelations", (string)null);
+                    b.ToTable("ReportControlsRelations");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.ReportCustomerCustom", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("ReportCustomerCustoms");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportParameter", b =>
@@ -350,7 +400,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.HasIndex("ReportControlId")
                         .IsUnique();
 
-                    b.ToTable("ReportParameters", (string)null);
+                    b.ToTable("ReportParameters");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>
@@ -381,6 +431,25 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Navigation("Report");
 
                     b.Navigation("ReportControl");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.ReportCustomerCustom", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Beelina.LIB.Models.Report", "Report")
+                        .WithMany()
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Report");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportParameter", b =>

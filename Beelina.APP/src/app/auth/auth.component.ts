@@ -16,19 +16,20 @@ import { StorageService } from '../_services/storage.service';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
 import { ClientInformationResult } from '../_models/results/client-information-result.result';
-import { BaseComponent } from '../shared/components/base-component/base.component';
 import { ModuleEnum } from '../_enum/module.enum';
 import {
   getPermissionLevelEnum,
   PermissionLevelEnum,
 } from '../_enum/permission-level.enum';
+import { SharedComponent } from '../shared/components/shared/shared.component';
+import { UIService } from '../_services/ui.service';
 
 @Component({
   selector: 'app-auth-module',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent extends BaseComponent implements OnInit {
+export class AuthComponent extends SharedComponent implements OnInit {
   private _authForm: FormGroup;
 
   constructor(
@@ -39,17 +40,16 @@ export class AuthComponent extends BaseComponent implements OnInit {
     private notificationService: NotificationService,
     private storageService: StorageService,
     private store: Store<AppStateInterface>,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    protected override uiService: UIService
   ) {
-    super();
+    super(uiService);
     this._authForm = this.formBuilder.group({
       company: ['', Validators.required],
       username: ['', Validators.required],
       password: ['', Validators.required],
     });
   }
-
-  ngOnInit() { }
 
   onSubmit() {
     const company = this.authForm.get('company').value;

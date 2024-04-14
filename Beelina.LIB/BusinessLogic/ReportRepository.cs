@@ -41,6 +41,11 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<IList<Report>> GetAllReports()
         {
+            var generalSetting = await _beelinaRepository
+                                  .ClientDbContext
+                                  .GeneralSettings
+                                  .FirstOrDefaultAsync();
+
             var userRetailModulePermission = await _beelinaRepository
                 .ClientDbContext
                 .UserPermission
@@ -50,14 +55,27 @@ namespace Beelina.LIB.BusinessLogic
                 )
                 .FirstOrDefaultAsync();
 
-            var reportsFromRepo = await _beelinaRepository.SystemDbContext.Reports
-                                    .Where(r =>
-                                    r.ModuleId == ModulesEnum.Retail
-                                    && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
-                                    && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
-                                    && r.IsActive
-                                    && !r.IsDelete
-                                ).ToListAsync();
+            var tenantId = await _beelinaRepository.SystemDbContext.Clients
+                        .Where(c => c.DBHashName == _currentUserService.AppSecretToken)
+                        .Select(c => c.Id)
+                        .FirstOrDefaultAsync();
+
+            var reportsFromRepo = await (from r in _beelinaRepository.SystemDbContext.Reports
+                                         join rc in _beelinaRepository.SystemDbContext.ReportCustomerCustoms
+                                         on new { Id = r.Id } equals new { Id = rc.ReportId }
+
+                                         into reportCustomJoin
+                                         from rc in reportCustomJoin.DefaultIfEmpty()
+
+                                         where
+                                           (!r.Custom || (r.Custom && rc.ClientId == tenantId && rc != null))
+                                           &&  ((r.OnlyAvailableOnBusinessModel == null) || (r.OnlyAvailableOnBusinessModel != null && r.OnlyAvailableOnBusinessModel == generalSetting.BusinessModel))
+                                           && r.ModuleId == ModulesEnum.Retail
+                                           && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
+                                           && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
+                                           && r.IsActive
+                                           && !r.IsDelete
+                                         select r).ToListAsync();
 
             return reportsFromRepo;
         }

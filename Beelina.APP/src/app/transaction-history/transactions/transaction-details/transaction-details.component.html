@@ -35,42 +35,44 @@
           </div>
           <br />
           <mat-divider></mat-divider>
+          <div class="product-transaction-list-container">
+            <mat-list role="list" class="product-transaction-list">
+              <mat-list-item *ngFor="let item of transaction?.productTransactions" role="listitem">
+                <div [ngClass]="{ unpaid: !item?.isPaid }" class="product-transaction-list__item-section">
+                  <div class="product-transaction-information">
+                    <span>
+                      ({{
+                      "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE"
+                      | translate
+                      }}: {{ item.product?.code }})
+                      ({{
+                      "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.UNIT"
+                      | translate
+                      }}: {{ item.product?.productUnit?.name }})
+                      <br />
+                      {{ item.product?.name }}
+                    </span>
+                    <span>
+                      <span>X</span>
+                      <span>{{ item.quantity }}</span>
+                    </span>
+                  </div>
 
-          <mat-list role="list" class="product-transaction-list">
-            <mat-list-item *ngFor="let item of transaction?.productTransactions" role="listitem">
-              <div [ngClass]="{ unpaid: !item?.isPaid }" class="product-transaction-list__item-section">
-                <div class="product-transaction-information">
-                  <span>
-                    ({{
-                    "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE"
-                    | translate
-                    }}: {{ item.product?.code }})
-                    ({{
-                    "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.UNIT"
-                    | translate
-                    }}: {{ item.product?.productUnit?.name }})
-                    <br />
-                    {{ item.product?.name }}
-                  </span>
-                  <span>
-                    <span>X</span>
-                    <span>{{ item.quantity }}</span>
-                  </span>
-                </div>
+                  <div class="product-transaction-information-price">
+                    <span>{{ item?.priceFormatted }}</span>
+                  </div>
 
-                <div class="product-transaction-information-price">
-                  <span>{{ item?.priceFormatted }}</span>
+                  <div class="product-transaction-information-status">
+                    <app-badge *ngIf="item?.isPaid" [type]="bannerTypeEnum.SUCCESS"
+                      [textIdentifier]="'GENERAL_TEXTS.PAID'"></app-badge>
+                    <app-badge *ngIf="!item?.isPaid" [type]="bannerTypeEnum.ERROR"
+                      [textIdentifier]="'GENERAL_TEXTS.UNPAID'"></app-badge>
+                  </div>
                 </div>
+              </mat-list-item>
+            </mat-list>
+          </div>
 
-                <div class="product-transaction-information-status">
-                  <app-badge *ngIf="item?.isPaid" [type]="bannerTypeEnum.SUCCESS"
-                    [textIdentifier]="'GENERAL_TEXTS.PAID'"></app-badge>
-                  <app-badge *ngIf="!item?.isPaid" [type]="bannerTypeEnum.ERROR"
-                    [textIdentifier]="'GENERAL_TEXTS.UNPAID'"></app-badge>
-                </div>
-              </div>
-            </mat-list-item>
-          </mat-list>
           <br />
           <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
             <span>{{ "GENERAL_TEXTS.BALANCE" | translate }}</span>

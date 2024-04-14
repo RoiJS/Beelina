@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enum';
+import { PlaceholderEntityTemplateEnum } from 'src/app/_enum/placeholder-entity-template.enum';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
 import {
   PermissionLevelEnum,
   getPermissionLevelEnum,
 } from 'src/app/_enum/permission-level.enum';
 import { User } from 'src/app/_models/user.model';
-import { TemplateSizeEnum } from '../../ui/empty-entities-placeholder/empty-entities-placeholder.component';
+import { TemplateSizeEnum } from '../../ui/placeholder-entities/placeholder-entities.component';
 import { BannerTypeEnum } from '../../ui/banner/banner.component';
 
 @Component({
@@ -19,7 +19,7 @@ import { BannerTypeEnum } from '../../ui/banner/banner.component';
 export class BaseComponent {
   protected _isLoading = false;
   protected _permissionLevelEnum = PermissionLevelEnum;
-  protected _emptyTemplateType = EmptyEntityTemplateEnum;
+  protected _emptyTemplateType = PlaceholderEntityTemplateEnum;
   protected _templateSize = TemplateSizeEnum;
   protected _bannerType = BannerTypeEnum;
   protected $isLoading: Observable<boolean>;
@@ -67,7 +67,7 @@ export class BaseComponent {
     return this._isLoading;
   }
 
-  get emptyEntityTemplateEnum(): typeof EmptyEntityTemplateEnum {
+  get emptyEntityTemplateEnum(): typeof PlaceholderEntityTemplateEnum {
     return this._emptyTemplateType;
   }
 
