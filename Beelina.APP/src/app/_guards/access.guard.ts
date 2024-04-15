@@ -9,7 +9,6 @@ import {
 import { Observable } from 'rxjs';
 import { SidedrawerService } from '../_services/sidedrawer.service';
 import { AuthService } from '../_services/auth.service';
-import { NotificationService } from '../shared/ui/notification/notification.service';
 
 @Injectable()
 export class AccessGuard {
@@ -31,7 +30,7 @@ export class AccessGuard {
   ): Observable<boolean> | Promise<boolean> | boolean {
     const currentMainUrl = state.url;
     const mainUrls = this.sidedrawerService.getMenus();
-    const exists = mainUrls.find((u) => u.url.includes(currentMainUrl));
+    const exists = mainUrls.find((u) => currentMainUrl.includes(u.url));
     if (!exists) {
       this.authService.logout();
     }
