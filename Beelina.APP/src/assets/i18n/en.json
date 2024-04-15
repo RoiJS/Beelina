@@ -685,7 +685,9 @@
       "SALES_PER_CUSTOMER_REPORT_NAME": "Sales Per Customer Report",
       "SALES_PER_CUSTOMER_REPORT_DESC": "Generates sales data per customer for a specified date, aiding administrators in analyzing and gaining insights into individual customer sales.",
       "PRODUCT_WITHDRAWAL_REPORT_NAME": "Product Withdrawal Report",
-      "PRODUCT_WITHDRAWAL_REPORT_DESC": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date."
+      "PRODUCT_WITHDRAWAL_REPORT_DESC": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date.",
+      "PRODUCT_WITHDRAWAL_REPORT_NAME_2": "Product Withdrawal Report",
+      "PRODUCT_WITHDRAWAL_REPORT_DESC_2": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date."
     }
   },
   "REPORT_DETAILS_PAGE": {
