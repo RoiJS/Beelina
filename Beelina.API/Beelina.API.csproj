@@ -56,6 +56,9 @@
     <None Update="Templates\ReportTemplates\ProductWithdrawalReport_Template.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\ReportTemplates\ProductWithdrawalReport_Template_2.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
