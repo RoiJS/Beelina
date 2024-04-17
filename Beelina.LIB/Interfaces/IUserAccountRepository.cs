@@ -6,6 +6,7 @@ namespace Beelina.LIB.Interfaces
     public interface IUserAccountRepository<TEntity>
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
+        Task<List<UserAccount>> GetUserAccounts(int userId = 0);
         Task<UserAccount> Register(UserAccount account, string password);
         Task<UserAccount> Login(string username, string password);
         Task<bool> UserExists(string username, int userId = 0);

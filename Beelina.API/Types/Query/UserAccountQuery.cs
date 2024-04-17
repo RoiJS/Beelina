@@ -12,18 +12,17 @@ namespace Beelina.API.Types.Query
     public class UserAccountQuery
     {
         [Authorize]
-        [UsePaging]
+        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
-        public async Task<IList<UserAccount>> GetUserAccounts([Service] IUserAccountRepository<UserAccount> userAccountRepository) => await userAccountRepository.GetAllEntities().ToListObjectAsync();
-
+        public async Task<IList<UserAccount>> GetUserAccounts([Service] IUserAccountRepository<UserAccount> userAccountRepository)
+        {
+            return await userAccountRepository.GetUserAccounts();
+        }
+        
         [Authorize]
         public async Task<IUserAccountPayload> GetUserAccount([Service] IUserAccountRepository<UserAccount> userAccountRepository, [Service] IMapper mapper, int userId)
         {
-            var userAccountFromRepo = await userAccountRepository
-                                        .GetEntity(userId)
-                                        .Includes(u => u.UserPermissions)
-                                        .ToObjectAsync();
-
+            var userAccountFromRepo = await userAccountRepository.GetUserAccounts(userId);
             var userAccountResult = mapper.Map<UserAccountInformationResult>(userAccountFromRepo);
 
             if (userAccountFromRepo == null)

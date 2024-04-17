@@ -19,6 +19,21 @@ namespace Beelina.LIB.BusinessLogic
 
         }
 
+        public async Task<List<UserAccount>> GetUserAccounts(int userId = 0)
+        {
+            var usersFromRepo = await _beelinaRepository
+                                            .ClientDbContext
+                                            .UserAccounts
+                                            .Where(u => 
+                                                !u.IsDelete 
+                                                && (userId == 0 || (userId > 0 && u.Id == userId))
+                                            )
+                                            .Includes(a => a.UserPermissions)
+                                            .ToListAsync();
+
+            return usersFromRepo;
+        }
+
         public async Task<UserAccount> Register(UserAccount account, string password)
         {
             var encryptedPassword = GenerateNewPassword(password);
