@@ -9,7 +9,7 @@
         public const string Gender = "gender";
         public const string Username = "username";
         public const string EmailAddress = "emailAddress";
-        public const string RetailModulePrivilege = "retailModulePrivilege";
+        public const string DistributionModulePrivilege = "distributionModulePrivilege";
         public const string DateCreated = "dateCreated";
         public const string BusinessModel = "businessModel";
     }

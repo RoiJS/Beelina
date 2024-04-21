@@ -14,22 +14,30 @@ namespace Beelina.API.Types.Query
         [Authorize]
         [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
-        public async Task<IList<UserAccount>> GetUserAccounts([Service] IUserAccountRepository<UserAccount> userAccountRepository)
+        public async Task<IList<UserAccount>> GetUserAccounts(
+            [Service] IUserAccountRepository<UserAccount> userAccountRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            string filterKeyword = ""
+        )
         {
-            return await userAccountRepository.GetUserAccounts();
+            return await userAccountRepository.GetUserAccounts(0, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
         }
-        
-        [Authorize]
-        public async Task<IUserAccountPayload> GetUserAccount([Service] IUserAccountRepository<UserAccount> userAccountRepository, [Service] IMapper mapper, int userId)
-        {
-            var userAccountFromRepo = await userAccountRepository.GetUserAccounts(userId);
-            var userAccountResult = mapper.Map<UserAccountInformationResult>(userAccountFromRepo);
 
-            if (userAccountFromRepo == null)
+        [Authorize]
+        public async Task<IUserAccountPayload> GetUserAccount(
+            [Service] IUserAccountRepository<UserAccount> userAccountRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IMapper mapper,
+            int userId)
+        {
+            var userAccountFromRepo = await userAccountRepository.GetUserAccounts(userId, "", httpContextAccessor.HttpContext.RequestAborted);
+
+            if (userAccountFromRepo == null || userAccountFromRepo.Count == 0)
             {
                 return new UserAccountNotExistsError();
             }
 
+            var userAccountResult = mapper.Map<UserAccountInformationResult>(userAccountFromRepo[0]);
             return userAccountResult;
         }
 

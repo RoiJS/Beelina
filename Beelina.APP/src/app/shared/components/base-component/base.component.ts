@@ -24,6 +24,7 @@ export class BaseComponent {
   protected _bannerType = BannerTypeEnum;
   protected $isLoading: Observable<boolean>;
   protected _currentLoggedInUser: User;
+  protected _passwordVisible: boolean;
 
   constructor() {
   }
@@ -63,22 +64,6 @@ export class BaseComponent {
     return photo;
   }
 
-  get isLoading(): boolean {
-    return this._isLoading;
-  }
-
-  get emptyEntityTemplateEnum(): typeof PlaceholderEntityTemplateEnum {
-    return this._emptyTemplateType;
-  }
-
-  get emptyEntityTemplateSizeEnum(): typeof TemplateSizeEnum {
-    return this._templateSize;
-  }
-
-  get bannerTypeEnum(): typeof BannerTypeEnum {
-    return this._bannerType;
-  }
-
   //#region Permission Level related methods
   get permissionLevelEnum(): typeof PermissionLevelEnum {
     return this._permissionLevelEnum;
@@ -89,7 +74,7 @@ export class BaseComponent {
   }
 
   modulePrivilege(module: ModuleEnum): number {
-    return this._currentLoggedInUser?.getModulePrivilege(module);
+    return this._currentLoggedInUser?.getModulePrivilege(module).value;
   }
   //#endregion
 
@@ -119,5 +104,29 @@ export class BaseComponent {
     const suffix = originalString.slice(endIndex + 1);
 
     return `${prefix}<mark>${markedText}</mark>${suffix}`;
+  }
+
+  setPasswordVisibility() {
+    this._passwordVisible = !this._passwordVisible;
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
+
+  get emptyEntityTemplateEnum(): typeof PlaceholderEntityTemplateEnum {
+    return this._emptyTemplateType;
+  }
+
+  get emptyEntityTemplateSizeEnum(): typeof TemplateSizeEnum {
+    return this._templateSize;
+  }
+
+  get bannerTypeEnum(): typeof BannerTypeEnum {
+    return this._bannerType;
+  }
+
+  get passwordVisible(): boolean {
+    return this._passwordVisible;
   }
 }

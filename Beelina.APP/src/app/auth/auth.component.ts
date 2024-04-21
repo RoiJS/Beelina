@@ -99,8 +99,8 @@ export class AuthComponent extends SharedComponent implements OnInit {
   private getDefaultLandingPage() {
     let defaultLandingPage = '/sales';
     const userPermission = this.authService.user.value.getModulePrivilege(
-      ModuleEnum.Retail
-    );
+      ModuleEnum.Distribution
+    ).value;
 
     if (userPermission === getPermissionLevelEnum(PermissionLevelEnum.Manager)) {
       defaultLandingPage = '/product-catalogue';

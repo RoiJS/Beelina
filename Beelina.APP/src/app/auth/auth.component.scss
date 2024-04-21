@@ -99,7 +99,7 @@
       justify-content: center;
       gap: 15px;
       padding: 100px 40px 20px 40px;
-     border-radius: 11px;
+      border-radius: 11px;
       font-family: "Inter", sans-serif;
     }
 
@@ -140,6 +140,14 @@
       position: absolute;
       z-index: 99;
       left: 12px;
+      bottom: 9px;
+    }
+
+    .icon-password {
+      width: 25px;
+      position: absolute;
+      z-index: 99;
+      right: 12px;
       bottom: 9px;
     }
 

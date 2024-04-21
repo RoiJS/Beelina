@@ -1,38 +1,31 @@
 import { createAction, props } from '@ngrx/store';
 
-import { Barangay } from 'src/app/_models/barangay';
+import { User } from 'src/app/_models/user.model';
 
-export const getBarangaysAction = createAction(
-  '[Barangay] Get Barangays Methods'
+export const getUserAccountsAction = createAction(
+  '[User Accounts] Get User Accounts'
 );
 
-export const getAllBarangayAction = createAction(
-  '[Barangay] Get All Barangays'
-);
-
-export const getBarangaysActionSuccess = createAction(
-  '[Barangay] Get Barangay Methods Success',
+export const getUserAccountsActionSuccess = createAction(
+  '[User Accounts] Get User Accounts Success',
   props<{
     endCursor: string;
     hasNextPage: boolean;
-    barangays: Array<Barangay>;
+    userAccounts: Array<User>;
+    totalCount: number,
   }>()
 );
 
-export const getBarangaysActionError = createAction(
-  '[Barangay] Get Barangays Methods Error',
+export const getUserAccountsActionError = createAction(
+  '[User Accounts] Get User Accounts Error',
   props<{ error: string }>()
 );
 
-export const resetBarangayState = createAction(
-  '[Barangay] Reset Barangay State'
+export const resetUserAccountsState = createAction(
+  '[User Accounts] Reset User Accounts',
 );
 
-export const resetBarangayList = createAction(
-  '[Barangay] Reset Barangay List'
-);
-
-export const setSearchBarangaysAction = createAction(
-  '[Barangay] Search Barangays',
+export const setSearchUserAccountsAction = createAction(
+  '[User Accounts] Search User Accounts',
   props<{ keyword: string }>()
 );

@@ -80,7 +80,7 @@ export class ReportDetailsComponent
               const controlLabelIdentifier =
                 relation.reportControl.labelIdentifier;
 
-              const userPrivileges = this.authService.user.value.getModulePrivilege(ModuleEnum.Retail);
+              const userPrivileges = this.authService.user.value.getModulePrivilege(ModuleEnum.Distribution).value;
               const businessModel = this.authService.businessModel;
 
               const show = (!relation.onlyAvailableOnBusinessModel && !relation.onlyAvailableOnBusinessModelForMinimumPrivilege) || (businessModel === getBusinessModelEnum(relation.onlyAvailableOnBusinessModel?.toString())

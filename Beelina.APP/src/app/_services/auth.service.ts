@@ -92,91 +92,6 @@ const REFRESH_QUERY = gql`
   }
 `;
 
-const UPDATE_USER_CREDENTIALS = gql`
-  mutation ($userAccountForUpdateInput: UserAccountInput!) {
-    updateUserAccount(
-      input: { userAccountForUpdateInput: $userAccountForUpdateInput }
-    ) {
-      userAccount {
-        id
-        username
-      }
-      errors {
-        __typename
-        ... on UserAccountNotExistsError {
-          message
-        }
-        ... on BaseError {
-          message
-        }
-      }
-    }
-  }
-`;
-
-const GET_USER_INFORMATION = gql`
-  query ($userId: Int!) {
-    userAccount(userId: $userId) {
-      typename: __typename
-      ... on UserAccountInformationResult {
-        id
-        firstName
-        middleName
-        lastName
-        gender
-        emailAddress
-        username
-        userPermissions {
-          id
-          moduleId
-          permissionLevel
-        }
-      }
-
-      ... on UserAccountNotExistsError {
-        message
-      }
-    }
-  }
-`;
-
-const VERIFY_USER_ACCOUNT = gql`
-  query ($loginInput: LoginInput!) {
-    verifyUserAccount(loginInput: $loginInput) {
-      typename: __typename
-      ... on UserAccountInformationResult {
-        id
-        firstName
-        middleName
-        lastName
-        gender
-        emailAddress
-        username
-        userPermissions {
-          id
-          moduleId
-          permissionLevel
-        }
-      }
-
-      ... on UserAccountNotExistsError {
-        message
-      }
-    }
-  }
-`;
-
-const CHECK_USERNAME = gql`
-  query ($userId: Int!, $username: String!) {
-    checkUsername(userId: $userId, username: $username) {
-      typename: __typename
-      ... on CheckUsernameInformationResult {
-        exists
-      }
-    }
-  }
-`;
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private _user = new BehaviorSubject<User>(null);
@@ -370,142 +285,6 @@ export class AuthService {
     this.routingService.replace([redirectUrl]);
   }
 
-  updateAccountInformation(user: User) {
-    const userAccountForUpdateInput: IUserAccountInput = {
-      id: user.id,
-      firstName: user.firstName,
-      middleName: user.middleName,
-      lastName: user.lastName,
-      gender: user.gender,
-      emailAddress: user.emailAddress,
-      username: user.username,
-      newPassword: user.password,
-      userPermissions: user.userPermissions.map((p) => {
-        return <IUserPermissionInput>{
-          id: p.id,
-          moduleId: p.moduleId,
-          permissionLevel: p.permissionLevel,
-        };
-      }),
-    };
-
-    return this.apollo
-      .mutate({
-        mutation: UPDATE_USER_CREDENTIALS,
-        variables: {
-          userAccountForUpdateInput,
-        },
-      })
-      .pipe(
-        map(
-          (
-            result: MutationResult<{ updateUserAccount: IUpdateAccountOutput }>
-          ) => {
-            const output = result.data.updateUserAccount;
-            const payload = output.userAccount;
-            const errors = output.errors;
-
-            if (payload) {
-              return payload;
-            }
-
-            if (errors && errors.length > 0) {
-              throw new Error(errors[0].message);
-            }
-
-            return null;
-          }
-        )
-      );
-  }
-
-  getUserInformation(userId: number) {
-    return this.apollo
-      .watchQuery({
-        query: GET_USER_INFORMATION,
-        variables: {
-          userId,
-        },
-      })
-      .valueChanges.pipe(
-        map(
-          (
-            result: ApolloQueryResult<{
-              userAccount: IUserAccountInformationQueryPayload;
-            }>
-          ) => {
-            const data = result.data.userAccount;
-
-            if (data.typename === 'UserAccountInformationResult')
-              return result.data.userAccount;
-            if (data.typename === 'UserAccountNotExistsError')
-              throw new Error(
-                (<UserAccountNotExistsError>result.data.userAccount).message
-              );
-
-            return null;
-          }
-        )
-      );
-  }
-
-  verifyUserAccount(username: string, password: string) {
-    const loginInput: ILoginInput = {
-      username,
-      password,
-    };
-    return this.apollo
-      .watchQuery({
-        query: VERIFY_USER_ACCOUNT,
-        variables: {
-          loginInput,
-        },
-      })
-      .valueChanges.pipe(
-        map(
-          (
-            result: ApolloQueryResult<{
-              verifyUserAccount: IUserAccountInformationQueryPayload;
-            }>
-          ) => {
-            const data = result.data.verifyUserAccount;
-            if (data.typename === 'UserAccountInformationResult') {
-              const user = new User();
-              const currentUser = <UserAccountInformationResult>(
-                result.data.verifyUserAccount
-              );
-              user.firstName = currentUser.firstName;
-              user.middleName = currentUser.middleName;
-              user.lastName = currentUser.lastName;
-              user.username = currentUser.username;
-              user.emailAddress = currentUser.emailAddress;
-
-              currentUser.userPermissions.forEach(
-                (permission: UserModulePermission) => {
-                  const userPermission = new UserModulePermission();
-                  userPermission.id = permission.id;
-                  userPermission.moduleId = permission.moduleId;
-                  userPermission.permissionLevel = permission.permissionLevel;
-                  user.userPermissions.push(userPermission);
-                }
-              );
-
-              return user;
-            }
-
-            if (data.typename === 'UserAccountNotExistsError')
-              throw new Error(
-                (<UserAccountNotExistsError>(
-                  result.data.verifyUserAccount
-                )).message
-              );
-
-            return null;
-          }
-        )
-      );
-  }
-
   autoLogin() {
     if (
       !this.storageService.hasKey('authToken') ||
@@ -588,7 +367,7 @@ export class AuthService {
     return this._user.pipe(
       take(1),
       switchMap((user: User) => {
-        const isAdmin = user.getModulePrivilege(ModuleEnum.Retail) === 3;
+        const isAdmin = user.getModulePrivilege(ModuleEnum.Distribution).value === 3;
         return of(isAdmin);
       }),
       tap((isAdmin) => {
@@ -616,11 +395,11 @@ export class AuthService {
     user.businessModel = parseInt(currentUser.businessModel);
 
     // Keep user permission per module
-    // (1) Retail Module
-    if (currentUser.retailModulePrivilege) {
+    // (1) Distribution Module
+    if (currentUser.distributionModulePrivilege) {
       user.setModulePrivilege(
-        ModuleEnum.Retail,
-        <PermissionLevelEnum>currentUser.retailModulePrivilege.toUpperCase()
+        ModuleEnum.Distribution,
+        <PermissionLevelEnum>currentUser.distributionModulePrivilege.toUpperCase()
       );
     }
 
@@ -635,34 +414,4 @@ export class AuthService {
     this._currentUserFullname.next(user.fullname);
     this._currentUsername.next(user.username);
   }
-
-
-  checkUsernameExists(userId: number, username: string) {
-    return this.apollo
-      .watchQuery({
-        query: CHECK_USERNAME,
-        variables: {
-          userId,
-          username,
-        },
-      })
-      .valueChanges.pipe(
-        map(
-          (
-            result: ApolloQueryResult<{
-              checkUsername: IUserAccountInformationQueryPayload;
-            }>
-          ) => {
-            const data = result.data.checkUsername;
-            if (data.typename === 'CheckUsernameInformationResult')
-              return (<CheckUsernameInformationResult>result.data.checkUsername)
-                .exists;
-
-            return false;
-          }
-        )
-      );
-  }
-
-
 }

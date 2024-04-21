@@ -30,7 +30,10 @@
     "LINKED": "Linked",
     "SAVE_CHANGES": "Save Changes",
     "NEW": "New",
-    "EXISTING": "Existing"
+    "EXISTING": "Existing",
+    "DEACTIVATE": "Deactivate",
+    "ACTIVATE": "Activate",
+    "INACTIVE": "Inactive"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -744,6 +747,14 @@
         "HINT": "Please enter a valid email",
         "INVALID_EMAIL_ERROR_MESSAGE": "Invalid email format. Please enter a valid email address."
       },
+      "PERMISSION_LEVEL_CONTROL": {
+        "LABEL": "Permission Level",
+        "OPTIONS": {
+          "USER": "Sales agent",
+          "MANAGER": "Manager",
+          "ADMINISTRATOR": "Administrator"
+        }
+      },
       "USERNAME_CONTROL": {
         "LABEL": "Username",
         "HINT": "Please enter a valid username",
@@ -756,7 +767,8 @@
       },
       "CONFIRM_PASSWORD_CONTROL": {
         "LABEL": "Confirm Password",
-        "HINT": "Please enter confirm password"
+        "HINT": "Please enter confirm password",
+        "PASSWORD_NOT_MATCHED_ERROR_MESSAGE": "Password does not matched!"
       }
     },
     "EDIT_PROFILE_DIALOG": {
@@ -861,7 +873,63 @@
   },
   "ACCOUNTS_PAGE": {
     "TITLE": "Accounts",
-    "DESCRIPTION": "This is the page where administrator can manage user accounts information."
+    "DESCRIPTION": "Create, update and remove user accounts on this page. Only administrators can access this page.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search account name or username..."
+    },
+    "ACCOUNT_SEARCH_RESULT_CONTAINER": {
+      "LABEL": "Search result matches"
+    },
+    "ACCOUNT_COUNTER_CONTAINER": {
+      "LABEL": "Total number of items"
+    },
+    "DELETE_ACCOUNT_DIALOG": {
+      "TITLE": "Delete user account",
+      "CONFIRM": "Are you sure to delete selected user account?",
+      "SUCCESS_MESSAGE": "Selected user account has been successfully removed.",
+      "ERROR_MESSAGE": "Removing user account failed. Please again later."
+    },
+    "ACTIVATE_ACCOUNT_DIALOG": {
+      "TITLE": "Activate user account",
+      "CONFIRM": "Activating user account means that you are giving this user permission to access the system. Are you still sure to proceed?",
+      "SUCCESS_MESSAGE": "Selected user account has been successfully activated.",
+      "ERROR_MESSAGE": "Activating user account failed. Please again later."
+    },
+    "DEACTIVATE_ACCOUNT_DIALOG": {
+      "TITLE": "Deactivate user account",
+      "CONFIRM": "Deactivating user account means that user cannot login anymore. Are you still sure to proceed?",
+      "SUCCESS_MESSAGE": "Selected user account has been successfully deactivated.",
+      "ERROR_MESSAGE": "Deactivating user account failed. Please again later."
+    }
+  },
+  "MANAGE_ACCOUNT_PAGE": {
+    "TITLE": "Manage User Account",
+    "DESCRIPTION": "This is where user account information can be managed.",
+    "TAB_SECTIONS": {
+      "PERSONAL_INFORMATION": "Personal Information",
+      "ACCOUNT_INFORMATION": "Account Information"
+    },
+    "FORM_CONTROL_SECTION": {
+      "TITLE": {
+        "CREATE_NEW": "Create New User Account",
+        "UPDATE_EXISTING": "Update User Account"
+      }
+    },
+    "EDIT_ACCOUNT_DIALOG": {
+      "TITLE": "Update user account",
+      "CONFIRM": "Are you sure to save changes details?",
+      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "ERROR_MESSAGE": "Updating details failed. Please again later."
+    },
+    "NEW_ACCOUNT_DIALOG": {
+      "TITLE": "New user account",
+      "CONFIRM": "Are you sure to save new user account?",
+      "SUCCESS_MESSAGE": "New user account has been saved!",
+      "ERROR_MESSAGE": "Updating details failed. Please again later."
+    },
+    "INVALID_FORM_DIALOG": {
+      "TITLE": "There is error(s) in the form. Please fix the error(s) and saving again."
+    }
   },
   "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
     "TITLE": "Product Stock Audit",

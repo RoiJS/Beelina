@@ -43,7 +43,7 @@ namespace Beelina.LIB.BusinessLogic
                      .ClientDbContext
                      .UserPermission
                      .Where(u =>
-                         u.ModuleId == ModulesEnum.Retail
+                         u.ModuleId == ModulesEnum.Distribution
                          && u.UserAccountId == _currentUserService.CurrentUserId
                      )
                      .FirstOrDefaultAsync();
@@ -94,7 +94,7 @@ namespace Beelina.LIB.BusinessLogic
       try
       {
 
-        var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Retail);
+        var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Distribution);
 
         // Gather products information with product stock per panel and product unit.
         // Only gets the products that the user has permission to see.

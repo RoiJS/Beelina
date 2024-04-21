@@ -43,7 +43,7 @@ export class ToolBarComponent
     private location: Location) {
     super();
     this._currentLoggedInUser = this.authService.user.value;
-    this.isAdmin = this.modulePrivilege(ModuleEnum.Retail) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
+    this.isAdmin = this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
   }
 
   ngOnInit(): void { }
