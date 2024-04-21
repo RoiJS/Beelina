@@ -5,7 +5,7 @@ import {
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
 import { UserAccountInformationResult } from 'src/app/_models/results/user-account-information-result';
-import { AuthService } from 'src/app/_services/auth.service';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 import { BaseComponent } from '../components/base-component/base.component';
 
 @Component({
@@ -15,8 +15,7 @@ import { BaseComponent } from '../components/base-component/base.component';
 })
 export class AccountVerificationComponent
   extends BaseComponent
-  implements OnInit
-{
+  implements OnInit {
   private _accountVerificationForm: FormGroup;
 
   constructor(
@@ -25,7 +24,7 @@ export class AccountVerificationComponent
     public data: {
       defaultUsername: string;
     },
-    private authService: AuthService,
+    private userAccountService: UserAccountService,
     private formBuilder: FormBuilder
   ) {
     super();
@@ -39,7 +38,7 @@ export class AccountVerificationComponent
       .setValue(this.data.defaultUsername);
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onCancel() {
     this._bottomSheetRef.dismiss();
@@ -50,7 +49,7 @@ export class AccountVerificationComponent
     const password = this._accountVerificationForm.get('password').value;
 
     this._isLoading = true;
-    this.authService.verifyUserAccount(username, password).subscribe({
+    this.userAccountService.verifyUserAccount(username, password).subscribe({
       next: (data: UserAccountInformationResult) => {
         this._isLoading = false;
         this._bottomSheetRef.dismiss(data);

@@ -2,6 +2,6 @@
 {
     public enum ModulesEnum
     {
-        Retail = 1
+        Distribution = 1
     }
 }

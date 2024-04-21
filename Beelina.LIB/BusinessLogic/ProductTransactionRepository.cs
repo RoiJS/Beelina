@@ -35,7 +35,7 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<List<TransactionTopProduct>> GetTopSellingProducts(int userId, string fromDate = "", string toDate = "")
         {
-            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
 
             var productTransactionsFromRepo = from t in _beelinaRepository.ClientDbContext.Transactions
                                               join pt in _beelinaRepository.ClientDbContext.ProductTransactions

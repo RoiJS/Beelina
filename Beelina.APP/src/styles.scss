@@ -364,6 +364,8 @@ app-tool-bar {
 
 @media only screen and (min-width: 780px) {
   cdk-virtual-scroll-viewport.product-list
+    > div.cdk-virtual-scroll-content-wrapper,
+  cdk-virtual-scroll-viewport.user-account-list
     > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -377,6 +379,8 @@ app-tool-bar {
 
 @media only screen and (min-width: 1440px) {
   cdk-virtual-scroll-viewport.product-list
+    > div.cdk-virtual-scroll-content-wrapper,
+  cdk-virtual-scroll-viewport.user-account-list
     > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;

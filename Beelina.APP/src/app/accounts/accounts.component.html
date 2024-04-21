@@ -1,9 +1,70 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false"></app-tool-bar>
-<div class="page-container scale-in-center-animation">
-  <div class="page-container__page-divider scale-in-center-animation">
-    <label>{{ "ACCOUNTS_PAGE.TITLE" | translate }}</label><br />
-    <span class="page-information-description">{{
-      "ACCOUNTS_PAGE.DESCRIPTION" | translate
-      }}</span>
+
+<app-loader-layout [busy]="$isLoading | async">
+  <div class="page-container scale-in-center-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "ACCOUNTS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "ACCOUNTS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-search-field (onSearch)="onSearch($event)" (onClear)="onClear()" [placeHolderTextIdentifier]="
+        'ACCOUNTS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "></app-search-field>
+    <div class="user-account-list-status-bar-container">
+      <div class="user-account-list-status-bar-container__search-result-counter-section"
+        *ngIf="filterKeyword?.length > 0">
+        <span>{{ 'ACCOUNTS_PAGE.ACCOUNT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalUserAccounts.toString()"></app-badge>
+      </div>
+
+      <div class="user-account-list-status-bar-container__total-accounts-counter-section"
+        *ngIf="filterKeyword?.length === 0">
+        <span>{{ 'ACCOUNTS_PAGE.ACCOUNT_COUNTER_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalUserAccounts.toString()"></app-badge>
+      </div>
+    </div>
+    <app-list-container [templateType]="emptyEntityTemplateEnum.USER_ACCOUNTS" [count]="dataSource?.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container user-account-list">
+        <div *cdkVirtualFor="let item of dataSource">
+          <div class="user-account-item-container">
+            <div matRipple class="user-account-item-container__user-icon-container">
+              <div class="user-icon">
+                <img src="../../../assets/icons/user-icon.png" />
+              </div>
+            </div>
+            <div matRipple class="user-account-item-container__user-info-container">
+              <div class="user-info">
+                <span class="user-info__name">{{ item.fullname }} <app-badge *ngIf="!item.isActive"
+                    [type]="bannerTypeEnum.WARNING" [textIdentifier]="'GENERAL_TEXTS.INACTIVE'"></app-badge></span>
+                <span class="user-info__username">{{ item.username }}</span><br>
+                <span class="user-info__user-type">{{ item.userType }}</span>
+              </div>
+              <div class="user-actions">
+                <div class="user-actions__edit-button-container">
+                  <button mat-button mat-raised-button color="primary" (click)="editUserAccount(item)">Edit</button>
+                </div>
+                <div>
+                  <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="deleteUser(item)">
+                      <mat-icon>delete</mat-icon> {{ "GENERAL_TEXTS.REMOVE" | translate }}
+                    </button>
+                    <button *ngIf="item.isActive" mat-menu-item (click)="activateUser(item, false)">
+                      <mat-icon>remove_circle_outline</mat-icon> {{ "GENERAL_TEXTS.DEACTIVATE" | translate }}
+                    </button>
+                    <button *ngIf="!item.isActive" mat-menu-item (click)="activateUser(item, true)">
+                      <mat-icon>check_circle_outline</mat-icon> {{ "GENERAL_TEXTS.ACTIVATE" | translate }}
+                    </button>
+                  </mat-menu>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
   </div>
-</div>
+
+  <app-floating-button (tapButton)="addUserAccount()" [icon]="'add'"></app-floating-button>
+</app-loader-layout>

@@ -1,0 +1,155 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
+  <button mat-icon-button class="toolbar-option" (click)="saveInfo()">
+    <mat-icon>save</mat-icon>
+  </button>
+</app-tool-bar>
+<app-loader-layout [busy]="isLoading">
+  <div class="page-container slide-in-left-animation">
+    <div class="panel">
+      <div [formGroup]="profileForm " class="panel__details-group-panel">
+        <div class="panel__header-section">
+          <label>{{ title }}</label>
+        </div>
+        <div class="panel__body-section">
+          <mat-tab-group mat-stretch-tabs="true" mat-align-tabs="start">
+            <!-- Sales Tab View -->
+            <mat-tab [label]="personalInformationLabelText">
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.FIRSTNAME_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <input matInput type="text" formControlName="firstName" />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.MIDDLENAME_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <input matInput type="text" formControlName="middleName" />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.LASTNAME_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <input matInput type="text" formControlName="lastName" />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <input matInput type="email" formControlName="emailAddress" />
+                <mat-error *ngIf="profileForm.get('emailAddress').hasError('email')">
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.INVALID_EMAIL_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
+              </mat-form-field>
+            </mat-tab>
+            <mat-tab [label]="accountInformationLabelText">
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.PERMISSION_LEVEL_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <mat-select formControlName="permission">
+                  <mat-option [value]="'USER'">
+                    {{
+                    "PROFILE_PAGE.FORM_CONTROL_SECTION.PERMISSION_LEVEL_CONTROL.OPTIONS.USER"
+                    | translate
+                    }}
+                  </mat-option>
+                  <mat-option [value]="'MANAGER'">
+                    {{
+                    "PROFILE_PAGE.FORM_CONTROL_SECTION.PERMISSION_LEVEL_CONTROL.OPTIONS.MANAGER"
+                    | translate
+                    }}
+                  </mat-option>
+                  <mat-option [value]="'ADMINISTRATOR'">
+                    {{
+                    "PROFILE_PAGE.FORM_CONTROL_SECTION.PERMISSION_LEVEL_CONTROL.OPTIONS.ADMINISTRATOR"
+                    | translate
+                    }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <input matInput type="email" formControlName="username" />
+
+                <mat-error *ngIf="
+                        profileForm.get('username')?.hasError('usernameAlreadyExists')
+                      ">
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
+              </mat-form-field>
+
+              <br />
+              <br />
+              <app-banner [type]="_bannerType.WARNING">
+                <span>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
+                  | translate
+                  }}</span>
+              </app-banner>
+              <br />
+
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <input matInput [type]="passwordVisible ? 'text' : 'password'" formControlName="newPassword" />
+
+                <mat-icon matSuffix (click)="setPasswordVisibility()">{{passwordVisible ? 'visibility' :
+                  'visibility_off'}}</mat-icon>
+
+                <mat-error *ngIf="profileForm.get('newPassword').hasError('pattern')">
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.CONFIRM_PASSWORD_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <input matInput [type]="passwordVisible ? 'text' : 'password'" formControlName="confirmPassword" />
+
+                <mat-icon matSuffix (click)="setPasswordVisibility()">{{passwordVisible ? 'visibility' :
+                  'visibility_off'}}</mat-icon>
+
+                <mat-error *ngIf="profileForm.get('confirmPassword').hasError('pattern')">
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.CONFIRM_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
+                <mat-error *ngIf="profileForm.get('confirmPassword').hasError('passwordMismatch')">
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.CONFIRM_PASSWORD_CONTROL.PASSWORD_NOT_MATCHED_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
+              </mat-form-field>
+
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

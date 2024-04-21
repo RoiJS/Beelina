@@ -10,6 +10,7 @@ import { UniqueUsernameValidator } from '../_validators/unique-username.validato
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
+import { UserAccountService } from '../_services/user-account.service';
 
 @Component({
   selector: 'app-profile',
@@ -22,6 +23,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private userAccountService: UserAccountService,
     private formBuilder: FormBuilder,
     private dialogService: DialogService,
     private notificationService: NotificationService,
@@ -62,8 +64,8 @@ export class ProfileComponent extends BaseComponent implements OnInit {
     const userId = this.authService.userId;
     this.uniqueUsernameValidator.userId = userId;
 
-    this.authService
-      .getUserInformation(userId)
+    this.userAccountService
+      .getUserAccount(userId)
       .subscribe((data: UserAccountInformationResult) => {
         this._userDetails = data;
         this._profileForm.get('firstName').setValue(data.firstName);
@@ -123,7 +125,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
         .subscribe((result: boolean) => {
           if (result) {
             this._isLoading = true;
-            this.authService.updateAccountInformation(user).subscribe({
+            this.userAccountService.updateAccountInformation(user).subscribe({
               next: () => {
                 this._isLoading = false;
                 this._userDetails = user;

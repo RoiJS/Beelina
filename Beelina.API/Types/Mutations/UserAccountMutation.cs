@@ -23,56 +23,73 @@ namespace Beelina.API.Types.Mutations
     {
         [Authorize]
         [Error(typeof(UserAccountErrorFactory))]
-        public async Task<UserAccount> RegisterUserAccount(
-            [Service] IUserAccountRepository<UserAccount> userAccountRepository,
-            [Service] IMapper mapper,
-            UserAccountInput userAccountInput)
-        {
-            userAccountInput.Username = userAccountInput.Username.ToLower();
-
-            if (await userAccountRepository.UserExists(userAccountInput.Username))
-                throw new UsernameAlreadyExistsException(userAccountInput.Username);
-
-            var userToCreate = mapper.Map<UserAccount>(userAccountInput);
-
-            var createdUser = await userAccountRepository.Register(userToCreate, userAccountInput.NewPassword);
-
-            return createdUser;
-        }
-
-        [Authorize]
-        [Error(typeof(UserAccountErrorFactory))]
         public async Task<UserAccount> UpdateUserAccount(
             [Service] IUserAccountRepository<UserAccount> userAccountRepository,
             [Service] IMapper mapper,
             [Service] ICurrentUserService currentUserService,
-            UserAccountInput userAccountForUpdateInput
+            UserAccountInput userAccountInput
             )
         {
+            userAccountRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
             var userAccountFromRepo = await userAccountRepository
-                        .GetEntity(userAccountForUpdateInput.Id)
+                        .GetEntity(userAccountInput.Id)
                         .Includes(u => u.UserPermissions)
                         .ToObjectAsync();
 
             if (userAccountFromRepo == null)
-                throw new UserAccountNotExistsException();
-
-            userAccountRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-
-            mapper.Map(userAccountForUpdateInput, userAccountFromRepo);
-
-            // Check if user has new password   
-            if (!String.IsNullOrEmpty(userAccountForUpdateInput.NewPassword))
             {
-                var encryptedNewPassword = userAccountRepository.GenerateNewPassword(userAccountForUpdateInput.NewPassword);
-                userAccountFromRepo.PasswordHash = encryptedNewPassword.PasswordHash;
-                userAccountFromRepo.PasswordSalt = encryptedNewPassword.PasswordSalt;
+                userAccountInput.Username = userAccountInput.Username.ToLower();
+
+                if (await userAccountRepository.UserExists(userAccountInput.Username))
+                    throw new UsernameAlreadyExistsException(userAccountInput.Username);
+
+                var userToCreate = mapper.Map<UserAccount>(userAccountInput);
+
+                userAccountFromRepo = await userAccountRepository.Register(userToCreate, userAccountInput.NewPassword);
+            }
+            else
+            {
+                mapper.Map(userAccountInput, userAccountFromRepo);
+
+                // Check if user has new password   
+                if (!String.IsNullOrEmpty(userAccountInput.NewPassword))
+                {
+                    var encryptedNewPassword = userAccountRepository.GenerateNewPassword(userAccountInput.NewPassword);
+                    userAccountFromRepo.PasswordHash = encryptedNewPassword.PasswordHash;
+                    userAccountFromRepo.PasswordSalt = encryptedNewPassword.PasswordSalt;
+                }
+
+                if (!await userAccountRepository.SaveChanges())
+                    throw new BaseException("Failed to update user account!");
             }
 
-            if (!await userAccountRepository.SaveChanges())
-                throw new BaseException("Failed to update user account!");
-
             return userAccountFromRepo;
+        }
+
+        [Authorize]
+        [Error(typeof(UserAccountErrorFactory))]
+        public async Task<bool> DeleteUserAccounts(
+            [Service] IUserAccountRepository<UserAccount> userAccountRepository,
+            [Service] ICurrentUserService currentUserService,
+            List<int> userIds
+            )
+        {
+            userAccountRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+            return await userAccountRepository.DeleteMultipleUserAccounts(userIds);
+        }
+
+        [Authorize]
+        [Error(typeof(UserAccountErrorFactory))]
+        public async Task<bool> SetUserAccountsStatus(
+            [Service] IUserAccountRepository<UserAccount> userAccountRepository,
+            [Service] ICurrentUserService currentUserService,
+            List<int> userIds,
+            bool state
+        )
+        {
+            userAccountRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+            return await userAccountRepository.SetMultipleUserAccountsStatus(userIds, state);
         }
 
         [Error(typeof(UserAccountErrorFactory))]
@@ -142,7 +159,7 @@ namespace Beelina.API.Types.Mutations
             {
                 throw new InvalidRefreshTokenException();
             }
-            
+
             var generalSetting = await generalSettingRepository.GetGeneralSettings();
             var appSecretToken = httpContextAccessor.HttpContext.Request.Headers["App-Secret-Token"].ToString();
             var newAccessToken = GenerateAccessToken(appSettings, generalSetting, userFromRepo, appSecretToken);
@@ -166,7 +183,7 @@ namespace Beelina.API.Types.Mutations
 
         private string GenerateAccessToken(IOptions<ApplicationSettings> appSettings, GeneralSetting generalSetting, UserAccount user, string appSecretToken)
         {
-            var retailModulePrivilege = user.UserPermissions.Where(u => u.ModuleId == ModulesEnum.Retail).FirstOrDefault();
+            var distributionModulePrivilege = user.UserPermissions.Where(u => u.ModuleId == ModulesEnum.Distribution).FirstOrDefault();
 
             var claims = new List<Claim> {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -181,9 +198,9 @@ namespace Beelina.API.Types.Mutations
                 new (BeelinaClaimTypes.BusinessModel, ((int)generalSetting.BusinessModel).ToString()),
             };
 
-            if (retailModulePrivilege is not null)
+            if (distributionModulePrivilege is not null)
             {
-                claims.Add(new(BeelinaClaimTypes.RetailModulePrivilege, Enum.GetName(typeof(PermissionLevelEnum), retailModulePrivilege.PermissionLevel) ?? String.Empty));
+                claims.Add(new(BeelinaClaimTypes.DistributionModulePrivilege, Enum.GetName(typeof(PermissionLevelEnum), distributionModulePrivilege.PermissionLevel) ?? String.Empty));
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Value.GeneralSettings.Token));

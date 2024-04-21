@@ -5,7 +5,6 @@ import { ModuleEnum } from 'src/app/_enum/module.enum';
 
 import { User } from 'src/app/_models/user.model';
 import { AuthService } from 'src/app/_services/auth.service';
-import { StorageService } from 'src/app/_services/storage.service';
 import { UIService } from 'src/app/_services/ui.service';
 import { SharedComponent } from '../components/shared/shared.component';
 
@@ -21,7 +20,7 @@ export class UserCardComponent extends SharedComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private translateSerice: TranslateService,
+    private translateService: TranslateService,
     override uiService: UIService
   ) {
     super(uiService);
@@ -44,13 +43,13 @@ export class UserCardComponent extends SharedComponent implements OnInit {
   }
 
   get getUserType(): string {
-    switch (this._user?.getModulePrivilege(ModuleEnum.Retail)) {
+    switch (this._user?.getModulePrivilege(ModuleEnum.Distribution).value) {
       case 1:
-        return this.translateSerice.instant('USER_TYPE.SALES_AGENT');
+        return this.translateService.instant('USER_TYPE.SALES_AGENT');
       case 2:
-        return this.translateSerice.instant('USER_TYPE.MANAGER');
+        return this.translateService.instant('USER_TYPE.MANAGER');
       case 3:
-        return this.translateSerice.instant('USER_TYPE.ADMINISTRATOR');
+        return this.translateService.instant('USER_TYPE.ADMINISTRATOR');
       default:
         return '';
     }

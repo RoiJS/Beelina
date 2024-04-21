@@ -8,6 +8,7 @@ import { IProductStockAuditState } from '../product/edit-product-details/manage-
 import { ITransactionDateState } from '../transaction-history/types/transaction-dates-state.interface';
 import { IProductUnitState } from '../units/types/product-unit-state.interface';
 import { ITopSellingProductsState } from '../product/top-products/store/top-selling-product-state.interface';
+import { IUserAccountState } from '../accounts/store/user-account.interface';
 
 export interface AppStateInterface {
   authCredentials: ILoginAuthCredentialsState;
@@ -21,4 +22,5 @@ export interface AppStateInterface {
   transactionDates: ITransactionDateState;
   topSellingProducts: ITopSellingProductsState;
   productTransactions: IProductTransactionState;
+  userAccounts: IUserAccountState;
 }

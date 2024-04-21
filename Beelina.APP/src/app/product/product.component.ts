@@ -284,12 +284,12 @@ export class ProductComponent
       if (data === undefined) return;
 
       if (data !== null) {
-        const retailModulePrivilege = data.getModulePrivilege(
-          ModuleEnum.Retail
-        );
+        const distributionModulePrivilege = data.getModulePrivilege(
+          ModuleEnum.Distribution
+        ).value;
         if (
-          retailModulePrivilege &&
-          retailModulePrivilege >
+          distributionModulePrivilege &&
+          distributionModulePrivilege >
           getPermissionLevelEnum(PermissionLevelEnum.User)
         ) {
           this._allowManageProductDetails = true;
@@ -478,7 +478,7 @@ export class ProductComponent
   }
 
   get currentUserPermission(): number {
-    return this.modulePrivilege(ModuleEnum.Retail);
+    return this.modulePrivilege(ModuleEnum.Distribution);
   }
 
   get allowManageProductDetails(): boolean {

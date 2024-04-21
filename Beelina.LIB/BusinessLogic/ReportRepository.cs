@@ -50,7 +50,7 @@ namespace Beelina.LIB.BusinessLogic
                 .ClientDbContext
                 .UserPermission
                 .Where(u =>
-                    u.ModuleId == ModulesEnum.Retail
+                    u.ModuleId == ModulesEnum.Distribution
                     && u.UserAccountId == _currentUserService.CurrentUserId
                 )
                 .FirstOrDefaultAsync();
@@ -70,7 +70,7 @@ namespace Beelina.LIB.BusinessLogic
                                          where
                                            (!r.Custom || (r.Custom && rc.ClientId == tenantId && rc != null))
                                            &&  ((r.OnlyAvailableOnBusinessModel == null) || (r.OnlyAvailableOnBusinessModel != null && r.OnlyAvailableOnBusinessModel == generalSetting.BusinessModel))
-                                           && r.ModuleId == ModulesEnum.Retail
+                                           && r.ModuleId == ModulesEnum.Distribution
                                            && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
                                            && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
                                            && r.IsActive

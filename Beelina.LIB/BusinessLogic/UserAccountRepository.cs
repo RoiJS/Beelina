@@ -19,6 +19,25 @@ namespace Beelina.LIB.BusinessLogic
 
         }
 
+        public async Task<List<UserAccount>> GetUserAccounts(int userId = 0, string filterKeyword = "", CancellationToken cancellationToken = default)
+        {
+            var usersFromRepo = await _beelinaRepository
+                                            .ClientDbContext
+                                            .UserAccounts
+                                            .Where(u =>
+                                                !u.IsDelete
+                                                && (userId == 0 || (userId > 0 && u.Id == userId))
+                                            )
+                                            .Includes(a => a.UserPermissions)
+                                            .ToListAsync(cancellationToken);
+
+            var finalUserAccountsFromRepo = (from u in usersFromRepo
+                                             where (filterKeyword != "" && (u.FirstName.IsMatchAnyKeywords(filterKeyword) || u.MiddleName.IsMatchAnyKeywords(filterKeyword) || u.LastName.IsMatchAnyKeywords(filterKeyword) || u.Username.IsMatchAnyKeywords(filterKeyword)) || filterKeyword == "")
+                                             select u).ToList();
+
+            return finalUserAccountsFromRepo;
+        }
+
         public async Task<UserAccount> Register(UserAccount account, string password)
         {
             var encryptedPassword = GenerateNewPassword(password);
@@ -40,13 +59,35 @@ namespace Beelina.LIB.BusinessLogic
             return false;
         }
 
+        public async Task<bool> DeleteMultipleUserAccounts(List<int> userIds)
+        {
+            var selectedUserAccounts = await _beelinaRepository
+                .ClientDbContext
+                .UserAccounts
+                .Where(t => userIds.Contains(t.Id)).ToListAsync();
+
+            DeleteMultipleEntities(selectedUserAccounts);
+            return await SaveChanges();
+        }
+
+        public async Task<bool> SetMultipleUserAccountsStatus(List<int> userIds, bool state)
+        {
+            var selectedUserAccounts = await _beelinaRepository
+                .ClientDbContext
+                .UserAccounts
+                .Where(t => userIds.Contains(t.Id)).ToListAsync();
+
+            SetMultipleEntitiesStatus(selectedUserAccounts, state);
+            return await SaveChanges();
+        }
+
         public async Task<List<UserAccount>> GetAllSalesAgents()
         {
             var salesAgentAccounts = await _beelinaRepository.ClientDbContext.UserAccounts
                             .Includes(a => a.UserPermissions)
                             .ToListAsync();
 
-            return salesAgentAccounts.Where(x => x.UserPermissions.Any(u => u.ModuleId == ModulesEnum.Retail && u.PermissionLevel == PermissionLevelEnum.User)).ToList();
+            return salesAgentAccounts.Where(x => x.UserPermissions.Any(u => u.ModuleId == ModulesEnum.Distribution && u.PermissionLevel == PermissionLevelEnum.User)).ToList();
         }
 
         public async Task<UserAccount> Login(string username, string password)
