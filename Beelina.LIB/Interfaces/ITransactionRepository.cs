@@ -6,6 +6,9 @@ namespace Beelina.LIB.Interfaces
     public interface ITransactionRepository<TEntity>
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
+        Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate);
+        Task<List<CustomerSaleProduct>> GetTopCustomerSaleProducts(int storeId);
+
         Task<Transaction> RegisterTransaction(Transaction transaction);
 
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);

@@ -22,6 +22,108 @@ namespace Beelina.LIB.BusinessLogic
             _currentUserService = currentUserService;
         }
 
+        public async Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate)
+        {
+            var customeTransactions = (from t in _beelinaRepository.ClientDbContext.Transactions
+
+                                       join p in _beelinaRepository.ClientDbContext.ProductTransactions
+                                          on t.Id equals p.TransactionId
+                                          into joinProductTransactions
+                                       from pt in joinProductTransactions.DefaultIfEmpty()
+
+                                       join s in _beelinaRepository.ClientDbContext.Stores
+                                          on t.StoreId equals s.Id
+
+                                       where
+                                          (storeId == 0 || (storeId > 0 && t.StoreId == storeId))
+                                          && s.IsActive
+                                          && !s.IsDelete
+                                          && t.IsActive
+                                          && !t.IsDelete
+
+                                       select new
+                                       {
+                                           Store = s,
+                                           Transaction = t,
+                                           ProductTransaction = pt
+                                       }
+                                );
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+                customeTransactions = customeTransactions.Where(t =>
+                        t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate)
+                        && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate)
+                );
+            }
+
+            var topCustomerSales = await customeTransactions
+                .GroupBy(t => new { t.Store.Id, t.Store.Name, t.Store.OutletType })
+                .Select(g => new CustomerSale
+                {
+                    StoreId = g.Key.Id,
+                    StoreName = g.Key.Name,
+                    OutletType = g.Key.OutletType,
+                    TotalSalesAmount = Math.Round(g.Sum(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity), 2),
+                })
+                .OrderByDescending(t => t.TotalSalesAmount)
+                .ToListAsync();
+
+            return topCustomerSales;
+        }
+
+        public async Task<List<CustomerSaleProduct>> GetTopCustomerSaleProducts(int storeId)
+        {
+            var customeTransactions = (from t in _beelinaRepository.ClientDbContext.Transactions
+
+                                       join p in _beelinaRepository.ClientDbContext.ProductTransactions
+                                          on t.Id equals p.TransactionId
+                                          into joinProductTransactions
+                                       from pt in joinProductTransactions.DefaultIfEmpty()
+
+                                       join p in _beelinaRepository.ClientDbContext.Products
+                                          on pt.ProductId equals p.Id
+                                          into joinProducts
+                                       from pp in joinProducts.DefaultIfEmpty()
+
+                                       join pu in _beelinaRepository.ClientDbContext.ProductUnits
+                                            on pp.ProductUnitId equals pu.Id
+
+                                       where
+                                          t.StoreId == storeId
+                                          && pp.IsActive
+                                          && !pp.IsDelete
+                                          && t.IsActive
+                                          && !t.IsDelete
+
+                                       select new
+                                       {
+                                           Product = pp,
+                                           ProductUnitName = pu.Name,
+                                           Transaction = t,
+                                           ProductTransaction = pt
+                                       }
+                                );
+
+            var topCustomerSalesProducts = await customeTransactions
+                .GroupBy(t => new { t.Product.Code, t.Product.Id, t.Product.Name, t.ProductUnitName })
+                .Select(g => new CustomerSaleProduct
+                {
+                    ProductId = g.Key.Id,
+                    ProductCode = g.Key.Code,
+                    ProductName = g.Key.Name,
+                    Unit = g.Key.ProductUnitName,
+                    TotalSalesAmount = Math.Round(g.Sum(t => t.ProductTransaction.Price * t.ProductTransaction.Quantity), 2),
+                })
+                .OrderByDescending(t => t.TotalSalesAmount)
+                .ToListAsync();
+
+            return topCustomerSalesProducts;
+        }
+
         public async Task<List<TotalSalesPerDateRange>> GetTotalSalePerDateRange(int userId, List<DateRange> dateRanges)
         {
             var totalSalePerDateRanges = new List<TotalSalesPerDateRange>();

@@ -99,15 +99,15 @@ namespace Beelina.LIB.BusinessLogic
         // Gather products information with product stock per panel and product unit.
         // Only gets the products that the user has permission to see.
         var productsFromRepo = await (from p in _beelinaRepository.ClientDbContext.Products
-                                      join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
 
-                                      on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
-                                      into productStockJoin
+                                      join pp in _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                                        on new { Id = p.Id, UserAccountId = userId } equals new { Id = pp.ProductId, UserAccountId = pp.UserAccountId }
+                                        into productStockJoin
                                       from pp in productStockJoin.DefaultIfEmpty()
 
                                       join pu in _beelinaRepository.ClientDbContext.ProductUnits
-                                          on p.ProductUnitId equals pu.Id
-                                          into productUnitJoin
+                                        on p.ProductUnitId equals pu.Id
+                                        into productUnitJoin
                                       from pu in productUnitJoin.DefaultIfEmpty()
 
                                       where

@@ -82,6 +82,18 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
+    public async Task<List<CustomerSale>> GetTopCustomerSales([Service] ITransactionRepository<Transaction> transactionRepository, int storeId, string fromDate, string toDate)
+    {
+      return await transactionRepository.GetTopCustomerSales(storeId, fromDate, toDate);
+    }
+
+    [Authorize]
+    public async Task<List<CustomerSaleProduct>> GetCustomerSaleProducts([Service] ITransactionRepository<Transaction> transactionRepository, int storeId)
+    {
+      return await transactionRepository.GetTopCustomerSaleProducts(storeId);
+    }
+
+    [Authorize]
     public async Task<List<InsufficientProductQuantity>> ValidateProductionTransactionsQuantities(
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,

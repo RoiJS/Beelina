@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { map, take } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 import { Entity } from '../_models/entity.model';
 import { Product } from '../_models/product';
@@ -42,6 +43,7 @@ import { DateRange } from '../_models/date-range';
 import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
 import { ITransactionInformationOutput } from '../_interfaces/outputs/itransaction-information.output';
+import { OutletTypeEnum } from '../_enum/outlet-type.enum';
 
 const REGISTER_TRANSACTION_MUTATION = gql`
   mutation ($transactionInput: TransactionInput!) {
@@ -202,6 +204,7 @@ const GET_TOP_SELLING_PRODUCTS = gql`
         id
         code
         name
+        unitName
         count
         totalAmount
       }
@@ -247,6 +250,40 @@ const GET_TRANSACTION_SALES_FOR_ALL_PER_DATE_RANGE_QUERY = gql`
       id
       salesAgentName
       sales
+    }
+  }
+`;
+
+const GET_CUSTOMER_SALES_PRODUCTS_QUERY = gql`
+  query(
+    $storeId: Int!
+  ) {
+  customerSaleProducts (
+        storeId: $storeId
+    ) {
+        productId
+        productCode
+        productName
+        unit
+        totalSalesAmount
+    }
+  }
+`;
+const GET_TOP_CUSTOMER_SALES_QUERY = gql`
+  query(
+    $storeId: Int!,
+    $fromDate: String!,
+    $toDate: String!
+  ) {
+  topCustomerSales (
+        storeId: $storeId
+        fromDate: $fromDate
+        toDate: $toDate
+    ) {
+        storeId
+        storeName
+        outletType
+        totalSalesAmount
     }
   }
 `;
@@ -349,6 +386,7 @@ export interface IMarkTransactionAsPaidPayLoad {
 export class TopSellingProduct {
   public id: number;
   public code: string;
+  public unitName: string;
   public name: string;
   public count: number;
   public totalAmount: number;
@@ -358,11 +396,35 @@ export class TopSellingProduct {
   }
 }
 
+export class CustomerSale {
+  public storeId: number;
+  public storeName: string;
+  public outletType: string;
+  public totalSalesAmount: number;
+
+  get totalSalesAmountFormatted(): string {
+    return NumberFormatter.formatCurrency(this.totalSalesAmount);
+  }
+}
+
+export class CustomerSaleProduct {
+  public productId: number;
+  public productCode: string;
+  public productName: string;
+  public unit: string;
+  public totalSalesAmount: number;
+
+  get totalSalesAmountFormatted(): string {
+    return NumberFormatter.formatCurrency(this.totalSalesAmount);
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
   constructor(
     private apollo: Apollo,
-    private store: Store<AppStateInterface>
+    private store: Store<AppStateInterface>,
+    private translateService: TranslateService,
   ) { }
 
   registerTransaction(transaction: TransactionDto) {
@@ -704,6 +766,7 @@ export class TransactionService {
             topProducts.id = stockAudit.id;
             topProducts.code = stockAudit.code;
             topProducts.name = stockAudit.name;
+            topProducts.unitName = stockAudit.unitName;
             topProducts.count = stockAudit.count;
             topProducts.totalAmount = stockAudit.totalAmount;
             return topProducts;
@@ -746,7 +809,6 @@ export class TransactionService {
         )
       );
   }
-
 
   getTransactionSalesPerDateRange(userId: number, dateRanges: Array<DateRange>) {
     return this.apollo
@@ -791,6 +853,67 @@ export class TransactionService {
               })
             )
             return salesForAllSalesAgents;
+          }
+        )
+      );
+  }
+
+  getTopStoresSales(storeId: number = 0, fromDate: string = '', toDate: string = '') {
+    return this.apollo
+      .watchQuery({
+        query: GET_TOP_CUSTOMER_SALES_QUERY,
+        variables: { storeId, fromDate, toDate },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              topCustomerSales: Array<CustomerSale>;
+            }>
+          ) => {
+            const data = result.data.topCustomerSales;
+            const customerSales = <Array<CustomerSale>>(
+              data.map((t: CustomerSale) => {
+                const customerSale = new CustomerSale();
+                customerSale.storeId = t.storeId;
+                customerSale.storeName = t.storeName;
+                customerSale.outletType = t.outletType === OutletTypeEnum.GEN_TRADE ? this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE') : this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT');
+                customerSale.totalSalesAmount = t.totalSalesAmount;
+                return customerSale;
+              })
+            )
+            return customerSales;
+          }
+        )
+      );
+  }
+
+  getStoresSalesProducts(storeId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_CUSTOMER_SALES_PRODUCTS_QUERY,
+        variables: { storeId },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              customerSaleProducts: Array<CustomerSaleProduct>;
+            }>
+          ) => {
+            const data = result.data.customerSaleProducts;
+            const customerSales = <Array<CustomerSaleProduct>>(
+              data.map((t: CustomerSaleProduct) => {
+                const customerSale = new CustomerSaleProduct();
+                customerSale.productId = t.productId;
+                customerSale.productCode = t.productCode;
+                customerSale.productName = t.productName;
+                customerSale.unit = t.unit;
+                customerSale.totalSalesAmount = t.totalSalesAmount;
+                return customerSale;
+              })
+            )
+            return customerSales;
           }
         )
       );

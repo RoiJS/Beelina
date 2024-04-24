@@ -159,7 +159,7 @@ body {
     box-sizing: border-box;
     width: 100%;
     height: auto;
-    background-color: #ffffff;
+    background-color: $white;
     border-radius: 10px;
     padding-top: 5px;
     padding-left: 10px;
@@ -299,6 +299,11 @@ app-tool-bar {
 
     &--justify-content-space-between {
       justify-content: space-between;
+    }
+
+    .alt-label {
+      font-size: 0.8em;
+      color: $alt-text-color;
     }
   }
 
