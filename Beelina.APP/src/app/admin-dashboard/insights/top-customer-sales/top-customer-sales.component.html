@@ -1,0 +1,43 @@
+<div class="top-store-header-container">
+  <button *ngIf="customerSalesProducts.length > 0" mat-button mat-raised-button color="primary"
+    (click)="goBack()"><mat-icon>keyboard_arrow_left</mat-icon>Back</button>
+  <div class="top-store-header-container__info-banner" *ngIf="customerSalesProducts.length > 0">
+    <app-banner [type]="_bannerType.INFO">{{
+      "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE_2" | translate
+      }}</app-banner>
+  </div>
+  <div class="top-store-header-container__info-banner" *ngIf="customerSalesProducts.length === 0">
+    <app-banner [type]="_bannerType.INFO">{{
+      "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE" | translate
+      }}</app-banner>
+  </div>
+</div>
+
+<app-list-container *ngIf="customerSalesProducts.length === 0" [templateSize]="_templateSize.SMALL"
+  [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="customerSales?.length">
+  <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
+    <div *cdkVirtualFor="let item of customerSales">
+      <div matRipple (click)="showTopProducts(item.storeId)"
+        class="list-container__item-section top-store-list-container__item-section">
+        <span class="product-information">{{ item.storeName }} <span class="alt-label">({{
+            item.outletType }})</span></span>
+        <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.SUCCESS"
+          [label]="item.totalSalesAmountFormatted"></app-badge>
+      </div>
+    </div>
+  </cdk-virtual-scroll-viewport>
+</app-list-container>
+
+<app-list-container *ngIf="customerSalesProducts.length > 0" [templateSize]="_templateSize.SMALL"
+  [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="customerSales?.length">
+  <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
+    <div *cdkVirtualFor="let item of customerSalesProducts">
+      <div class="list-container__item-section top-store-list-container__item-section">
+        <span class="product-information">{{ item.productCode }}: {{ item.productName }} <span class="alt-label">({{
+            item.unit }})</span></span>
+        <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.SUCCESS"
+          [label]="item.totalSalesAmountFormatted"></app-badge>
+      </div>
+    </div>
+  </cdk-virtual-scroll-viewport>
+</app-list-container>

@@ -1017,10 +1017,19 @@
       "TITLE": "Insights",
       "DESCRIPTION": "This page gives administrator insights about the most frequently sold products.",
       "TOP_SELLING_PRODUCTS_CHART_SECTION": {
+        "TITLE": "Top 10 Selling Products"
+      },
+      "TOP_SELLING_PRODUCTS_LIST_SECTION": {
         "TITLE": "Top Selling Products"
       },
-      "TOP_SELLING_PRODUCTS_LISTT_SECTION": {
-        "TITLE": "Top Selling Products"
+      "TOP_CUSTOMER_STORE_LIST_SECTION": {
+        "TITLE": "Top Customer Sales",
+        "BODY_CONTAINER": {
+          "INFO_BANNER": {
+            "TITLE": "Click on store to see top products sold.",
+            "TITLE_2": "Click back button to see top store sales."
+          }
+        }
       }
     }
   }
