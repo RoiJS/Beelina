@@ -259,7 +259,7 @@
       }
     },
     "AGREEMENT_CONFIRMATION_DIALOG": {
-      "TITLE": "Agreement Confirmation",
+      "TITLE": "Agreement Policy",
       "FORM_CONTROL_SECTION": {
         "CONFIRMATION_CHECKBOX_CONTROL": {
           "LABEL": "I confirm that the order transaction details are complete and correct.",
