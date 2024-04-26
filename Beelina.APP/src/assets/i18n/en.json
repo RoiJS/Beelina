@@ -361,8 +361,12 @@
         "LABEL": "Description",
         "HINT": "Please enter description"
       },
+      "STOCK_REMAINING_CONTROL": {
+        "LABEL": "Stocks Remaining",
+        "HINT": "Please specify stock"
+      },
       "STOCK_QUANTITY_CONTROL": {
-        "LABEL": "Stock",
+        "LABEL": "Stocks to Sell",
         "HINT": "Please specify stock"
       },
       "ADDITIONAL_STOCK_QUANTITY_CONTROL": {

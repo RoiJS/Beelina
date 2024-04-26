@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Helpers.Constants;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Helpers.Constants;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using System.Security.Claims;
@@ -22,7 +23,7 @@ namespace Beelina.LIB.Helpers.Services
                 return appSecretToken;
             }
         }
-        
+
         public int CurrentUserId
         {
             get
@@ -45,6 +46,14 @@ namespace Beelina.LIB.Helpers.Services
             get
             {
                 return Convert.ToString(_claimsPrincipal.Identity.GetUserClaim(BeelinaClaimTypes.FirstName));
+            }
+        }
+
+        public BusinessModelEnum CurrrentBusinessModel
+        {
+            get
+            {
+                return (BusinessModelEnum)Convert.ToInt16(_claimsPrincipal.Identity.GetUserClaim(BeelinaClaimTypes.BusinessModel));
             }
         }
     }

@@ -92,6 +92,7 @@ export class EditProductDetailsComponent implements OnInit {
         description: [''],
         transactionNo: [''],
         stockQuantity: [0],
+        stocksRemainingFromWarehouse: [0],
         additionalStockQuantity: [0],
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
@@ -119,6 +120,7 @@ export class EditProductDetailsComponent implements OnInit {
         this._productForm.get('name').setValue(product.name);
         this._productForm.get('code').setValue(product.code);
         this._productForm.get('description').setValue(product.description);
+        this._productForm.get('stocksRemainingFromWarehouse').setValue(product.stocksRemainingFromWarehouse);
         this._productForm.get('stockQuantity').setValue(product.stockQuantity);
         this._productForm.get('isTransferable').setValue(product.isTransferable);
         this._productForm.get('numberOfUnits').setValue(product.numberOfUnits);
@@ -149,7 +151,10 @@ export class EditProductDetailsComponent implements OnInit {
       .valueChanges
       .subscribe((value) => {
         const newStockQuantity = value + this._productDetails.stockQuantity;
+        const newStockRemainingQuantity = this._productDetails.stocksRemainingFromWarehouse - value;
+
         this._productForm.get('stockQuantity').setValue(newStockQuantity);
+        this._productForm.get('stocksRemainingFromWarehouse').setValue(newStockRemainingQuantity);
       });
   }
 
