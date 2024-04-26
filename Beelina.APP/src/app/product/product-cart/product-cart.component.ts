@@ -13,7 +13,7 @@ import {
   transactionsSelector,
 } from '../add-to-cart-product/store/selectors';
 
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
@@ -22,6 +22,7 @@ import { StorageService } from 'src/app/_services/storage.service';
 import { ProductService } from 'src/app/_services/product.service';
 
 import { AddToCartProductComponent } from '../add-to-cart-product/add-to-cart-product.component';
+import { AgreementConfirmationComponent } from './agreement-confirmation/agreement-confirmation.component';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
@@ -85,6 +86,8 @@ export class ProductCartComponent
   private _saveDraftLoadingMessage = '';
   private _saveDraftSuccessMessage = '';
   private _saveDraftErrorMessage = '';
+
+  private _dialogRef: MatBottomSheetRef<AgreementConfirmationComponent>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -343,38 +346,40 @@ export class ProductCartComponent
           if (result === ButtonOptions.YES) {
             this._isLoading = true;
             this.loaderLayoutComponent.label = this._saveDraftLoadingMessage;
-            this.transactionService.registerTransaction(transaction).subscribe({
-              next: () => {
-                this._isLoading = false;
-                this.notificationService.openSuccessNotification(this._saveDraftSuccessMessage);
-                this.store.dispatch(
-                  ProductTransactionActions.setSaveOrderLoadingState({
-                    state: false,
-                  })
-                );
-                this.storageService.remove('productTransactions');
-                this.store.dispatch(
-                  ProductTransactionActions.resetProductTransactionState()
-                );
+            this.transactionService
+              .registerTransaction(transaction)
+              .subscribe({
+                next: () => {
+                  this._isLoading = false;
+                  this.notificationService.openSuccessNotification(this._saveDraftSuccessMessage);
+                  this.store.dispatch(
+                    ProductTransactionActions.setSaveOrderLoadingState({
+                      state: false,
+                    })
+                  );
+                  this.storageService.remove('productTransactions');
+                  this.store.dispatch(
+                    ProductTransactionActions.resetProductTransactionState()
+                  );
 
-                if (this._transactionId === 0) {
-                  this.router.navigate(['/product-catalogue']);
-                } else {
-                  this.router.navigate(['/draft-transactions']);
-                }
-              },
+                  if (this._transactionId === 0) {
+                    this.router.navigate(['/product-catalogue']);
+                  } else {
+                    this.router.navigate(['/draft-transactions']);
+                  }
+                },
 
-              error: () => {
-                this._isLoading = false;
-                this.notificationService.openErrorNotification(this._saveDraftErrorMessage);
+                error: () => {
+                  this._isLoading = false;
+                  this.notificationService.openErrorNotification(this._saveDraftErrorMessage);
 
-                this.store.dispatch(
-                  ProductTransactionActions.setSaveOrderLoadingState({
-                    state: false,
-                  })
-                );
-              },
-            });
+                  this.store.dispatch(
+                    ProductTransactionActions.setSaveOrderLoadingState({
+                      state: false,
+                    })
+                  );
+                },
+              });
           }
         });
     }
@@ -459,6 +464,9 @@ export class ProductCartComponent
   }
 
   confirm() {
+    this._orderForm.markAllAsTouched();
+    if (!this._orderForm.valid) return;
+
     this._isLoading = true;
     this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
     this.productService
@@ -485,77 +493,21 @@ export class ProductCartComponent
             return;
           }
 
-          this._orderForm.markAllAsTouched();
-          if (this._orderForm.valid) {
-            const transaction = new TransactionDto();
-            transaction.id = this._transactionId;
-            transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
-            transaction.discount = this._discountForm.get('discount').value;
-            transaction.storeId = this._selectedCustomer.id;
-            transaction.status = TransactionStatusEnum.CONFIRMED;
-            transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
-            transaction.transactionDate = DateFormatter.format(
-              this._orderForm.get('transactionDate').value
-            );
-            transaction.dueDate = DateFormatter.format(
-              this._orderForm.get('dueDate').value
-            );
-            transaction.productTransactions = this._productTransactions;
+          this._dialogRef = this.bottomSheet.open(AgreementConfirmationComponent);
 
-            this.dialogService
-              .openConfirmation(
-                this.translateService.instant(
-                  'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.TITLE'
-                ),
-                this.translateService.instant(
-                  'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.CONFIRM'
-                )
-              )
-              .subscribe((result: ButtonOptions) => {
-                if (result === ButtonOptions.YES) {
-                  this._isLoading = true;
-                  this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.LOADING_MESSAGE');
-                  this.transactionService
-                    .registerTransaction(transaction)
-                    .subscribe({
-                      next: () => {
-                        this._isLoading = false;
-                        this.notificationService.openSuccessNotification(this.translateService.instant(
-                          'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
-                        ));
-                        this.store.dispatch(
-                          ProductTransactionActions.setSaveOrderLoadingState({
-                            state: false,
-                          })
-                        );
-                        this.storageService.remove('productTransactions');
-                        this.store.dispatch(
-                          ProductTransactionActions.resetProductTransactionState()
-                        );
+          this._dialogRef
+            .afterDismissed()
+            .subscribe(
+              (data: {
+                confirm: boolean;
+              }) => {
+                if (!data) return;
 
-                        if (this._transactionId === 0) {
-                          this.router.navigate(['/product-catalogue']);
-                        } else {
-                          this.router.navigate(['/draft-transactions']);
-                        }
-                      },
-
-                      error: () => {
-                        this._isLoading = false;
-                        this.notificationService.openErrorNotification(this.translateService.instant(
-                          'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
-                        ));
-
-                        this.store.dispatch(
-                          ProductTransactionActions.setSaveOrderLoadingState({
-                            state: false,
-                          })
-                        );
-                      },
-                    });
+                if (data.confirm) {
+                  this.proceedConfirm();
                 }
-              });
-          }
+              }
+            );
         }
       );
   }
@@ -567,10 +519,69 @@ export class ProductCartComponent
   }
 
   ngOnDestroy() {
+    this._dialogRef = null;
     this._subscription.unsubscribe();
     this.store.dispatch(CustomerActions.resetCustomerState());
     this.store.dispatch(BarangayActions.resetBarangayState());
     this.store.dispatch(ProductTransactionActions.resetTransactionState());
+  }
+
+  private proceedConfirm() {
+    const transaction = new TransactionDto();
+    transaction.id = this._transactionId;
+    transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+    transaction.discount = this._discountForm.get('discount').value;
+    transaction.storeId = this._selectedCustomer.id;
+    transaction.status = TransactionStatusEnum.CONFIRMED;
+    transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+    transaction.transactionDate = DateFormatter.format(
+      this._orderForm.get('transactionDate').value
+    );
+    transaction.dueDate = DateFormatter.format(
+      this._orderForm.get('dueDate').value
+    );
+    transaction.productTransactions = this._productTransactions;
+
+    this._isLoading = true;
+    this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.LOADING_MESSAGE');
+    this.transactionService
+      .registerTransaction(transaction)
+      .subscribe({
+        next: () => {
+          this._isLoading = false;
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
+          ));
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: false,
+            })
+          );
+          this.storageService.remove('productTransactions');
+          this.store.dispatch(
+            ProductTransactionActions.resetProductTransactionState()
+          );
+
+          if (this._transactionId === 0) {
+            this.router.navigate(['/product-catalogue']);
+          } else {
+            this.router.navigate(['/draft-transactions']);
+          }
+        },
+
+        error: () => {
+          this._isLoading = false;
+          this.notificationService.openErrorNotification(this.translateService.instant(
+            'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
+          ));
+
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: false,
+            })
+          );
+        },
+      });
   }
 
   get orderForm(): FormGroup {
