@@ -258,6 +258,15 @@
         "ADD_ITEM": "Add Item +"
       }
     },
+    "AGREEMENT_CONFIRMATION_DIALOG": {
+      "TITLE": "Agreement Confirmation",
+      "FORM_CONTROL_SECTION": {
+        "CONFIRMATION_CHECKBOX_CONTROL": {
+          "LABEL": "I confirm that the order transaction details are complete and correct.",
+          "LABEL_2": "Click the confirm button below to proceed."
+        }
+      }
+    },
     "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
       "TITLE": "Save new order",
       "CONFIRM": "Are you sure to save new order?",

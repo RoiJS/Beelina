@@ -1,0 +1,29 @@
+<div class="agreement-confirmation-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "PRODUCT_CART_PAGE.AGREEMENT_CONFIRMATION_DIALOG.TITLE" | translate
+      }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body" [formGroup]="agreementConfirmationForm">
+    <mat-checkbox formControlName="confirm">{{
+      "PRODUCT_CART_PAGE.AGREEMENT_CONFIRMATION_DIALOG.FORM_CONTROL_SECTION.CONFIRMATION_CHECKBOX_CONTROL.LABEL" |
+      translate
+      }} <br>
+      {{
+      "PRODUCT_CART_PAGE.AGREEMENT_CONFIRMATION_DIALOG.FORM_CONTROL_SECTION.CONFIRMATION_CHECKBOX_CONTROL.LABEL_2" |
+      translate
+      }}
+    </mat-checkbox>
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button [disabled]="!agreementConfirmationForm.get('confirm')?.value" color="primary"
+        (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CANCEL" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
