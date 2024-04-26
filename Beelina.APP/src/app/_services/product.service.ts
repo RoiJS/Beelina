@@ -133,6 +133,7 @@ const GET_PRODUCT_STORE = gql`
         code
         description
         defaultPrice
+        stocksRemainingFromWarehouse
         stockQuantity
         pricePerUnit
         price
