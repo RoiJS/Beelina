@@ -26,19 +26,19 @@ namespace Beelina.LIB.Models
             }
         }
 
-        public float Balance
+        public double Balance
         {
             get
             {
-                return (float)ProductTransactions.Where(p => p.Status == PaymentStatusEnum.Unpaid).Sum(s => s.Quantity * s.Price);
+                return (double)ProductTransactions.Where(p => p.Status == PaymentStatusEnum.Unpaid).Sum(s => s.Quantity * s.Price);
             }
         }
 
-        public float Total
+        public double Total
         {
             get
             {
-                return (float)ProductTransactions.Sum(s => s.Quantity * s.Price);
+                return (double)ProductTransactions.Sum(s => s.Quantity * s.Price);
             }
         }
 

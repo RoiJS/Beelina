@@ -143,5 +143,10 @@ namespace Beelina.LIB.Helpers.Extensions
 
             return 0; // Return 0 if no keywords are found
         }
+
+        public static string FormatCurrency(this double input)
+        {
+            return $"₱ {input.ToString("N2")}";
+        }
     }
 }

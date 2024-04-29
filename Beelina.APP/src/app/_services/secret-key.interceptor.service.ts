@@ -20,13 +20,14 @@ export class SecretKeyInterceptorService implements HttpInterceptor {
   constructor(
     private forgotPasswordService: ForgotPasswordService,
     private storageService: StorageService
-  ) {}
+  ) { }
 
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     let appSecretToken = '';
+    let headers = {};
 
     if (this.forgotPasswordService.appSecretToken.getValue()) {
       appSecretToken = this.forgotPasswordService.appSecretToken.getValue();
@@ -36,12 +37,17 @@ export class SecretKeyInterceptorService implements HttpInterceptor {
       appSecretToken = this.storageService.getString('appSecretToken');
     }
 
-    const authReq = req.clone({
-      setHeaders: {
+    // Make sure to only add headers for graphql requests
+    if (req.url.includes("graphql")) {
+      headers = {
         'App-Secret-Token': appSecretToken,
         Authorization: `Bearer ${this.tokenGetter()}`,
         'ngsw-bypass': '' // This is to make sure HTTP requests are cached via the service worker.
-      },
+      };
+    }
+
+    const authReq = req.clone({
+      setHeaders: headers,
     });
 
     return next.handle(authReq);

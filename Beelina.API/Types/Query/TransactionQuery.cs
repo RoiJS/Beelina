@@ -29,28 +29,17 @@ namespace Beelina.API.Types.Query
     [Authorize]
     public async Task<TransactionDetails> GetTransaction(
         [Service] ITransactionRepository<Transaction> transactionRepository,
-        [Service] IProductTransactionRepository<ProductTransaction> productTransactionRepository,
         int transactionId)
     {
-      var badOrdersAmount = 0.0;
-      var transactionFromRepo = await transactionRepository
-                      .GetEntity(transactionId)
-                      .Includes(
-                          t => t.Store,
-                          t => t.Store.Barangay,
-                          t => t.Store.PaymentMethod
-                      )
-                      .ToObjectAsync();
+      return await transactionRepository.GetTransaction(transactionId);
+    }
 
-      // Only get for bad order amount if the transaction status is confirmed
-      if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
-      {
-        badOrdersAmount = await transactionRepository.GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId);
-      }
-
-      transactionFromRepo.ProductTransactions = await productTransactionRepository.GetProductTransactions(transactionId);
-
-      return new TransactionDetails { Transaction = transactionFromRepo, BadOrderAmount = badOrdersAmount };
+    [Authorize]
+    public async Task<bool> SendTransactionEmailReceipt(
+        [Service] ITransactionRepository<Transaction> transactionRepository,
+        int transactionId)
+    {
+      return await transactionRepository.SendTransactionEmailReceipt(transactionId);
     }
 
     [Authorize]
