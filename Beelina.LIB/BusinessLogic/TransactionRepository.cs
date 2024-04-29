@@ -677,7 +677,7 @@ namespace Beelina.LIB.BusinessLogic
                 var receiver = transactionDetails.Transaction.Store.EmailAddress;
                 var bcc = await GetEmailTransactionReceiptReceivers();
 
-                emailService.Send(_emailServerSettings.Value.SmtpAddress, receiver, subject, template, "", bcc);
+                emailService.Send(_emailServerSettings.Value.SmtpAddress, receiver, subject, template, _emailServerSettings.Value.SmtpAddress, bcc);
             }
             catch (Exception ex)
             {
