@@ -7,6 +7,7 @@ namespace Beelina.LIB.Models
         : Entity, IUserActionTracker
     {
         public BusinessModelEnum BusinessModel { get; set; }
+        public bool SendOrderTransactionReceipt { get; set; } = true;
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }
         public int? UpdatedById { get; set; }

@@ -157,6 +157,10 @@
         "LABEL": "Address",
         "HINT": "Please enter customer address"
       },
+      "EMAIL_ADDRESS_CONTROL": {
+        "LABEL": "Email Address",
+        "HINT": "Please enter customer email address"
+      },
       "OUTLET_TYPE_CONTROL": {
         "LABEL": "Outlet Type",
         "OPTIONS": {
@@ -176,7 +180,7 @@
     "EDIT_CUSTOMER_DIALOG": {
       "TITLE": "Update customer",
       "CONFIRM": "Are you sure to save customer details?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating customer failed. Please again later."
     }
   },
@@ -191,6 +195,10 @@
       "ADDRESS_CONTROL": {
         "LABEL": "Address",
         "HINT": "Please enter customer address"
+      },
+      "EMAIL_ADDRESS_CONTROL": {
+        "LABEL": "Email Address",
+        "HINT": "Please enter customer email address"
       },
       "PAYMENT_METHOD_CONTROL": {
         "LABEL": "Mode of Payment",
@@ -400,7 +408,7 @@
     "EDIT_PRODUCT_DIALOG": {
       "TITLE": "Update product",
       "CONFIRM": "Are you sure to save product details?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating product failed. Please again later."
     },
     "CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG": {
@@ -787,7 +795,7 @@
     "EDIT_PROFILE_DIALOG": {
       "TITLE": "Update profile",
       "CONFIRM": "Are you sure to save profile details?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating profile failed. Please again later."
     }
   },
@@ -931,7 +939,7 @@
     "EDIT_ACCOUNT_DIALOG": {
       "TITLE": "Update user account",
       "CONFIRM": "Are you sure to save changes details?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating details failed. Please again later."
     },
     "NEW_ACCOUNT_DIALOG": {
@@ -974,7 +982,7 @@
     "CONFIRMATION_REPORT_SETTINGS_DIALOG": {
       "TITLE": "Update Report Settings",
       "CONFIRM": "Are you sure to update report settings?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating report settings failed. Please again later."
     }
   },

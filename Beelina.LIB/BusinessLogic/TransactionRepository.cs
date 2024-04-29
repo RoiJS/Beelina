@@ -1,7 +1,12 @@
-﻿using Beelina.LIB.Enums;
+﻿using System.Text;
+using Beelina.LIB.Enums;
+using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using ReserbizAPP.LIB.Helpers.Class;
+using ReserbizAPP.LIB.Helpers.Services;
 
 namespace Beelina.LIB.BusinessLogic
 {
@@ -9,17 +14,23 @@ namespace Beelina.LIB.BusinessLogic
         : BaseRepository<Transaction>, ITransactionRepository<Transaction>
     {
         private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
+        private readonly IProductTransactionRepository<ProductTransaction> _productTransactionRepository;
+        private IOptions<EmailServerSettings> _emailServerSettings { get; }
         private readonly ICurrentUserService _currentUserService;
 
         public TransactionRepository(
             IBeelinaRepository<Transaction> beelinaRepository,
             IUserAccountRepository<UserAccount> userAccountRepository,
+            IProductTransactionRepository<ProductTransaction> productTransactionRepository,
+            IOptions<EmailServerSettings> emailServerSettings,
             ICurrentUserService currentUserService
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
-            _userAccountRepository = userAccountRepository;
             _currentUserService = currentUserService;
+            _emailServerSettings = emailServerSettings;
+            _productTransactionRepository = productTransactionRepository;
+            _userAccountRepository = userAccountRepository;
         }
 
         public async Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate)
@@ -282,6 +293,28 @@ namespace Beelina.LIB.BusinessLogic
                 }
             }
             return transactionHistoryDates.ToList();
+        }
+
+        public async Task<TransactionDetails> GetTransaction(int transactionId)
+        {
+            var badOrdersAmount = 0.0;
+            var transactionFromRepo = await GetEntity(transactionId)
+                            .Includes(
+                                t => t.Store,
+                                t => t.Store.Barangay,
+                                t => t.Store.PaymentMethod
+                            )
+                            .ToObjectAsync();
+
+            // Only get for bad order amount if the transaction status is confirmed
+            if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
+            {
+                badOrdersAmount = await GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId);
+            }
+
+            transactionFromRepo.ProductTransactions = await _productTransactionRepository.GetProductTransactions(transactionId);
+
+            return new TransactionDetails { Transaction = transactionFromRepo, BadOrderAmount = badOrdersAmount };
         }
 
         public async Task<Transaction> RegisterTransaction(Transaction transaction)
@@ -627,6 +660,111 @@ namespace Beelina.LIB.BusinessLogic
                                 .ToListAsync();
 
             DeleteMultipleEntities(transactionsFromRepo);
+        }
+
+        public async Task<bool> SendTransactionEmailReceipt(int transactionId)
+        {
+            var emailService = new EmailService(_emailServerSettings.Value.SmtpServer,
+                                _emailServerSettings.Value.SmtpAddress,
+                                _emailServerSettings.Value.SmtpPassword,
+                                _emailServerSettings.Value.SmtpPort);
+
+            try
+            {
+                var transactionDetails = await GetTransaction(transactionId);
+                var template = await GenerateEmailReceiptTemplate(transactionDetails);
+                var subject = $"Order Transaction Receipt - {transactionDetails.Transaction.InvoiceNo}";
+                var receiver = transactionDetails.Transaction.Store.EmailAddress;
+                var bcc = await GetEmailTransactionReceiptReceivers();
+
+                emailService.Send(_emailServerSettings.Value.SmtpAddress, receiver, subject, template, _emailServerSettings.Value.SmtpAddress, bcc);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending order receipt: ${ex.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<string> GetEmailTransactionReceiptReceivers()
+        {
+            var userAccounts = await _userAccountRepository.GetUserAccounts();
+            var userAccountsWithDistributionModulePermissionLevel = userAccounts
+                                    .Select(u => new
+                                    {
+                                        Id = u.Id,
+                                        EmailAddress = u.EmailAddress,
+                                        DistributionPermissionLevel = u.UserPermissions.Where(up => up.ModuleId == ModulesEnum.Distribution).Select(up => up.PermissionLevel).FirstOrDefault(),
+                                    })
+                                    .ToList();
+
+            // Managers, Administrators and current user email addresses.
+            var emailReceivers = userAccountsWithDistributionModulePermissionLevel
+                                                .Where(m => m.DistributionPermissionLevel > PermissionLevelEnum.User || m.Id == _currentUserService.CurrentUserId)
+                                                .Select(u => u.EmailAddress)
+                                                .ToList();
+
+            var managersAndAdminEmailAddressesConcatenated = String.Join(";", emailReceivers.ToArray());
+
+            return managersAndAdminEmailAddressesConcatenated;
+        }
+
+        private async Task<string> GenerateEmailReceiptTemplate(TransactionDetails transactionDetails)
+        {
+            var companyName = await _beelinaRepository.SystemDbContext.Clients
+                        .Where(c => c.DBHashName == _currentUserService.AppSecretToken)
+                        .Select(c => c.Name)
+                        .FirstOrDefaultAsync();
+
+            var salesAgent = await _beelinaRepository.ClientDbContext.UserAccounts
+                        .Where(c => c.Id == _currentUserService.CurrentUserId)
+                        .Select(c => $"{c.FirstName} {c.LastName}")
+                        .FirstOrDefaultAsync();
+
+            var template = "";
+
+            using (var rdFile = new StreamReader(String.Format("{0}/Templates/EmailTemplates/EmailNotificationOrderTransactionReceipt.html", AppDomain.CurrentDomain.BaseDirectory)))
+            {
+                template = rdFile.ReadToEnd();
+            }
+
+            template = template.Replace("#date", DateTime.Now.ToString("yyyy-MM-dd"));
+            template = template.Replace("#company", companyName);
+            template = template.Replace("#salesAgent", salesAgent);
+
+            // Transaction Details
+            template = template.Replace("#registeredDate", transactionDetails.Transaction.TransactionDate.ToString("yyyy-MM-dd"));
+            template = template.Replace("#dueDate", transactionDetails.Transaction.DueDate.ToString("yyyy-MM-dd"));
+            template = template.Replace("#transactionNo", transactionDetails.Transaction.InvoiceNo);
+            template = template.Replace("#storeName", transactionDetails.Transaction.Store.Name);
+            template = template.Replace("#barangay", transactionDetails.Transaction.Store.Barangay.Name);
+            template = template.Replace("#storeType", Enum.GetName(typeof(OutletTypeEnum), transactionDetails.Transaction.Store.OutletType));
+            template = template.Replace("#balance", transactionDetails.Transaction.Balance.FormatCurrency());
+            template = template.Replace("#grossTotal", transactionDetails.Transaction.Total.FormatCurrency());
+            template = template.Replace("#discount", transactionDetails.Transaction.Discount.ToString());
+
+            var netTotal = (transactionDetails.Transaction.Total - (transactionDetails.Transaction.Discount / 100) * transactionDetails.Transaction.Total) - transactionDetails.BadOrderAmount;
+            template = template.Replace("#netTotal", netTotal.FormatCurrency());
+            template = template.Replace("#modeOfPayment", Enum.GetName(typeof(ModeOfPaymentEnum), transactionDetails.Transaction.ModeOfPayment));
+
+            // Transaction Items
+            var productTransactionsTemplate = new StringBuilder();
+            foreach (var productTransaction in transactionDetails.Transaction.ProductTransactions)
+            {
+                productTransactionsTemplate.AppendLine("<tr class='table-product-transaction__row-item-section'>");
+                productTransactionsTemplate.AppendLine($"<td><b>{productTransaction.Product.Code}</b> - {productTransaction.Product.Name} <span>({productTransaction.Product.ProductUnit.Name})</span></td>");
+                productTransactionsTemplate.AppendLine($"<td class='table-product-transaction__row-item-section--number-value'>{productTransaction.Quantity}</td>");
+                productTransactionsTemplate.AppendLine($"<td class='table-product-transaction__row-item-section--number-value'>{productTransaction.Price.FormatCurrency()}</td>");
+                productTransactionsTemplate.AppendLine($"<td class='table-product-transaction__row-item-section--number-value'>{(productTransaction.Price * productTransaction.Quantity).FormatCurrency()}</td>");
+                productTransactionsTemplate.AppendLine("</tr>");
+            }
+
+            template = template.Replace("#transactionDetails", productTransactionsTemplate.ToString());
+            template = template.Replace("#badOrder", transactionDetails.BadOrderAmount.FormatCurrency());
+
+            return template;
         }
     }
 }

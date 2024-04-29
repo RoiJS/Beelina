@@ -7,6 +7,7 @@ export class StoreInformationResult implements IStoreInformationQueryPayload {
   public typename: string;
   public name: string;
   public address: string;
+  public emailAddress: string;
   public outletType: OutletTypeEnum;
   public paymentMethod: PaymentMethod;
   public barangay: Barangay;
