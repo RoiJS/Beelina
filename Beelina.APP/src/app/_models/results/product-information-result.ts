@@ -9,6 +9,7 @@ export class ProductInformationResult
   public code: string;
   public description: string;
   public defaultPrice: number;
+  public stocksRemainingFromWarehouse: number;
   public stockQuantity: number;
   public pricePerUnit: number;
   public price: number;

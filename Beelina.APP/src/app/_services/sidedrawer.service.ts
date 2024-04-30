@@ -82,13 +82,6 @@ export class SidedrawerService {
         maximumPermissionLevel: userPermissionLevel,
       },
       {
-        name: 'MAIN_MENU.REPORTS',
-        url: '/reports',
-        icon: 'bar_chart',
-        minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: managerPermissionLevel,
-      },
-      {
         name: 'MAIN_MENU.DASHBOARD',
         url: '/dashboard',
         icon: 'bar_chart',
@@ -102,21 +95,28 @@ export class SidedrawerService {
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
       },
-      // {
-      //   name: 'MAIN_MENU.ACCOUNTS',
-      //   url: '/accounts',
-      //   icon: 'person_pin',
-      //   minimumPermissionLevel: administratorPermissionLevel,
-      //   maximumPermissionLevel: administratorPermissionLevel,
-      // },
       {
-        name: 'MAIN_MENU.MANUAL',
-        url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
-        icon: 'error_outline',
-        isExternalUrl: true,
-        minimumPermissionLevel: userPermissionLevel,
-        maximumPermissionLevel: managerPermissionLevel,
+        name: 'MAIN_MENU.ACCOUNTS',
+        url: '/accounts',
+        icon: 'person_pin',
+        minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
       },
+      {
+        name: 'MAIN_MENU.REPORTS',
+        url: '/reports',
+        icon: 'bar_chart',
+        minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+      },
+      // {
+      //   name: 'MAIN_MENU.MANUAL',
+      //   url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
+      //   icon: 'error_outline',
+      //   isExternalUrl: true,
+      //   minimumPermissionLevel: userPermissionLevel,
+      //   maximumPermissionLevel: managerPermissionLevel,
+      // },
       {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',
@@ -124,7 +124,7 @@ export class SidedrawerService {
       },
     ];
 
-    // Filter menu based on the current user permission level on the Retail module.
+    // Filter menu based on the current user permission level on the Distribution module.
     // The way in works now, is that if the user has a permission level of 'User' or 'Administrator', then all the menus will be shown.
     // If the user has a permission level of 'Manager', then only Profile menu will be shown.
     // We will later revisit this in the future to properly show menus based on the user's permission level.

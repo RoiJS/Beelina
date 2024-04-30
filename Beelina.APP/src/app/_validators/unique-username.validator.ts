@@ -6,16 +6,16 @@ import {
 } from '@angular/forms';
 import { catchError, map, Observable, of, take } from 'rxjs';
 
-import { AuthService } from '../_services/auth.service';
+import { UserAccountService } from '../_services/user-account.service';
 
 @Injectable({ providedIn: 'root' })
 export class UniqueUsernameValidator implements AsyncValidator {
   userId: number = 0;
 
-  constructor(private authService: AuthService) {}
+  constructor(private userAccountService: UserAccountService) {}
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
-    return this.authService
+    return this.userAccountService
       .checkUsernameExists(this.userId, control.value)
       .pipe(
         take(1),

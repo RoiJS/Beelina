@@ -46,6 +46,7 @@ import { TransferProductStockTypeEnum } from '../_enum/transfer-product-stock-ty
 import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { ProductStockAuditItem } from '../_models/product-stock-audit-item';
 import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
+import { getProductSourceEnum, ProductSourceEnum } from '../_enum/product-source.enum';
 import { IExtractedProductsFileOutput } from '../_interfaces/outputs/iproduct-import-file.output';
 import { environment } from 'src/environments/environment';
 
@@ -132,6 +133,7 @@ const GET_PRODUCT_STORE = gql`
         code
         description
         defaultPrice
+        stocksRemainingFromWarehouse
         stockQuantity
         pricePerUnit
         price
@@ -405,7 +407,8 @@ const TRANSFER_PRODUCT_STOCK_FROM_OWN_INVENTORY_QUERY = gql`
     $destinationProductNumberOfUnits: Int!,
     $sourceProductNumberOfUnits: Int!,
     $sourceNumberOfUnitsTransfered: Int!,
-    $transferProductStockType: TransferProductStockTypeEnum!
+    $transferProductStockType: TransferProductStockTypeEnum!,
+    $productSource: ProductSourceEnum!
   ) {
     transferProductStockFromOwnInventory(input: {
       userAccountId: $userAccountId,
@@ -414,7 +417,8 @@ const TRANSFER_PRODUCT_STOCK_FROM_OWN_INVENTORY_QUERY = gql`
       destinationProductNumberOfUnits: $destinationProductNumberOfUnits,
       sourceProductNumberOfUnits:  $sourceProductNumberOfUnits,
       sourceNumberOfUnitsTransfered:  $sourceNumberOfUnitsTransfered,
-      transferProductStockType: $transferProductStockType
+      transferProductStockType: $transferProductStockType,
+      productSource: $productSource
     }){
       product {
           name
@@ -1313,7 +1317,9 @@ export class ProductService {
     destinationProductNumberOfUnits: number,
     sourceProductNumberOfUnits: number,
     sourceNumberOfUnitsTransfered: number,
-    transferProductStockType: TransferProductStockTypeEnum) {
+    transferProductStockType: TransferProductStockTypeEnum,
+    productSource: ProductSourceEnum,
+  ) {
     return this.apollo
       .mutate({
         mutation: TRANSFER_PRODUCT_STOCK_FROM_OWN_INVENTORY_QUERY,
@@ -1324,7 +1330,8 @@ export class ProductService {
           destinationProductNumberOfUnits,
           sourceProductNumberOfUnits,
           sourceNumberOfUnitsTransfered,
-          transferProductStockType
+          transferProductStockType,
+          productSource: getProductSourceEnum(productSource)
         }
       })
       .pipe(

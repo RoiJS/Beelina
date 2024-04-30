@@ -103,8 +103,8 @@
         currentSalesAgentId === 0 &&
         currentUserPermission > getPermissionLevel(permissionLevelEnum.User)
       " class="no-selected-sales-agent-label-container">
-      <app-empty-entities-placeholder [templateType]="emptyEntityTemplateEnum.SALES_AGENTS"
-        [templateSize]="emptyEntityTemplateSizeEnum.SMALL"></app-empty-entities-placeholder>
+      <app-placeholder-entities [templateType]="emptyEntityTemplateEnum.SALES_AGENTS"
+        [templateSize]="emptyEntityTemplateSizeEnum.SMALL"></app-placeholder-entities>
 
       <app-banner class="no-selected-sales-agent-label-container__label" [type]="bannerTypeEnum.WARNING">{{
         "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.HINT" |

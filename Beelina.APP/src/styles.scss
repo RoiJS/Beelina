@@ -142,7 +142,7 @@ body {
 
     .page-information-description {
       font-size: 12px;
-      color: #707070;
+      color: $alt-text-color;
     }
   }
 
@@ -159,7 +159,7 @@ body {
     box-sizing: border-box;
     width: 100%;
     height: auto;
-    background-color: #ffffff;
+    background-color: $white;
     border-radius: 10px;
     padding-top: 5px;
     padding-left: 10px;
@@ -300,6 +300,11 @@ app-tool-bar {
     &--justify-content-space-between {
       justify-content: space-between;
     }
+
+    .alt-label {
+      font-size: 0.8em;
+      color: $alt-text-color;
+    }
   }
 
   &__card-item {
@@ -364,6 +369,8 @@ app-tool-bar {
 
 @media only screen and (min-width: 780px) {
   cdk-virtual-scroll-viewport.product-list
+    > div.cdk-virtual-scroll-content-wrapper,
+  cdk-virtual-scroll-viewport.user-account-list
     > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -377,6 +384,8 @@ app-tool-bar {
 
 @media only screen and (min-width: 1440px) {
   cdk-virtual-scroll-viewport.product-list
+    > div.cdk-virtual-scroll-content-wrapper,
+  cdk-virtual-scroll-viewport.user-account-list
     > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -440,6 +449,10 @@ button[color="primary"] {
 
 .no-visibility {
   visibility: hidden;
+}
+
+.no-display {
+  display: none;
 }
 
 /*#endregion*/

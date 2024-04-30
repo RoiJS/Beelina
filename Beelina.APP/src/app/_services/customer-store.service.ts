@@ -43,6 +43,7 @@ const GET_CUSTOMER_STORES = gql`
         id
         name
         address
+        emailAddress
         outletType
       }
       pageInfo {
@@ -72,6 +73,7 @@ const GET_CUSTOMER_STORES_PER_BARANGAY = gql`
         id
         name
         address
+        emailAddress
         outletType
         transactions {
           id
@@ -115,6 +117,7 @@ const GET_CUSTOMER_STORE = gql`
         id
         name
         address
+        emailAddress
         outletType
         paymentMethod {
           name
@@ -158,6 +161,7 @@ export class CustomerStoreService {
       id: store.id,
       name: store.name,
       address: store.address,
+      emailAddress: store.emailAddress,
       outletType: store.outletType,
       paymentMethodInput: {
         id: store.paymentMethod.id,

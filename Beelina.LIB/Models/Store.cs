@@ -8,6 +8,7 @@ namespace Beelina.LIB.Models
     {
         public string Name { get; set; }
         public string Address { get; set; }
+        public string EmailAddress { get; set; }
         public OutletTypeEnum? OutletType { get; set; }
         public int PaymentMethodId { get; set; }
         public int BarangayId { get; set; }

@@ -46,11 +46,19 @@
             <input matInput type="text" formControlName="description" />
           </mat-form-field>
           <div class="product-detail-panel__stock-quantity-control">
-            <label class="stock-quantity-label">{{
-              "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
-              | translate
-              }}: <span class="stock-quantity-value">{{ productForm.get("stockQuantity").value }}</span></label>
-            <button mat-raised-button color="primary" (click)="editStockQuantity()"> {{ "GENERAL_TEXTS.EDIT" | translate
+            <div class="info-field">
+              <label *ngIf="businessModel === 1" class="stock-quantity-label">{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_REMAINING_CONTROL.LABEL"
+                | translate
+                }}: <span class="stock-quantity-value">{{ productForm.get("stocksRemainingFromWarehouse").value
+                  }}</span></label>
+              <label class="stock-quantity-label">{{
+                "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
+                | translate
+                }}: <span class="stock-quantity-value">{{ productForm.get("stockQuantity").value }}</span></label>
+            </div>
+            <button *ngIf="businessModel === 1" mat-raised-button color="primary" (click)="editStockQuantity()"> {{
+              "GENERAL_TEXTS.EDIT" | translate
               }}</button>
           </div>
           <mat-form-field appearance="fill">

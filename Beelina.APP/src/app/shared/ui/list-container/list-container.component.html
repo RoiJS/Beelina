@@ -1,7 +1,7 @@
 <div class="list-container-component">
   <div *ngIf="count === 0" class="list-container-component__empty-list-container">
-    <app-empty-entities-placeholder [templateType]="templateType"
-      [templateSize]="templateSize"></app-empty-entities-placeholder>
+    <app-placeholder-entities [templateType]="templateType"
+      [templateSize]="templateSize"></app-placeholder-entities>
   </div>
 
   <ng-content *ngIf="count > 0"></ng-content>

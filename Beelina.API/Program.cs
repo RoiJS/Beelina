@@ -49,6 +49,7 @@ services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), ty
 services.AddScoped(typeof(IBarangayRepository<Barangay>), typeof(BarangayRepository));
 services.AddScoped(typeof(IReportRepository<Report>), typeof(ReportRepository));
 services.AddScoped(typeof(IGeneralInformationRepository<GeneralInformation>), typeof(GeneralInformationRepository));
+services.AddScoped(typeof(IGeneralSettingRepository<GeneralSetting>), typeof(GeneralSettingRepository));
 services.AddTransient<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
 
 // GraphQL Services

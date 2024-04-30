@@ -1,5 +1,15 @@
 @import "../../../../../app-variables";
 
 ::ng-deep .mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__surface {
-  background-color: $error;
+  background-color: $error-bg-color;
+}
+
+::ng-deep .mat-mdc-snack-bar-container.error-snackbar {
+  border: 3px solid $error-border-color;
+  border-radius: 5px;
+  color: $alt-text-color;
+}
+
+::ng-deep .mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__label {
+  color: $alt-text-color;
 }

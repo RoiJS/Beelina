@@ -30,7 +30,10 @@
     "LINKED": "Linked",
     "SAVE_CHANGES": "Save Changes",
     "NEW": "New",
-    "EXISTING": "Existing"
+    "EXISTING": "Existing",
+    "DEACTIVATE": "Deactivate",
+    "ACTIVATE": "Activate",
+    "INACTIVE": "Inactive"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -154,6 +157,10 @@
         "LABEL": "Address",
         "HINT": "Please enter customer address"
       },
+      "EMAIL_ADDRESS_CONTROL": {
+        "LABEL": "Email Address",
+        "HINT": "Please enter customer email address"
+      },
       "OUTLET_TYPE_CONTROL": {
         "LABEL": "Outlet Type",
         "OPTIONS": {
@@ -173,7 +180,7 @@
     "EDIT_CUSTOMER_DIALOG": {
       "TITLE": "Update customer",
       "CONFIRM": "Are you sure to save customer details?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating customer failed. Please again later."
     }
   },
@@ -188,6 +195,10 @@
       "ADDRESS_CONTROL": {
         "LABEL": "Address",
         "HINT": "Please enter customer address"
+      },
+      "EMAIL_ADDRESS_CONTROL": {
+        "LABEL": "Email Address",
+        "HINT": "Please enter customer email address"
       },
       "PAYMENT_METHOD_CONTROL": {
         "LABEL": "Mode of Payment",
@@ -253,6 +264,15 @@
         "CONFIRM": "Confirm",
         "DRAFT": "Draft",
         "ADD_ITEM": "Add Item +"
+      }
+    },
+    "AGREEMENT_CONFIRMATION_DIALOG": {
+      "TITLE": "Agreement Policy",
+      "FORM_CONTROL_SECTION": {
+        "CONFIRMATION_CHECKBOX_CONTROL": {
+          "LABEL": "I confirm that the order transaction details are complete and correct.",
+          "LABEL_2": "Click the confirm button below to proceed."
+        }
       }
     },
     "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
@@ -358,8 +378,12 @@
         "LABEL": "Description",
         "HINT": "Please enter description"
       },
+      "STOCK_REMAINING_CONTROL": {
+        "LABEL": "Stocks Remaining",
+        "HINT": "Please specify stock"
+      },
       "STOCK_QUANTITY_CONTROL": {
-        "LABEL": "Stock",
+        "LABEL": "Stocks to Sell",
         "HINT": "Please specify stock"
       },
       "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
@@ -384,7 +408,7 @@
     "EDIT_PRODUCT_DIALOG": {
       "TITLE": "Update product",
       "CONFIRM": "Are you sure to save product details?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating product failed. Please again later."
     },
     "CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG": {
@@ -685,7 +709,9 @@
       "SALES_PER_CUSTOMER_REPORT_NAME": "Sales Per Customer Report",
       "SALES_PER_CUSTOMER_REPORT_DESC": "Generates sales data per customer for a specified date, aiding administrators in analyzing and gaining insights into individual customer sales.",
       "PRODUCT_WITHDRAWAL_REPORT_NAME": "Product Withdrawal Report",
-      "PRODUCT_WITHDRAWAL_REPORT_DESC": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date."
+      "PRODUCT_WITHDRAWAL_REPORT_DESC": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date.",
+      "PRODUCT_WITHDRAWAL_REPORT_NAME_2": "Product Withdrawal Report",
+      "PRODUCT_WITHDRAWAL_REPORT_DESC_2": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date."
     }
   },
   "REPORT_DETAILS_PAGE": {
@@ -742,6 +768,14 @@
         "HINT": "Please enter a valid email",
         "INVALID_EMAIL_ERROR_MESSAGE": "Invalid email format. Please enter a valid email address."
       },
+      "PERMISSION_LEVEL_CONTROL": {
+        "LABEL": "Permission Level",
+        "OPTIONS": {
+          "USER": "Sales agent",
+          "MANAGER": "Manager",
+          "ADMINISTRATOR": "Administrator"
+        }
+      },
       "USERNAME_CONTROL": {
         "LABEL": "Username",
         "HINT": "Please enter a valid username",
@@ -754,13 +788,14 @@
       },
       "CONFIRM_PASSWORD_CONTROL": {
         "LABEL": "Confirm Password",
-        "HINT": "Please enter confirm password"
+        "HINT": "Please enter confirm password",
+        "PASSWORD_NOT_MATCHED_ERROR_MESSAGE": "Password does not matched!"
       }
     },
     "EDIT_PROFILE_DIALOG": {
       "TITLE": "Update profile",
       "CONFIRM": "Are you sure to save profile details?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating profile failed. Please again later."
     }
   },
@@ -859,7 +894,63 @@
   },
   "ACCOUNTS_PAGE": {
     "TITLE": "Accounts",
-    "DESCRIPTION": "This is the page where administrator can manage user accounts information."
+    "DESCRIPTION": "Create, update and remove user accounts on this page. Only administrators can access this page.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search account name or username..."
+    },
+    "ACCOUNT_SEARCH_RESULT_CONTAINER": {
+      "LABEL": "Search result matches"
+    },
+    "ACCOUNT_COUNTER_CONTAINER": {
+      "LABEL": "Total number of items"
+    },
+    "DELETE_ACCOUNT_DIALOG": {
+      "TITLE": "Delete user account",
+      "CONFIRM": "Are you sure to delete selected user account?",
+      "SUCCESS_MESSAGE": "Selected user account has been successfully removed.",
+      "ERROR_MESSAGE": "Removing user account failed. Please again later."
+    },
+    "ACTIVATE_ACCOUNT_DIALOG": {
+      "TITLE": "Activate user account",
+      "CONFIRM": "Activating user account means that you are giving this user permission to access the system. Are you still sure to proceed?",
+      "SUCCESS_MESSAGE": "Selected user account has been successfully activated.",
+      "ERROR_MESSAGE": "Activating user account failed. Please again later."
+    },
+    "DEACTIVATE_ACCOUNT_DIALOG": {
+      "TITLE": "Deactivate user account",
+      "CONFIRM": "Deactivating user account means that user cannot login anymore. Are you still sure to proceed?",
+      "SUCCESS_MESSAGE": "Selected user account has been successfully deactivated.",
+      "ERROR_MESSAGE": "Deactivating user account failed. Please again later."
+    }
+  },
+  "MANAGE_ACCOUNT_PAGE": {
+    "TITLE": "Manage User Account",
+    "DESCRIPTION": "This is where user account information can be managed.",
+    "TAB_SECTIONS": {
+      "PERSONAL_INFORMATION": "Personal Information",
+      "ACCOUNT_INFORMATION": "Account Information"
+    },
+    "FORM_CONTROL_SECTION": {
+      "TITLE": {
+        "CREATE_NEW": "Create New User Account",
+        "UPDATE_EXISTING": "Update User Account"
+      }
+    },
+    "EDIT_ACCOUNT_DIALOG": {
+      "TITLE": "Update user account",
+      "CONFIRM": "Are you sure to save changes details?",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
+      "ERROR_MESSAGE": "Updating details failed. Please again later."
+    },
+    "NEW_ACCOUNT_DIALOG": {
+      "TITLE": "New user account",
+      "CONFIRM": "Are you sure to save new user account?",
+      "SUCCESS_MESSAGE": "New user account has been saved!",
+      "ERROR_MESSAGE": "Updating details failed. Please again later."
+    },
+    "INVALID_FORM_DIALOG": {
+      "TITLE": "There is error(s) in the form. Please fix the error(s) and saving again."
+    }
   },
   "MANAGE_PRODUCT_STOCK_AUDITS_PAGE": {
     "TITLE": "Product Stock Audit",
@@ -891,7 +982,7 @@
     "CONFIRMATION_REPORT_SETTINGS_DIALOG": {
       "TITLE": "Update Report Settings",
       "CONFIRM": "Are you sure to update report settings?",
-      "SUCCESS_MESSAGE": "New updates has been saved!",
+      "SUCCESS_MESSAGE": "New updates have been saved!",
       "ERROR_MESSAGE": "Updating report settings failed. Please again later."
     }
   },
@@ -947,10 +1038,19 @@
       "TITLE": "Insights",
       "DESCRIPTION": "This page gives administrator insights about the most frequently sold products.",
       "TOP_SELLING_PRODUCTS_CHART_SECTION": {
+        "TITLE": "Top 10 Selling Products"
+      },
+      "TOP_SELLING_PRODUCTS_LIST_SECTION": {
         "TITLE": "Top Selling Products"
       },
-      "TOP_SELLING_PRODUCTS_LISTT_SECTION": {
-        "TITLE": "Top Selling Products"
+      "TOP_CUSTOMER_STORE_LIST_SECTION": {
+        "TITLE": "Top Customer Sales",
+        "BODY_CONTAINER": {
+          "INFO_BANNER": {
+            "TITLE": "Click on store to see top products sold.",
+            "TITLE_2": "Click back button to see top store sales."
+          }
+        }
       }
     }
   }

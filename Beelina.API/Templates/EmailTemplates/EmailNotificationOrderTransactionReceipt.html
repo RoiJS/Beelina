@@ -1,0 +1,157 @@
+<html>
+
+<head>
+  <style>
+    .email-template-container {
+      background-color: #d69213;
+      border-radius: 10px;
+      color: white;
+      font-family: Inter, sans-serif;
+      padding: 1em;
+      width: 750px;
+    }
+
+    .email-template-container .transaction-no-details {
+      font-weight: bold;
+    }
+
+    .email-template-container__header-section {
+      line-height: 1.3em
+    }
+
+    .email-template-container__body-section {
+      align-self: center;
+      background: white;
+      color: black;
+      box-shadow: 3px 3px 3px #6b6b6b;
+      border-radius: 1em;
+      padding: 1em;
+      width: 700px;
+    }
+
+    .email-template-container__body-section table.table-product-transaction,
+    .email-template-container__body-section table.table-product-transaction th,
+    .email-template-container__body-section table.table-product-transaction td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      color: black;
+    }
+
+    .email-template-container__body-section table.table-product-transaction td,
+    .email-template-container__body-section table.table-product-transaction th {
+      padding: 5px;
+    }
+
+    .email-template-container__body-section table.table-product-transaction {
+      border: 1px solid black;
+      width: 700px;
+    }
+
+    .email-template-container__body-section table.table-product-transaction .table-product-transaction__header-section {
+      background-color: #d69213;
+    }
+
+    .email-template-container__body-section table.table-product-transaction .table-product-transaction__row-item-section span {
+      color: gray;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+
+    .email-template-container__body-section td.transaction-detail-value,
+    .table-product-transaction__row-item-section--number-value {
+      text-align: right;
+    }
+
+    .email-template-container__footer-section {
+      display: flex;
+      height: 50px;
+      justify-content: space-around;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-template-container">
+    <p class="email-template-container__header-section">
+      <b>Date:</b> #date<br>
+      <b>Company:</b> #company<br>
+      <b>Sales Agent:</b> #salesAgent
+    </p>
+    <p>This is an e-receipt for the confirmed order transaction with Transaction No. of <span
+        class="transaction-no-details">#transactionNo</span>. See transaction details below.</p>
+    <br>
+    <table class="email-template-container__body-section">
+      <tr>
+        <td colspan="2"><b>Registered Date:</b></td>
+        <td class="transaction-detail-value">#registeredDate</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Due Date:</b></td>
+        <td class="transaction-detail-value">#dueDate</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Transaction No.:</b></td>
+        <td class="transaction-detail-value">#transactionNo</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Store:</b></td>
+        <td class="transaction-detail-value">#storeName - #barangay (#storeType)</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Mode of Payment:</b></td>
+        <td class="transaction-detail-value">#modeOfPayment</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <table class="table-product-transaction">
+            <tr class="table-product-transaction__header-section">
+              <th><b>Product</b></th>
+              <th><b>Quantity</b></th>
+              <th><b>Price</b></th>
+              <th><b>Sub-total</b></th>
+            </tr>
+            #transactionDetails
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Balance:</b></td>
+        <td class="transaction-detail-value">#balance</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Bad Order:</b></td>
+        <td class="transaction-detail-value">#badOrder</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Gross Total:</b></td>
+        <td class="transaction-detail-value">#grossTotal</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Discount (%):</b></td>
+        <td class="transaction-detail-value">#discount</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Net Total:</b></td>
+        <td class="transaction-detail-value">#netTotal</td>
+      </tr>
+    </table>
+    <br>
+    <p>
+      Best Regards,<br /> Bizual
+    </p>
+
+  </div>
+  <hr>
+  <div class="email-template-container__footer-section">
+    <img src="#bannerLogo" />
+  </div>
+</body>
+
+</html>

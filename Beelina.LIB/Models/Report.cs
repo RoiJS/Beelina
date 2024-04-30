@@ -13,6 +13,7 @@ namespace Beelina.LIB.Models
         public ModulesEnum ModuleId { get; set; }
         public PermissionLevelEnum UserMinimumModulePermission { get; set; }
         public PermissionLevelEnum UserMaximumModulePermission { get; set; }
+        public BusinessModelEnum? OnlyAvailableOnBusinessModel { get; set; }
 
         public List<ReportControlsRelation> ReportControlsRelations { get; set; }
     }

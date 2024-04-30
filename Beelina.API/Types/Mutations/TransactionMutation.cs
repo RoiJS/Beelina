@@ -14,6 +14,7 @@ namespace Beelina.API.Types.Mutations
         [Authorize]
         public async Task<Transaction> RegisterTransaction(
             [Service] ITransactionRepository<Transaction> transactionRepository,
+            [Service] IGeneralSettingRepository<GeneralSetting> generalSettingRepository,
             [Service] ICurrentUserService currentUserService,
             [Service] IMapper mapper,
             TransactionInput transactionInput)
@@ -43,6 +44,18 @@ namespace Beelina.API.Types.Mutations
             });
 
             await transactionRepository.RegisterTransaction(transactionFromRepo);
+
+            // Send order transaction receipt
+            if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
+            {
+                var generalSetting = await generalSettingRepository.GetGeneralSettings();
+
+                // Check if order transaction receipt should be sent
+                if (generalSetting.SendOrderTransactionReceipt)
+                {
+                    await transactionRepository.SendTransactionEmailReceipt(transactionFromRepo.Id);
+                }
+            }
 
             return transactionFromRepo;
         }

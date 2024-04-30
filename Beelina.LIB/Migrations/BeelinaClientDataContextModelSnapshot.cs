@@ -61,7 +61,64 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("Barangays");
+                    b.ToTable("Barangays", (string)null);
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.GeneralSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("BusinessModel")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeactivatedById")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeletedById")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SendOrderTransactionReceipt")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DeactivatedById");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("GeneralSettings", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.PaymentMethod", b =>
@@ -95,7 +152,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentMethods");
+                    b.ToTable("PaymentMethods", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
@@ -172,7 +229,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockAudit", b =>
@@ -252,7 +309,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductStockAudits");
+                    b.ToTable("ProductStockAudits", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockPerPanel", b =>
@@ -319,7 +376,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("ProductStockPerPanels");
+                    b.ToTable("ProductStockPerPanels", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockPerWarehouse", b =>
@@ -383,7 +440,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("WarehouseId");
 
-                    b.ToTable("ProductStockPerWarehouse");
+                    b.ToTable("ProductStockPerWarehouse", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockWarehouseAudit", b =>
@@ -415,6 +472,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
+                    b.Property<int>("DestinationProductStockPerWarehouseId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -430,7 +490,16 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("SourceProductNumberOfUnits")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SourceProductStockPerWarehouseId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StockAuditSource")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransferProductStockType")
                         .HasColumnType("int");
 
                     b.Property<int?>("UpdatedById")
@@ -448,7 +517,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductStockWarehouseAudit");
+                    b.ToTable("ProductStockWarehouseAudit", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
@@ -518,7 +587,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductTransactions");
+                    b.ToTable("ProductTransactions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductUnit", b =>
@@ -555,7 +624,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductUnits");
+                    b.ToTable("ProductUnits", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -597,7 +666,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportNotificationEmailAddress", b =>
@@ -636,7 +705,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("ReportNotificationEmailAddresses");
+                    b.ToTable("ReportNotificationEmailAddresses", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -674,6 +743,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -706,7 +778,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
@@ -768,6 +840,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
@@ -780,7 +855,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserAccount", b =>
@@ -858,7 +933,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("UserAccounts");
+                    b.ToTable("UserAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserPermission", b =>
@@ -900,7 +975,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserPermission");
+                    b.ToTable("UserPermission", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Warehouse", b =>
@@ -937,7 +1012,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Warehouses");
+                    b.ToTable("Warehouses", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Barangay", b =>
@@ -949,6 +1024,33 @@ namespace Beelina.LIB.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.GeneralSetting", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeactivatedBy")
+                        .WithMany()
+                        .HasForeignKey("DeactivatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("DeactivatedBy");
+
+                    b.Navigation("DeletedBy");
+
+                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
