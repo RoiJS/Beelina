@@ -740,8 +740,8 @@
     },
     "GENERATE_REPORT_DIALOG": {
       "TITLE": "Generate Report",
-      "CONFIRM": "This will generate report in an excel file format and will be sent to your email address. Do you want to  proceeed?",
-      "SUCCESS_MESSAGE": "Report has been successfully generated. The report will be sent to your email. Please check your email. Thank you!",
+      "CONFIRM": "This will generate report in an excel file format and will be sent to the email address set on reports list page. Do you want to  proceeed?",
+      "SUCCESS_MESSAGE": "Report has been successfully generated. The report will be sent to the email address set on reports list page. Please check your email. Thank you!",
       "ERROR_MESSAGE": "Failed to generate report file. Please try again later.",
       "LOADING_MESSAGE": "Generating report. This will take a while. Please wait..."
     }
