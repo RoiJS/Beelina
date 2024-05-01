@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Beelina.LIB.Enums;
+using Beelina.LIB.Helpers.Class;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
@@ -16,6 +17,7 @@ namespace Beelina.LIB.BusinessLogic
         private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
         private readonly IProductTransactionRepository<ProductTransaction> _productTransactionRepository;
         private IOptions<EmailServerSettings> _emailServerSettings { get; }
+        private readonly IOptions<AppHostInfo> _appHostInfo;
         private readonly ICurrentUserService _currentUserService;
 
         public TransactionRepository(
@@ -23,10 +25,12 @@ namespace Beelina.LIB.BusinessLogic
             IUserAccountRepository<UserAccount> userAccountRepository,
             IProductTransactionRepository<ProductTransaction> productTransactionRepository,
             IOptions<EmailServerSettings> emailServerSettings,
+            IOptions<AppHostInfo> appHostInfo,
             ICurrentUserService currentUserService
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
+            _appHostInfo = appHostInfo;
             _currentUserService = currentUserService;
             _emailServerSettings = emailServerSettings;
             _productTransactionRepository = productTransactionRepository;
@@ -673,7 +677,7 @@ namespace Beelina.LIB.BusinessLogic
             {
                 var transactionDetails = await GetTransaction(transactionId);
                 var template = await GenerateEmailReceiptTemplate(transactionDetails);
-                var subject = $"Order Transaction Receipt - {transactionDetails.Transaction.InvoiceNo}";
+                var subject = $"Bizual Order Transaction Receipt - {transactionDetails.Transaction.InvoiceNo}";
                 var receiver = transactionDetails.Transaction.Store.EmailAddress;
                 var bcc = await GetEmailTransactionReceiptReceivers();
 
@@ -763,6 +767,7 @@ namespace Beelina.LIB.BusinessLogic
 
             template = template.Replace("#transactionDetails", productTransactionsTemplate.ToString());
             template = template.Replace("#badOrder", transactionDetails.BadOrderAmount.FormatCurrency());
+            template = template.Replace("#bannerLogo", $"{_appHostInfo.Value.AppDomain}/assets/logo/bannerlogo-alt.jpg");
 
             return template;
         }
