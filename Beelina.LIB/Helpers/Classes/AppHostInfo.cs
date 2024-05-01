@@ -2,6 +2,7 @@ namespace Beelina.LIB.Helpers.Class
 {
     public class AppHostInfo
     {
-        public string Domain { get; set; }
+        public string APIDomain { get; set; }
+        public string AppDomain { get; set; }
     }
 }
