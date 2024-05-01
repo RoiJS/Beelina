@@ -499,7 +499,10 @@ namespace Beelina.LIB.BusinessLogic
           // Join products with their corresponding absolute stock quantity.
           finalProductsFromRepo = (from p in filteredProductsFromRepo
                                    join owsa in overallWarehouseProductStockAudits
+
                                    on new { Id = p.Id } equals new { Id = owsa.ProductId }
+                                   into warehouseProductStockJoin
+                                   from pws in warehouseProductStockJoin.DefaultIfEmpty()
 
                                    select new Product
                                    {
@@ -512,7 +515,7 @@ namespace Beelina.LIB.BusinessLogic
                                      PricePerUnit = p.PricePerUnit,
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
-                                     StockQuantity = owsa.Quantity,
+                                     StockQuantity = (pws == null ? 0 : pws.Quantity),
                                    })
                                   .ToList();
         }
