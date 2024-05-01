@@ -23,10 +23,12 @@ import { ProductInformationResult } from 'src/app/_models/results/product-inform
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 
 import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
-import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
+import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
-
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
 
@@ -35,7 +37,7 @@ import * as ProductActions from '../store/actions';
   templateUrl: './edit-product-details.component.html',
   styleUrls: ['./edit-product-details.component.scss'],
 })
-export class EditProductDetailsComponent implements OnInit {
+export class EditProductDetailsComponent extends BaseComponent implements OnInit {
   private _dialogRef: MatBottomSheetRef<
     AddProductStockQuantityDialogComponent,
     {
@@ -57,8 +59,7 @@ export class EditProductDetailsComponent implements OnInit {
   private _productSourceRedirectUrl: Array<string> = ['/product-catalogue', "/warehouse-products"];
   private _updateProductSubscription: Subscription;
   private _warehouseId: number = 1;
-
-  $isLoading: Observable<boolean>;
+  private _isAdmin = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -73,6 +74,10 @@ export class EditProductDetailsComponent implements OnInit {
     private uniqueProductCodeValidator: UniqueProductCodeValidator,
     public translateService: TranslateService,
   ) {
+    super();
+    this._currentLoggedInUser = this.authService.user.value;
+    this._isAdmin = this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
+
     const state = <any>this.router.getCurrentNavigation().extras.state;
     this._productSource = <ProductSourceEnum>state.productSource;
     this._businessModel = this.authService.businessModel;
@@ -308,5 +313,9 @@ export class EditProductDetailsComponent implements OnInit {
 
   get businessModel(): BusinessModelEnum {
     return this._businessModel;
+  }
+
+  get isAdmin(): boolean {
+    return this._isAdmin;
   }
 }
