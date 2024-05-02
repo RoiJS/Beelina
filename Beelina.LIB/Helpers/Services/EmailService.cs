@@ -44,9 +44,16 @@ namespace ReserbizAPP.LIB.Helpers.Services
             {
                 MailAddress fromAddress = new(senderEmail);
                 mail.From = fromAddress;
-                mail.To.Add(receiverEmail);
                 mail.Subject = subject;
                 mail.Body = htmlBody;
+
+                if (!String.IsNullOrEmpty(receiverEmail))
+                {
+                    foreach (var receiver in receiverEmail.Split(";"))
+                    {
+                        mail.To.Add(receiver);
+                    }
+                }
 
                 if (!String.IsNullOrEmpty(bcc))
                 {

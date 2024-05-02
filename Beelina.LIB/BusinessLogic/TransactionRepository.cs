@@ -678,10 +678,12 @@ namespace Beelina.LIB.BusinessLogic
                 var transactionDetails = await GetTransaction(transactionId);
                 var template = await GenerateEmailReceiptTemplate(transactionDetails);
                 var subject = $"Bizual Order Transaction Receipt - {transactionDetails.Transaction.InvoiceNo}";
-                var receiver = transactionDetails.Transaction.Store.EmailAddress;
-                var bcc = await GetEmailTransactionReceiptReceivers();
+                var salesAgent = transactionDetails.Transaction.Store.EmailAddress;
+                var receivers = await GetEmailTransactionReceiptReceivers();
+                receivers.Add(salesAgent);
+                var emailReceivers = String.Join(";", receivers.ToArray());
 
-                emailService.Send(_emailServerSettings.Value.SmtpAddress, receiver, subject, template, _emailServerSettings.Value.SmtpAddress, bcc);
+                emailService.Send(_emailServerSettings.Value.SmtpAddress, emailReceivers, subject, template, _emailServerSettings.Value.SmtpAddress);
             }
             catch (Exception ex)
             {
@@ -692,7 +694,7 @@ namespace Beelina.LIB.BusinessLogic
             return true;
         }
 
-        private async Task<string> GetEmailTransactionReceiptReceivers()
+        private async Task<List<string>> GetEmailTransactionReceiptReceivers()
         {
             var userAccounts = await _userAccountRepository.GetUserAccounts();
             var userAccountsWithDistributionModulePermissionLevel = userAccounts
@@ -704,15 +706,15 @@ namespace Beelina.LIB.BusinessLogic
                                     })
                                     .ToList();
 
-            // Managers, Administrators and current user email addresses.
+            // Managers and current user email addresses.
             var emailReceivers = userAccountsWithDistributionModulePermissionLevel
-                                                .Where(m => m.DistributionPermissionLevel > PermissionLevelEnum.User || m.Id == _currentUserService.CurrentUserId)
+                                                .Where(m => m.DistributionPermissionLevel <= PermissionLevelEnum.Manager || m.Id == _currentUserService.CurrentUserId)
                                                 .Select(u => u.EmailAddress)
                                                 .ToList();
 
-            var managersAndAdminEmailAddressesConcatenated = String.Join(";", emailReceivers.ToArray());
+            // var managersAndAdminEmailAddressesConcatenated = String.Join(";", emailReceivers.ToArray());
 
-            return managersAndAdminEmailAddressesConcatenated;
+            return emailReceivers;
         }
 
         private async Task<string> GenerateEmailReceiptTemplate(TransactionDetails transactionDetails)
