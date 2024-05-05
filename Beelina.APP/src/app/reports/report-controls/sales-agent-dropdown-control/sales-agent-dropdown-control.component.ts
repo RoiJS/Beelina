@@ -3,6 +3,7 @@ import { BaseControlComponent } from '../base-control/base-control.component';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { User } from 'src/app/_models/user.model';
 
@@ -17,6 +18,7 @@ export class SalesAgentDropdownControlComponent extends BaseControlComponent imp
   private _salesAgents: User[];
 
   constructor(
+    private authService: AuthService,
     private formBuilder: FormBuilder,
     private productService: ProductService,
     protected override translateService: TranslateService
@@ -24,7 +26,7 @@ export class SalesAgentDropdownControlComponent extends BaseControlComponent imp
     super(translateService);
 
     this._form = this.formBuilder.group({
-      salesAgent: [0, Validators.required],
+      salesAgent: [null, Validators.required],
     });
 
     this.productService.getSalesAgentsList().subscribe({
@@ -43,6 +45,7 @@ export class SalesAgentDropdownControlComponent extends BaseControlComponent imp
   }
 
   override validate(): boolean {
+    if (this.hide) this._form.get('salesAgent').setValue(this.authService.userId);
     this._form.markAllAsTouched();
     return this._form.valid;
   }

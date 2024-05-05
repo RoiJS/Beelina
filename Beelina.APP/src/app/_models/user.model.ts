@@ -1,14 +1,15 @@
+import { BusinessModelEnum } from '../_enum/business-model.enum';
 import { GenderEnum } from '../_enum/gender.enum';
 import { ModuleEnum } from '../_enum/module.enum';
 import {
   PermissionLevelEnum,
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
+import { Entity } from './entity.model';
 import { UserCredentials } from './user-credentials';
 import { UserModulePermission } from './user-module-permission';
 
-export class User {
-  public id: number;
+export class User extends Entity {
   public firstName: string;
   public middleName: string;
   public lastName: string;
@@ -16,19 +17,25 @@ export class User {
   public password: string;
   public gender: GenderEnum;
   public emailAddress: string;
+  public businessModel: BusinessModelEnum;
   public credentials: UserCredentials;
   public userPermissions: UserModulePermission[];
+  public userType: string;
 
   constructor() {
+    super();
     this.credentials = new UserCredentials();
     this.userPermissions = new Array<UserModulePermission>();
   }
 
-  getModulePrivilege(moduleId: ModuleEnum): number | null {
+  getModulePrivilege(moduleId: ModuleEnum): { key: string; value: number | null } {
     const permission = this.userPermissions.find(
       (permission) => permission.moduleId === moduleId
     )?.permissionLevel;
-    return getPermissionLevelEnum(permission);
+    return {
+      key: permission,
+      value: getPermissionLevelEnum(permission)
+    }
   }
 
   setModulePrivilege(moduleId: ModuleEnum, permission: PermissionLevelEnum) {

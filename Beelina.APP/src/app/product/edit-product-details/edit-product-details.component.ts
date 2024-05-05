@@ -10,6 +10,7 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { productUnitsSelector } from 'src/app/units/store/selectors';
 
+import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
@@ -21,10 +22,13 @@ import { ProductUnit } from 'src/app/_models/product-unit';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 
-import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
+import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
+import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
-
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
 
@@ -33,7 +37,7 @@ import * as ProductActions from '../store/actions';
   templateUrl: './edit-product-details.component.html',
   styleUrls: ['./edit-product-details.component.scss'],
 })
-export class EditProductDetailsComponent implements OnInit {
+export class EditProductDetailsComponent extends BaseComponent implements OnInit {
   private _dialogRef: MatBottomSheetRef<
     AddProductStockQuantityDialogComponent,
     {
@@ -49,16 +53,17 @@ export class EditProductDetailsComponent implements OnInit {
   private _productAdditionalStockQuantitySubscription: Subscription;
   private _productId: number;
   private _productSource: ProductSourceEnum;
+  private _businessModel: BusinessModelEnum;
   private _productSourceUpdateFunc: Array<string> = ["updateProductInformation", "updateWarehouseProductInformation"];
   private _productSourceGetFunc: Array<string> = ["getProduct", "getWarehouseProduct"];
   private _productSourceRedirectUrl: Array<string> = ['/product-catalogue', "/warehouse-products"];
   private _updateProductSubscription: Subscription;
   private _warehouseId: number = 1;
-
-  $isLoading: Observable<boolean>;
+  private _isAdmin = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private authService: AuthService,
     private bottomSheet: MatBottomSheet,
     private store: Store<AppStateInterface>,
     private dialogService: DialogService,
@@ -69,8 +74,13 @@ export class EditProductDetailsComponent implements OnInit {
     private uniqueProductCodeValidator: UniqueProductCodeValidator,
     public translateService: TranslateService,
   ) {
+    super();
+    this._currentLoggedInUser = this.authService.user.value;
+    this._isAdmin = this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
+
     const state = <any>this.router.getCurrentNavigation().extras.state;
     this._productSource = <ProductSourceEnum>state.productSource;
+    this._businessModel = this.authService.businessModel;
 
     this._productForm = this.formBuilder.group(
       {
@@ -87,6 +97,7 @@ export class EditProductDetailsComponent implements OnInit {
         description: [''],
         transactionNo: [''],
         stockQuantity: [0],
+        stocksRemainingFromWarehouse: [0],
         additionalStockQuantity: [0],
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
@@ -114,6 +125,7 @@ export class EditProductDetailsComponent implements OnInit {
         this._productForm.get('name').setValue(product.name);
         this._productForm.get('code').setValue(product.code);
         this._productForm.get('description').setValue(product.description);
+        this._productForm.get('stocksRemainingFromWarehouse').setValue(product.stocksRemainingFromWarehouse);
         this._productForm.get('stockQuantity').setValue(product.stockQuantity);
         this._productForm.get('isTransferable').setValue(product.isTransferable);
         this._productForm.get('numberOfUnits').setValue(product.numberOfUnits);
@@ -144,7 +156,10 @@ export class EditProductDetailsComponent implements OnInit {
       .valueChanges
       .subscribe((value) => {
         const newStockQuantity = value + this._productDetails.stockQuantity;
+        const newStockRemainingQuantity = this._productDetails.stocksRemainingFromWarehouse - value;
+
         this._productForm.get('stockQuantity').setValue(newStockQuantity);
+        this._productForm.get('stocksRemainingFromWarehouse').setValue(newStockRemainingQuantity);
       });
   }
 
@@ -294,5 +309,13 @@ export class EditProductDetailsComponent implements OnInit {
 
   get showDefaultPrice(): boolean {
     return this._productDetails?.defaultPrice > 0 && this._productSource === ProductSourceEnum.Panel;
+  }
+
+  get businessModel(): BusinessModelEnum {
+    return this._businessModel;
+  }
+
+  get isAdmin(): boolean {
+    return this._isAdmin;
   }
 }

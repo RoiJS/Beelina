@@ -1,8 +1,10 @@
-export enum EmptyEntityTemplateEnum {
+export enum PlaceholderEntityTemplateEnum {
   CUSTOMERS = 'CUSTOMERS',
   TRANSACTIONS = 'TRANSACTIONS',
   PRODUCTS = 'PRODUCTS',
   TOP_PRODUCTS = 'TOP_PRODUCTS',
   REPORTS = 'REPORTS',
   SALES_AGENTS = 'SALES_AGENTS',
+  LOGIN = 'LOGIN',
+  USER_ACCOUNTS = 'USER_ACCOUNTS'
 }

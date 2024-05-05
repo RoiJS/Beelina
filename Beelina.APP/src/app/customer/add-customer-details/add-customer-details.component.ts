@@ -54,7 +54,8 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
     this._customerForm = this.formBuilder.group({
       name: ['', Validators.required],
       address: [''],
-      outletType: [null],
+      emailAddress: ['', Validators.email],
+      outletType: [null, Validators.required],
       paymentMethod: ['', Validators.required],
       barangay: ['', Validators.required],
     });
@@ -88,6 +89,7 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
     const customerStore = new CustomerStore();
     customerStore.name = this._customerForm.get('name').value;
     customerStore.address = this._customerForm.get('address').value;
+    customerStore.emailAddress = this._customerForm.get('emailAddress').value;
     customerStore.outletType = this._customerForm.get('outletType').value;
     customerStore.paymentMethod.name =
       this._customerForm.get('paymentMethod').value;

@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { EmptyEntityTemplateEnum } from 'src/app/_enum/empty-entity-template.enum';
+import { PlaceholderEntityTemplateEnum } from 'src/app/_enum/placeholder-entity-template.enum';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
 import {
   PermissionLevelEnum,
   getPermissionLevelEnum,
 } from 'src/app/_enum/permission-level.enum';
 import { User } from 'src/app/_models/user.model';
-import { TemplateSizeEnum } from '../../ui/empty-entities-placeholder/empty-entities-placeholder.component';
+import { TemplateSizeEnum } from '../../ui/placeholder-entities/placeholder-entities.component';
 import { BannerTypeEnum } from '../../ui/banner/banner.component';
 
 @Component({
@@ -19,11 +19,12 @@ import { BannerTypeEnum } from '../../ui/banner/banner.component';
 export class BaseComponent {
   protected _isLoading = false;
   protected _permissionLevelEnum = PermissionLevelEnum;
-  protected _emptyTemplateType = EmptyEntityTemplateEnum;
+  protected _emptyTemplateType = PlaceholderEntityTemplateEnum;
   protected _templateSize = TemplateSizeEnum;
   protected _bannerType = BannerTypeEnum;
   protected $isLoading: Observable<boolean>;
   protected _currentLoggedInUser: User;
+  protected _passwordVisible: boolean;
 
   constructor() {
   }
@@ -63,22 +64,6 @@ export class BaseComponent {
     return photo;
   }
 
-  get isLoading(): boolean {
-    return this._isLoading;
-  }
-
-  get emptyEntityTemplateEnum(): typeof EmptyEntityTemplateEnum {
-    return this._emptyTemplateType;
-  }
-
-  get emptyEntityTemplateSizeEnum(): typeof TemplateSizeEnum {
-    return this._templateSize;
-  }
-
-  get bannerTypeEnum(): typeof BannerTypeEnum {
-    return this._bannerType;
-  }
-
   //#region Permission Level related methods
   get permissionLevelEnum(): typeof PermissionLevelEnum {
     return this._permissionLevelEnum;
@@ -89,7 +74,7 @@ export class BaseComponent {
   }
 
   modulePrivilege(module: ModuleEnum): number {
-    return this._currentLoggedInUser?.getModulePrivilege(module);
+    return this._currentLoggedInUser?.getModulePrivilege(module).value;
   }
   //#endregion
 
@@ -119,5 +104,29 @@ export class BaseComponent {
     const suffix = originalString.slice(endIndex + 1);
 
     return `${prefix}<mark>${markedText}</mark>${suffix}`;
+  }
+
+  setPasswordVisibility() {
+    this._passwordVisible = !this._passwordVisible;
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
+
+  get emptyEntityTemplateEnum(): typeof PlaceholderEntityTemplateEnum {
+    return this._emptyTemplateType;
+  }
+
+  get emptyEntityTemplateSizeEnum(): typeof TemplateSizeEnum {
+    return this._templateSize;
+  }
+
+  get bannerTypeEnum(): typeof BannerTypeEnum {
+    return this._bannerType;
+  }
+
+  get passwordVisible(): boolean {
+    return this._passwordVisible;
   }
 }

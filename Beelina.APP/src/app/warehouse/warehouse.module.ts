@@ -30,6 +30,7 @@ import { WarehouseComponent } from './warehouse.component';
       {
         path: '',
         component: WarehouseComponent,
+        title: 'WAREHOUSE_PAGE.TITLE'
       },
       {
         path: 'product-import',

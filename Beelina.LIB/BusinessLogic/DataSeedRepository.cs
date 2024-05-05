@@ -76,7 +76,7 @@ namespace Beelina.LIB.BusinessLogic
                          EmailAddress = account.EmailAddress,
                          UserPermissions = new List<UserPermission> {
                             new UserPermission {
-                                ModuleId = ModulesEnum.Retail,
+                                ModuleId = ModulesEnum.Distribution,
                                 PermissionLevel = PermissionLevelEnum.Administrator
                             }
                          }

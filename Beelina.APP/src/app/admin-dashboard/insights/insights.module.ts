@@ -6,7 +6,7 @@ import { StoreModule } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import * as TopSellingProductReducers from '../../product/top-products/store/reducers';
@@ -16,6 +16,7 @@ import { TopSellingProductEffects } from 'src/app/product/top-products/store/eff
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { TopSellingProductsChartComponent } from './top-selling-products-chart/top-selling-products-chart.component';
 import { TopSellingProductsListComponent } from './top-selling-products-list/top-selling-products-list.component';
+import { TopCustomerSalesComponent } from './top-customer-sales/top-customer-sales.component';
 
 @NgModule({
   imports: [
@@ -25,6 +26,7 @@ import { TopSellingProductsListComponent } from './top-selling-products-list/top
     MatBottomSheetModule,
     MatNativeDateModule,
     MatDatepickerModule,
+    MatRippleModule,
     StoreModule.forFeature('topSellingProducts', TopSellingProductReducers.reducers),
     EffectsModule.forFeature([
       TopSellingProductEffects,
@@ -41,7 +43,8 @@ import { TopSellingProductsListComponent } from './top-selling-products-list/top
   declarations: [
     InsightsComponent,
     TopSellingProductsChartComponent,
-    TopSellingProductsListComponent
+    TopSellingProductsListComponent,
+    TopCustomerSalesComponent
   ]
 })
 export class InsightsModule { }

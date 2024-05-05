@@ -30,7 +30,12 @@ namespace ReserbizAPP.LIB.Helpers.Services
 
         public void Send(string senderEmail, string receiverEmail, string subject, string htmlBody, string cc = "", string bcc = "")
         {
-            var fileattachmentStream = new MemoryStream(_fileAttachmentStream);
+            var fileattachmentStream = new MemoryStream();
+            if (_fileAttachmentStream is not null && _fileAttachmentStream.Length > 0)
+            {
+                fileattachmentStream = new MemoryStream(_fileAttachmentStream);
+            }
+
             var mail = new MailMessage()
             {
                 IsBodyHtml = true
@@ -39,13 +44,23 @@ namespace ReserbizAPP.LIB.Helpers.Services
             {
                 MailAddress fromAddress = new(senderEmail);
                 mail.From = fromAddress;
-                mail.To.Add(receiverEmail);
                 mail.Subject = subject;
                 mail.Body = htmlBody;
 
+                if (!String.IsNullOrEmpty(receiverEmail))
+                {
+                    foreach (var receiver in receiverEmail.Split(";"))
+                    {
+                        mail.To.Add(receiver);
+                    }
+                }
+
                 if (!String.IsNullOrEmpty(bcc))
                 {
-                    mail.Bcc.Add(bcc);
+                    foreach (var bccEmail in bcc.Split(";"))
+                    {
+                        mail.Bcc.Add(bccEmail);
+                    }
                 }
 
                 if (!String.IsNullOrEmpty(cc) && receiverEmail != cc)

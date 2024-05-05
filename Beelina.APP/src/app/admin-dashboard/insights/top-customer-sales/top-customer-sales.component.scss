@@ -1,0 +1,30 @@
+@import "../../../../app-variables";
+
+.top-store-header-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  margin-bottom: 1em;
+  align-items: center;
+
+  &__info-banner {
+    flex: 1;
+  }
+}
+
+.top-store-list-container {
+  height: 15em;
+
+  &__item-section {
+    display: flex;
+    justify-content: space-between;
+
+    .product-information {
+      font-weight: bold;
+    }
+
+    .product-number-of-transaction {
+      min-width: 100px;
+    }
+  }
+}

@@ -15,6 +15,7 @@ import { StorageService } from 'src/app/_services/storage.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import { TransferProductStockTypeEnum } from 'src/app/_enum/transfer-product-stock-type.enum';
+import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 
 @Component({
   selector: 'app-transfer-product-inventory',
@@ -40,6 +41,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
     @Inject(MAT_BOTTOM_SHEET_DATA)
     public data: {
       productId: number;
+      productSource: ProductSourceEnum;
     },
     private authService: AuthService,
     private notificationService: NotificationService,
@@ -195,7 +197,8 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
             destinationProductNumberOfUnits,
             sourceProductNumberOfUnits,
             sourceNumberOfUnitsTransfered,
-            transferType
+            transferType,
+            this.data.productSource
           )
           .subscribe({
             next: () => {

@@ -8,9 +8,13 @@
 
   &__panel {
     height: 78vh;
+    width: 50%;
   }
 
   &__page-container {
     background: $white;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
   }
 }

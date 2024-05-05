@@ -2,11 +2,18 @@
 
 .product-detail-panel {
   &__stock-quantity-control {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
+    display: flex;
     height: 2em;
-    margin-bottom: 1.5em;
+    justify-content: space-between;
+    margin-top: 1em;
+    margin-bottom: 3em;
+
+    .info-field {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
 
     .stock-quantity-label {
       font-size: 1.1em;

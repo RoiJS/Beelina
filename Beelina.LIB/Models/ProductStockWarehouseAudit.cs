@@ -11,6 +11,10 @@ namespace Beelina.LIB.Models
         public string PurchaseOrderNumber { get; set; }
         public StockAuditSourceEnum StockAuditSource { get; set; }
         public ProductStockPerWarehouse ProductStockPerWarehouse { get; set; }
+        public int SourceProductStockPerWarehouseId { get; set; }
+        public int SourceProductNumberOfUnits { get; set; }
+        public int DestinationProductStockPerWarehouseId { get; set; }
+        public TransferProductStockTypeEnum TransferProductStockType { get; set; }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

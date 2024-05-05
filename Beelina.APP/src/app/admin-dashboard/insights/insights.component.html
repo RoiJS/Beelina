@@ -11,20 +11,32 @@
     <div class="insights-container">
       <div class="panel insights-container__panel">
         <div class="panel__header-section">
-          <label>Top 10 selling products</label>
+          <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_SELLING_PRODUCTS_CHART_SECTION.TITLE" | translate }}</label>
         </div>
         <div class="panel__body-section">
           <app-top-selling-products-chart></app-top-selling-products-chart>
         </div>
       </div>
-      <div class="panel insights-container__panel">
-        <div class="panel__header-section">
-          <label>All Top Selling products</label>
+
+      <div class="insights-container__panel insights-container__page-container">
+        <div class="panel insights-container__top-sales-container-panel">
+          <div class="panel__header-section">
+            <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.TITLE" | translate }}</label>
+          </div>
+          <div class="panel__body-section">
+            <app-top-customer-sales></app-top-customer-sales>
+          </div>
         </div>
-        <div class="panel__body-section">
-          <app-top-selling-products-list></app-top-selling-products-list>
+        <div class="panel insights-container__top-selling-products-container-panel">
+          <div class="panel__header-section">
+            <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_SELLING_PRODUCTS_LIST_SECTION.TITLE" | translate }}</label>
+          </div>
+          <div class="panel__body-section">
+            <app-top-selling-products-list></app-top-selling-products-list>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </app-loader-layout>

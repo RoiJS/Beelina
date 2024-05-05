@@ -35,7 +35,7 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<List<TransactionTopProduct>> GetTopSellingProducts(int userId, string fromDate = "", string toDate = "")
         {
-            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Retail);
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
 
             var productTransactionsFromRepo = from t in _beelinaRepository.ClientDbContext.Transactions
                                               join pt in _beelinaRepository.ClientDbContext.ProductTransactions
@@ -65,9 +65,13 @@ namespace Beelina.LIB.BusinessLogic
                                           on t.ProductId equals p.Id into productJoin
                                           from ptt in productJoin
 
+                                          join pu in _beelinaRepository.ClientDbContext.ProductUnits
+                                          on ptt.ProductUnitId equals pu.Id
+
                                           select new
                                           {
                                               ProductId = t.ProductId,
+                                              ProductUnitName = pu.Name,
                                               ProductCode = ptt.Code,
                                               ProductName = ptt.Name,
                                               TransactionDate = t.TransactionDate,
@@ -91,11 +95,12 @@ namespace Beelina.LIB.BusinessLogic
             }
 
             var topProductsFromRepo = from t in productTransactionsJoin
-                                      group t by new { t.ProductId, t.ProductCode, t.ProductName } into g
+                                      group t by new { t.ProductId, t.ProductCode, t.ProductName, t.ProductUnitName } into g
                                       select new TransactionTopProduct
                                       {
                                           Id = g.Key.ProductId,
                                           Code = g.Key.ProductCode,
+                                          UnitName = g.Key.ProductUnitName,
                                           Name = g.Key.ProductName,
                                           Count = g.Count(),
                                           TotalAmount = g.Sum(s => s.Amount)

@@ -21,6 +21,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
+
+    span {
+      color: $alt-text-color;
+      font-weight: 500;
+    }
+
     .value {
       min-width: 80px;
     }

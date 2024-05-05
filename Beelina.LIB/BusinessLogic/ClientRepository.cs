@@ -116,7 +116,7 @@ namespace Beelina.LIB.BusinessLogic
         {
             try
             {
-                var url = String.Format("{0}{1}", _appHostInfo.Value.Domain, _appSettings.Value.AppSettingsURL.SyncDatabaseURL);
+                var url = String.Format("{0}{1}", _appHostInfo.Value.APIDomain, _appSettings.Value.AppSettingsURL.SyncDatabaseURL);
                 var httpClient = new RestClient(url);
                 httpClient.Options.MaxTimeout = -1;
                 var httpRequest = new RestRequest(url, Method.Post);
@@ -150,7 +150,7 @@ namespace Beelina.LIB.BusinessLogic
                     ContactNumber = client.ContactNumber
                 };
 
-                var url = String.Format("{0}{1}", _appHostInfo.Value.Domain, _appSettings.Value.AppSettingsURL.PopulateDatabaseURL);
+                var url = String.Format("{0}{1}", _appHostInfo.Value.APIDomain, _appSettings.Value.AppSettingsURL.PopulateDatabaseURL);
                 var httpClient = new RestClient(url);
                 httpClient.Options.MaxTimeout = -1;
                 var httpRequest = new RestRequest(url, Method.Post);

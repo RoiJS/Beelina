@@ -1,3 +1,3 @@
 export enum ModuleEnum {
-  Retail = 'RETAIL',
+  Distribution = 'DISTRIBUTION',
 }

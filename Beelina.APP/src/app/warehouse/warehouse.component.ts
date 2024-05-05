@@ -11,12 +11,14 @@ import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { WarehouseProductDataSource } from 'src/app/_models/datasources/warehouse-product.datasource';
 import { Product } from 'src/app/_models/product';
-import { ProductService } from 'src/app/_services/product.service';
 import { AddProductStockQuantityDialogComponent } from 'src/app/product/add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { SearchFieldComponent } from 'src/app/shared/ui/search-field/search-field.component';
+import { TransferProductInventoryComponent } from '../product/transfer-product-inventory/transfer-product-inventory.component';
+
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { ProductService } from 'src/app/_services/product.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import * as WarehouseProductActions from './store/actions';
 import { filterKeywordSelector, isLoadingSelector, totalCountSelector } from './store/selectors';
 
@@ -42,6 +44,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   >;
 
   private _subscription: Subscription = new Subscription();
+  private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
 
   constructor(
     private dialogService: DialogService,
@@ -67,6 +70,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   ngOnDestroy() {
     this._subscription.unsubscribe();
     this.store.dispatch(WarehouseProductActions.getWarehouseProductsCancelAction());
+    this._transferInventoryDialogRef = null;
   }
 
   ngAfterViewInit() {
@@ -212,6 +216,19 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
           })
         }
       );
+  }
+
+  transferProductInventory(productId: number) {
+    this._transferInventoryDialogRef = this.bottomSheet.open(TransferProductInventoryComponent, {
+      data: { productId, productSource: ProductSourceEnum.Warehouse },
+    });
+    this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
+        this.store.dispatch(WarehouseProductActions.setSearchWarehouseProductAction({ keyword: this.searchFieldComponent.value() }));
+        this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
+      }
+    })
   }
 
   addProduct() {

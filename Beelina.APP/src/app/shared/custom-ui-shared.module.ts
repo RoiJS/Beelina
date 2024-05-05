@@ -23,7 +23,7 @@ import { TextInputAutocompleteContainerComponent } from './text-input-autocomple
 import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/text-input-autocomplete-menu.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { DialogModule } from './ui/dialog/dialog.module';
-import { EmptyEntitiesPlaceholderComponent } from './ui/empty-entities-placeholder/empty-entities-placeholder.component';
+import { PlaceholderEntitiesComponent } from './ui/placeholder-entities/placeholder-entities.component';
 import { FilterAndSortComponent } from './ui/filter-and-sort/filter-and-sort.component';
 import { FloatingButtonComponent } from './ui/floating-button/floating-button.component';
 import { ListContainerComponent } from './ui/list-container/list-container.component';
@@ -61,7 +61,7 @@ import { BadgeModule } from './ui/badge/badge.module';
     TransactionOptionMenuComponent,
     LoaderLayoutComponent,
     ListContainerComponent,
-    EmptyEntitiesPlaceholderComponent,
+    PlaceholderEntitiesComponent,
     ToolBarComponent,
     FloatingButtonComponent,
     ProductCardItemComponent,
@@ -79,7 +79,7 @@ import { BadgeModule } from './ui/badge/badge.module';
     TransactionOptionMenuComponent,
     LoaderLayoutComponent,
     ListContainerComponent,
-    EmptyEntitiesPlaceholderComponent,
+    PlaceholderEntitiesComponent,
     ToolBarComponent,
     FloatingButtonComponent,
     ProductCardItemComponent,

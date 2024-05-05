@@ -63,15 +63,15 @@ export class AppComponent
   override ngOnInit(): void {
     this.authService.user.subscribe((user) => {
       this.sideDrawerService.setCurrentUserPrivileges(
-        user?.getModulePrivilege(ModuleEnum.Retail)
+        user?.getModulePrivilege(ModuleEnum.Distribution).value
       );
       this._currentLoggedInUser = user;
-      this.isAdmin = this.modulePrivilege(ModuleEnum.Retail) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
+      this.isAdmin = this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
       this.menuDataSource.data = this.sideDrawerService.getMenus();
       this.isAuthenticated = (user !== null);
 
       if (
-        this.modulePrivilege(ModuleEnum.Retail) ===
+        this.modulePrivilege(ModuleEnum.Distribution) ===
         this.getPermissionLevel(PermissionLevelEnum.User)
       ) {
         this.storageService.storeString(

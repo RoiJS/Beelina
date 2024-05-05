@@ -24,6 +24,7 @@ namespace Beelina.LIB.DbContexts
         public DbSet<GlobalErrorLog> GlobalErrorLogs { get; set; }
         public DbSet<GeneralInformation> GeneralInformations { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<ReportCustomerCustom> ReportCustomerCustoms { get; set; }
         public DbSet<ReportControl> ReportControls { get; set; }
         public DbSet<ReportControlsRelation> ReportControlsRelations { get; set; }
         public DbSet<ReportParameter> ReportParameters { get; set; }

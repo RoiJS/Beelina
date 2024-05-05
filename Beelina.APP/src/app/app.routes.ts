@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AuthGuard } from './_guards/auth.guard';
 import { AdminGuard } from './_guards/admin.guard';
+import { AccessGuard } from './_guards/access.guard';
 
 export const routes: Routes = [
   {
@@ -18,30 +19,35 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./product/product.module').then((m) => m.ProductModule),
     canLoad: [AuthGuard],
+    // canActivate: [AccessGuard]
   },
   {
     path: 'warehouse-products',
     loadChildren: () =>
       import('./warehouse/warehouse.module').then((m) => m.WarehouseModule),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'accounts',
     loadChildren: () =>
       import('./accounts/accounts.module').then((m) => m.AccountsModule),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'barangays',
     loadChildren: () =>
       import('./barangays/barangays.module').then((m) => m.BarangaysModule),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'sales',
     loadChildren: () =>
       import('./sales/sales.module').then((m) => m.SalesModule),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'transaction-history',
@@ -50,6 +56,7 @@ export const routes: Routes = [
         (m) => m.TransactionHistoryModule
       ),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'draft-transactions',
@@ -58,18 +65,21 @@ export const routes: Routes = [
         (m) => m.DraftTransactionsModule
       ),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'bad-orders',
     loadChildren: () =>
       import('./bad-orders/bad-orders.module').then((m) => m.BadOrdersModule),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'reports',
     loadChildren: () =>
       import('./reports/reports.module').then((m) => m.ReportsModule),
     canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
   },
   {
     path: 'profile',
@@ -82,5 +92,6 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./admin-dashboard/admin-dashoard.module').then((m) => m.AdminDashoardModule),
     canLoad: [AuthGuard, AdminGuard],
+    canActivate: [AccessGuard]
   },
 ];

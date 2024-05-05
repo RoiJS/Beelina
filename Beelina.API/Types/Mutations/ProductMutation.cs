@@ -41,20 +41,38 @@ namespace Beelina.API.Types.Mutations
                     int destinationProductNumberOfUnits,
                     int sourceProductNumberOfUnits,
                     int sourceNumberOfUnitsTransfered,
-                    TransferProductStockTypeEnum transferProductStockType)
+                    TransferProductStockTypeEnum transferProductStockType,
+                    ProductSourceEnum productSource)
         {
             var warehouseId = 1; // Will be implemented later
-            return await productRepository.TransferProductStockFromOwnInventory(
-                userAccountId,
-                warehouseId,
-                sourceProductId,
-                destinationProductId,
-                destinationProductNumberOfUnits,
-                sourceProductNumberOfUnits,
-                sourceNumberOfUnitsTransfered,
-                transferProductStockType,
-                httpContextAccessor.HttpContext.RequestAborted
-            );
+            if (productSource == ProductSourceEnum.Panel)
+            {
+                return await productRepository.TransferProductStockFromOwnInventory(
+                            userAccountId,
+                            warehouseId,
+                            sourceProductId,
+                            destinationProductId,
+                            destinationProductNumberOfUnits,
+                            sourceProductNumberOfUnits,
+                            sourceNumberOfUnitsTransfered,
+                            transferProductStockType,
+                            httpContextAccessor.HttpContext.RequestAborted
+                        );
+            }
+            else
+            {
+                return await productRepository.TransferWarehouseProductStockFromOwnInventory(
+                                userAccountId,
+                                warehouseId,
+                                sourceProductId,
+                                destinationProductId,
+                                destinationProductNumberOfUnits,
+                                sourceProductNumberOfUnits,
+                                sourceNumberOfUnitsTransfered,
+                                transferProductStockType,
+                                httpContextAccessor.HttpContext.RequestAborted
+                            );
+            }
         }
 
         [Authorize]

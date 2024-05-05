@@ -77,7 +77,11 @@
               "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.LABEL"
               | translate
               }}:</mat-label>
-            <input matInput type="password" formControlName="newPassword" />
+            <input matInput type="password" [type]="passwordVisible ? 'text' : 'password'"
+              formControlName="newPassword" />
+
+            <mat-icon matSuffix (click)="setPasswordVisibility()">{{passwordVisible ? 'visibility' :
+              'visibility_off'}}</mat-icon>
 
             <mat-error *ngIf="profileForm.get('newPassword').hasError('pattern')">
               {{

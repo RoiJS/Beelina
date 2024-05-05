@@ -47,8 +47,11 @@ namespace Beelina.API.Types.Query
             [Service] IProductRepository<Product> productRepository,
             [Service] IProductStockPerWarehouseRepository<ProductStockPerWarehouse> productStockPerWarehouseRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] ICurrentUserService currentUserService,
             [Service] IMapper mapper, int productId, int userAccountId)
         {
+            var warehouseId = 1;
+
             var productFromRepo = await productRepository.GetProducts(userAccountId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
 
             if (productFromRepo == null || productFromRepo?.Count == 0)
@@ -61,11 +64,21 @@ namespace Beelina.API.Types.Query
             // Set default price based on warehouse price.
             if (productResult.Price == 0)
             {
-                var productStockWarehouseFromRepo = await productStockPerWarehouseRepository.GetProductStockPerWarehouse(productId, 1);
+                var productStockWarehouseFromRepo = await productStockPerWarehouseRepository.GetProductStockPerWarehouse(productId, warehouseId);
 
                 if (productStockWarehouseFromRepo != null)
                 {
                     productResult.DefaultPrice = productStockWarehouseFromRepo.Price;
+                }
+            }
+
+            // Get remaining stocks from warehouse
+            if (currentUserService.CurrrentBusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
+            {
+                var warehouseProductFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
+                if (warehouseProductFromRepo != null && warehouseProductFromRepo.Count > 0)
+                {
+                    productResult.StocksRemainingFromWarehouse = warehouseProductFromRepo[0].StockQuantity;
                 }
             }
 
