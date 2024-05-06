@@ -1,12 +1,8 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Store, select } from '@ngrx/store';
 import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexPlotOptions, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
 import { Subscription } from 'rxjs';
 
-import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { TopSellingProduct, TransactionService } from 'src/app/_services/transaction.service';
-import { topSellingProductsSelector } from 'src/app/product/top-products/store/selectors';
-import * as TopSellingProductActions from '../../../product/top-products/store/actions';
 import { AuthService } from 'src/app/_services/auth.service';
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 
