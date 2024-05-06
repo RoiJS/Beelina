@@ -80,7 +80,7 @@
             <input matInput type="password" [type]="passwordVisible ? 'text' : 'password'"
               formControlName="newPassword" />
 
-            <mat-icon matSuffix (click)="setPasswordVisibility()">{{passwordVisible ? 'visibility' :
+            <mat-icon matSuffix (click)="setPasswordVisibility()">{{!passwordVisible ? 'visibility' :
               'visibility_off'}}</mat-icon>
 
             <mat-error *ngIf="profileForm.get('newPassword').hasError('pattern')">
