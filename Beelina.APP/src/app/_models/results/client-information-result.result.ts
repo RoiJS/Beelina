@@ -3,6 +3,6 @@ import { IClientInformationQueryPayload } from 'src/app/_interfaces/payloads/icl
 export class ClientInformationResult implements IClientInformationQueryPayload {
   public typename: string;
   public name: string;
-  public dBName: string;
-  public dBHashName: string;
+  public dbName: string;
+  public dbHashName: string;
 }

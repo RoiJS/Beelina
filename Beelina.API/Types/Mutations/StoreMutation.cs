@@ -4,7 +4,7 @@ using Beelina.LIB.GraphQL.Exceptions;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Mutations
 {

@@ -42,8 +42,11 @@ namespace Beelina.LIB.BusinessLogic
             try
             {
                 var url = String.Format("{0}{1}", _appHostInfo.Value.APIDomain, _applicationSettings.Value.AppSettingsURL.SyncDatabaseURL);
-                var httpClient = new RestClient(url);
-                httpClient.Options.MaxTimeout = -1;
+                var options = new RestClientOptions(url)
+                {
+                    MaxTimeout = -1
+                };
+                var httpClient = new RestClient(options);
                 var httpRequest = new RestRequest(url, Method.Post);
                 httpRequest.AddHeader("App-Secret-Token", client.DBHashName);
                 httpRequest.AddHeader("Content-Type", "application/json");

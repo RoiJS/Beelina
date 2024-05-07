@@ -890,6 +890,13 @@
       "EXTRACT_FILE_ERROR_DIALOG": {
         "TITLE": "Failed to extract"
       }
+    },
+    "ABORT_IMPORT_DIALOG": {
+      "TEXT": "Import process has been aborted. No products have been added or updated."
+    },
+    "RESET_IMPORT_DIALOG": {
+      "TITLE": "Reset import",
+      "CONFIRM": "Resetting import setup will remove the uploaded file and remove the extracted products as well. Are you sure you want to proceed?"
     }
   },
   "ACCOUNTS_PAGE": {

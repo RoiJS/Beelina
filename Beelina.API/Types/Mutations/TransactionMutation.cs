@@ -3,7 +3,7 @@ using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Mutations
 {
@@ -44,18 +44,6 @@ namespace Beelina.API.Types.Mutations
             });
 
             await transactionRepository.RegisterTransaction(transactionFromRepo);
-
-            // Send order transaction receipt
-            if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
-            {
-                var generalSetting = await generalSettingRepository.GetGeneralSettings();
-
-                // Check if order transaction receipt should be sent
-                if (generalSetting.SendOrderTransactionReceipt)
-                {
-                    await transactionRepository.SendTransactionEmailReceipt(transactionFromRepo.Id);
-                }
-            }
 
             return transactionFromRepo;
         }

@@ -62,7 +62,7 @@ export class AuthComponent extends SharedComponent implements OnInit {
         next: (client: ClientInformationResult) => {
           this.authService.company.next(client.name);
           this.storageService.storeString('company', client.name);
-          this.storageService.storeString('appSecretToken', client.dBHashName);
+          this.storageService.storeString('appSecretToken', client.dbHashName);
 
           const username = this.authForm.get('username').value;
           const password = this.authForm.get('password').value;

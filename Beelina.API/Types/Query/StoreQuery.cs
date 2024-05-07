@@ -3,7 +3,7 @@ using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Query
 {

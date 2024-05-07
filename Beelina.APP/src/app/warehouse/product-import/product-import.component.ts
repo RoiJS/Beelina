@@ -61,6 +61,7 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
       .subscribe((importResult: boolean) => {
         if (importResult) {
           this.notificationService.openSuccessNotification(this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.SUCCESS_IMPORT_DIALOG.TEXT'));
+          this.store.dispatch(ProductActions.setImportWarehouseImportProductResultState({ result: false }));
           this.resetAction();
         }
       });
@@ -133,12 +134,14 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
 
   abortImport() {
     this.store.dispatch(ProductActions.importWarehouseProductsCancelAction());
-    this.notificationService.openErrorNotification('Import process has been aborted. No products have been imported to the system.');
+    this.notificationService.openErrorNotification(this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.ABORT_IMPORT_DIALOG.TEXT'));
   }
 
   resetImport() {
     this.dialogService
-      .openConfirmation('Reset import', 'Resetting import setup will remove the uploaded file and remove the extracted products as well. Are you sure you want to proceed?')
+      .openConfirmation(
+        this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.RESET_IMPORT_DIALOG.TITLE'),
+        this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.RESET_IMPORT_DIALOG.CONFIRM'))
       .subscribe((result: ButtonOptions) => {
         if (result === ButtonOptions.YES) {
           this.resetAction();
