@@ -16,6 +16,7 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
 
 import { TransferProductStockTypeEnum } from 'src/app/_enum/transfer-product-stock-type.enum';
 import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
+import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
 
 @Component({
   selector: 'app-transfer-product-inventory',
@@ -35,6 +36,8 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
   private _sourceProductQuantityToBeTransferedLabel: string;
 
   private _transferProductTypeOptionsArray: Array<{ key: string; value: string }> = [];
+  private _productSourceGetFunc: Array<string> = ["getProduct", "getWarehouseProduct"];
+  private _businessModel: BusinessModelEnum;
 
   constructor(
     private _bottomSheetRef: MatBottomSheetRef<TransferProductInventoryComponent>,
@@ -52,6 +55,8 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
     private storageService: StorageService,
   ) {
     super();
+    this._businessModel = this.authService.businessModel;
+
     this._transferProductStockForm = this.formBuilder.group({
       transferType: [TransferProductStockTypeEnum.BULK_TO_PIECE, [Validators.required]],
     });
@@ -91,8 +96,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
     });
 
     this._isLoading = true;
-    this.productService
-      .getProduct(data.productId)
+    this.productService[this._productSourceGetFunc[this.data.productSource]](data.productId)
       .subscribe((result: ProductInformationResult) => {
         this._sourceProduct = new Product();
         this._sourceProduct.id = result.id;
@@ -116,7 +120,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
         this._sourceProductNumberOfUnitsLabel = this.translateService.instant('TRANSFER_PRODUCT_STOCK_DIALOG.FORM_CONTROL_SECTION.BULK_TO_PIECES_CONTROL.NUMBER_OF_UNITS_CONTROL.LABEL').replace("__PRODUCT_UNIT__", this._sourceProduct.productUnit.name);
         this._sourceProductQuantityToBeTransferedLabel = this.translateService.instant('TRANSFER_PRODUCT_STOCK_DIALOG.FORM_CONTROL_SECTION.BULK_TO_PIECES_CONTROL.NUMBER_OF_STOCKS_TO_BE_TRANSFERED_CONTROL.LABEL').replace("__PRODUCT_UNIT__", this._sourceProduct.productUnit.name);
 
-        this.productService.getProductsByName(this._sourceProduct.name).subscribe((result: {
+        this.productService.getProductsByName(this._sourceProduct.name, this.data.productSource, this._businessModel).subscribe((result: {
           endCursor: string,
           hasNextPage: boolean,
           products: Array<Product>,

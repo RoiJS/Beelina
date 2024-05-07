@@ -45,6 +45,7 @@ import { NotificationService } from '../shared/ui/notification/notification.serv
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
 import { AddProductStockQuantityDialogComponent } from './add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
+import { BusinessModelEnum } from '../_enum/business-model.enum';
 
 @Component({
   selector: 'app-product',
@@ -77,9 +78,11 @@ export class ProductComponent
   private _totalProductValue: string;
   private _totalProductValueSubscription: Subscription;
 
-  currentSalesAgentId: number = 0;
   private _filterKeyword: string;
   private _warehouseId: number = 1;
+  private _businessModel: BusinessModelEnum;
+
+  currentSalesAgentId: number = 0;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -94,6 +97,7 @@ export class ProductComponent
     private translateService: TranslateService
   ) {
     super();
+    this._businessModel = this.authService.businessModel;
     this._transactionId =
       +this.activatedRoute.snapshot.paramMap.get('transactionId');
 
@@ -499,5 +503,9 @@ export class ProductComponent
 
   get totalProductValue(): string {
     return this._totalProductValue;
+  }
+
+  get businessModel(): BusinessModelEnum {
+    return this._businessModel;
   }
 }

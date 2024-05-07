@@ -288,6 +288,12 @@ const GET_TOP_CUSTOMER_SALES_QUERY = gql`
   }
 `;
 
+const SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION = gql`
+  query($transactionId: Int!) {
+    sendTransactionEmailReceipt(transactionId: $transactionId)
+  }
+`;
+
 export class TransactionInformation {
   public id: number;
   public invoiceNo: string;
@@ -572,6 +578,29 @@ export class TransactionService {
                 t.hasUnpaidProductTransaction;
               return transaction;
             });
+          }
+        )
+      );
+  }
+
+  sendOrderReceiptEmailNotification(
+    transactionId: number
+  ) {
+    return this.apollo
+      .watchQuery({
+        query: SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION,
+        variables: {
+          transactionId
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              sendTransactionEmailReceipt: boolean;
+            }>
+          ) => {
+            return result.data.sendTransactionEmailReceipt;
           }
         )
       );

@@ -53,6 +53,7 @@ import { InsufficientProductQuantity } from 'src/app/_models/insufficient-produc
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
+import { ITransactionPayload } from 'src/app/_interfaces/payloads/itransaction.payload';
 
 @Component({
   selector: 'app-product-cart',
@@ -547,7 +548,7 @@ export class ProductCartComponent
     this.transactionService
       .registerTransaction(transaction)
       .subscribe({
-        next: () => {
+        next: (result: ITransactionPayload) => {
           this._isLoading = false;
           this.notificationService.openSuccessNotification(this.translateService.instant(
             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
@@ -561,6 +562,8 @@ export class ProductCartComponent
           this.store.dispatch(
             ProductTransactionActions.resetProductTransactionState()
           );
+
+          this.sendOrderReceiptEmailNotification(result.id);
 
           if (this._transactionId === 0) {
             this.router.navigate(['/product-catalogue']);
@@ -582,6 +585,12 @@ export class ProductCartComponent
           );
         },
       });
+  }
+
+
+  private sendOrderReceiptEmailNotification(transactionId: number) {
+    this.transactionService
+      .sendOrderReceiptEmailNotification(transactionId).subscribe();
   }
 
   get orderForm(): FormGroup {

@@ -8,7 +8,7 @@ using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Constants;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

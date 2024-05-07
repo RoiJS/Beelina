@@ -1,15 +1,22 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
-  <button mat-icon-button class="toolbar-option" (click)="openTextParserDialog()">
+
+  @if ((currentUserPermission === getPermissionLevel(permissionLevelEnum.Manager) &&
+  businessModel===businessModelEnum.WarehousePanelMonitoring) || currentUserPermission ===
+  getPermissionLevel(permissionLevelEnum.User)) { <button mat-icon-button class="toolbar-option"
+    (click)="openTextParserDialog()">
     <mat-icon matBadgeColor="warn">add_comment</mat-icon>
   </button>
-  <button mat-icon-button [disabled]="itemCounter === 0" class="toolbar-option" (click)="goToCart()" *ngIf="
-      currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
-    ">
-    <mat-icon [matBadge]="itemCounter" [matBadgeHidden]="itemCounter === 0" matBadgeColor="warn"
+  }
+
+  @if(currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)) { <button mat-icon-button
+    [disabled]="itemCounter === 0" class="toolbar-option" (click)="goToCart()">
+    <mat-icon [matBadge]=" itemCounter" [matBadgeHidden]="itemCounter === 0" matBadgeColor="warn"
       aria-hidden="false">shopping_cart</mat-icon>
-  </button>
-  <!-- I think this is not needed anymore since we have introduced an account portal for managers. -->
-  <!-- <mat-icon
+    </button>
+    }
+
+    <!-- I think this is not needed anymore since we have introduced an account portal for managers. -->
+    <!-- <mat-icon
     matRipple
     [matMenuTriggerFor]="menu"
     *ngIf="

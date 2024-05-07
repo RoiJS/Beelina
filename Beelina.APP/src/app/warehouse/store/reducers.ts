@@ -69,6 +69,14 @@ export const reducers = createReducer(
       }
   ),
   on(
+    ProductActions.setImportWarehouseImportProductResultState,
+    (state, action) =>
+      <IProductState>{
+        ...state,
+        importProductsResult: action.result,
+      }
+  ),
+  on(
     ProductActions.importWarehouseProductsCancelAction,
     (state, action) =>
       <IProductState>{
