@@ -11,7 +11,7 @@ namespace Beelina.LIB.Interfaces
         void DeleteMultipleEntities(List<TEntity> entities, bool forceDelete = false);
         T DetachEntity<T>(T entity) where T : class;
         List<T> DetachEntities<T>(List<T> entities) where T : class;
-        Task Reset();
+        Task Reset(CancellationToken cancellationToken = default);
         void SetEntityStatus(TEntity entity, bool status);
         void SetMultipleEntitiesStatus(List<TEntity> entities, bool status);
         IBaseRepository<TEntity> SetCurrentUserId(int currentUserId);
@@ -22,6 +22,6 @@ namespace Beelina.LIB.Interfaces
         IBaseRepository<TEntity> Includes(params Expression<Func<TEntity, object>>[] includes);
         Task<TEntity> ToObjectAsync();
         Task<IList<TEntity>> ToListObjectAsync();
-        Task<bool> SaveChanges();
+        Task<bool> SaveChanges(CancellationToken cancellationToken = default);
     }
 }

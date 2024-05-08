@@ -27,6 +27,7 @@ namespace Beelina.LIB.DbContexts
         public DbSet<Store> Stores { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<ProductTransaction> ProductTransactions { get; set; }
+        public DbSet<ProductTransactionQuantityHistory> ProductTransactionQuantityHistory { get; set; }
         public DbSet<ReportNotificationEmailAddress> ReportNotificationEmailAddresses { get; set; }
         public DbSet<Barangay> Barangays { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -181,7 +182,7 @@ namespace Beelina.LIB.DbContexts
             _dcHelper.GenerateEntityCreatedDateAndCreatedById(entries, CurrentUserId);
             _dcHelper.GenerateEntityUpdateDateAndUpdatedById(entries, CurrentUserId);
 
-            return await base.SaveChangesAsync();
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>

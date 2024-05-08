@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Dtos;
+﻿using AutoMapper;
+using Beelina.LIB.Dtos;
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
@@ -10,6 +11,76 @@ namespace Beelina.API.Types.Query
   [ExtendObjectType("Query")]
   public class TransactionQuery
   {
+    [Authorize]
+    public async Task<Transaction> RegisterTransaction(
+            [Service] ITransactionRepository<Transaction> transactionRepository,
+            [Service] ICurrentUserService currentUserService,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IMapper mapper,
+            TransactionInput transactionInput)
+    {
+
+      transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+      var transactionFromRepo = (await transactionRepository.GetTransaction(transactionInput.Id)).Transaction;
+
+      if (transactionFromRepo == null)
+      {
+        transactionFromRepo = mapper.Map<Transaction>(transactionInput);
+      }
+      else
+      {
+        mapper.Map(transactionInput, transactionFromRepo);
+      }
+
+      var updatedProductTransactions = mapper.Map<List<ProductTransaction>>(transactionInput.ProductTransactionInputs);
+
+      updatedProductTransactions.ForEach(t =>
+      {
+        var productQuantityHistories = new List<ProductTransactionQuantityHistory>();
+
+        if (t.Id > 0)
+        {
+          productQuantityHistories = transactionFromRepo
+                        .ProductTransactions
+                        .Where(pt => pt.ProductId == t.ProductId)
+                        .Select(pt => pt.ProductTransactionQuantityHistory)
+                        .First();
+
+          var productTransactionFromInput = transactionInput
+                        .ProductTransactionInputs
+                        .Where(pt => pt.ProductId == t.ProductId)
+                        .First();
+
+          if (productTransactionFromInput.CurrentQuantity != productTransactionFromInput.Quantity)
+          {
+            productQuantityHistories.Add(new ProductTransactionQuantityHistory
+            {
+              ProductTransactionId = t.Id,
+              Quantity = productTransactionFromInput.CurrentQuantity
+            });
+          }
+        }
+
+        t.Status = (transactionInput.ModeOfPayment == (int)ModeOfPaymentEnum.AccountReceivable) ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+
+        if (productQuantityHistories.Count > 0)
+        {
+          t.ProductTransactionQuantityHistory = productQuantityHistories;
+        }
+      });
+
+      var deletedProductTransactions = transactionFromRepo.ProductTransactions
+          .Where(ptRepo => !transactionInput.ProductTransactionInputs.Any(ptInput => ptInput.Id == ptRepo.Id))
+          .ToList();
+
+      transactionFromRepo.ProductTransactions = updatedProductTransactions;
+
+      await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
+
+      return transactionFromRepo;
+    }
+
     [Authorize]
     [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
     [UseProjection]

@@ -14,7 +14,7 @@ namespace Beelina.LIB.Models
         public int ModeOfPayment { get; set; }
         public int WarehouseId { get; set; } = 1; // Default to the first warehouse
 
-        public List<ProductTransaction> ProductTransactions { get; set; } = new List<ProductTransaction>();
+        public List<ProductTransaction> ProductTransactions { get; set; } = [];
         public string InvoiceNo { get; set; }
         public double Discount { get; set; }
 

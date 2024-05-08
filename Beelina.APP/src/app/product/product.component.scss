@@ -21,6 +21,11 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    justify-content: space-between;
+
+    &--wrap {
+      width: 100%;
+    }
 
     span {
       color: $alt-text-color;

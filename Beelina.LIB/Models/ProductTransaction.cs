@@ -13,6 +13,7 @@ namespace Beelina.LIB.Models
         public PaymentStatusEnum Status { get; set; } = PaymentStatusEnum.Unpaid;
 
         public Transaction Transaction { get; set; }
+        public List<ProductTransactionQuantityHistory> ProductTransactionQuantityHistory { get; set; } = [];
         public Product Product { get; set; }
 
         public double CurrentQuantity
