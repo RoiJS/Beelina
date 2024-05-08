@@ -3,7 +3,7 @@ import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { map, take } from 'rxjs';
+import { catchError, map, take } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Entity } from '../_models/entity.model';
@@ -468,19 +468,17 @@ export class TransactionService {
           ) => {
             const output = result.data.registerTransaction;
             const payload = output.id;
-            // const errors = output.errors;
 
             if (payload) {
               return payload;
             }
 
-            // if (errors && errors.length > 0) {
-            //   throw new Error(errors[0].message);
-            // }
-
             return null;
           }
-        )
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 
