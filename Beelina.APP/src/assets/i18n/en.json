@@ -910,7 +910,7 @@
       "LABEL": "Search result matches"
     },
     "ACCOUNT_COUNTER_CONTAINER": {
-      "LABEL": "Total number of items"
+      "LABEL": "Total number of accounts"
     },
     "DELETE_ACCOUNT_DIALOG": {
       "TITLE": "Delete user account",
