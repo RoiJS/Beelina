@@ -226,15 +226,15 @@ namespace Beelina.LIB.BusinessLogic
         /// This method performs save asynchronous that will persist any changes applied to the entity.
         /// </summary>
         /// <returns>Return true if there were affected with the changes applied and false if none.</returns>
-        public async Task<bool> SaveChangesAsync()
+        public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await _dbContext.SaveChangesAsync() > 0;
+            return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task Reset()
+        public async Task Reset(CancellationToken cancellationToken = default)
         {
             _dbContext.RemoveRange(await _dbContext.Set<TEntity>().ToListAsync());
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         public BeelinaDataContext SystemDbContext => _systemDbContext;

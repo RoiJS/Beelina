@@ -271,7 +271,8 @@
       "FORM_CONTROL_SECTION": {
         "CONFIRMATION_CHECKBOX_CONTROL": {
           "LABEL": "I confirm that the order transaction details are complete and correct.",
-          "LABEL_2": "Click the confirm button below to proceed."
+          "LABEL_2": "Show the transaction details to customer and confirm.",
+          "LABEL_3": "Note that the transaction details cannot be changed once it is confirmed."
         }
       }
     },

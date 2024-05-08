@@ -8,7 +8,7 @@ namespace Beelina.LIB.Interfaces
     {
         Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate);
         Task<List<CustomerSaleProduct>> GetTopCustomerSaleProducts(int storeId);
-        Task<Transaction> RegisterTransaction(Transaction transaction);
+        Task<Transaction> RegisterTransaction(Transaction transaction, List<ProductTransaction> deletedProductTransactions, CancellationToken cancellationToken = default);
         Task<TransactionDetails> GetTransaction(int transactionId);
         Task<bool> SendTransactionEmailReceipt(int transactionId);
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);

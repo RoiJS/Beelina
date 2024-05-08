@@ -109,14 +109,14 @@ namespace Beelina.LIB.BusinessLogic
             return entitiesObject;
         }
 
-        public async Task<bool> SaveChanges()
+        public async Task<bool> SaveChanges(CancellationToken cancellationToken = default)
         {
-            return await _beelinaRepository.SaveChangesAsync();
+            return await _beelinaRepository.SaveChangesAsync(cancellationToken);
         }
 
-        public async virtual Task Reset()
+        public async virtual Task Reset(CancellationToken cancellationToken = default)
         {
-            await _beelinaRepository.Reset();
+            await _beelinaRepository.Reset(cancellationToken);
         }
     }
 }

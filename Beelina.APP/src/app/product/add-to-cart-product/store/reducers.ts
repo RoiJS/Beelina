@@ -42,9 +42,17 @@ export const reducers = createReducer(
       state.currentIdx = newIdx;
       state.productTransactions.push(productTransaction);
     } else {
-      if (action.quantity !== 0)
+      if (action.quantity !== 0) {
+        const currentProductTransaction = state.productTransactions.find(
+          (p) => p.productId === action.productId
+        );
+        productTransaction.id = currentProductTransaction.id;
+        productTransaction.currentQuantity = currentProductTransaction.currentQuantity;
         state.productTransactions[productIdx] = productTransaction;
-      else state.productTransactions.splice(productIdx, 1);
+      }
+      else {
+        state.productTransactions.splice(productIdx, 1);
+      }
     }
   }),
   mutableOn(

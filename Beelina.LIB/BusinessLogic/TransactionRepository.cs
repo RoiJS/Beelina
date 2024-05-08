@@ -310,6 +310,11 @@ namespace Beelina.LIB.BusinessLogic
                             )
                             .ToObjectAsync();
 
+            if (transactionFromRepo == null)
+            {
+                return new TransactionDetails { Transaction = null, BadOrderAmount = badOrdersAmount };
+            }
+
             // Only get for bad order amount if the transaction status is confirmed
             if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
             {
@@ -321,12 +326,19 @@ namespace Beelina.LIB.BusinessLogic
             return new TransactionDetails { Transaction = transactionFromRepo, BadOrderAmount = badOrdersAmount };
         }
 
-        public async Task<Transaction> RegisterTransaction(Transaction transaction)
+        public async Task<Transaction> RegisterTransaction(Transaction transaction, List<ProductTransaction> deletedProductTransactions, CancellationToken cancellationToken = default)
         {
             if (transaction.Id <= 0)
                 await AddEntity(transaction);
             else
-                await SaveChanges();
+            {
+                if (deletedProductTransactions.Count > 0)
+                {
+                    await _productTransactionRepository.DeleteProductTransactions(deletedProductTransactions, cancellationToken);
+                }
+                
+                await SaveChanges(cancellationToken);
+            }
 
             return transaction;
         }
