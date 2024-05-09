@@ -4,9 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
-import { AuthService } from 'src/app/_services/auth.service';
+import { Transaction } from 'src/app/_models/transaction';
 import {
-  Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
@@ -18,8 +17,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 })
 export class TransactionsComponent
   extends BaseComponent
-  implements OnInit
-{
+  implements OnInit {
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
 

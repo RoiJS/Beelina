@@ -1,10 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { mutableOn } from 'ngrx-etc';
-import { ProductTransaction } from 'src/app/_models/transaction';
+import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from 'src/app/_models/transaction';
 
 import * as ProductTransactionActions from './actions';
 import { IProductTransactionState } from './types/product-transaction-state.interface';
-import { Transaction } from 'src/app/_services/transaction.service';
 
 export const initialState: IProductTransactionState = {
   isLoading: false,
@@ -48,6 +47,14 @@ export const reducers = createReducer(
         );
         productTransaction.id = currentProductTransaction.id;
         productTransaction.currentQuantity = currentProductTransaction.currentQuantity;
+
+        if (action.quantity !== productTransaction.currentQuantity) {
+          const productTransactionQuantityHistory = new ProductTransactionQuantityHistory();
+          productTransactionQuantityHistory.quantity = productTransaction.currentQuantity;
+
+          productTransaction.productTransactionQuantityHistory.push(productTransactionQuantityHistory);
+        }
+
         state.productTransactions[productIdx] = productTransaction;
       }
       else {

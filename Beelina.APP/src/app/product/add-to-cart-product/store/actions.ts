@@ -1,6 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ProductTransaction } from 'src/app/_models/transaction';
-import { Transaction } from 'src/app/_services/transaction.service';
+import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 
 export const initializeProductTransactions = createAction(
   '[Transaction] Initialize Product Transactions'

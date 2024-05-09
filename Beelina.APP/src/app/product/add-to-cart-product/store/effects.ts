@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
-import { catchError, map, of, switchMap } from 'rxjs';
+import { map, of, switchMap } from 'rxjs';
 
 import * as ProductTransactionActions from './actions';
 
 import { StorageService } from 'src/app/_services/storage.service';
-import { ProductTransaction } from 'src/app/_models/transaction';
+import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import {
-  Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
 
@@ -51,6 +50,7 @@ export class ProductTransactionsEffects {
           .getTransaction(action.transactionId)
           .pipe(
             map((transaction: Transaction) => {
+              console.log(transaction);
               return ProductTransactionActions.initializeTransactionDetails({
                 transaction,
               });
@@ -63,5 +63,5 @@ export class ProductTransactionsEffects {
     private actions$: Actions,
     private transactionService: TransactionService,
     private storageService: StorageService
-  ) {}
+  ) { }
 }

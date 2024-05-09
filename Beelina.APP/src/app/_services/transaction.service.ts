@@ -6,13 +6,8 @@ import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { catchError, map, take } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Entity } from '../_models/entity.model';
 import { Product } from '../_models/product';
-import { ProductTransaction } from '../_models/transaction';
-
-import { CustomerStore } from '../_models/customer-store';
-
-import { IModelNode } from '../_interfaces/imodel-node';
+import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
 
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 
@@ -167,6 +162,10 @@ const GET_TRANSACTION = gql`
                 name
             }
           }
+          productTransactionQuantityHistory {
+              quantity
+              dateCreated
+          }
         }
       }
       badOrderAmount
@@ -302,52 +301,6 @@ export class TransactionInformation {
   public hasUnpaidProductTransaction: boolean;
 }
 
-export class Transaction extends Entity implements IModelNode {
-  public storeId: number;
-  public invoiceNo: string;
-  public discount: number;
-  public transactionDate: Date;
-  public dueDate: Date;
-  public store: CustomerStore;
-  public modeOfPayment: number;
-  public productTransactions: Array<ProductTransaction>;
-  public hasUnpaidProductTransaction: boolean;
-  public balance: number;
-  public total: number;
-  public badOrderAmount: number;
-
-  get transactionDateFormatted(): string {
-    return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
-  }
-
-  get dueDateFormatted(): string {
-    return DateFormatter.format(this.dueDate, 'MMM DD, YYYY');
-  }
-
-  get grossTotalFormatted(): string {
-    return NumberFormatter.formatCurrency(this.total);
-  }
-
-  get badOrderFormatted(): string {
-    return NumberFormatter.formatCurrency(this.badOrderAmount);
-  }
-
-  get netTotalFormatted(): string {
-    const calculatedNetTotalAmount =
-      (this.total - (this.discount / 100) * this.total) - this.badOrderAmount;
-    return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
-  }
-
-  get balanceFormatted(): string {
-    return NumberFormatter.formatCurrency(this.balance);
-  }
-
-  constructor() {
-    super();
-    this.productTransactions = new Array<ProductTransaction>();
-    this.store = new CustomerStore();
-  }
-}
 
 export class TransactionDetails {
   public transaction: Transaction;
@@ -650,6 +603,14 @@ export class TransactionService {
                 productTransaction.product.name = pt.product.name;
                 productTransaction.product.price = pt.product.price;
                 productTransaction.product.productUnit = pt.product.productUnit;
+
+                productTransaction.productTransactionQuantityHistory = pt.productTransactionQuantityHistory.map((ptqh) => {
+                  const productTransactionQuantityHistory = new ProductTransactionQuantityHistory();
+                  productTransactionQuantityHistory.id = ptqh.id;
+                  productTransactionQuantityHistory.quantity = ptqh.quantity;
+                  return productTransactionQuantityHistory;
+                });
+
                 return productTransaction;
               });
 

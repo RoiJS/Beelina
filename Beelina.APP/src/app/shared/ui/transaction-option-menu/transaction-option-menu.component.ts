@@ -4,12 +4,13 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
-import { Transaction, TransactionService } from 'src/app/_services/transaction.service';
+import { TransactionService } from 'src/app/_services/transaction.service';
 import { DialogService } from '../dialog/dialog.service';
 import { NotificationService } from '../notification/notification.service';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
 import * as TransactionDateActions from '../../../transaction-history/store/actions';
+import { Transaction } from 'src/app/_models/transaction';
 
 @Component({
   selector: 'app-transaction-option-menu',

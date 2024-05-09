@@ -442,7 +442,8 @@
       "STOCK": "Stocks",
       "PRICE": "Price",
       "UNIT": "Unit",
-      "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No."
+      "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No.",
+      "RETURN_ITEMS": "Return Items"
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
