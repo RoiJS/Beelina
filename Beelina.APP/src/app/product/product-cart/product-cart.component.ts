@@ -27,7 +27,6 @@ import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-la
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
 import {
-  Transaction,
   TransactionDto,
   TransactionService,
 } from 'src/app/_services/transaction.service';
@@ -48,12 +47,11 @@ import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { ProductCartTransaction } from 'src/app/_models/product-cart-transaction.model';
 
 import { Barangay } from 'src/app/_models/barangay';
-import { ProductTransaction } from 'src/app/_models/transaction';
+import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
-import { ITransactionPayload } from 'src/app/_interfaces/payloads/itransaction.payload';
 
 @Component({
   selector: 'app-product-cart',

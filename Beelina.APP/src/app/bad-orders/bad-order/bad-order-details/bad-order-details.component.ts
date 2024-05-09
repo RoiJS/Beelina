@@ -5,13 +5,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import {
-  Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
+import { Transaction } from 'src/app/_models/transaction';
 
 @Component({
   selector: 'app-bad-order-details',

@@ -10,7 +10,6 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 import {
-  Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
@@ -19,6 +18,7 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import * as PaymentMethodActions from '../../../payment-methods/store/actions';
+import { Transaction } from 'src/app/_models/transaction';
 
 @Component({
   selector: 'app-transaction-details',

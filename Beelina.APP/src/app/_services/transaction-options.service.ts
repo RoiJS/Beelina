@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { BehaviorSubject } from 'rxjs';
 
-import { Transaction } from './transaction.service';
 import { TransactionOptionMenuComponent } from '../shared/ui/transaction-option-menu/transaction-option-menu.component';
+import { Transaction } from '../_models/transaction';
 
 @Injectable({
   providedIn: 'root'
