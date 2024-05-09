@@ -27,7 +27,13 @@ namespace Beelina.LIB.Models.Reports
 
             var reportOutput = new DailyDetailedTransactionsReportOutput
             {
-                ListOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new DailyDetailedTransactionsReportOutputList
+                HeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new DailyDetailedTransactionsReportOutputHeader
+                {
+                    SalesAgentName = row.Field<string>("SalesAgentName"),
+                    Date = row.Field<string>("Date"),
+                }).FirstOrDefault(),
+
+                ListOutput = reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new DailyDetailedTransactionsReportOutputList
                 {
                     StoreName = row.Field<string>("StoreName"),
                     StoreAddress = row.Field<string>("StoreAddress"),
@@ -41,8 +47,10 @@ namespace Beelina.LIB.Models.Reports
                     ItemName = row.Field<string>("ItemName"),
                     PricePerUnit = row.Field<decimal>("PricePerUnit"),
                     Quantity = row.Field<int>("Quantity"),
+                    ReturnItems = row.Field<int>("ReturnItems"),
                     Amount = row.Field<decimal>("Amount"),
-                    Status = row.Field<int>("Status"),
+                    PaidStatus = row.Field<int>("PaidStatus"),
+                    OrderStatus = row.Field<int>("OrderStatus"),
                 }).ToList()
             };
 
@@ -53,7 +61,10 @@ namespace Beelina.LIB.Models.Reports
             {
                 var worksheet = package.Workbook.Worksheets["Sheet1"];
 
-                var cellNumber = 2;
+                worksheet.Cells["B1"].Value = reportOutput.HeaderOutput.SalesAgentName;
+                worksheet.Cells["B2"].Value = reportOutput.HeaderOutput.Date;
+
+                var cellNumber = 6;
                 foreach (var item in reportOutput.ListOutput)
                 {
                     worksheet.Cells[$"A{cellNumber}"].Value = item.StoreName;
@@ -68,8 +79,10 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"I{cellNumber}"].Value = item.ItemName;
                     worksheet.Cells[$"J{cellNumber}"].Value = item.PricePerUnit;
                     worksheet.Cells[$"K{cellNumber}"].Value = item.Quantity;
-                    worksheet.Cells[$"L{cellNumber}"].Value = item.Amount;
-                    worksheet.Cells[$"M{cellNumber}"].Value = item.StatusName;
+                    worksheet.Cells[$"L{cellNumber}"].Value = item.ReturnItems;
+                    worksheet.Cells[$"M{cellNumber}"].Value = item.Amount;
+                    worksheet.Cells[$"N{cellNumber}"].Value = item.OrderStatusStatusName;
+                    worksheet.Cells[$"O{cellNumber}"].Value = item.PaidStatusName;
                     cellNumber++;
                 }
 
@@ -83,11 +96,23 @@ namespace Beelina.LIB.Models.Reports
 
     public class DailyDetailedTransactionsReportOutput : BaseReportOutput
     {
+        public DailyDetailedTransactionsReportOutputHeader HeaderOutput { get; set; }
         public List<DailyDetailedTransactionsReportOutputList> ListOutput { get; set; }
 
         public DailyDetailedTransactionsReportOutput() : base()
         {
             ListOutput = new List<DailyDetailedTransactionsReportOutputList>();
+        }
+    }
+
+    public class DailyDetailedTransactionsReportOutputHeader
+    {
+        public string SalesAgentName { get; set; }
+        public string Date { get; set; }
+
+        public DailyDetailedTransactionsReportOutputHeader()
+        {
+
         }
     }
 
@@ -105,8 +130,10 @@ namespace Beelina.LIB.Models.Reports
         public string ItemName { get; set; }
         public decimal PricePerUnit { get; set; }
         public int Quantity { get; set; }
+        public int ReturnItems { get; set; }
         public decimal Amount { get; set; }
-        public int Status { get; set; }
+        public int OrderStatus { get; set; }
+        public int PaidStatus { get; set; }
 
         public string OutletTypeName
         {
@@ -116,11 +143,19 @@ namespace Beelina.LIB.Models.Reports
             }
         }
 
-        public string StatusName
+        public string OrderStatusStatusName
         {
             get
             {
-                return Enum.GetName(typeof(PaymentStatusEnum), Status);
+                return Enum.GetName(typeof(TransactionStatusEnum), OrderStatus);
+            }
+        }
+
+        public string PaidStatusName
+        {
+            get
+            {
+                return Enum.GetName(typeof(PaymentStatusEnum), PaidStatus);
             }
         }
 
