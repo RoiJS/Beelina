@@ -50,7 +50,6 @@ export class ProductTransactionsEffects {
           .getTransaction(action.transactionId)
           .pipe(
             map((transaction: Transaction) => {
-              console.log(transaction);
               return ProductTransactionActions.initializeTransactionDetails({
                 transaction,
               });

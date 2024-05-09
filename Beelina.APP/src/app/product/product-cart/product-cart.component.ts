@@ -173,7 +173,6 @@ export class ProductCartComponent
       this.store
         .pipe(select(productTransactionsSelector))
         .subscribe((productTransactions: Array<ProductTransaction>) => {
-          console.log(productTransactions);
           this._productTransactions = productTransactions;
 
           if (this._transactionId === 0) {
