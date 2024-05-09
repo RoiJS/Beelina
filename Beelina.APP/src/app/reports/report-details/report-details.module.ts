@@ -14,6 +14,7 @@ import { DatePickerComponent } from '../report-controls/date-picker/date-picker.
 import { SortOrderControlComponent } from '../report-controls/sort-order-control/sort-order-control.component';
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { SalesAgentDropdownControlComponent } from '../report-controls/sales-agent-dropdown-control/sales-agent-dropdown-control.component';
+import { TransactionTypeDropdownControlComponent } from '../report-controls/transaction-type-dropdown-control/transaction-type-dropdown-control.component';
 
 @NgModule({
   imports: [
@@ -33,6 +34,7 @@ import { SalesAgentDropdownControlComponent } from '../report-controls/sales-age
     DatePickerComponent,
     SortOrderControlComponent,
     SalesAgentDropdownControlComponent,
+    TransactionTypeDropdownControlComponent,
   ],
 })
 export class ReportDetailsModule { }

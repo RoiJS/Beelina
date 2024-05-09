@@ -735,6 +735,12 @@
       },
       "SALES_AGENT_DROPDOWN_CONTROL": {
         "LABEL": "Sales Agent"
+      },
+      "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
+        "LABEL": "Order Transaction Type",
+        "CONFIRM_OPTION": "Confirm",
+        "DRAFT_OPTION": "Draft",
+        "BAD_OPTION": "Bad Order"
       }
     },
     "BUTTON_OPTIONS": {
