@@ -90,7 +90,7 @@ namespace Beelina.LIB.BusinessLogic
             return salesAgentAccounts.Where(x => x.UserPermissions.Any(u => u.ModuleId == ModulesEnum.Distribution && u.PermissionLevel == PermissionLevelEnum.User)).ToList();
         }
 
-        public async Task<UserAccount> Login(string username, string password)
+        public async Task<UserAccount> Login(string username, string password, bool byPassAuthentication = false)
         {
             var account = await _beelinaRepository.ClientDbContext.UserAccounts
                 .Where(
@@ -109,9 +109,13 @@ namespace Beelina.LIB.BusinessLogic
                 return null;
             }
 
-            if (!VerifyPasswordHash(password, account.PasswordHash, account.PasswordSalt))
+            // Bypassing authentication by skipping password verification
+            if (!byPassAuthentication)
             {
-                return null;
+                if (!VerifyPasswordHash(password, account.PasswordHash, account.PasswordSalt))
+                {
+                    return null;
+                }
             }
 
             return account;
