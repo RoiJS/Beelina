@@ -18,8 +18,9 @@
           </div>
           <br />
           <mat-list role="list" class="product-transaction-list-container">
-            <mat-list-item class="product-transaction-list-container__list-item-section"
-              *ngFor="let item of productTransactions" role="listitem">
+
+            @for (item of productTransactions; track item.id) {
+            <mat-list-item class="product-transaction-list-container__list-item-section" role="listitem">
               <div class="list-item">
                 <span class="list-item__product-details-information">
                   ({{
@@ -29,16 +30,27 @@
                   <br />
                   {{ item?.productName }}
                 </span>
-                <div class="list-item__product-price-information">
-                  <span>{{ item?.priceFormatted }}</span>
-                  <span>X</span>
-                  <span>{{ item?.quantity }}</span>
-                  <mat-icon (click)="updateItemToCart(item.productId)" matRipple
-                    class="list-item__edit-product">edit</mat-icon>
+                <div>
+                  <div class="list-item__product-price-information">
+                    <span>{{ item?.priceFormatted }}</span>
+                    <span>X</span>
+                    <span>{{ item?.quantity }}</span>
+                    <mat-icon (click)="updateItemToCart(item.productId)" matRipple
+                      class="list-item__edit-product">edit</mat-icon>
+                  </div>
+
+                  @if (item?.returnQuantity > 0) {
+                  <span class="list-item__return-quantity">({{
+                    "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.RETURN_ITEMS"
+                    | translate
+                    }} {{ item?.returnQuantity }})</span>
+                  }
                 </div>
               </div>
               <mat-divider></mat-divider>
             </mat-list-item>
+            }
+
           </mat-list>
           <div *ngIf="isDraftTransaction" class="product-transaction-list-container__button-section">
             <button mat-raised-button color="primary" (click)="addINewtemToCart()">

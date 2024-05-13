@@ -46,7 +46,7 @@
                 [type]="passwordVisible ? 'text' : 'password'" class="input_field" id="password_field"
                 formControlName="password" />
 
-              <mat-icon matSuffix class="icon-password" (click)="setPasswordVisibility()">{{passwordVisible ? 'visibility' :
+              <mat-icon matSuffix class="icon-password" (click)="setPasswordVisibility()">{{!passwordVisible ? 'visibility' :
                 'visibility_off'}}</mat-icon>
             </div>
 

@@ -94,6 +94,9 @@ export const reducers = createReducer(
     const productIdx = state.products.findIndex(
       (p) => p.id === action.productId
     );
+
+    if (productIdx < 0) return;
+
     const product = state.products[productIdx];
     const updatedProduct = new Product();
     updatedProduct.id = product.id;

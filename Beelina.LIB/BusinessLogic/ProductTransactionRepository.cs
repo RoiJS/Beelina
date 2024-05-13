@@ -29,8 +29,16 @@ namespace Beelina.LIB.BusinessLogic
                                                 .Where(p => p.TransactionId == transactionId)
                                                 .Include(p => p.Product)
                                                 .Include(p => p.Product.ProductUnit)
+                                                .Include(p => p.ProductTransactionQuantityHistory)
+                                                .AsNoTracking()
                                                 .ToListAsync();
             return productTransactionsFromRepo;
+        }
+
+        public async Task DeleteProductTransactions(List<ProductTransaction> productTransactions, CancellationToken cancellationToken = default)
+        {
+            DeleteMultipleEntities(productTransactions, true);
+            await SaveChanges(cancellationToken);
         }
 
         public async Task<List<TransactionTopProduct>> GetTopSellingProducts(int userId, string fromDate = "", string toDate = "")

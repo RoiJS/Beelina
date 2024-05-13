@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
+import { GraphQLError } from 'graphql';
 import { catchError, map, take } from 'rxjs';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
@@ -42,12 +43,14 @@ import { User } from '../_models/user.model';
 import { StorageService } from './storage.service';
 import { ProductStockAudit } from '../_models/product-stock-audit';
 import { IProductStockAuditOutput } from '../_interfaces/outputs/iproduct-stock-update.output';
+import { BusinessModelEnum } from '../_enum/business-model.enum';
 import { TransferProductStockTypeEnum } from '../_enum/transfer-product-stock-type.enum';
 import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { ProductStockAuditItem } from '../_models/product-stock-audit-item';
 import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 import { getProductSourceEnum, ProductSourceEnum } from '../_enum/product-source.enum';
 import { IExtractedProductsFileOutput } from '../_interfaces/outputs/iproduct-import-file.output';
+
 import { environment } from 'src/environments/environment';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
@@ -627,56 +630,92 @@ export class ProductService {
       );
   }
 
-  getProductsByName(productName: string) {
-    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+  getProductsByName(productName: string, productSource: ProductSourceEnum, businessModel: BusinessModelEnum) {
+    let query = null;
+    let variables = {};
 
-    return this.apollo
-      .watchQuery({
-        query: GET_PRODUCTS_QUERY,
-        variables: {
-          cursor: null,
-          filterKeyword: productName,
-          userAccountId,
-        },
-      })
-      .valueChanges.pipe(
-        map((result: ApolloQueryResult<{ products: IBaseConnection }>) => {
-          const data = result.data.products;
-          const errors = result.errors;
-          const endCursor = data.pageInfo.endCursor;
-          const hasNextPage = data.pageInfo.hasNextPage;
-          const productsDto = <Array<Product>>data.nodes;
+    const parseProducts = (productsDto: Array<Product>, endCursor: string, hasNextPage: boolean, errors: Array<GraphQLError>) => {
+      const products: Array<Product> = productsDto.map((productDto) => {
+        const product = new Product();
+        product.id = productDto.id;
+        product.code = productDto.code;
+        product.name = productDto.name;
+        product.description = productDto.description;
+        product.stockQuantity = productDto.stockQuantity;
+        product.pricePerUnit = productDto.pricePerUnit;
+        product.price = productDto.price;
+        product.isTransferable = productDto.isTransferable;
+        product.numberOfUnits = productDto.numberOfUnits;
+        product.productUnit = productDto.productUnit;
+        return product;
+      });
 
-          const products: Array<Product> = productsDto.map((productDto) => {
-            const product = new Product();
-            product.id = productDto.id;
-            product.code = productDto.code;
-            product.name = productDto.name;
-            product.description = productDto.description;
-            product.stockQuantity = productDto.stockQuantity;
-            product.pricePerUnit = productDto.pricePerUnit;
-            product.price = productDto.price;
-            product.isTransferable = productDto.isTransferable;
-            product.numberOfUnits = productDto.numberOfUnits;
-            product.productUnit = productDto.productUnit;
-            return product;
-          });
+      if (products) {
+        return {
+          endCursor,
+          hasNextPage,
+          products,
+        };
+      }
 
-          if (products) {
-            return {
-              endCursor,
-              hasNextPage,
-              products,
-            };
-          }
+      if (errors && errors.length > 0) {
+        throw new Error(errors[0].message);
+      }
 
-          if (errors && errors.length > 0) {
-            throw new Error(errors[0].message);
-          }
+      return null;
+    }
 
-          return null;
+    if (productSource === ProductSourceEnum.Panel && businessModel === BusinessModelEnum.WarehousePanelMonitoring) {
+      query = GET_PRODUCTS_QUERY;
+      variables = {
+        cursor: null,
+        filterKeyword: productName,
+        userAccountId: +this.storageService.getString('currentSalesAgentId'),
+      };
+
+      return this.apollo
+        .watchQuery({
+          query,
+          variables,
         })
-      );
+        .valueChanges.pipe(
+          map((result: ApolloQueryResult<{ products: IBaseConnection }>) => {
+            const data = result.data.products;
+            const productsDto = <Array<Product>>data.nodes;
+
+            const errors = <Array<GraphQLError>>result.errors;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+
+            return parseProducts(productsDto, endCursor, hasNextPage, errors);
+          })
+        );
+    } else {
+      query = GET_WAREHOUSE_PRODUCTS_QUERY;
+      variables = {
+        cursor: null,
+        filterKeyword: productName,
+        warehouseId: 1,
+      };
+
+      return this.apollo
+        .watchQuery({
+          query,
+          variables,
+        })
+        .valueChanges.pipe(
+          map((result: ApolloQueryResult<{ warehouseProducts: IBaseConnection }>) => {
+            const data = result.data.warehouseProducts;
+            const productsDto = <Array<Product>>data.nodes;
+
+            const errors = <Array<GraphQLError>>result.errors;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+
+            return parseProducts(productsDto, endCursor, hasNextPage, errors);
+          })
+        );
+    }
   }
 
   getProduct(productId: number) {
@@ -1372,7 +1411,9 @@ export class ProductService {
     fd.append('map', JSON.stringify(_map))
     fd.append('file', file, file.name)
 
-    return this.http.post<IExtractedProductsFileOutput>(environment.beelinaAPIEndPoint, fd)
+    const headers = new HttpHeaders().set('GraphQL-preflight', '1');
+
+    return this.http.post<IExtractedProductsFileOutput>(environment.beelinaAPIEndPoint, fd, { headers })
       .pipe(
         map((result: IExtractedProductsFileOutput) => {
           const data = result.data;

@@ -271,7 +271,8 @@
       "FORM_CONTROL_SECTION": {
         "CONFIRMATION_CHECKBOX_CONTROL": {
           "LABEL": "I confirm that the order transaction details are complete and correct.",
-          "LABEL_2": "Click the confirm button below to proceed."
+          "LABEL_2": "Show the transaction details to customer and confirm.",
+          "LABEL_3": "Note that the transaction details cannot be changed once it is confirmed."
         }
       }
     },
@@ -441,7 +442,8 @@
       "STOCK": "Stocks",
       "PRICE": "Price",
       "UNIT": "Unit",
-      "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No."
+      "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No.",
+      "RETURN_ITEMS": "Return Items"
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
@@ -733,6 +735,12 @@
       },
       "SALES_AGENT_DROPDOWN_CONTROL": {
         "LABEL": "Sales Agent"
+      },
+      "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
+        "LABEL": "Order Transaction Type",
+        "CONFIRM_OPTION": "Confirm",
+        "DRAFT_OPTION": "Draft",
+        "BAD_OPTION": "Bad Order"
       }
     },
     "BUTTON_OPTIONS": {
@@ -890,6 +898,13 @@
       "EXTRACT_FILE_ERROR_DIALOG": {
         "TITLE": "Failed to extract"
       }
+    },
+    "ABORT_IMPORT_DIALOG": {
+      "TEXT": "Import process has been aborted. No products have been added or updated."
+    },
+    "RESET_IMPORT_DIALOG": {
+      "TITLE": "Reset import",
+      "CONFIRM": "Resetting import setup will remove the uploaded file and remove the extracted products as well. Are you sure you want to proceed?"
     }
   },
   "ACCOUNTS_PAGE": {
@@ -902,7 +917,7 @@
       "LABEL": "Search result matches"
     },
     "ACCOUNT_COUNTER_CONTAINER": {
-      "LABEL": "Total number of items"
+      "LABEL": "Total number of accounts"
     },
     "DELETE_ACCOUNT_DIALOG": {
       "TITLE": "Delete user account",

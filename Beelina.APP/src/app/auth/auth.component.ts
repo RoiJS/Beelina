@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -32,15 +32,16 @@ import { UIService } from '../_services/ui.service';
 export class AuthComponent extends SharedComponent implements OnInit {
   private _authForm: FormGroup;
 
+  authService = inject(AuthService);
+  appVersionService = inject(AppVersionService);
+  formBuilder = inject(FormBuilder);
+  router = inject(Router);
+  notificationService = inject(NotificationService);
+  storageService = inject(StorageService);
+  store = inject(Store<AppStateInterface>);
+  translateService = inject(TranslateService);
+
   constructor(
-    private authService: AuthService,
-    private appVersionService: AppVersionService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private notificationService: NotificationService,
-    private storageService: StorageService,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService,
     protected override uiService: UIService
   ) {
     super(uiService);
@@ -62,7 +63,7 @@ export class AuthComponent extends SharedComponent implements OnInit {
         next: (client: ClientInformationResult) => {
           this.authService.company.next(client.name);
           this.storageService.storeString('company', client.name);
-          this.storageService.storeString('appSecretToken', client.dBHashName);
+          this.storageService.storeString('appSecretToken', client.dbHashName);
 
           const username = this.authForm.get('username').value;
           const password = this.authForm.get('password').value;

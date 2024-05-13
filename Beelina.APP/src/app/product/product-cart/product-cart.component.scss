@@ -32,7 +32,7 @@
         }
 
         &__product-price-information {
-          width: 120px;
+          min-width: 120px;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -40,6 +40,11 @@
 
         &__edit-product {
           font-size: 17px;
+        }
+
+        &__return-quantity {
+          color: $error;
+          font-size: 12px;
         }
       }
     }

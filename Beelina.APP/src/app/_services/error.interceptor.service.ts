@@ -16,7 +16,7 @@ import { AuthToken } from '../_models/auth-token.model';
 
 @Injectable()
 export class ErrorInterceptorService implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   intercept(
     req: HttpRequest<any>,
@@ -28,7 +28,7 @@ export class ErrorInterceptorService implements HttpInterceptor {
         if (errors && errors.length > 0) {
           const errorCode = errors[0].extensions.code;
 
-          if (errorCode === 'AUTH_NOT_AUTHENTICATED') {
+          if (errorCode === 'AUTH_NOT_AUTHENTICATED' || errorCode === 'AUTH_NOT_AUTHORIZED') {
             return this.authService.refresh().pipe(
               switchMap(() => {
                 return this.updateHeader(req);
@@ -53,7 +53,7 @@ export class ErrorInterceptorService implements HttpInterceptor {
 
           if (
             exception.status === 500 &&
-            errorCode === 'AUTH_NOT_AUTHENTICATED'
+            (errorCode === 'AUTH_NOT_AUTHENTICATED' || errorCode === 'AUTH_NOT_AUTHORIZED')
           ) {
             return this.authService.refresh().pipe(
               switchMap(() => {
