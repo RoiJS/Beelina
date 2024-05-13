@@ -101,17 +101,17 @@ namespace Beelina.API.Types.Mutations
             [Service] IOptions<ApplicationSettings> appSettings,
             LoginInput loginInput)
         {
-            var userFromRepo = await userAccountRepository.Login(loginInput.Username.ToLower(), loginInput.Password);
+            var generalSetting = await generalSettingRepository.GetGeneralSettings();
+            var userFromRepo = await userAccountRepository.Login(loginInput.Username.ToLower(), loginInput.Password, generalSetting.ByPassAuthentication);
 
             if (userFromRepo == null)
                 throw new InvalidCredentialsException();
 
-            var generalInformation = await generalInformationRepository.GetGeneralInformation();
 
+            var generalInformation = await generalInformationRepository.GetGeneralInformation();
             if (generalInformation.SystemUpdateStatus)
                 throw new SystemUpdateActiveException();
 
-            var generalSetting = await generalSettingRepository.GetGeneralSettings();
             var appSecretToken = httpContextAccessor.HttpContext.Request.Headers["App-Secret-Token"].ToString();
             var accessToken = GenerateAccessToken(appSettings, generalSetting, userFromRepo, appSecretToken);
             var refreshToken = userAccountRepository.GenerateNewRefreshToken();

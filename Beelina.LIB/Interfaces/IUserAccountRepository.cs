@@ -10,7 +10,7 @@ namespace Beelina.LIB.Interfaces
         Task<bool> DeleteMultipleUserAccounts(List<int> userIds);
         Task<bool> SetMultipleUserAccountsStatus(List<int> userIds, bool state);
         Task<UserAccount> Register(UserAccount account, string password);
-        Task<UserAccount> Login(string username, string password);
+        Task<UserAccount> Login(string username, string password, bool byPassAuthentication = false);
         Task<bool> UserExists(string username, int userId = 0);
         EncryptedPassword GenerateNewPassword(string password);
         RefreshToken GenerateNewRefreshToken();
