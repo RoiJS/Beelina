@@ -67,8 +67,11 @@ export class AppComponent
     this.translateService.setDefaultLang('en');
 
     if (this.swUpdate.isEnabled) {
-      this.swUpdate.checkForUpdate().then(() => {
-        this.promptUser();
+      this.swUpdate.checkForUpdate().then((result) => {
+        console.log(result)
+        if (result) {
+          this.promptUser();
+        }
       });
     }
   }
