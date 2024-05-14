@@ -65,14 +65,6 @@ export class AppComponent
   ) {
     super(uiService);
     this.translateService.setDefaultLang('en');
-
-    if (this.swUpdate.isEnabled) {
-      this.swUpdate.checkForUpdate().then((result) => {
-        if (result) {
-          this.promptUser();
-        }
-      });
-    }
   }
 
   override ngOnInit(): void {
@@ -99,6 +91,7 @@ export class AppComponent
     this.initRouterEvents();
     this.updateOnlineStatus();
     this.monitorConnectionStatus();
+    this.checkNewAppVersion();
   }
 
   override ngOnDestroy(): void {
@@ -131,13 +124,6 @@ export class AppComponent
     return this.activatedUrl() === currentUrl;
   }
 
-  private promptUser(): void {
-    this.dialogService.openAlert('New app version', `New app version ${this.appVersionService.appVersionNumber} is now available. Get the new version by reloading the app. Click Ok to reload.`)
-      .subscribe(() => {
-        window.location.reload();
-      });
-  }
-
   private updateOnlineStatus(): void {
     this.isOnline.set(window.navigator.onLine);
     console.info(`isOnline=[${this.isOnline}]`);
@@ -157,15 +143,29 @@ export class AppComponent
           .getGeneralInformation()
           .subscribe((info: GeneralInformation) => {
             this.isSystemUpdateActive.set(info.systemUpdateStatus);
-            // this.currentAppVersion.set(info.appVersion);
-
-            // const newAppVersion = this.appVersionService.appVersionNumber !== this.currentAppVersion();
-            // console.log(newAppVersion);
-
             if (this.isSystemUpdateActive()) {
               this.authService.logout();
             }
           });
+      });
+  }
+
+  private checkNewAppVersion() {
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.checkForUpdate().then((result) => {
+        if (result) {
+          this.promptUser();
+        }
+      });
+    }
+  }
+
+  private promptUser(): void {
+    this.dialogService.openAlert(
+      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.TITLE'),
+      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.DESCRIPTION').replace("{0}", this.appVersionService.appVersionNumber))
+      .subscribe(() => {
+        window.location.reload();
       });
   }
 
@@ -176,10 +176,6 @@ export class AppComponent
   get appVersion(): string {
     return this.appVersionService.appVersion;
   }
-
-  // get newAppVersion(): boolean {
-  //   return this.appVersionService.appVersion !== this.currentAppVersion();
-  // }
 
   hasChild = (_: number, node: IMenu) =>
     !!node.children && node.children.length > 0;
