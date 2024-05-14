@@ -11,6 +11,7 @@ import {
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
 import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 
@@ -20,6 +21,7 @@ import { ModuleEnum } from './_enum/module.enum';
 import { PermissionLevelEnum } from './_enum/permission-level.enum';
 import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
+import { DialogService } from './shared/ui/dialog/dialog.service';
 import { GeneralInformationService } from './_services/general-information.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { StorageService } from './_services/storage.service';
@@ -27,7 +29,6 @@ import { UIService } from './_services/ui.service';
 
 import { IMenu } from './_interfaces/imenu';
 import { GeneralInformation } from './_models/general-information.model';
-import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -52,13 +53,14 @@ export class AppComponent
 
   authService = inject(AuthService);
   appVersionService = inject(AppVersionService);
+  dialogService = inject(DialogService);
   router = inject(Router);
   sideDrawerService = inject(SidedrawerService);
   storageService = inject(StorageService);
   translateService = inject(TranslateService);
   generalInformationService = inject(GeneralInformationService);
   swUpdate = inject(SwUpdate);
-  snackbar = inject(MatSnackBar)
+  // snackbar = inject(MatSnackBar)
 
   constructor(
     protected override uiService: UIService
@@ -68,7 +70,7 @@ export class AppComponent
 
     if (this.swUpdate.isEnabled) {
       this.swUpdate.checkForUpdate().then((result) => {
-        console.log(result)
+        // console.log(result)
         if (result) {
           this.promptUser();
         }
@@ -133,13 +135,18 @@ export class AppComponent
   }
 
   private promptUser(): void {
-    const snackBarRef = this.snackbar.open('A new version is available', 'Reload', {
-      duration: 10000,
-    });
+    // const snackBarRef = this.snackbar.open('A new version is available', 'Reload', {
+    //   duration: 10000,
+    // });
 
-    snackBarRef.onAction().subscribe(() => {
-      window.location.reload();
-    });
+    // snackBarRef.onAction().subscribe(() => {
+    //   window.location.reload();
+    // });
+
+    this.dialogService.openAlert('New app version', `New app version ${this.appVersionService.appVersionNumber} is now available. Get the new version by reloading the app. Click Ok to reload.`)
+      .subscribe(() => {
+        window.location.reload();
+      });
   }
 
   private updateOnlineStatus(): void {
