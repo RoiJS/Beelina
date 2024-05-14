@@ -6,9 +6,9 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class AppVersionService {
-  private _appVersion = new BehaviorSubject<string>('1.18');
+  private _appVersion = new BehaviorSubject<string>('1.19');
 
-  constructor(private translate: TranslateService) {}
+  constructor(private translate: TranslateService) { }
 
   get copyRightText(): string {
     return `${this.translate.instant(
@@ -18,9 +18,12 @@ export class AppVersionService {
     )}`;
   }
 
+  get appVersionNumber(): string {
+    return this._appVersion.value;
+  }
+
   get appVersion(): string {
-    return `${this.translate.instant('SIDE_DRAWER_SECTION.FOOTER.VERSION')} ${
-      this._appVersion.value
-    }`;
+    return `${this.translate.instant('SIDE_DRAWER_SECTION.FOOTER.VERSION')} ${this._appVersion.value
+      }`;
   }
 }
