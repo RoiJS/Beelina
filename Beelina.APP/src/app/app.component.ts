@@ -29,7 +29,6 @@ import { UIService } from './_services/ui.service';
 
 import { IMenu } from './_interfaces/imenu';
 import { GeneralInformation } from './_models/general-information.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -60,7 +59,6 @@ export class AppComponent
   translateService = inject(TranslateService);
   generalInformationService = inject(GeneralInformationService);
   swUpdate = inject(SwUpdate);
-  // snackbar = inject(MatSnackBar)
 
   constructor(
     protected override uiService: UIService
@@ -70,7 +68,6 @@ export class AppComponent
 
     if (this.swUpdate.isEnabled) {
       this.swUpdate.checkForUpdate().then((result) => {
-        // console.log(result)
         if (result) {
           this.promptUser();
         }
@@ -135,14 +132,6 @@ export class AppComponent
   }
 
   private promptUser(): void {
-    // const snackBarRef = this.snackbar.open('A new version is available', 'Reload', {
-    //   duration: 10000,
-    // });
-
-    // snackBarRef.onAction().subscribe(() => {
-    //   window.location.reload();
-    // });
-
     this.dialogService.openAlert('New app version', `New app version ${this.appVersionService.appVersionNumber} is now available. Get the new version by reloading the app. Click Ok to reload.`)
       .subscribe(() => {
         window.location.reload();
