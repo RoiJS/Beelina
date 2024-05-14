@@ -134,7 +134,7 @@ export class AppComponent
 
   private promptUser(): void {
     const snackBarRef = this.snackbar.open('A new version is available', 'Reload', {
-      duration: 7000,
+      duration: 6000,
     });
 
     snackBarRef.onAction().subscribe(() => {
