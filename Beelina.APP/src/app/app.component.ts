@@ -27,6 +27,8 @@ import { UIService } from './_services/ui.service';
 
 import { IMenu } from './_interfaces/imenu';
 import { GeneralInformation } from './_models/general-information.model';
+import { SwUpdate } from '@angular/service-worker';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -42,6 +44,7 @@ export class AppComponent
   menuDataSource = new MatTreeNestedDataSource<IMenu>();
 
   activatedUrl = signal('');
+  currentAppVersion = signal<string>('');
   isSystemUpdateActive = signal<boolean>(false);
   isOnline = signal<boolean>(true);
   isAuthenticated = signal<boolean>(false);
@@ -54,12 +57,20 @@ export class AppComponent
   storageService = inject(StorageService);
   translateService = inject(TranslateService);
   generalInformationService = inject(GeneralInformationService);
+  swUpdate = inject(SwUpdate);
+  snackbar = inject(MatSnackBar)
 
   constructor(
     protected override uiService: UIService
   ) {
     super(uiService);
     this.translateService.setDefaultLang('en');
+
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.checkForUpdate().then(() => {
+        this.promptUser();
+      });
+    }
   }
 
   override ngOnInit(): void {
@@ -118,6 +129,16 @@ export class AppComponent
     return this.activatedUrl() === currentUrl;
   }
 
+  private promptUser(): void {
+    const snackBarRef = this.snackbar.open('A new version is available', 'Reload', {
+      duration: 6000,
+    });
+
+    snackBarRef.onAction().subscribe(() => {
+      window.location.reload();
+    });
+  }
+
   private updateOnlineStatus(): void {
     this.isOnline.set(window.navigator.onLine);
     console.info(`isOnline=[${this.isOnline}]`);
@@ -137,6 +158,11 @@ export class AppComponent
           .getGeneralInformation()
           .subscribe((info: GeneralInformation) => {
             this.isSystemUpdateActive.set(info.systemUpdateStatus);
+            // this.currentAppVersion.set(info.appVersion);
+
+            // const newAppVersion = this.appVersionService.appVersionNumber !== this.currentAppVersion();
+            // console.log(newAppVersion);
+
             if (this.isSystemUpdateActive()) {
               this.authService.logout();
             }
@@ -151,6 +177,10 @@ export class AppComponent
   get appVersion(): string {
     return this.appVersionService.appVersion;
   }
+
+  // get newAppVersion(): boolean {
+  //   return this.appVersionService.appVersion !== this.currentAppVersion();
+  // }
 
   hasChild = (_: number, node: IMenu) =>
     !!node.children && node.children.length > 0;
