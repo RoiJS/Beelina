@@ -11,6 +11,7 @@ import {
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
 import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 
@@ -20,6 +21,7 @@ import { ModuleEnum } from './_enum/module.enum';
 import { PermissionLevelEnum } from './_enum/permission-level.enum';
 import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
+import { DialogService } from './shared/ui/dialog/dialog.service';
 import { GeneralInformationService } from './_services/general-information.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { StorageService } from './_services/storage.service';
@@ -42,6 +44,7 @@ export class AppComponent
   menuDataSource = new MatTreeNestedDataSource<IMenu>();
 
   activatedUrl = signal('');
+  currentAppVersion = signal<string>('');
   isSystemUpdateActive = signal<boolean>(false);
   isOnline = signal<boolean>(true);
   isAuthenticated = signal<boolean>(false);
@@ -49,11 +52,13 @@ export class AppComponent
 
   authService = inject(AuthService);
   appVersionService = inject(AppVersionService);
+  dialogService = inject(DialogService);
   router = inject(Router);
   sideDrawerService = inject(SidedrawerService);
   storageService = inject(StorageService);
   translateService = inject(TranslateService);
   generalInformationService = inject(GeneralInformationService);
+  swUpdate = inject(SwUpdate);
 
   constructor(
     protected override uiService: UIService
@@ -86,6 +91,7 @@ export class AppComponent
     this.initRouterEvents();
     this.updateOnlineStatus();
     this.monitorConnectionStatus();
+    this.checkNewAppVersion();
   }
 
   override ngOnDestroy(): void {
@@ -141,6 +147,25 @@ export class AppComponent
               this.authService.logout();
             }
           });
+      });
+  }
+
+  private checkNewAppVersion() {
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.checkForUpdate().then((result) => {
+        if (result) {
+          this.promptUser();
+        }
+      });
+    }
+  }
+
+  private promptUser(): void {
+    this.dialogService.openAlert(
+      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.TITLE'),
+      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.DESCRIPTION').replace("{0}", this.appVersionService.appVersionNumber))
+      .subscribe(() => {
+        window.location.reload();
       });
   }
 

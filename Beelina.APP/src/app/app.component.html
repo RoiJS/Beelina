@@ -49,8 +49,16 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <router-outlet *ngIf="isOnline() && !isSystemUpdateActive()"></router-outlet>
-    <app-offline *ngIf="!isOnline()"></app-offline>
-    <app-system-update *ngIf="isOnline() && isSystemUpdateActive()"></app-system-update>
+    @if(isOnline() && !isSystemUpdateActive()) {
+    <router-outlet></router-outlet>
+    }
+
+    @if (isOnline() && isSystemUpdateActive()) {
+    <app-system-update></app-system-update>
+    }
+
+    @if (!isOnline()) {
+    <app-offline></app-offline>
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>
