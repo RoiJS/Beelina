@@ -833,7 +833,7 @@
       "FIRST_STEP_SECTION": {
         "TITLE": "Select file",
         "IMPORT_MECHANICS_INFORMATION_TEXTS": {
-          "LABEL_1": "Select an excel file <code>(.xlsx)</code> to extract products information that you want to import in Bizual. Before uploading the file, make sure that it is less than <b>25 MB</b> in size.",
+          "LABEL_1": "Select an excel file <code>(.xlsx)</code> to extract products information that you want to import in Bizual. File must only contain a maximum of 1000 data rows.",
           "LABEL_2": "The file must also follow the column format below, otherwise it won't be able to read properly the content of the file.",
           "LABEL_3": "If the code does not exists in Bizual, this will automatically create a new entry of the product in Bizual.",
           "LABEL_4": "If the already exists, then it will try to update the item if there are new changes."

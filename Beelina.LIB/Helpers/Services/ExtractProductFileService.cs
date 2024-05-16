@@ -26,7 +26,7 @@ namespace Beelina.LIB.Helpers.Services
                 {
                     ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets[0]; // Assuming you're reading the first sheet
 
-                    const int MAX_ROW_COUNT = 2000;
+                    const int MAX_ROW_COUNT = 1000;
                     const int COLUMN_CODE_INDEX = 1;
                     const int COLUMN_NAME_INDEX = 2;
                     const int COLUMN_QUANTITY_INDEX = 3;
@@ -40,7 +40,7 @@ namespace Beelina.LIB.Helpers.Services
                     int columnCount = worksheet.Dimension.Columns;
 
                     if (columnCount != COLUMN_COUNT) throw new Exception("The number of columns does not match the expected number of columns (6). Please select a valid file and try again.");
-                    if (rowCount > MAX_ROW_COUNT) throw new Exception($"The number of products exceeds the maximum limit (2000). The number of rows is {rowCount}. Please select a valid file and try again.");
+                    if (rowCount > MAX_ROW_COUNT) throw new Exception($"The number of products exceeds the maximum limit (1000). The number of rows is {rowCount}. Please select a valid file and try again.");
 
                     for (int row = ROW_DATA_START; row <= rowCount; row++)
                     {
