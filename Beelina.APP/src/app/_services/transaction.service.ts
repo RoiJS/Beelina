@@ -3,16 +3,11 @@ import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { map, take } from 'rxjs';
+import { catchError, map, take } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Entity } from '../_models/entity.model';
 import { Product } from '../_models/product';
-import { ProductTransaction } from '../_models/transaction';
-
-import { CustomerStore } from '../_models/customer-store';
-
-import { IModelNode } from '../_interfaces/imodel-node';
+import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
 
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 
@@ -44,13 +39,12 @@ import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
 import { ITransactionInformationOutput } from '../_interfaces/outputs/itransaction-information.output';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
+import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
 
-const REGISTER_TRANSACTION_MUTATION = gql`
-  mutation ($transactionInput: TransactionInput!) {
-    registerTransaction(input: { transactionInput: $transactionInput }) {
-      transaction {
-        id
-      }
+const REGISTER_TRANSACTION_QUERY = gql`
+  query ($transactionInput: TransactionInput!) {
+    registerTransaction(transactionInput: $transactionInput) {
+      id
     }
   }
 `;
@@ -167,6 +161,10 @@ const GET_TRANSACTION = gql`
             productUnit {
                 name
             }
+          }
+          productTransactionQuantityHistory {
+              quantity
+              dateCreated
           }
         }
       }
@@ -288,6 +286,12 @@ const GET_TOP_CUSTOMER_SALES_QUERY = gql`
   }
 `;
 
+const SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION = gql`
+  query($transactionId: Int!) {
+    sendTransactionEmailReceipt(transactionId: $transactionId)
+  }
+`;
+
 export class TransactionInformation {
   public id: number;
   public invoiceNo: string;
@@ -297,52 +301,6 @@ export class TransactionInformation {
   public hasUnpaidProductTransaction: boolean;
 }
 
-export class Transaction extends Entity implements IModelNode {
-  public storeId: number;
-  public invoiceNo: string;
-  public discount: number;
-  public transactionDate: Date;
-  public dueDate: Date;
-  public store: CustomerStore;
-  public modeOfPayment: number;
-  public productTransactions: Array<ProductTransaction>;
-  public hasUnpaidProductTransaction: boolean;
-  public balance: number;
-  public total: number;
-  public badOrderAmount: number;
-
-  get transactionDateFormatted(): string {
-    return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
-  }
-
-  get dueDateFormatted(): string {
-    return DateFormatter.format(this.dueDate, 'MMM DD, YYYY');
-  }
-
-  get grossTotalFormatted(): string {
-    return NumberFormatter.formatCurrency(this.total);
-  }
-
-  get badOrderFormatted(): string {
-    return NumberFormatter.formatCurrency(this.badOrderAmount);
-  }
-
-  get netTotalFormatted(): string {
-    const calculatedNetTotalAmount =
-      (this.total - (this.discount / 100) * this.total) - this.badOrderAmount;
-    return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
-  }
-
-  get balanceFormatted(): string {
-    return NumberFormatter.formatCurrency(this.balance);
-  }
-
-  constructor() {
-    super();
-    this.productTransactions = new Array<ProductTransaction>();
-    this.store = new CustomerStore();
-  }
-}
 
 export class TransactionDetails {
   public transaction: Transaction;
@@ -443,7 +401,7 @@ export class TransactionService {
           productId: p.productId,
           quantity: p.quantity,
           price: p.price,
-          currentQuantity: transaction.id > 0 ? 0 : p.currentQuantity,
+          currentQuantity: p.currentQuantity,
         };
 
         return productTransaction;
@@ -451,32 +409,29 @@ export class TransactionService {
     };
 
     return this.apollo
-      .mutate({
-        mutation: REGISTER_TRANSACTION_MUTATION,
+      .watchQuery({
+        query: REGISTER_TRANSACTION_QUERY,
         variables: {
           transactionInput,
         },
-      })
-      .pipe(
+      }).valueChanges.pipe(
         map(
           (
-            result: MutationResult<{ registerTransaction: ITransactionOutput }>
+            result: ApolloQueryResult<{ registerTransaction: ITransactionPayload }>
           ) => {
             const output = result.data.registerTransaction;
-            const payload = output.transaction;
-            const errors = output.errors;
+            const payload = output.id;
 
             if (payload) {
               return payload;
             }
 
-            if (errors && errors.length > 0) {
-              throw new Error(errors[0].message);
-            }
-
             return null;
           }
-        )
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 
@@ -577,6 +532,29 @@ export class TransactionService {
       );
   }
 
+  sendOrderReceiptEmailNotification(
+    transactionId: number
+  ) {
+    return this.apollo
+      .watchQuery({
+        query: SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION,
+        variables: {
+          transactionId
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              sendTransactionEmailReceipt: boolean;
+            }>
+          ) => {
+            return result.data.sendTransactionEmailReceipt;
+          }
+        )
+      );
+  }
+
   getTransaction(transactionId: number) {
     return this.apollo
       .watchQuery({
@@ -625,6 +603,14 @@ export class TransactionService {
                 productTransaction.product.name = pt.product.name;
                 productTransaction.product.price = pt.product.price;
                 productTransaction.product.productUnit = pt.product.productUnit;
+
+                productTransaction.productTransactionQuantityHistory = pt.productTransactionQuantityHistory.map((ptqh) => {
+                  const productTransactionQuantityHistory = new ProductTransactionQuantityHistory();
+                  productTransactionQuantityHistory.id = ptqh.id;
+                  productTransactionQuantityHistory.quantity = ptqh.quantity;
+                  return productTransactionQuantityHistory;
+                });
+
                 return productTransaction;
               });
 

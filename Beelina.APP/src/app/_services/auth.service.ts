@@ -20,16 +20,9 @@ import { ModuleEnum } from '../_enum/module.enum';
 import { PermissionLevelEnum } from '../_enum/permission-level.enum';
 
 import { IAuthenticationOutput } from '../_interfaces/outputs/ilogin.output';
-import { IUserAccountInput } from '../_interfaces/inputs/iuser-account.input';
 import { ILoginInput } from '../_interfaces/inputs/ilogin.input';
-import { IUserPermissionInput } from '../_interfaces/inputs/iuser-permission.input';
-import { IUpdateAccountOutput } from '../_interfaces/outputs/iupdate-account.output';
-import { IUserAccountInformationQueryPayload } from '../_interfaces/payloads/iuser-account-information-query.payload';
 import { IClientInformationQueryPayload } from '../_interfaces/payloads/iclient-information-query.payload';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
-import { UserAccountNotExistsError } from '../_models/errors/user-account-not-exists.error';
-import { CheckUsernameInformationResult } from '../_models/results/check-usernamee-information-result';
-import { UserAccountInformationResult } from '../_models/results/user-account-information-result';
 import { UserModulePermission } from '../_models/user-module-permission';
 import * as LoginActions from '../auth/store/actions';
 import * as ProductTransactionActions from '../product/add-to-cart-product/store/actions';
@@ -40,8 +33,8 @@ const GET_CLIENT_INFORMATION_QUERY = gql`
       typename: __typename
       ... on ClientInformationResult {
         name
-        dBHashName
-        dBName
+        dbHashName
+        dbName
       }
       ... on ClientNotExistsError {
         message

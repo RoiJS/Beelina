@@ -46,6 +46,11 @@ export const setUpdateWarehouseImportProductLoadingState = createAction(
   props<{ state: boolean }>()
 );
 
+export const setImportWarehouseImportProductResultState = createAction(
+  '[Warehouse Product] Set Import Warehouse Import Product Result State',
+  props<{ result: boolean }>()
+);
+
 export const setSearchWarehouseProductAction = createAction(
   '[Warehouse Product] Search Warehouse Products',
   props<{ keyword: string }>()

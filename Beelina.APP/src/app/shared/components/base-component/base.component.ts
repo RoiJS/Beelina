@@ -10,6 +10,7 @@ import {
 import { User } from 'src/app/_models/user.model';
 import { TemplateSizeEnum } from '../../ui/placeholder-entities/placeholder-entities.component';
 import { BannerTypeEnum } from '../../ui/banner/banner.component';
+import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
 
 @Component({
   selector: 'app-base-component',
@@ -18,6 +19,7 @@ import { BannerTypeEnum } from '../../ui/banner/banner.component';
 })
 export class BaseComponent {
   protected _isLoading = false;
+  protected _businessModelEnum = BusinessModelEnum;
   protected _permissionLevelEnum = PermissionLevelEnum;
   protected _emptyTemplateType = PlaceholderEntityTemplateEnum;
   protected _templateSize = TemplateSizeEnum;
@@ -124,6 +126,10 @@ export class BaseComponent {
 
   get bannerTypeEnum(): typeof BannerTypeEnum {
     return this._bannerType;
+  }
+
+  get businessModelEnum(): typeof BusinessModelEnum {
+    return this._businessModelEnum;
   }
 
   get passwordVisible(): boolean {

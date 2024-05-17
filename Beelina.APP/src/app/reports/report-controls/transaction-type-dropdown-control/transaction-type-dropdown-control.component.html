@@ -1,0 +1,16 @@
+<div [ngClass]="{ 'no-display': hide }" [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label>{{ controLabel }}:</mat-label>
+    <mat-select formControlName="transactionType">
+      <mat-option [value]="'CONFIRMED'">{{
+        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.TRANSACTION_TYPE_DROPDOWN_CONTROL.CONFIRM_OPTION" | translate
+        }}</mat-option>
+      <mat-option [value]="'DRAFT'">{{
+        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.TRANSACTION_TYPE_DROPDOWN_CONTROL.DRAFT_OPTION" | translate
+        }}</mat-option>
+      <mat-option [value]="'BAD_ORDER'">{{
+        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.TRANSACTION_TYPE_DROPDOWN_CONTROL.BAD_OPTION" | translate
+        }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

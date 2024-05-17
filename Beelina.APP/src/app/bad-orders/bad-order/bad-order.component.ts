@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+import { Transaction } from 'src/app/_models/transaction';
 import { TransactionOptionsService } from 'src/app/_services/transaction-options.service';
 import {
-  Transaction,
   TransactionService,
 } from 'src/app/_services/transaction.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';

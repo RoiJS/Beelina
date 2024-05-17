@@ -1,44 +1,20 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
-  <button mat-icon-button class="toolbar-option" (click)="openTextParserDialog()">
+
+  @if ((currentUserPermission === getPermissionLevel(permissionLevelEnum.Manager) &&
+  businessModel() === businessModelEnum.WarehousePanelMonitoring) || currentUserPermission ===
+  getPermissionLevel(permissionLevelEnum.User)) { <button mat-icon-button class="toolbar-option"
+    (click)="openTextParserDialog()">
     <mat-icon matBadgeColor="warn">add_comment</mat-icon>
   </button>
-  <button mat-icon-button [disabled]="itemCounter === 0" class="toolbar-option" (click)="goToCart()" *ngIf="
-      currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
-    ">
-    <mat-icon [matBadge]="itemCounter" [matBadgeHidden]="itemCounter === 0" matBadgeColor="warn"
+  }
+
+  @if(currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)) { <button mat-icon-button
+    [disabled]="itemCounter() === 0" class="toolbar-option" (click)="goToCart()">
+    <mat-icon [matBadge]=" itemCounter()" [matBadgeHidden]="itemCounter() === 0" matBadgeColor="warn"
       aria-hidden="false">shopping_cart</mat-icon>
-  </button>
-  <!-- I think this is not needed anymore since we have introduced an account portal for managers. -->
-  <!-- <mat-icon
-    matRipple
-    [matMenuTriggerFor]="menu"
-    *ngIf="
-      currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)
-    "
-    >more_vert</mat-icon
-  >
-  <mat-menu #menu="matMenu">
-    <button
-      mat-menu-item
-      (click)="openAllowManageProductDetailsDialog()"
-      *ngIf="!allowManageProductDetails"
-    >
-      {{
-        "PRODUCTS_CATALOGUE_PAGE.MANAGE_PRODUCT_DETAILS.ACTIVATE_MANAGE_PRODUCT_DETAILS"
-          | translate
-      }}
     </button>
-    <button
-      mat-menu-item
-      (click)="deactivateAllowManageProductDetailsDialog()"
-      *ngIf="allowManageProductDetails"
-    >
-      {{
-        "PRODUCTS_CATALOGUE_PAGE.MANAGE_PRODUCT_DETAILS.DEACTIVATE_MANAGE_PRODUCT_DETAILS"
-          | translate
-      }}
-    </button>
-  </mat-menu> -->
+    }
+
 </app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
@@ -57,8 +33,10 @@
           | translate
           }}:</mat-label>
         <mat-select [(ngModel)]="currentSalesAgentId" (selectionChange)="switchSaleAgent($event)">
-          <mat-option *ngFor="let salesAgent of salesAgents" [value]="salesAgent.id">{{ salesAgent.fullname
+          @for(salesAgent of salesAgents(); track salesAgent.id) {
+          <mat-option [value]="salesAgent.id">{{ salesAgent.fullname
             }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -67,31 +45,40 @@
       "></app-search-field>
 
     <div class="product-list-status-bar-container">
-      <div class="product-list-status-bar-container__total-value-section" *ngIf="totalProductValue">
+
+      @if (totalProductValue()) {
+      <div class="product-list-status-bar-container__total-value-section"
+        [ngClass]="{ 'product-list-status-bar-container__total-value-section--wrap': isHandset }">
         <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCTS_TOTAL_VALUE_CONTAINER.LABEL' | translate }}: </span>
-        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductValue"></app-badge>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductValue()"></app-badge>
       </div>
+      }
 
-      <div class="product-list-status-bar-container__search-result-counter-section" *ngIf="filterKeyword?.length > 0">
+      @if (filterKeyword()?.length > 0) {
+      <div class="product-list-status-bar-container__search-result-counter-section"
+        [ngClass]="{ 'product-list-status-bar-container__search-result-counter-section--wrap': isHandset }">
         <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
-        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductCount().toString()"></app-badge>
       </div>
+      }
 
+      @if(filterKeyword()?.length === 0 && currentUserPermission === getPermissionLevel(permissionLevelEnum.User)) {
       <div class="product-list-status-bar-container__total-products-counter-section"
-        *ngIf="filterKeyword?.length === 0 && currentUserPermission === getPermissionLevel(permissionLevelEnum.User)">
+        [ngClass]="{ 'product-list-status-bar-container__total-products-counter-section--wrap': isHandset }">
         <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_COUNTER_CONTAINER.LABEL' | translate }}: </span>
-        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductCount().toString()"></app-badge>
       </div>
+      }
+
     </div>
 
-    <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource?.itemCount">
+    <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource()?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
-        <div *cdkVirtualFor="let item of dataSource">
-          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword" [hideDeductionCounterIcon]="currentUserPermission >
+        <div *cdkVirtualFor="let item of dataSource()">
+          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword()" [hideDeductionCounterIcon]="currentUserPermission >
             getPermissionLevel(permissionLevelEnum.User)" [allowManageItem]="
               currentUserPermission >
-                getPermissionLevel(permissionLevelEnum.User) ||
-              allowManageProductDetails
+                getPermissionLevel(permissionLevelEnum.User)
             " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
             (selectItem)="addItemToCart($event)" (transferProduct)="transferProductInventory($event)"
             (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
@@ -99,10 +86,9 @@
       </cdk-virtual-scroll-viewport>
     </app-list-container>
 
-    <div *ngIf="
-        currentSalesAgentId === 0 &&
-        currentUserPermission > getPermissionLevel(permissionLevelEnum.User)
-      " class="no-selected-sales-agent-label-container">
+    @if(currentSalesAgentId === 0 &&
+    currentUserPermission > getPermissionLevel(permissionLevelEnum.User)) {
+    <div class="no-selected-sales-agent-label-container">
       <app-placeholder-entities [templateType]="emptyEntityTemplateEnum.SALES_AGENTS"
         [templateSize]="emptyEntityTemplateSizeEnum.SMALL"></app-placeholder-entities>
 
@@ -111,10 +97,11 @@
         translate }}</app-banner>
 
     </div>
+    }
   </div>
 
-  <app-floating-button *ngIf="
-      (currentSalesAgentId > 0 && currentUserPermission > getPermissionLevel(permissionLevelEnum.User)) ||
-      allowManageProductDetails
-    " (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
+  @if((currentSalesAgentId > 0 && currentUserPermission > getPermissionLevel(permissionLevelEnum.User))) {
+  <app-floating-button (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
+  }
+
 </app-loader-layout>

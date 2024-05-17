@@ -17,12 +17,12 @@ namespace Beelina.LIB.Interfaces
         void SetEntityStatus(TEntity entity, bool status);
         void SetMultipleEntitiesStatus(List<TEntity> entities, bool status);
         void SetCurrentUser(int currentUserId);
-        Task Reset();
+        Task Reset(CancellationToken cancellationToken = default);
         IBeelinaRepository<TEntity> GetEntity(int id);
         IBeelinaRepository<TEntity> GetAllEntities(bool includeDeleted = false);
         IBeelinaRepository<TEntity> Includes(params Expression<Func<TEntity, object>>[] includes);
         Task<TEntity> ToObjectAsync();
         Task<IList<TEntity>> ToListObjectAsync();
-        Task<bool> SaveChangesAsync();
+        Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

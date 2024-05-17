@@ -5,10 +5,13 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  inject,
+  signal,
 } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
 import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 
@@ -18,6 +21,7 @@ import { ModuleEnum } from './_enum/module.enum';
 import { PermissionLevelEnum } from './_enum/permission-level.enum';
 import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
+import { DialogService } from './shared/ui/dialog/dialog.service';
 import { GeneralInformationService } from './_services/general-information.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { StorageService } from './_services/storage.service';
@@ -39,21 +43,24 @@ export class AppComponent
   treeControl = new NestedTreeControl<IMenu>((node) => node.children);
   menuDataSource = new MatTreeNestedDataSource<IMenu>();
 
-  private activatedUrl = '';
+  activatedUrl = signal('');
+  currentAppVersion = signal<string>('');
+  isSystemUpdateActive = signal<boolean>(false);
+  isOnline = signal<boolean>(true);
+  isAuthenticated = signal<boolean>(false);
+  isAdmin = signal<boolean>(true);
 
-  isSystemUpdateActive: boolean;
-  isOnline: boolean;
-  isAuthenticated: boolean;
-  isAdmin: boolean = true;
+  authService = inject(AuthService);
+  appVersionService = inject(AppVersionService);
+  dialogService = inject(DialogService);
+  router = inject(Router);
+  sideDrawerService = inject(SidedrawerService);
+  storageService = inject(StorageService);
+  translateService = inject(TranslateService);
+  generalInformationService = inject(GeneralInformationService);
+  swUpdate = inject(SwUpdate);
 
   constructor(
-    private authService: AuthService,
-    private appVersionService: AppVersionService,
-    private router: Router,
-    private sideDrawerService: SidedrawerService,
-    private storageService: StorageService,
-    private translateService: TranslateService,
-    private generalInformationService: GeneralInformationService,
     protected override uiService: UIService
   ) {
     super(uiService);
@@ -66,9 +73,9 @@ export class AppComponent
         user?.getModulePrivilege(ModuleEnum.Distribution).value
       );
       this._currentLoggedInUser = user;
-      this.isAdmin = this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
+      this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));
       this.menuDataSource.data = this.sideDrawerService.getMenus();
-      this.isAuthenticated = (user !== null);
+      this.isAuthenticated.set((user !== null));
 
       if (
         this.modulePrivilege(ModuleEnum.Distribution) ===
@@ -84,6 +91,7 @@ export class AppComponent
     this.initRouterEvents();
     this.updateOnlineStatus();
     this.monitorConnectionStatus();
+    this.checkNewAppVersion();
   }
 
   override ngOnDestroy(): void {
@@ -106,18 +114,18 @@ export class AppComponent
     }
 
     if (name === 'MAIN_MENU.LOGOUT') {
-      if (this.isAdmin) this.uiService.toggleDrawer();
+      if (this.isAdmin()) this.uiService.toggleDrawer();
       this.authService.logout();
     }
   }
 
   isPageSelected(url: string, fragment: string = ''): boolean {
     let currentUrl = url;
-    return this.activatedUrl === currentUrl;
+    return this.activatedUrl() === currentUrl;
   }
 
   private updateOnlineStatus(): void {
-    this.isOnline = window.navigator.onLine;
+    this.isOnline.set(window.navigator.onLine);
     console.info(`isOnline=[${this.isOnline}]`);
   }
 
@@ -130,12 +138,34 @@ export class AppComponent
     this.router.events
       .pipe(filter((event: any) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        this.activatedUrl = event.urlAfterRedirects;
+        this.activatedUrl.set(event.urlAfterRedirects);
         this.generalInformationService
           .getGeneralInformation()
           .subscribe((info: GeneralInformation) => {
-            this.isSystemUpdateActive = info.systemUpdateStatus;
+            this.isSystemUpdateActive.set(info.systemUpdateStatus);
+            if (this.isSystemUpdateActive()) {
+              this.authService.logout();
+            }
           });
+      });
+  }
+
+  private checkNewAppVersion() {
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.checkForUpdate().then((result) => {
+        if (result) {
+          this.promptUser();
+        }
+      });
+    }
+  }
+
+  private promptUser(): void {
+    this.dialogService.openAlert(
+      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.TITLE'),
+      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.DESCRIPTION').replace("{0}", this.appVersionService.appVersionNumber))
+      .subscribe(() => {
+        window.location.reload();
       });
   }
 

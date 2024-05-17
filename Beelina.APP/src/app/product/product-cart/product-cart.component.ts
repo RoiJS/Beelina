@@ -27,7 +27,6 @@ import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-la
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
 import {
-  Transaction,
   TransactionDto,
   TransactionService,
 } from 'src/app/_services/transaction.service';
@@ -48,7 +47,7 @@ import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { ProductCartTransaction } from 'src/app/_models/product-cart-transaction.model';
 
 import { Barangay } from 'src/app/_models/barangay';
-import { ProductTransaction } from 'src/app/_models/transaction';
+import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { PaymentMethod } from 'src/app/_models/payment-method';
@@ -126,7 +125,6 @@ export class ProductCartComponent
 
     nameControl.disable();
     addressControl.disable();
-    // paymentMethodControl.disable();
 
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
 
@@ -346,7 +344,7 @@ export class ProductCartComponent
           if (result === ButtonOptions.YES) {
             this._isLoading = true;
             this.loaderLayoutComponent.label = this._saveDraftLoadingMessage;
-            this.transactionService
+            this._subscription.add(this.transactionService
               .registerTransaction(transaction)
               .subscribe({
                 next: () => {
@@ -379,7 +377,7 @@ export class ProductCartComponent
                     })
                   );
                 },
-              });
+              }));
           }
         });
     }
@@ -416,7 +414,7 @@ export class ProductCartComponent
           if (result === ButtonOptions.YES) {
             this._isLoading = true;
             this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.LOADING_MESSAGE');
-            this.transactionService.registerTransaction(transaction).subscribe({
+            this._subscription.add(this.transactionService.registerTransaction(transaction).subscribe({
               next: () => {
                 this._isLoading = false;
                 this.notificationService.openSuccessNotification(this.translateService.instant(
@@ -451,7 +449,7 @@ export class ProductCartComponent
                   })
                 );
               },
-            });
+            }));
           }
         });
     }
@@ -544,10 +542,10 @@ export class ProductCartComponent
 
     this._isLoading = true;
     this.loaderLayoutComponent.label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.LOADING_MESSAGE');
-    this.transactionService
+    this._subscription.add(this.transactionService
       .registerTransaction(transaction)
       .subscribe({
-        next: () => {
+        next: (id: number) => {
           this._isLoading = false;
           this.notificationService.openSuccessNotification(this.translateService.instant(
             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
@@ -561,6 +559,8 @@ export class ProductCartComponent
           this.store.dispatch(
             ProductTransactionActions.resetProductTransactionState()
           );
+
+          this.sendOrderReceiptEmailNotification(id);
 
           if (this._transactionId === 0) {
             this.router.navigate(['/product-catalogue']);
@@ -581,7 +581,13 @@ export class ProductCartComponent
             })
           );
         },
-      });
+      }));
+  }
+
+
+  private sendOrderReceiptEmailNotification(transactionId: number) {
+    this.transactionService
+      .sendOrderReceiptEmailNotification(transactionId).subscribe();
   }
 
   get orderForm(): FormGroup {

@@ -67,7 +67,11 @@
     }
   },
   "MAIN_PAGE": {
-    "DESCRIPTION": "This application is only supported in mobile view at the moment."
+    "DESCRIPTION": "This application is only supported in mobile view at the moment.",
+    "NEW_APP_VERSION_DIALOG": {
+      "TITLE": "New app version",
+      "DESCRIPTION": "New app version {0} is now available. Get the new version by reloading the app. Click Ok to reload."
+    }
   },
   "AUTH_PAGE": {
     "TITLE": "Login",
@@ -271,7 +275,8 @@
       "FORM_CONTROL_SECTION": {
         "CONFIRMATION_CHECKBOX_CONTROL": {
           "LABEL": "I confirm that the order transaction details are complete and correct.",
-          "LABEL_2": "Click the confirm button below to proceed."
+          "LABEL_2": "Show the transaction details to customer and confirm.",
+          "LABEL_3": "Note that the transaction details cannot be changed once it is confirmed."
         }
       }
     },
@@ -441,7 +446,8 @@
       "STOCK": "Stocks",
       "PRICE": "Price",
       "UNIT": "Unit",
-      "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No."
+      "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No.",
+      "RETURN_ITEMS": "Return Items"
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
@@ -733,6 +739,12 @@
       },
       "SALES_AGENT_DROPDOWN_CONTROL": {
         "LABEL": "Sales Agent"
+      },
+      "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
+        "LABEL": "Order Transaction Type",
+        "CONFIRM_OPTION": "Confirm",
+        "DRAFT_OPTION": "Draft",
+        "BAD_OPTION": "Bad Order"
       }
     },
     "BUTTON_OPTIONS": {
@@ -821,7 +833,7 @@
       "FIRST_STEP_SECTION": {
         "TITLE": "Select file",
         "IMPORT_MECHANICS_INFORMATION_TEXTS": {
-          "LABEL_1": "Select an excel file <code>(.xlsx)</code> to extract products information that you want to import in Bizual. Before uploading the file, make sure that it is less than <b>25 MB</b> in size.",
+          "LABEL_1": "Select an excel file <code>(.xlsx)</code> to extract products information that you want to import in Bizual. File must only contain a maximum of 1000 data rows.",
           "LABEL_2": "The file must also follow the column format below, otherwise it won't be able to read properly the content of the file.",
           "LABEL_3": "If the code does not exists in Bizual, this will automatically create a new entry of the product in Bizual.",
           "LABEL_4": "If the already exists, then it will try to update the item if there are new changes."
@@ -890,6 +902,13 @@
       "EXTRACT_FILE_ERROR_DIALOG": {
         "TITLE": "Failed to extract"
       }
+    },
+    "ABORT_IMPORT_DIALOG": {
+      "TEXT": "Import process has been aborted. No products have been added or updated."
+    },
+    "RESET_IMPORT_DIALOG": {
+      "TITLE": "Reset import",
+      "CONFIRM": "Resetting import setup will remove the uploaded file and remove the extracted products as well. Are you sure you want to proceed?"
     }
   },
   "ACCOUNTS_PAGE": {
@@ -902,7 +921,7 @@
       "LABEL": "Search result matches"
     },
     "ACCOUNT_COUNTER_CONTAINER": {
-      "LABEL": "Total number of items"
+      "LABEL": "Total number of accounts"
     },
     "DELETE_ACCOUNT_DIALOG": {
       "TITLE": "Delete user account",

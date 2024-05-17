@@ -10,12 +10,14 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  overflow: auto;
 
   .app-logo-container {
     font-size: 120px;
     text-align: center;
     color: $primary;
     font-weight: bold;
+    margin-bottom: 0.7em;
 
     .main-logo img {
       width: 130px;

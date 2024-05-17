@@ -1,6 +1,5 @@
 import { IBaseState } from 'src/app/_interfaces/states/ibase.state';
-import { ProductTransaction } from 'src/app/_models/transaction';
-import { Transaction } from 'src/app/_services/transaction.service';
+import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 
 export interface IProductTransactionState extends IBaseState {
   currentIdx: number;

@@ -4,7 +4,7 @@ using Beelina.LIB.GraphQL.Exceptions;
 using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Mutations
 {
@@ -35,6 +35,7 @@ namespace Beelina.API.Types.Mutations
         public async Task<Product> TransferProductStockFromOwnInventory(
                     [Service] IProductRepository<Product> productRepository,
                     [Service] IHttpContextAccessor httpContextAccessor,
+                    [Service] ICurrentUserService currentUserService,
                     int userAccountId,
                     int sourceProductId,
                     int destinationProductId,
@@ -45,7 +46,7 @@ namespace Beelina.API.Types.Mutations
                     ProductSourceEnum productSource)
         {
             var warehouseId = 1; // Will be implemented later
-            if (productSource == ProductSourceEnum.Panel)
+            if (productSource == ProductSourceEnum.Panel && currentUserService.CurrrentBusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
             {
                 return await productRepository.TransferProductStockFromOwnInventory(
                             userAccountId,
