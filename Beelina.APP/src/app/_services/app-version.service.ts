@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class AppVersionService {
-  private _appVersion = new BehaviorSubject<string>('1.18');
+  private _appVersion = new BehaviorSubject<string>('1.18.1');
 
   constructor(private translate: TranslateService) { }
 
