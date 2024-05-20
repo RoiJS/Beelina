@@ -301,6 +301,15 @@ app-tool-bar {
       justify-content: space-between;
     }
 
+    &--align-items-center {
+      align-items: center;
+    }
+
+    &--check-box-item-section {
+      display: flex;
+      align-items: center;
+    }
+
     .alt-label {
       font-size: 0.8em;
       color: $alt-text-color;

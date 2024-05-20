@@ -1,4 +1,30 @@
-<app-tool-bar [title]="transationDate"> </app-tool-bar>
+@if(!multipleItemsService.selectMultipleActive()) {
+<app-tool-bar [title]="transationDate">
+  <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="multipleItemsService.activateSelectMultiple(true)">
+      <mat-icon>list</mat-icon>
+      {{ 'GENERAL_TEXTS.SELECT_MULTIPLE' | translate }}
+    </button>
+  </mat-menu>
+</app-tool-bar>
+} @else {
+<app-tool-bar [title]="multipleItemsService.selectedItemsCountLabel('TRANSACTION_SELECT_MULTIPLE_MODE.LABEL')"
+  [showBackButton]="false">
+  <button mat-icon-button class="toolbar-option" (click)="multipleItemsService.activateSelectMultiple(false)">
+    <mat-icon matBadgeColor="warn">highlight_off</mat-icon>
+  </button>
+
+  <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
+  <mat-menu #menu="matMenu">
+    <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item
+      (click)="deleteSelectedItems()">
+      <mat-icon>delete</mat-icon>
+      {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.DELETE_SELECTED_ORDERS' | translate }}
+    </button>
+  </mat-menu>
+</app-tool-bar>
+}
 
 <app-loader-layout [busy]="isLoading">
   <div class="page-container slide-in-left-animation">
@@ -10,12 +36,23 @@
     </div>
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="transactions?.length">
+
+      @if(multipleItemsService.selectMultipleActive()) {
+      <mat-checkbox [checked]="multipleItemsService.isSelectedAll()" (change)="selectAllItems($event.checked)"
+        [labelPosition]="'after'">{{
+        'GENERAL_TEXTS.SELECT_ALL' | translate }}</mat-checkbox>
+      }
+
       <cdk-virtual-scroll-viewport itemSize="10" class="list-container transactions-list">
         <div *cdkVirtualFor="let item of transactions">
           <div matRipple
-            class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
+            class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between list-container__item-section--align-items-center"
             (click)="goToTransaction(item.id)" longPress (onLongPress)="openMenu(item)">
-            <div>
+            <div class="list-container__item-section--check-box-item-section">
+              @if(multipleItemsService.selectMultipleActive()) {
+              <mat-checkbox [checked]="multipleItemsService.isSelected(item.id.toString())" [id]="item.id.toString()"
+                (change)="selectItem($event.checked, $event.source.id)"></mat-checkbox>
+              }
               <span># {{ item.invoiceNo }}</span> - <span>{{ item.store.name }}</span>
             </div>
             <mat-icon>keyboard_arrow_right</mat-icon>

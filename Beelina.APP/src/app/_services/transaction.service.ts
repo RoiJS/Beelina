@@ -50,23 +50,19 @@ const REGISTER_TRANSACTION_QUERY = gql`
 `;
 
 const DELETE_TRANSACTION = gql`
-  mutation ($transactionId: Int!) {
-    deleteTransaction(input: { transactionId: $transactionId }) {
-      transaction {
-        id
-      }
-    }
+mutation($transactionIds: [Int!]!) {
+  deleteTransactions(input: { transactionIds: $transactionIds }) {
+    boolean
   }
+}
 `;
 
 const DELETE_TRANSACTIONS_BY_DATE = gql`
-  mutation($transactionStatus: TransactionStatusEnum!, $transactionDate: String!) {
-    deleteTransactionsByDate(input: { transactionStatus: $transactionStatus, transactionDate: $transactionDate }) {
-      transactionInformation {
-          id
-      }
-    }
+mutation($transactionStatus: TransactionStatusEnum!, $transactionDates: [String!]!) {
+  deleteTransactionsByDate(input: { transactionStatus: $transactionStatus, transactionDates: $transactionDates }) {
+    boolean
   }
+}
 `;
 
 const GET_TRANSACTION_DATES = gql`
@@ -435,66 +431,62 @@ export class TransactionService {
       );
   }
 
-  deleteTransaction(transactionId: number) {
+  deleteTransactions(transactionIds: Array<number>) {
     return this.apollo
       .mutate({
         mutation: DELETE_TRANSACTION,
         variables: {
-          transactionId,
+          transactionIds,
         },
       })
       .pipe(
         map(
           (
-            result: MutationResult<{ deleteTransaction: ITransactionOutput }>
+            result: MutationResult<{ deleteTransactions: { boolean: boolean } }>
           ) => {
-            const output = result.data.deleteTransaction;
-            const payload = output.transaction;
-            const errors = output.errors;
+            const output = result.data.deleteTransactions;
+            const payload = output.boolean;
 
             if (payload) {
               return payload;
             }
 
-            if (errors && errors.length > 0) {
-              throw new Error(errors[0].message);
-            }
-
             return null;
           }
-        )
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 
-  deleteTransactionsByDate(transactionStatus: TransactionStatusEnum, transactionDate: string) {
+  deleteTransactionsByDate(transactionStatus: TransactionStatusEnum, transactionDates: Array<string>) {
     return this.apollo
       .mutate({
         mutation: DELETE_TRANSACTIONS_BY_DATE,
         variables: {
           transactionStatus,
-          transactionDate
+          transactionDates
         },
       })
       .pipe(
         map(
           (
-            result: MutationResult<{ deleteTransactionsByDate: ITransactionInformationOutput }>
+            result: MutationResult<{ deleteTransactionsByDate: { boolean: boolean } }>
           ) => {
             const output = result.data.deleteTransactionsByDate;
-            const payload = output.transactionInformation;
-            const errors = output.errors;
+            const payload = output.boolean;
 
             if (payload) {
               return payload;
             }
 
-            if (errors && errors.length > 0) {
-              throw new Error(errors[0].message);
-            }
-
             return null;
           }
-        )
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 

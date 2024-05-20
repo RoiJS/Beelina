@@ -33,7 +33,10 @@
     "EXISTING": "Existing",
     "DEACTIVATE": "Deactivate",
     "ACTIVATE": "Activate",
-    "INACTIVE": "Inactive"
+    "INACTIVE": "Inactive",
+    "SELECTED_ITEMS": "Selected Item(s)",
+    "SELECT_MULTIPLE": "Select Multiple",
+    "SELECT_ALL": "Select All"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -585,6 +588,12 @@
     "TITLE": "Bad Orders",
     "DESCRIPTION": "This contains all registered bad orders."
   },
+  "TRANSACTION_SELECT_MULTIPLE_MODE": {
+    "LABEL": "Selected Order(s)",
+    "OPTIONS": {
+      "DELETE_SELECTED_ORDERS": "Delete Selected Order(s)"
+    }
+  },
   "TRANSACTION_OPTION_MENU": {
     "GO_TO_ORDER_TRANSACTIONS": {
       "LABEL": "View orders",
@@ -600,13 +609,13 @@
     },
     "DELETE_TRANSACTION_BY_DATE_DIALOG": {
       "TITLE": "Delete Orders",
-      "CONFIRM": "This will delete all orders for the selected date. Are you sure to proceed?",
+      "CONFIRM": "This will delete all orders for the selected date(s). Are you really sure to proceed?",
       "SUCCESS_MESSAGE": "Orders have been successfully deleted.",
       "ERROR_MESSAGE": "Deleting orders failed. Please again later."
     },
     "DELETE_TRANSACTION_DIALOG": {
-      "TITLE": "Delete Order",
-      "CONFIRM": "Are you sure to delete selected order?",
+      "TITLE": "Delete Order(s)",
+      "CONFIRM": "Are you sure to delete selected order(s)?",
       "SUCCESS_MESSAGE": "Order has been successfully deleted.",
       "ERROR_MESSAGE": "Deleting order failed. Please again later."
     }

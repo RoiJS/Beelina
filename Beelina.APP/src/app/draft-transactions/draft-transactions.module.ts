@@ -9,6 +9,8 @@ import { CommonModule } from '@angular/common';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { DraftTransactionsComponent } from './draft-transactions.component';
 import { TransactionDatesEffects } from '../transaction-history/store/effects';
@@ -25,6 +27,8 @@ import * as TransactionDatesReducers from '../transaction-history/store/reducers
     MatNativeDateModule,
     MatBottomSheetModule,
     MatRippleModule,
+    MatCheckboxModule,
+    MatMenuModule,
     ScrollingModule,
     StoreModule.forFeature(
       'transactionDates',
@@ -49,4 +53,4 @@ import * as TransactionDatesReducers from '../transaction-history/store/reducers
   ],
   declarations: [DraftTransactionsComponent],
 })
-export class DraftTransactionsModule {}
+export class DraftTransactionsModule { }

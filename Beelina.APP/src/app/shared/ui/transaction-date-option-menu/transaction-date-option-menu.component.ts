@@ -83,7 +83,7 @@ export class TransactionDateOptionMenuComponent implements OnInit {
           this.transactionService
             .deleteTransactionsByDate(
               this.data.transactionStatus,
-              formattedDate)
+              [formattedDate])
             .subscribe({
               next: () => {
                 this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
