@@ -52,4 +52,8 @@ export class BaseDataSource<T> extends DataSource<T | undefined> {
   get itemCount(): number {
     return this._dataStream.value.length;
   }
+
+  get data(): (T | undefined)[] {
+    return this._dataStream.value;
+  }
 }

@@ -1,15 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { TranslateService } from '@ngx-translate/core';
 
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { Transaction } from 'src/app/_models/transaction';
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { MultipleItemsService } from 'src/app/_services/multiple-items.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { TransactionOptionsService } from 'src/app/_services/transaction-options.service';
 import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
 @Component({
   selector: 'app-bad-order',
@@ -20,13 +27,18 @@ export class BadOrderComponent extends BaseComponent implements OnInit {
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private bottomSheet: MatBottomSheet,
-    private router: Router,
-    private transactionService: TransactionService,
-    private transactionOptionsService: TransactionOptionsService
-  ) {
+  activatedRoute = inject(ActivatedRoute);
+  bottomSheet = inject(MatBottomSheet);
+  dialogService = inject(DialogService);
+  multipleItemsService = inject(MultipleItemsService);
+  notificationService = inject(NotificationService);
+  router = inject(Router);
+  store = inject(Store<AppStateInterface>);
+  transactionService = inject(TransactionService);
+  transactionOptionsService = inject(TransactionOptionsService);
+  translateService = inject(TranslateService);
+
+  constructor() {
     super();
 
     this.transactionOptionsService.setBottomSheet(this.bottomSheet);
@@ -52,6 +64,8 @@ export class BadOrderComponent extends BaseComponent implements OnInit {
   }
 
   goToTransaction(transactionId: number) {
+    if (this.multipleItemsService.selectMultipleActive()) return;
+
     this.router.navigate([
       `bad-orders/transactions/${this._transactionDate}/${transactionId}`,
     ]);
@@ -59,6 +73,52 @@ export class BadOrderComponent extends BaseComponent implements OnInit {
 
   openMenu(transaction: Transaction) {
     this.transactionOptionsService.openMenu(transaction);
+  }
+
+  deleteSelectedItems() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.CONFIRM'
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result == ButtonOptions.YES) {
+          const orders = this.multipleItemsService.selectedItems().map((id) => +id);
+          this._isLoading = true;
+          this.transactionService
+            .deleteTransactions(orders)
+            .subscribe({
+              next: () => {
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
+                ));
+                this._isLoading = false;
+                this.multipleItemsService.reset();
+                this.ngOnInit();
+              },
+
+              error: () => {
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
+                ));
+                this.multipleItemsService.reset();
+              },
+            });
+        }
+      });
+  }
+
+  selectAllItems(checked: boolean) {
+    const items = this.transactions.map((item) => item.id.toString());
+    this.multipleItemsService.selectAllItems(checked, items);
+  }
+
+  selectItem(checked: boolean, id: string) {
+    this.multipleItemsService.selectItem(checked, id, this.transactions.length);
   }
 
   get transationDate(): string {

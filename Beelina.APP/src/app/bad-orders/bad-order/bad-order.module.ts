@@ -5,6 +5,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { BadOrderComponent } from './bad-order.component';
@@ -14,6 +16,8 @@ import { BadOrderComponent } from './bad-order.component';
     CustomUISharedModule,
     MatIconModule,
     MatRippleModule,
+    MatCheckboxModule,
+    MatMenuModule,
     ScrollingModule,
     MatBottomSheetModule,
     RouterModule.forChild([
@@ -34,4 +38,4 @@ import { BadOrderComponent } from './bad-order.component';
   ],
   declarations: [BadOrderComponent],
 })
-export class BadOrderModule {}
+export class BadOrderModule { }
