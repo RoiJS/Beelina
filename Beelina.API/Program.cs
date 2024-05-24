@@ -47,6 +47,7 @@ services.AddScoped(typeof(IStoreRepository<Store>), typeof(StoreRepository));
 services.AddScoped(typeof(ITransactionRepository<Transaction>), typeof(TransactionRepository));
 services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), typeof(ProductTransactionRepository));
 services.AddScoped(typeof(IBarangayRepository<Barangay>), typeof(BarangayRepository));
+services.AddScoped(typeof(ISupplierRepository<Supplier>), typeof(SupplierRepository));
 services.AddScoped(typeof(IReportRepository<Report>), typeof(ReportRepository));
 services.AddScoped(typeof(IGeneralInformationRepository<GeneralInformation>), typeof(GeneralInformationRepository));
 services.AddScoped(typeof(IGeneralSettingRepository<GeneralSetting>), typeof(GeneralSettingRepository));
@@ -71,9 +72,11 @@ services.AddGraphQLServer()
         .AddType<BarangayQuery>()
         .AddType<PaymentMethodQuery>()
         .AddType<TransactionQuery>()
+        .AddType<SupplierQuery>()
         .AddType<GeneralInformationQuery>()
         .AddType<UserAccountMutation>()
         .AddType<BarangayMutation>()
+        .AddType<SupplierMutation>()
         .AddType<ProductMutation>()
         .AddType<StoreMutation>()
         .AddType<TransactionMutation>()
