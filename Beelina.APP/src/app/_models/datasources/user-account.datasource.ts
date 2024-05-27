@@ -9,8 +9,8 @@ import { userAccountsSelector } from 'src/app/accounts/store/selectors';
 import { User } from '../user.model';
 
 export class UserAccountDataSource extends BaseDataSource<User> {
-  constructor(override store: Store<AppStateInterface>) {
-    super(store);
+  constructor(protected store: Store<AppStateInterface>) {
+    super();
     this._pageSize = 50;
     this.store.dispatch(UserAccountActions.getUserAccountsAction());
 

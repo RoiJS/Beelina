@@ -12,10 +12,10 @@ export class TransactionDatesDataSource extends BaseDataSource<TransactionDateIn
   protected transactionStatus: TransactionStatusEnum;
 
   constructor(
-    override store: Store<AppStateInterface>,
+    protected store: Store<AppStateInterface>,
     transactionStatus: TransactionStatusEnum
   ) {
-    super(store);
+    super();
 
     this.transactionStatus = transactionStatus;
     this.store.dispatch(

@@ -10,11 +10,11 @@ import { ProductStockAuditItem } from '../product-stock-audit-item';
 export class WarehouseProductStockAuditsDatasource extends BaseDataSource<ProductStockAuditItem> {
 
   constructor(
-    override store: Store<AppStateInterface>,
+    protected store: Store<AppStateInterface>,
     protected productId: number,
     protected warehouseId: number,
   ) {
-    super(store);
+    super();
 
     this.store.dispatch(
       ProductStockAuditsStoreActions.getWarehouseProductStockAuditsAction({

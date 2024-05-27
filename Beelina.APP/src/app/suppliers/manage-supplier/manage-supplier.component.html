@@ -1,0 +1,32 @@
+<div class="manage-supplier-container">
+  <div class="manage-supplier-container__header">
+    <span>{{ dialogTitle }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="manage-supplier-container__body" [formGroup]="supplierForm">
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "SUPPLIERS_PAGE.ADD_SUPPLIER_DIALOG.FORM_CONTROL_SECTION.CODE_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <input matInput formControlName="code" />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "SUPPLIERS_PAGE.ADD_SUPPLIER_DIALOG.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+  </div>
+  <div class="manage-supplier-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onSave()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CLOSE" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

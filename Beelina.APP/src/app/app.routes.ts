@@ -43,6 +43,13 @@ export const routes: Routes = [
     canActivate: [AccessGuard]
   },
   {
+    path: 'suppliers',
+    loadChildren: () =>
+      import('./suppliers/suppliers.module').then((m) => m.SuppliersModule),
+    canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
+  },
+  {
     path: 'sales',
     loadChildren: () =>
       import('./sales/sales.module').then((m) => m.SalesModule),

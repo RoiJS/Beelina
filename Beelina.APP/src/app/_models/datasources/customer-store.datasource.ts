@@ -8,10 +8,10 @@ import { BaseDataSource } from './base.datasource';
 
 export class CustomerStoreDataSource extends BaseDataSource<CustomerStore> {
   constructor(
-    override store: Store<AppStateInterface>,
+    protected store: Store<AppStateInterface>,
     private barangayName: string
   ) {
-    super(store);
+    super();
 
     this.store.dispatch(
       CustomerStoreActions.getCustomerStorePerBarangayAction({ barangayName })
