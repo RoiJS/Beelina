@@ -7,7 +7,7 @@ namespace Beelina.LIB.BusinessLogic
     public class SupplierRepository(IBeelinaRepository<Supplier> beelinaRepository)
                 : BaseRepository<Supplier>(beelinaRepository, beelinaRepository.ClientDbContext), ISupplierRepository<Supplier>
     {
-        public async Task<List<Supplier>> GetSuppliers(string filterKeyword)
+        public async Task<List<Supplier>> GetSuppliers(string filterKeyword = "")
         {
             var suppliers = await _beelinaRepository.ClientDbContext.Suppliers
                                 .Where(s =>

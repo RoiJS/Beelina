@@ -387,6 +387,10 @@
         "LABEL": "Description",
         "HINT": "Please enter description"
       },
+      "SUPPLIER_CONTROL": {
+        "LABEL": "Supplier",
+        "HINT": "Please choose supplier"
+      },
       "STOCK_QUANTITY_CONTROL": {
         "LABEL": "Stock Quantity",
         "HINT": "Please specify stock"
@@ -433,6 +437,10 @@
       "DESCRIPTION_CONTROL": {
         "LABEL": "Description",
         "HINT": "Please enter description"
+      },
+      "SUPPLIER_CONTROL": {
+        "LABEL": "Supplier",
+        "HINT": "Please choose supplier"
       },
       "STOCK_REMAINING_CONTROL": {
         "LABEL": "Stocks Remaining",

@@ -24,12 +24,14 @@
               }}:</mat-label>
             <input matInput type="text" formControlName="code" />
 
-            <mat-error *ngIf="productForm.get('code').hasError('productAlreadyExists')">
+            @if(productForm.get('code').hasError('productAlreadyExists')) {
+            <mat-error>
               {{
               "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.CODE_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
               | translate
               }}
             </mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>{{
@@ -45,22 +47,39 @@
               }}:</mat-label>
             <input matInput type="text" formControlName="description" />
           </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>{{
+              "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+
+            <mat-select formControlName="supplierId">
+              @for(supplier of supplierStore.suppliers(); track supplier.id) {
+              <mat-option [value]="supplier.id">{{ supplier.name
+                }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
           <div class="product-detail-panel__stock-quantity-control">
             <div class="info-field">
-              <label *ngIf="businessModel === businessModelEnum.WarehousePanelMonitoring && !isAdmin" class="stock-quantity-label">{{
+              @if (businessModel === businessModelEnum.WarehousePanelMonitoring && !isAdmin) {
+              <label class="stock-quantity-label">{{
                 "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_REMAINING_CONTROL.LABEL"
                 | translate
                 }}: <span class="stock-quantity-value">{{ productForm.get("stocksRemainingFromWarehouse").value
                   }}</span></label>
+              }
               <label class="stock-quantity-label">{{
                 "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
                 | translate
                 }}: <span class="stock-quantity-value">{{ productForm.get("stockQuantity").value }}</span></label>
             </div>
-            <button *ngIf="businessModel === businessModelEnum.WarehousePanelMonitoring || isAdmin" mat-raised-button color="primary"
-              (click)="editStockQuantity()"> {{
+
+            @if (businessModel === businessModelEnum.WarehousePanelMonitoring || isAdmin) {
+            <button mat-raised-button color="primary" (click)="editStockQuantity()"> {{
               "GENERAL_TEXTS.EDIT" | translate
               }}</button>
+            }
           </div>
           <mat-form-field appearance="fill">
             <mat-label>{{
@@ -68,8 +87,11 @@
               | translate
               }}:</mat-label>
             <input matInput type="number" formControlName="pricePerUnit" />
-            <mat-hint *ngIf="showDefaultPrice"><span
+
+            @if (showDefaultPrice) {
+            <mat-hint><span
                 [innerHTML]="translateService.instant('EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRICE_PER_UNIT_CONTROL.HINT')"></span></mat-hint>
+            }
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>{{
@@ -79,9 +101,11 @@
             <input type="text" matInput formControlName="productUnit" [matAutocomplete]="auto" />
 
             <mat-autocomplete #auto="matAutocomplete">
-              <mat-option *ngFor="let option of productUnitFilterOptions | async" [value]="option.name">
+              @for(option of productUnitFilterOptions | async; track option.id) {
+              <mat-option [value]="option.name">
                 {{ option.name }}
               </mat-option>
+              }
             </mat-autocomplete>
           </mat-form-field>
           <div class="product-detail-panel__transferrable">

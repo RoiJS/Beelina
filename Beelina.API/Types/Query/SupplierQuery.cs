@@ -18,6 +18,12 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
+        public async Task<IList<Supplier>> GetAllSuppliers([Service] ISupplierRepository<Supplier> supplierRepository)
+        {
+            return await supplierRepository.GetSuppliers();
+        }
+
+        [Authorize]
         public async Task<ISupplierPayload> CheckSupplierCode([Service] ISupplierRepository<Supplier> supplierRepository, int supplierId, string supplierCode)
         {
             var supplierFromRepo = await supplierRepository.GetSupplierByUniqueCode(supplierId, supplierCode);

@@ -40,6 +40,21 @@ export const SupplierStore = signalStore(
       });
     },
 
+    getAllSuppliers: () => {
+      patchState(store, { isLoading: true });
+      return supplierService.getAllSuppliers().subscribe({
+        next: (suppliers: Array<Supplier>) => {
+          patchState(store, {
+            suppliers,
+            isLoading: false
+          });
+        },
+        error: (error) => {
+          patchState(store, { error: error.message });
+        },
+      });
+    },
+
     setSearchSuppliers: (keyword: string) => {
       patchState(store, { filterKeyword: keyword });
     },

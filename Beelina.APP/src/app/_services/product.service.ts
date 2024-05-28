@@ -142,6 +142,7 @@ const GET_PRODUCT_STORE = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         productUnit {
           name
         }
@@ -167,6 +168,7 @@ const GET_WAREHOUSE_PRODUCT_STORE = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         productUnit {
           name
         }
@@ -790,6 +792,7 @@ export class ProductService {
         name: product.name,
         code: product.code,
         description: product.description,
+        supplierId: product.supplierId,
         stockQuantity: product.stockQuantity,
         pricePerUnit: product.pricePerUnit,
         isTransferable: product.isTransferable,
@@ -835,6 +838,7 @@ export class ProductService {
         name: product.name,
         code: product.code,
         description: product.description,
+        supplierId: product.supplierId,
         stockQuantity: product.stockQuantity,
         pricePerUnit: product.pricePerUnit,
         isTransferable: product.isTransferable,

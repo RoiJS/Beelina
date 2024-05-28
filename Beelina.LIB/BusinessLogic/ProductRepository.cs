@@ -129,7 +129,8 @@ namespace Beelina.LIB.BusinessLogic
                                         Description = p.Description,
                                         PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                         ProductUnitId = p.ProductUnitId,
-                                        ProductUnit = pu
+                                        ProductUnit = pu,
+                                        SupplierId = p.SupplierId,
                                       }).ToListAsync(cancellationToken);
 
         var filteredProductsFromRepo = (from p in productsFromRepo
@@ -149,6 +150,7 @@ namespace Beelina.LIB.BusinessLogic
                                           PricePerUnit = p.PricePerUnit,
                                           ProductUnitId = p.ProductUnitId,
                                           ProductUnit = p.ProductUnit,
+                                          SupplierId = p.SupplierId
                                         })
                                         .OrderByDescending(p => p.SearchResultPercentage)
                                         .ToList();
@@ -191,6 +193,7 @@ namespace Beelina.LIB.BusinessLogic
                                                        PricePerUnit = p.PricePerUnit,
                                                        ProductUnitId = p.ProductUnitId,
                                                        ProductUnit = p.ProductUnit,
+                                                       SupplierId = p.SupplierId,
                                                        StockAbsoluteQuantity = (ps == null ? 0 : ps.Quantity)
                                                      })
                                                      .ToList();
@@ -238,6 +241,7 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
                                      IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                     SupplierId = p.SupplierId
                                    })
                                   .ToList();
         }
@@ -261,6 +265,7 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = wp.StockQuantity,
                                      IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                     SupplierId = p.SupplierId
                                    })
                                         .ToList();
         }
@@ -317,7 +322,8 @@ namespace Beelina.LIB.BusinessLogic
                                           IsTransferable = p.IsTransferable,
                                           PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                           ProductUnitId = p.ProductUnitId,
-                                          ProductUnit = pu
+                                          ProductUnit = pu,
+                                          SupplierId = p.SupplierId
                                         }).ToListAsync(cancellationToken);
           // Filter product list
           filteredProductsFromRepo = (from p in productsFromRepo
@@ -337,6 +343,7 @@ namespace Beelina.LIB.BusinessLogic
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = p.ProductUnit,
                                         IsTransferable = p.IsTransferable,
+                                        SupplierId = p.SupplierId
                                       })
                                       .OrderByDescending(p => p.SearchResultPercentage)
                                       .ToList();
@@ -439,6 +446,7 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = owsa.Quantity,
                                      IsTransferable = p.IsTransferable,
+                                     SupplierId = p.SupplierId
                                    })
                                   .ToList();
         }
@@ -515,6 +523,7 @@ namespace Beelina.LIB.BusinessLogic
                                      PricePerUnit = p.PricePerUnit,
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
+                                     SupplierId = p.SupplierId,
                                      StockQuantity = (pws == null ? 0 : pws.Quantity),
                                    })
                                   .ToList();
@@ -586,6 +595,7 @@ namespace Beelina.LIB.BusinessLogic
               Description = productInput.Description,
               IsTransferable = productInput.IsTransferable,
               NumberOfUnits = productInput.NumberOfUnits,
+              SupplierId = productInput.SupplierId
             };
           }
           else
@@ -596,6 +606,7 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.Description = productInput.Description;
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
+            productFromRepo.SupplierId = productInput.SupplierId;
           }
 
           // Create new product unit if not exists.
@@ -652,6 +663,7 @@ namespace Beelina.LIB.BusinessLogic
               Description = productInput.Description,
               IsTransferable = productInput.IsTransferable,
               NumberOfUnits = productInput.NumberOfUnits,
+              SupplierId = productInput.SupplierId,
             };
           }
           else
@@ -662,6 +674,7 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.Description = productInput.Description;
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
+            productFromRepo.SupplierId = productInput.SupplierId;
           }
 
           // Create new product unit if not exists.

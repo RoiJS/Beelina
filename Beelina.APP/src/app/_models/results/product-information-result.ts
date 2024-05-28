@@ -8,6 +8,7 @@ export class ProductInformationResult
   public name: string;
   public code: string;
   public description: string;
+  public supplierId: number;
   public defaultPrice: number;
   public stocksRemainingFromWarehouse: number;
   public stockQuantity: number;

@@ -28,7 +28,6 @@ namespace Beelina.LIB.Models
         }
 
         public int ProductUnitId { get; set; }
-
         public ProductUnit ProductUnit { get; set; }
 
         public int SupplierId { get; set; }

@@ -11,6 +11,7 @@
         public string WithdrawalSlipNo { get; set; }
         public bool IsTransferable { get; set; }
         public int NumberOfUnits { get; set; }
+        public int SupplierId { get; set; }
         public ProductUnitInput ProductUnitInput { get; set; }
     }
 }

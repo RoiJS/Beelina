@@ -48,6 +48,7 @@ const GET_ALL_SUPPLIERS = gql`
     allSuppliers {
       id
       name
+      code
     }
   }
 `;
@@ -129,11 +130,11 @@ export class SupplierService {
       .valueChanges.pipe(
         map((result: ApolloQueryResult<{ allSuppliers: Array<Supplier> }>) => {
           const data = result.data.allSuppliers.map((b: Supplier) => {
-            const barangay = new Supplier();
-            barangay.id = b.id;
-            barangay.code = b.code;
-            barangay.name = b.name;
-            return barangay;
+            const supplier = new Supplier();
+            supplier.id = b.id;
+            supplier.code = b.code;
+            supplier.name = b.name;
+            return supplier;
           });
 
           return data;
