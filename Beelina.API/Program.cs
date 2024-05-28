@@ -98,6 +98,7 @@ services.AddGraphQLServer()
         .AddType<UserAccountNotExistsError>()
         .AddType<SystemUpdateActiveError>()
         .AddType<CheckProductCodeInformationResult>()
+        .AddType<CheckSupplierCodeInformationResult>()
         .AddType<UploadType>()
         .AddType<ClientNotExistsError>();
 

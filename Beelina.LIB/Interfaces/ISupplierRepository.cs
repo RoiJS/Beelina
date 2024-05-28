@@ -8,5 +8,7 @@ namespace Beelina.LIB.Interfaces
         Task<List<Supplier>> GetSuppliers(string filterKeyword);
 
         Task DeleteSuppliers(List<int> supplierIds);
+
+        Task<Supplier> GetSupplierByUniqueCode(int supplierId, string supplierCode);
     }
 }

@@ -541,7 +541,15 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<Product> GetProductByUniqueCode(int productId, string productCode)
     {
-      var productFromRepo = await _beelinaRepository.ClientDbContext.Products.Where((p) => p.Id != productId && p.Code == productCode).FirstOrDefaultAsync();
+      var productFromRepo = await _beelinaRepository
+                                .ClientDbContext
+                                .Products
+                                .Where((p) =>
+                                    p.Id != productId &&
+                                    p.Code == productCode &&
+                                    p.IsActive &&
+                                    !p.IsDelete
+                                ).FirstOrDefaultAsync();
       return productFromRepo;
     }
 

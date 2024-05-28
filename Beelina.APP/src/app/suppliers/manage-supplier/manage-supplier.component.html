@@ -10,6 +10,15 @@
         | translate
         }}:</mat-label>
       <input matInput formControlName="code" />
+
+      @if (supplierForm.get('code').hasError('supplierAlreadyExists')) {
+      <mat-error>
+        {{
+        "SUPPLIERS_PAGE.ADD_SUPPLIER_DIALOG.FORM_CONTROL_SECTION.CODE_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+        | translate
+        }}
+      </mat-error>
+      }
     </mat-form-field>
     <mat-form-field appearance="fill">
       <mat-label>{{

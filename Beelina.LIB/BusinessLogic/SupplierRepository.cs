@@ -26,5 +26,19 @@ namespace Beelina.LIB.BusinessLogic
 
             DeleteMultipleEntities(suppliersFromRepo);
         }
+
+        public async Task<Supplier> GetSupplierByUniqueCode(int supplierId, string supplierCode)
+        {
+            var supplierFromRepo = await _beelinaRepository
+                                      .ClientDbContext
+                                      .Suppliers
+                                      .Where((p) =>
+                                          p.Id != supplierId &&
+                                          p.Code == supplierCode &&
+                                          p.IsActive &&
+                                          !p.IsDelete
+                                      ).FirstOrDefaultAsync();
+            return supplierFromRepo;
+        }
     }
 }

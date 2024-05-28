@@ -5,9 +5,10 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { Supplier } from 'src/app/_models/supplier';
-import { SupplierService } from 'src/app/_services/supplier.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { SupplierService } from 'src/app/_services/supplier.service';
+import { UniqueSupplierCodeValidator } from 'src/app/_validators/unique-supplier-code.validator';
 
 @Component({
   selector: 'app-manage-supplier',
@@ -32,14 +33,28 @@ export class ManageSupplierComponent implements OnInit {
     },
     private formBuilder: FormBuilder,
     private notificationService: NotificationService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private uniqueSupplierCodeValidator: UniqueSupplierCodeValidator
   ) {
+
+    this.uniqueSupplierCodeValidator.supplierId = this.data.supplier.id;
     this.setUpLanguageTexts(this.data.supplier.id === 0);
 
     this._supplierForm = this.formBuilder.group({
-      code: [data.supplier.code, [Validators.required]],
+      code: [
+        data.supplier.code,
+        [Validators.required],
+        [
+          this.uniqueSupplierCodeValidator.validate.bind(
+            this.uniqueSupplierCodeValidator
+          ),
+        ],
+      ],
       name: [data.supplier.name, [Validators.required]],
-    });
+    },
+      {
+        updateOn: 'blur',
+      });
   }
 
   ngOnInit() { }

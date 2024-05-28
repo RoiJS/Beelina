@@ -9,6 +9,8 @@ import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 import { ISupplierInput } from '../_interfaces/inputs/isupplier.input';
 import { Supplier } from '../_models/supplier';
 import { ISupplierOutput } from '../_interfaces/outputs/isupplier.output';
+import { ISupplierInformationQueryPayload } from '../_interfaces/payloads/isupplier-information-query.payload';
+import { CheckSupplierCodeInformationResult } from '../_models/results/check-supplier-code-information-result';
 
 const UPDATE_SUPPLIER_MUTATION = gql`
   mutation($supplierInput: SupplierInput!) {
@@ -62,6 +64,17 @@ const DELETE_SUPPLIERS_MUTATION = gql`
           ... on BaseError {
               message
         }
+      }
+    }
+  }
+`;
+
+const CHECK_SUPPLIER_CODE = gql`
+  query($supplierId: Int!, $supplierCode: String!){
+    checkSupplierCode(supplierId: $supplierId, supplierCode: $supplierCode) {
+      typename: __typename
+      ... on CheckSupplierCodeInformationResult {
+        exists
       }
     }
   }
@@ -185,6 +198,34 @@ export class SupplierService {
 
           return null;
         })
+      );
+  }
+
+  checkSupplierCodeExists(supplierId: number, supplierCode: string) {
+    return this.apollo
+      .watchQuery({
+        query: CHECK_SUPPLIER_CODE,
+        variables: {
+          supplierId,
+          supplierCode,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              checkSupplierCode: ISupplierInformationQueryPayload;
+            }>
+          ) => {
+            const data = result.data.checkSupplierCode;
+            if (data.typename === 'CheckSupplierCodeInformationResult')
+              return (<CheckSupplierCodeInformationResult>(
+                result.data.checkSupplierCode
+              )).exists;
+
+            return false;
+          }
+        )
       );
   }
 }

@@ -174,7 +174,8 @@
         },
         "CODE_CONTROL": {
           "LABEL": "Code",
-          "HINT": "Please enter supplier code"
+          "HINT": "Please enter supplier code",
+          "ALREADY_EXIST_ERROR_MESSAGE": "Code already exists. Please enter a different code"
         }
       },
       "TITLE": "Add Supplier",

@@ -1,3 +1,4 @@
+using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
@@ -14,6 +15,13 @@ namespace Beelina.API.Types.Query
         public async Task<List<Supplier>> GetSuppliers([Service] ISupplierRepository<Supplier> supplierRepository, string filterKeyword = "")
         {
             return await supplierRepository.GetSuppliers(filterKeyword);
+        }
+
+        [Authorize]
+        public async Task<ISupplierPayload> CheckSupplierCode([Service] ISupplierRepository<Supplier> supplierRepository, int supplierId, string supplierCode)
+        {
+            var supplierFromRepo = await supplierRepository.GetSupplierByUniqueCode(supplierId, supplierCode);
+            return new CheckSupplierCodeInformationResult(supplierFromRepo != null);
         }
     }
 }

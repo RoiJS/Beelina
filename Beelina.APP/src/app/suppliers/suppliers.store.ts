@@ -28,7 +28,6 @@ export const SupplierStore = signalStore(
       patchState(store, { isLoading: true });
       return supplierService.getSuppliers(store.endCursor(), store.filterKeyword()).subscribe({
         next: (data) => {
-          console.log(data);
           patchState(store, {
             suppliers: store.suppliers().concat(data.suppliers),
             endCursor: data.endCursor,
