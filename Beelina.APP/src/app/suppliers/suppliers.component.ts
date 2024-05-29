@@ -58,8 +58,8 @@ export class SuppliersComponent extends BaseComponent implements OnInit, OnDestr
     this.openSupplierDialog(new Supplier());
   }
 
-  updateSupplier(barangay: Supplier) {
-    this.openSupplierDialog(barangay);
+  updateSupplier(supplier: Supplier) {
+    this.openSupplierDialog(supplier);
   }
 
   deleteSupplier(id: number) {

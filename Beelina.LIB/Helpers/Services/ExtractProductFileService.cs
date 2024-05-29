@@ -69,20 +69,6 @@ namespace Beelina.LIB.Helpers.Services
 
                         if (!String.IsNullOrEmpty(worksheet.Cells[row, SUPPLIER_CODE_INDEX].Value?.ToString()))
                         {
-                            // if (double.TryParse(worksheet.Cells[row, COLUMN_PRICE_INDEX].Value?.ToString(), out double price))
-                            // {
-                            //     successExtractedProduct.Price = (float)price;
-                            // }
-                            // else
-                            // {
-                            //     priceValid = false;
-                            //     failedExtractedProducts.Add(new FailedExtractedProduct
-                            //     {
-                            //         RowNumber = row,
-                            //         Message = "Invalid price value. Value must only be a numeric value."
-                            //     });
-                            // }
-
                             var supplierCode = worksheet.Cells[row, SUPPLIER_CODE_INDEX].Value?.ToString();
                             var supplierFromRepo = await _supplierRepository.GetSuppliers(supplierCode);
                             if (supplierFromRepo.Count > 0)
