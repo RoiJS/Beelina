@@ -361,6 +361,11 @@ app-tool-bar {
       color: $primary;
       font-size: 15px;
     }
+
+    .sub-label {
+      color: $alt-text-color;
+      font-size: 12px;
+    }
   }
 
   &__options-section {

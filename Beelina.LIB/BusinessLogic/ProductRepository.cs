@@ -110,6 +110,11 @@ namespace Beelina.LIB.BusinessLogic
                                         into productUnitJoin
                                       from pu in productUnitJoin.DefaultIfEmpty()
 
+                                      join ps in _beelinaRepository.ClientDbContext.Suppliers
+                                        on p.SupplierId equals ps.Id
+                                        into productSupplierJoin
+                                      from ps in productSupplierJoin.DefaultIfEmpty()
+
                                       where
                                         !p.IsDelete
                                         && p.IsActive
@@ -129,7 +134,9 @@ namespace Beelina.LIB.BusinessLogic
                                         Description = p.Description,
                                         PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                         ProductUnitId = p.ProductUnitId,
-                                        ProductUnit = pu
+                                        ProductUnit = pu,
+                                        SupplierId = p.SupplierId,
+                                        Supplier = ps
                                       }).ToListAsync(cancellationToken);
 
         var filteredProductsFromRepo = (from p in productsFromRepo
@@ -149,6 +156,8 @@ namespace Beelina.LIB.BusinessLogic
                                           PricePerUnit = p.PricePerUnit,
                                           ProductUnitId = p.ProductUnitId,
                                           ProductUnit = p.ProductUnit,
+                                          SupplierId = p.SupplierId,
+                                          Supplier = p.Supplier
                                         })
                                         .OrderByDescending(p => p.SearchResultPercentage)
                                         .ToList();
@@ -191,6 +200,8 @@ namespace Beelina.LIB.BusinessLogic
                                                        PricePerUnit = p.PricePerUnit,
                                                        ProductUnitId = p.ProductUnitId,
                                                        ProductUnit = p.ProductUnit,
+                                                       SupplierId = p.SupplierId,
+                                                       Supplier = p.Supplier,
                                                        StockAbsoluteQuantity = (ps == null ? 0 : ps.Quantity)
                                                      })
                                                      .ToList();
@@ -238,6 +249,8 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
                                      IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                     SupplierId = p.SupplierId,
+                                     Supplier = p.Supplier
                                    })
                                   .ToList();
         }
@@ -261,6 +274,8 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = wp.StockQuantity,
                                      IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
+                                     SupplierId = p.SupplierId,
+                                     Supplier = p.Supplier
                                    })
                                         .ToList();
         }
@@ -300,6 +315,11 @@ namespace Beelina.LIB.BusinessLogic
                                             into productUnitJoin
                                         from pu in productUnitJoin.DefaultIfEmpty()
 
+                                        join ps in _beelinaRepository.ClientDbContext.Suppliers
+                                            on p.SupplierId equals ps.Id
+                                            into productSupplierJoin
+                                        from ps in productSupplierJoin.DefaultIfEmpty()
+
                                         where
                                           !p.IsDelete
                                           && p.IsActive
@@ -317,7 +337,9 @@ namespace Beelina.LIB.BusinessLogic
                                           IsTransferable = p.IsTransferable,
                                           PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
                                           ProductUnitId = p.ProductUnitId,
-                                          ProductUnit = pu
+                                          ProductUnit = pu,
+                                          SupplierId = p.SupplierId,
+                                          Supplier = ps
                                         }).ToListAsync(cancellationToken);
           // Filter product list
           filteredProductsFromRepo = (from p in productsFromRepo
@@ -337,6 +359,8 @@ namespace Beelina.LIB.BusinessLogic
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = p.ProductUnit,
                                         IsTransferable = p.IsTransferable,
+                                        SupplierId = p.SupplierId,
+                                        Supplier = p.Supplier
                                       })
                                       .OrderByDescending(p => p.SearchResultPercentage)
                                       .ToList();
@@ -439,6 +463,8 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = owsa.Quantity,
                                      IsTransferable = p.IsTransferable,
+                                     SupplierId = p.SupplierId,
+                                     Supplier = p.Supplier
                                    })
                                   .ToList();
         }
@@ -515,6 +541,7 @@ namespace Beelina.LIB.BusinessLogic
                                      PricePerUnit = p.PricePerUnit,
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
+                                     SupplierId = p.SupplierId,
                                      StockQuantity = (pws == null ? 0 : pws.Quantity),
                                    })
                                   .ToList();
@@ -541,7 +568,15 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<Product> GetProductByUniqueCode(int productId, string productCode)
     {
-      var productFromRepo = await _beelinaRepository.ClientDbContext.Products.Where((p) => p.Id != productId && p.Code == productCode).FirstOrDefaultAsync();
+      var productFromRepo = await _beelinaRepository
+                                .ClientDbContext
+                                .Products
+                                .Where((p) =>
+                                    p.Id != productId &&
+                                    p.Code == productCode &&
+                                    p.IsActive &&
+                                    !p.IsDelete
+                                ).FirstOrDefaultAsync();
       return productFromRepo;
     }
 
@@ -578,6 +613,7 @@ namespace Beelina.LIB.BusinessLogic
               Description = productInput.Description,
               IsTransferable = productInput.IsTransferable,
               NumberOfUnits = productInput.NumberOfUnits,
+              SupplierId = productInput.SupplierId
             };
           }
           else
@@ -588,6 +624,7 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.Description = productInput.Description;
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
+            productFromRepo.SupplierId = productInput.SupplierId;
           }
 
           // Create new product unit if not exists.
@@ -644,6 +681,7 @@ namespace Beelina.LIB.BusinessLogic
               Description = productInput.Description,
               IsTransferable = productInput.IsTransferable,
               NumberOfUnits = productInput.NumberOfUnits,
+              SupplierId = productInput.SupplierId,
             };
           }
           else
@@ -654,6 +692,7 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.Description = productInput.Description;
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
+            productFromRepo.SupplierId = productInput.SupplierId;
           }
 
           // Create new product unit if not exists.
@@ -1283,11 +1322,18 @@ namespace Beelina.LIB.BusinessLogic
                                   into productsJoin
                                   from pj in productsJoin.DefaultIfEmpty()
 
+                                  join ps in _beelinaRepository.ClientDbContext.Suppliers
+                                  on pi.SupplierCode equals ps.Code
+                                  into productSupplierJoin
+                                  from ps in productSupplierJoin.DefaultIfEmpty()
+
                                   select new MapExtractedProduct
                                   {
                                     Id = pj == null ? 0 : pj.Id,
                                     Code = pi.Code,
                                     Name = pi.Name,
+                                    SupplierId = ps == null ? default : ps.Id,
+                                    SupplierCode = pi.SupplierCode,
                                     Description = pj == null ? default : pj.Description,
                                     IsTransferable = pj == null ? default : pj.IsTransferable,
                                     Unit = pi.Unit,
@@ -1298,6 +1344,8 @@ namespace Beelina.LIB.BusinessLogic
                                     OriginalName = pj == null ? default : pj.Name,
                                     OriginalUnit = pj == null ? default : pj.ProductUnit.Name,
                                     OriginalPrice = pj == null ? default : pj.PricePerUnit,
+                                    OriginalSupplierId = pj == null ? default : pj.Supplier.Id,
+                                    OriginalSupplierCode = pj == null ? default : pj.Supplier.Code
                                   }).ToList();
 
       mapProductResult.SuccessExtractedProducts = mappedProductsImport;

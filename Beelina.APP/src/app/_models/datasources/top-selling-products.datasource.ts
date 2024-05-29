@@ -11,10 +11,10 @@ import { topSellingProductsSelector } from 'src/app/product/top-products/store/s
 export class TopSellingProductsDataSource extends BaseDataSource<TopSellingProduct> {
 
   constructor(
-    override store: Store<AppStateInterface>,
+    protected store: Store<AppStateInterface>,
     protected userId: number
   ) {
-    super(store);
+    super();
 
     this.store.dispatch(
       TopSellingProductsStoreActions.getTopSellingProductsAction({

@@ -10,11 +10,11 @@ import { ProductStockAuditItem } from '../product-stock-audit-item';
 export class ProductStockAuditsDatasource extends BaseDataSource<ProductStockAuditItem> {
 
   constructor(
-    override store: Store<AppStateInterface>,
+    protected store: Store<AppStateInterface>,
     protected productId: number,
     protected userAccountId: number,
   ) {
-    super(store);
+    super();
 
     this.store.dispatch(
       ProductStockAuditsStoreActions.getProductStockAuditsAction({

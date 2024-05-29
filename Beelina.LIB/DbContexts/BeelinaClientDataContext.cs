@@ -30,6 +30,7 @@ namespace Beelina.LIB.DbContexts
         public DbSet<ProductTransactionQuantityHistory> ProductTransactionQuantityHistory { get; set; }
         public DbSet<ReportNotificationEmailAddress> ReportNotificationEmailAddresses { get; set; }
         public DbSet<Barangay> Barangays { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<ProductStockPerWarehouse> ProductStockPerWarehouse { get; set; }

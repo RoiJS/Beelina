@@ -42,6 +42,7 @@
     "SALES": "Sales",
     "CUSTOMERS": "Customers",
     "BARANGAYS": "Barangays",
+    "SUPPLIERS": "Suppliers",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
     "WAREHOUSE_PRODUCTS": "Warehouse Products",
@@ -150,6 +151,53 @@
       "CONFIRM": "Are you sure to update barangay?",
       "SUCCESS_MESSAGE": "Selected barangay has been successfully updated!",
       "ERROR_MESSAGE": "Updating barangay failed. Please again later."
+    }
+  },
+  "SUPPLIERS_PAGE": {
+    "TITLE": "Suppliers",
+    "DESCRIPTION": "This is where suppliers information can be managed.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search supplier name or code..."
+    },
+    "DELETE_SUPPLIER_DIALOG": {
+      "TITLE": "Delete supplier",
+      "CONFIRM": "Are you sure to delete selected supplier?",
+      "SUCCESS_MESSAGE": "Selected supplier has been successfully removed.",
+      "ERROR_MESSAGE": "Removing supplier failed. Please again later."
+    },
+    "ADD_SUPPLIER_DIALOG": {
+      "FORM_CONTROL_SECTION": {
+        "HEADER_TITLE": "Add New Supplier",
+        "NAME_CONTROL": {
+          "LABEL": "Name",
+          "HINT": "Please enter supplier name"
+        },
+        "CODE_CONTROL": {
+          "LABEL": "Code",
+          "HINT": "Please enter supplier code",
+          "ALREADY_EXIST_ERROR_MESSAGE": "Code already exists. Please enter a different code"
+        }
+      },
+      "TITLE": "Add Supplier",
+      "CONFIRM": "Are you sure to add new supplier?",
+      "SUCCESS_MESSAGE": "New supplier has been successfully added!",
+      "ERROR_MESSAGE": "Adding new supplier failed. Please again later."
+    },
+    "UPDATE_SUPPLIER_DIALOG": {
+      "FORM_CONTROL_SECTION": {
+        "NAME_CONTROL": {
+          "LABEL": "Name",
+          "HINT": "Please enter supplier name"
+        },
+        "CODE_CONTROL": {
+          "LABEL": "Code",
+          "HINT": "Please enter supplier code"
+        }
+      },
+      "TITLE": "Update Supplier",
+      "CONFIRM": "Are you sure to update supplier?",
+      "SUCCESS_MESSAGE": "Selected supplier has been successfully updated!",
+      "ERROR_MESSAGE": "Updating supplier failed. Please again later."
     }
   },
   "EDIT_CUSTOMER_DETAILS_PAGE": {
@@ -339,6 +387,10 @@
         "LABEL": "Description",
         "HINT": "Please enter description"
       },
+      "SUPPLIER_CONTROL": {
+        "LABEL": "Supplier",
+        "HINT": "Please choose supplier"
+      },
       "STOCK_QUANTITY_CONTROL": {
         "LABEL": "Stock Quantity",
         "HINT": "Please specify stock"
@@ -385,6 +437,10 @@
       "DESCRIPTION_CONTROL": {
         "LABEL": "Description",
         "HINT": "Please enter description"
+      },
+      "SUPPLIER_CONTROL": {
+        "LABEL": "Supplier",
+        "HINT": "Please choose supplier"
       },
       "STOCK_REMAINING_CONTROL": {
         "LABEL": "Stocks Remaining",
@@ -850,6 +906,7 @@
         "FIELDS_SECTION": {
           "PRODUCT_CODE": "Code",
           "PRODUCT_NAME": "Name",
+          "SUPPLIER_CODE_NAME": "Supplier Code",
           "ADDITIONAL_QUANTITY": "Additional Quantity",
           "PRICE_PER_UNIT": "Price (Optional)",
           "PRODUCT_UNIT": "Unit (Optional)",
@@ -877,6 +934,7 @@
             "FIELDS": {
               "CODE": "Code",
               "NAME": "Name",
+              "SUPPLIER_CODE": "Supplier Code",
               "QUANTITY": "Quantity",
               "UNIT": "Unit",
               "PRICE": "Price",

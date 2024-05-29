@@ -28,8 +28,10 @@ namespace Beelina.LIB.Models
         }
 
         public int ProductUnitId { get; set; }
-
         public ProductUnit ProductUnit { get; set; }
+
+        public int SupplierId { get; set; }
+        public Supplier Supplier { get; set; }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

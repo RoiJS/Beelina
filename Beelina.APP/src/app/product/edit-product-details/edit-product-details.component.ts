@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -31,6 +31,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
+import { SupplierStore } from 'src/app/suppliers/suppliers.store';
 
 @Component({
   selector: 'app-edit-product-details',
@@ -61,19 +62,21 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   private _warehouseId: number = 1;
   private _isAdmin = false;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private authService: AuthService,
-    private bottomSheet: MatBottomSheet,
-    private store: Store<AppStateInterface>,
-    private dialogService: DialogService,
-    private productService: ProductService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private notificationService: NotificationService,
-    private uniqueProductCodeValidator: UniqueProductCodeValidator,
-    public translateService: TranslateService,
-  ) {
+
+  activatedRoute = inject(ActivatedRoute);
+  authService = inject(AuthService);
+  bottomSheet = inject(MatBottomSheet);
+  store = inject(Store<AppStateInterface>);
+  dialogService = inject(DialogService);
+  productService = inject(ProductService);
+  formBuilder = inject(FormBuilder);
+  router = inject(Router);
+  notificationService = inject(NotificationService);
+  uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
+  supplierStore = inject(SupplierStore);
+  translateService = inject(TranslateService);
+
+  constructor() {
     super();
     this._currentLoggedInUser = this.authService.user.value;
     this._isAdmin = this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
@@ -102,7 +105,8 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
         isTransferable: [false],
-        numberOfUnits: [0]
+        numberOfUnits: [0],
+        supplierId: [null, Validators.required]
       },
       {
         updateOn: 'blur',
@@ -110,6 +114,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
     );
 
     this.$isLoading = this.store.pipe(select(isUpdateLoadingSelector));
+    this.supplierStore.getAllSuppliers();
   }
 
   ngOnInit() {
@@ -125,6 +130,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         this._productForm.get('name').setValue(product.name);
         this._productForm.get('code').setValue(product.code);
         this._productForm.get('description').setValue(product.description);
+        this._productForm.get('supplierId').setValue(product.supplierId);
         this._productForm.get('stocksRemainingFromWarehouse').setValue(product.stocksRemainingFromWarehouse);
         this._productForm.get('stockQuantity').setValue(product.stockQuantity);
         this._productForm.get('isTransferable').setValue(product.isTransferable);
@@ -181,6 +187,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
     product.name = this._productForm.get('name').value;
     product.code = this._productForm.get('code').value;
     product.description = this._productForm.get('description').value;
+    product.supplierId = this._productForm.get('supplierId').value;
     product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
     product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
     product.isTransferable = this._productForm.get('isTransferable').value;

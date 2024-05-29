@@ -10,7 +10,7 @@ export class BaseDataSource<T> extends DataSource<T | undefined> {
   protected readonly _dataStream = new BehaviorSubject<(T | undefined)[]>([]);
   protected readonly _subscription = new Subscription();
 
-  constructor(protected store: Store<AppStateInterface>) {
+  constructor() {
     super();
   }
 

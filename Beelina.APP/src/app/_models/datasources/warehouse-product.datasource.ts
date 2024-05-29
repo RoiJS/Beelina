@@ -10,8 +10,8 @@ import { productsSelector } from 'src/app/warehouse/store/selectors';
 
 export class WarehouseProductDataSource extends BaseDataSource<Product> {
 
-  constructor(override store: Store<AppStateInterface>) {
-    super(store);
+  constructor(protected store: Store<AppStateInterface>) {
+    super();
     this._pageSize = 50;
     this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
 

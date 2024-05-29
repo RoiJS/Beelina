@@ -217,6 +217,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
@@ -229,6 +232,8 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("DeletedById");
 
                     b.HasIndex("ProductUnitId");
+
+                    b.HasIndex("SupplierId");
 
                     b.HasIndex("UpdatedById");
 
@@ -823,6 +828,43 @@ namespace Beelina.LIB.Migrations
                     b.ToTable("Stores");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -1118,6 +1160,12 @@ namespace Beelina.LIB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Beelina.LIB.Models.Supplier", "Supplier")
+                        .WithMany("Products")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
                         .WithMany("UpdatedProducts")
                         .HasForeignKey("UpdatedById")
@@ -1130,6 +1178,8 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("ProductUnit");
+
+                    b.Navigation("Supplier");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -1522,6 +1572,11 @@ namespace Beelina.LIB.Migrations
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.Supplier", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>

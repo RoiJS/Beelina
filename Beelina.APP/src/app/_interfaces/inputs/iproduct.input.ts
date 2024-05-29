@@ -5,6 +5,7 @@ export interface IProductInput {
   name: string;
   code: string;
   description: string;
+  supplierId: number;
   stockQuantity: number;
   pricePerUnit: number;
   withdrawalSlipNo: string;
