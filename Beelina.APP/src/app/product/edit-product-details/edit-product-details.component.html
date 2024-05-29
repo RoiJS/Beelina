@@ -55,8 +55,7 @@
 
             <mat-select formControlName="supplierId">
               @for(supplier of supplierStore.suppliers(); track supplier.id) {
-              <mat-option [value]="supplier.id">{{ supplier.name
-                }}</mat-option>
+              <mat-option [value]="supplier.id">{{ supplier.code }}: {{ supplier.name}}</mat-option>
               }
             </mat-select>
           </mat-form-field>

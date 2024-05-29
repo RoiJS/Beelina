@@ -906,6 +906,7 @@
         "FIELDS_SECTION": {
           "PRODUCT_CODE": "Code",
           "PRODUCT_NAME": "Name",
+          "SUPPLIER_CODE_NAME": "Supplier Code",
           "ADDITIONAL_QUANTITY": "Additional Quantity",
           "PRICE_PER_UNIT": "Price (Optional)",
           "PRODUCT_UNIT": "Unit (Optional)",
@@ -933,6 +934,7 @@
             "FIELDS": {
               "CODE": "Code",
               "NAME": "Name",
+              "SUPPLIER_CODE": "Supplier Code",
               "QUANTITY": "Quantity",
               "UNIT": "Unit",
               "PRICE": "Price",

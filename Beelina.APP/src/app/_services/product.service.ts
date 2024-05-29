@@ -449,6 +449,8 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
           id
           code
           name
+          supplierCode
+          supplierId
           description
           isTransferable
           originalName
@@ -459,6 +461,8 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
           originalUnit
           originalPrice
           originalNumberOfUnits
+          originalSupplierCode
+          originalSupplierId
         }
         failedExtractedProducts {
           rowNumber

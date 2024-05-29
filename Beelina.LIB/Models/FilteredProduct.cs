@@ -15,6 +15,7 @@ namespace Beelina.LIB.Models
         public int ProductUnitId { get; set; }
         public ProductUnit ProductUnit { get; set; }
         public int SupplierId { get; set; }
+        public Supplier Supplier { get; set; }
         public bool IsTransferable { get; set; }
         public bool IsLinkedToSalesAgent { get; set; }
     }

@@ -36,6 +36,7 @@ services.AddScoped(typeof(IClientRepository<Client>), typeof(ClientRepository));
 services.AddScoped(typeof(IClientDbManagerRepository<IEntity>), typeof(ClientDbManagerRepository));
 services.AddScoped(typeof(IDataSeedRepository<IEntity>), typeof(DataSeedRepository));
 services.AddScoped(typeof(ICurrentUserService), typeof(CurrentUserService));
+services.AddScoped(typeof(IExtractProductFileService), typeof(ExtractProductFileService));
 services.AddScoped(typeof(IProductUnitRepository<ProductUnit>), typeof(ProductUnitRepository));
 services.AddScoped(typeof(IProductRepository<Product>), typeof(ProductRepository));
 services.AddScoped(typeof(IProductStockPerPanelRepository<ProductStockPerPanel>), typeof(ProductStockPerPanelRepository));

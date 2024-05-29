@@ -1,19 +1,21 @@
 
+using Beelina.LIB.Interfaces;
+using Beelina.LIB.Models;
 using OfficeOpenXml;
 
 namespace Beelina.LIB.Helpers.Services
 {
     public class ExtractProductFileService
+        : IExtractProductFileService
     {
-        private readonly Stream _fileStream;
+        private readonly ISupplierRepository<Supplier> _supplierRepository;
+        private Stream _fileStream;
 
-        public ExtractProductFileService(Stream fileStream)
+        public ExtractProductFileService(ISupplierRepository<Supplier> supplierRepository) => _supplierRepository = supplierRepository;
+
+        public async Task<ExtractProductResult> ReadFile(Stream fileStream)
         {
             _fileStream = fileStream;
-        }
-
-        public ExtractProductResult ReadFile()
-        {
             var productExtractedResult = new ExtractProductResult();
             var successExtractedProducts = new List<SuccessExtractedProduct>();
             var failedExtractedProducts = new List<FailedExtractedProduct>();
@@ -29,22 +31,24 @@ namespace Beelina.LIB.Helpers.Services
                     const int MAX_ROW_COUNT = 1000;
                     const int COLUMN_CODE_INDEX = 1;
                     const int COLUMN_NAME_INDEX = 2;
-                    const int COLUMN_QUANTITY_INDEX = 3;
-                    const int COLUMN_PRICE_INDEX = 4;
-                    const int COLUMN_UNIT_INDEX = 5;
-                    const int COLUMN_NUMBER_OF_UNITS_INDEX = 6;
-                    const int COLUMN_COUNT = 6;
+                    const int SUPPLIER_CODE_INDEX = 3;
+                    const int COLUMN_QUANTITY_INDEX = 4;
+                    const int COLUMN_PRICE_INDEX = 5;
+                    const int COLUMN_UNIT_INDEX = 6;
+                    const int COLUMN_NUMBER_OF_UNITS_INDEX = 7;
+                    const int COLUMN_COUNT = 7;
                     const int ROW_DATA_START = 2;
 
                     int rowCount = worksheet.Dimension.Rows;
                     int columnCount = worksheet.Dimension.Columns;
 
-                    if (columnCount != COLUMN_COUNT) throw new Exception("The number of columns does not match the expected number of columns (6). Please select a valid file and try again.");
+                    if (columnCount != COLUMN_COUNT) throw new Exception($"The number of columns does not match the expected number of columns ({COLUMN_COUNT}). Please select a valid file and try again.");
                     if (rowCount > MAX_ROW_COUNT) throw new Exception($"The number of products exceeds the maximum limit (1000). The number of rows is {rowCount}. Please select a valid file and try again.");
 
                     for (int row = ROW_DATA_START; row <= rowCount; row++)
                     {
                         var successExtractedProduct = new SuccessExtractedProduct();
+                        var supplierCodeValid = true;
                         var priceValid = true;
                         var quantityValid = true;
                         var numberOfUnitsValid = true;
@@ -62,6 +66,40 @@ namespace Beelina.LIB.Helpers.Services
                         }
 
                         successExtractedProduct.Name = worksheet.Cells[row, COLUMN_NAME_INDEX].Value?.ToString();
+
+                        if (!String.IsNullOrEmpty(worksheet.Cells[row, SUPPLIER_CODE_INDEX].Value?.ToString()))
+                        {
+                            // if (double.TryParse(worksheet.Cells[row, COLUMN_PRICE_INDEX].Value?.ToString(), out double price))
+                            // {
+                            //     successExtractedProduct.Price = (float)price;
+                            // }
+                            // else
+                            // {
+                            //     priceValid = false;
+                            //     failedExtractedProducts.Add(new FailedExtractedProduct
+                            //     {
+                            //         RowNumber = row,
+                            //         Message = "Invalid price value. Value must only be a numeric value."
+                            //     });
+                            // }
+
+                            var supplierCode = worksheet.Cells[row, SUPPLIER_CODE_INDEX].Value?.ToString();
+                            var supplierFromRepo = await _supplierRepository.GetSuppliers(supplierCode);
+                            if (supplierFromRepo.Count > 0)
+                            {
+                                successExtractedProduct.SupplierCode = supplierCode;
+                            }
+                            else
+                            {
+                                supplierCodeValid = false;
+                                failedExtractedProducts.Add(new FailedExtractedProduct
+                                {
+                                    RowNumber = row,
+                                    Message = "Supplier Code does not exists. Please provide a valid supplier code."
+                                });
+                            }
+                        }
+
                         successExtractedProduct.Unit = worksheet.Cells[row, COLUMN_UNIT_INDEX].Value?.ToString();
 
                         if (!String.IsNullOrEmpty(worksheet.Cells[row, COLUMN_PRICE_INDEX].Value?.ToString()))
@@ -115,7 +153,7 @@ namespace Beelina.LIB.Helpers.Services
                             }
                         }
 
-                        if (priceValid && quantityValid && numberOfUnitsValid)
+                        if (supplierCodeValid && priceValid && quantityValid && numberOfUnitsValid)
                         {
                             successExtractedProducts.Add(successExtractedProduct);
                         }
@@ -163,6 +201,7 @@ namespace Beelina.LIB.Helpers.Services
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string SupplierCode { get; set; }
         public float? Price { get; set; } = null;
         public string Unit { get; set; }
         public int Quantity { get; set; }
@@ -190,6 +229,8 @@ namespace Beelina.LIB.Helpers.Services
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public int SupplierId { get; set; }
+        public string SupplierCode { get; set; }
         public string Description { get; set; }
         public bool IsTransferable { get; set; }
         public float? Price { get; set; }
@@ -197,6 +238,8 @@ namespace Beelina.LIB.Helpers.Services
         public int? NumberOfUnits { get; set; }
         public int Quantity { get; set; }
         public int OriginalNumberOfUnits { get; set; }
+        public int OriginalSupplierId { get; set; }
+        public string OriginalSupplierCode { get; set; }
         public string OriginalName { get; set; }
         public float OriginalPrice { get; set; }
         public string OriginalUnit { get; set; }
