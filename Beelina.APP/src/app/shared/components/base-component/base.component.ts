@@ -11,6 +11,7 @@ import { User } from 'src/app/_models/user.model';
 import { TemplateSizeEnum } from '../../ui/placeholder-entities/placeholder-entities.component';
 import { BannerTypeEnum } from '../../ui/banner/banner.component';
 import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
+import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 @Component({
   selector: 'app-base-component',
@@ -24,6 +25,8 @@ export class BaseComponent {
   protected _emptyTemplateType = PlaceholderEntityTemplateEnum;
   protected _templateSize = TemplateSizeEnum;
   protected _bannerType = BannerTypeEnum;
+  protected _transactionStatusType = TransactionStatusEnum;
+
   protected $isLoading: Observable<boolean>;
   protected _currentLoggedInUser: User;
   protected _passwordVisible: boolean;

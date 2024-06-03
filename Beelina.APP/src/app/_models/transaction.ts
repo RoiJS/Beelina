@@ -1,7 +1,9 @@
 import { PaymenStatusEnum } from '../_enum/payment-status.enum';
+import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 import { IModelNode } from '../_interfaces/imodel-node';
+import { Barangay } from './barangay';
 import { CustomerStore } from './customer-store';
 import { Entity } from './entity.model';
 import { Product } from './product';
@@ -12,16 +14,28 @@ export class Transaction extends Entity implements IModelNode {
   public discount: number;
   public transactionDate: Date;
   public dueDate: Date;
+  public createdById: number;
+  public createdBy: string;
+  public detailsUpdatedBy: string;
+  public detailsDateUpdated: Date;
+  public orderItemsDateUpdated: Date;
+  public finalDateUpdated: Date;
   public store: CustomerStore;
+  public barangay: Barangay;
   public modeOfPayment: number;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
   public total: number;
   public badOrderAmount: number;
+  public status: TransactionStatusEnum;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
+  }
+
+  get finalDateUpdatedFormatted(): string {
+    return DateFormatter.format(this.finalDateUpdated, 'MMM DD, YYYY hh:mm A');
   }
 
   get dueDateFormatted(): string {
@@ -50,6 +64,7 @@ export class Transaction extends Entity implements IModelNode {
     super();
     this.productTransactions = new Array<ProductTransaction>();
     this.store = new CustomerStore();
+    this.barangay = new Barangay();
   }
 }
 

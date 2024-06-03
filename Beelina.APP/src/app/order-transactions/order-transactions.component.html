@@ -1,0 +1,65 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false"></app-tool-bar>
+
+<app-loader-layout [busy]="orderTransactionStore.isLoading()">
+  <div class="page-container scale-in-center-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "ORDER_TRANSACTIONS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "ORDER_TRANSACTIONS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-search-field (onSearch)="onSearch($event)" (onClear)="onClear()" [placeHolderTextIdentifier]="
+        'ORDER_TRANSACTIONS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "></app-search-field>
+    <div class="order-transactions-list-status-bar-container">
+
+      @if (orderTransactionStore.filterKeyword()?.length > 0) {
+      <div class="order-transactions-list-status-bar-container__search-result-counter-section">
+        <span>{{ 'ORDER_TRANSACTIONS_PAGE.ORDER_TRANSACTION_LIST_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING"
+          [label]="orderTransactionStore.totalCount().toString()"></app-badge>
+      </div>
+      }
+    </div>
+
+    <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
+      [labelInformationTextIdentifier]="'ORDER_TRANSACTIONS_PAGE.ORDER_TRANSACTION_LIST_EMPTY_LABEL.LABEL'"
+      [count]="dataSource?.itemCount">
+      <cdk-virtual-scroll-viewport select="" itemSize="10" orientation="vertical"
+        class="list-container order-transactions-list">
+        <div *cdkVirtualFor="let item of dataSource">
+          <div class="order-transactions-item-container" (click)="viewTransaction(item)">
+            <div matRipple class="order-transactions-item-container__order-transactions-icon-container">
+              <div class="order-transactions-icon">
+                <mat-icon>assignment</mat-icon>
+              </div>
+            </div>
+            <div matRipple class="order-transactions-item-container__order-transactions-info-container">
+              <div class="order-transactions-info">
+                <span class="order-transactions-info__invoice-no">{{ item.invoiceNo }}
+                  @switch(item.status) {
+                  @case(_transactionStatusType.DRAFT) {
+                  <app-badge [type]="bannerTypeEnum.INFO" [textIdentifier]="'ORDER_TYPE.DRAFT'"></app-badge>
+                  }
+                  @case(_transactionStatusType.BAD_ORDER) {
+                  <app-badge [type]="bannerTypeEnum.ERROR" [textIdentifier]="'ORDER_TYPE.BAD_ORDER'"></app-badge>
+                  }
+                  @case(_transactionStatusType.CONFIRMED) {
+                  <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'ORDER_TYPE.CONFIRM'"></app-badge>
+                  }
+                  }
+                </span>
+                <span class="order-transactions-info__created-by">{{ item.createdBy }}</span><br>
+                <span class="order-transactions-info__order-transactions-date">{{ item.transactionDateFormatted
+                  }}</span>
+              </div>
+              <div class="order-transactions-actions">
+                <mat-icon>keyboard_arrow_right</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
+  </div>
+</app-loader-layout>

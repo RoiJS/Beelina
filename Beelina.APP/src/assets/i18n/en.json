@@ -36,12 +36,15 @@
     "INACTIVE": "Inactive",
     "SELECTED_ITEMS": "Selected Item(s)",
     "SELECT_MULTIPLE": "Select Multiple",
-    "SELECT_ALL": "Select All"
+    "SELECT_ALL": "Select All",
+    "VIEW": "View",
+    "LAST_SAVED": "Last saved"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
     "CUSTOMERS": "Customers",
     "BARANGAYS": "Barangays",
+    "ORDER_TRANSACTIONS": "Order Transactions",
     "SUPPLIERS": "Suppliers",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
@@ -55,6 +58,11 @@
     "MANUAL": "User Manual",
     "DASHBOARD": "Dashboard",
     "LOGOUT": "Logout"
+  },
+  "ORDER_TYPE": {
+    "DRAFT": "Draft",
+    "BAD_ORDER": "Bad Order",
+    "CONFIRM": "Confirm"
   },
   "USER_TYPE": {
     "SALES_AGENT": "Sales Agent",
@@ -358,6 +366,13 @@
       "SUCCESS_MESSAGE": "New bad order has been saved!",
       "ERROR_MESSAGE": "Saving bad order failed. Please again later.",
       "LOADING_MESSAGE": "Saving order as bad order. Please wait..."
+    },
+    "SAVE_NEW_UPDATE_DIALOG": {
+      "TITLE": "Save new updates",
+      "CONFIRM": "Are you sure to save new updates?",
+      "SUCCESS_MESSAGE": "New update(s) have been saved!",
+      "ERROR_MESSAGE": "Saving new updates failed. Please again later.",
+      "LOADING_MESSAGE": "Saving new updates. Please wait..."
     },
     "CLEAR_ORDER_DIALOG": {
       "TITLE": "Clear order",
@@ -1007,6 +1022,19 @@
       "CONFIRM": "Deactivating user account means that user cannot login anymore. Are you still sure to proceed?",
       "SUCCESS_MESSAGE": "Selected user account has been successfully deactivated.",
       "ERROR_MESSAGE": "Deactivating user account failed. Please again later."
+    }
+  },
+  "ORDER_TRANSACTIONS_PAGE": {
+    "TITLE": "Order Transactions",
+    "DESCRIPTION": "View list of all registered order transactions. Only administrators can access this page.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search invoice no./sales agent/customer name/barangay name..."
+    },
+    "ORDER_TRANSACTION_LIST_SEARCH_RESULT_CONTAINER": {
+      "LABEL": "Search result matches"
+    },
+    "ORDER_TRANSACTION_LIST_EMPTY_LABEL": {
+      "LABEL": "Search Transaction by typing Invoice No., Sales Agent, Barangay Name, or Customer Name"
     }
   },
   "MANAGE_ACCOUNT_PAGE": {

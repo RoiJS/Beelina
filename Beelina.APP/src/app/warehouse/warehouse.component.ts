@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, viewChild } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -29,7 +29,7 @@ import { filterKeywordSelector, isLoadingSelector, totalCountSelector } from './
 })
 export class WarehouseComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild(SearchFieldComponent) searchFieldComponent: SearchFieldComponent;
+  searchFieldComponent = viewChild(SearchFieldComponent);
 
   private _dataSource: WarehouseProductDataSource;
   private _filterKeyword: string;
@@ -78,7 +78,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
       this.store.pipe(select(filterKeywordSelector))
         .subscribe((filterKeyword: string) => {
           this._filterKeyword = filterKeyword;
-          this.searchFieldComponent.value(filterKeyword)
+          this.searchFieldComponent().value(filterKeyword)
         })
     );
 
@@ -196,7 +196,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
                   );
 
                   this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
-                  this.store.dispatch(WarehouseProductActions.setSearchWarehouseProductAction({ keyword: this.searchFieldComponent.value() }));
+                  this.store.dispatch(WarehouseProductActions.setSearchWarehouseProductAction({ keyword: this.searchFieldComponent().value() }));
                   this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
                 },
 
@@ -225,7 +225,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
-        this.store.dispatch(WarehouseProductActions.setSearchWarehouseProductAction({ keyword: this.searchFieldComponent.value() }));
+        this.store.dispatch(WarehouseProductActions.setSearchWarehouseProductAction({ keyword: this.searchFieldComponent().value() }));
         this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
       }
     })

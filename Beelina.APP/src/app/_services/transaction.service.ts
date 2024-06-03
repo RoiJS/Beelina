@@ -37,7 +37,6 @@ import {
 import { DateRange } from '../_models/date-range';
 import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
-import { ITransactionInformationOutput } from '../_interfaces/outputs/itransaction-information.output';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
 import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
 
@@ -102,6 +101,36 @@ const GET_TRANSACTION_DATES = gql`
   }
 `;
 
+const GET_TRANSACTIONS_QUERY = gql`
+  query($filterKeyword: String, $cursor: String) {
+    transactions(filterKeyword: $filterKeyword, after: $cursor) {
+      nodes {
+          id,
+          storeId,
+          invoiceNo,
+          createdBy,
+          detailsUpdatedBy
+          detailsDateUpdated
+          orderItemsDateUpdated
+          finalDateUpdated
+          createdById,
+          transactionDate,
+          hasUnpaidProductTransaction,
+          barangayName
+          storeName
+          status
+      }
+      pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+      totalCount
+    }
+  }
+`;
+
 const GET_APPROVED_TRANSACTIONS_BY_DATE = gql`
   query ($transactionDate: String!, $status: TransactionStatusEnum!) {
     transactionsByDate(transactionDate: $transactionDate, status: $status) {
@@ -126,6 +155,7 @@ const GET_TRANSACTION = gql`
         transactionDate
         dueDate
         hasUnpaidProductTransaction
+        status
         total
         balance
         modeOfPayment
@@ -291,10 +321,18 @@ const SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION = gql`
 export class TransactionInformation {
   public id: number;
   public invoiceNo: string;
+  public createdBy: string;
+  public detailsUpdatedBy: string;
+  public detailsDateUpdated: Date;
+  public orderItemsDateUpdated: Date;
+  public finalDateUpdated: Date;
+  public createdById: number;
   public storeId: number;
   public storeName: string;
+  public barangayName: string;
   public transactionDate: Date;
   public hasUnpaidProductTransaction: boolean;
+  public status: TransactionStatusEnum;
 }
 
 
@@ -524,6 +562,70 @@ export class TransactionService {
       );
   }
 
+  getTransactions(
+    cursor: string,
+    filterKeyword: string,
+  ) {
+    return this.apollo
+      .watchQuery({
+        query: GET_TRANSACTIONS_QUERY,
+        variables: {
+          filterKeyword,
+          cursor
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              transactions: IBaseConnection;
+            }>
+          ) => {
+
+            const data = result.data.transactions;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+            const totalCount = data.totalCount;
+            const transactionsDto = <Array<TransactionInformation>>data.nodes;
+
+            const transactions = transactionsDto.map((t) => {
+              const transaction = new Transaction();
+              transaction.id = t.id;
+              transaction.invoiceNo = t.invoiceNo;
+              transaction.storeId = t.storeId;
+              transaction.createdBy = t.createdBy;
+              transaction.detailsUpdatedBy = t.detailsUpdatedBy;
+              transaction.detailsDateUpdated = t.detailsDateUpdated;
+              transaction.orderItemsDateUpdated = t.orderItemsDateUpdated;
+              transaction.finalDateUpdated = t.finalDateUpdated;
+              transaction.createdById = t.createdById;
+              transaction.status = t.status;
+              transaction.transactionDate = t.transactionDate;
+              transaction.store.name = t.storeName;
+              transaction.barangay.name = t.barangayName;
+              transaction.hasUnpaidProductTransaction =
+                t.hasUnpaidProductTransaction;
+              return transaction;
+            });
+
+            if (transactions) {
+              return {
+                endCursor,
+                hasNextPage,
+                transactions,
+                totalCount
+              };
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
   sendOrderReceiptEmailNotification(
     transactionId: number
   ) {
@@ -577,6 +679,8 @@ export class TransactionService {
             transaction.total = transactionFromRepo.transaction.total;
             transaction.hasUnpaidProductTransaction =
               transactionFromRepo.transaction.hasUnpaidProductTransaction;
+            transaction.status = transactionFromRepo.transaction.status;
+
             transaction.productTransactions =
               transactionFromRepo.transaction.productTransactions.map((pt) => {
                 const productTransaction = new ProductTransaction();
