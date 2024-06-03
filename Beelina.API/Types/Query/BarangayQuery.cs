@@ -17,9 +17,9 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        public async Task<IList<Barangay>> GetAllBarangays([Service] IBarangayRepository<Barangay> barangayRepository, [Service] ICurrentUserService currentUserService)
+        public async Task<IList<Barangay>> GetAllBarangays([Service] IBarangayRepository<Barangay> barangayRepository, int userId)
         {
-            return await GetBarangaysAsync(barangayRepository, currentUserService.CurrentUserId);
+            return await GetBarangaysAsync(barangayRepository, userId);
         }
 
         private async Task<IList<Barangay>> GetBarangaysAsync(IBarangayRepository<Barangay> barangayRepository, int currentUserId)

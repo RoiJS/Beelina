@@ -82,6 +82,16 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
+    [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "")
+    {
+      return await transactionRepository.GetTransactions(TransactionStatusEnum.All, "", 0, filterKeyword);
+    }
+
+    [Authorize]
     [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
     [UseProjection]
     [UseFiltering]

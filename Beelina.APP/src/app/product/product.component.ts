@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, inject, input, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -53,7 +53,7 @@ import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper'
 export class ProductComponent
   extends SharedComponent
   implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(SearchFieldComponent) searchFieldComponent: SearchFieldComponent;
+  searchFieldComponent = viewChild(SearchFieldComponent);
 
   businessModel = signal<BusinessModelEnum>(BusinessModelEnum.WarehousePanelMonitoring);
   currentSalesAgentId: number = 0;
@@ -171,7 +171,7 @@ export class ProductComponent
       this.store.pipe(select(filterKeywordSelector))
         .subscribe((filterKeyword: string) => {
           this.filterKeyword.set(filterKeyword);
-          this.searchFieldComponent.value(filterKeyword)
+          this.searchFieldComponent().value(filterKeyword)
         })
     );
 
@@ -301,7 +301,7 @@ export class ProductComponent
     this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.store.dispatch(ProductActions.resetProductState());
-        this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
+        this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent().value() }));
         this.store.dispatch(ProductActions.getProductsAction());
       }
     })
@@ -387,7 +387,7 @@ export class ProductComponent
                     );
 
                     this.store.dispatch(ProductActions.resetProductState());
-                    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
+                    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent().value() }));
                     this.store.dispatch(ProductActions.getProductsAction());
                   },
 

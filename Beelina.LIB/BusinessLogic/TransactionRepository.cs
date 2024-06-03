@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Beelina.LIB.Enums;
 using Beelina.LIB.Helpers.Class;
+using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
@@ -18,6 +19,7 @@ namespace Beelina.LIB.BusinessLogic
         private readonly IProductTransactionRepository<ProductTransaction> _productTransactionRepository;
         private IOptions<EmailServerSettings> _emailServerSettings { get; }
         private readonly IOptions<AppHostInfo> _appHostInfo;
+        private readonly IOptions<ApplicationSettings> _appSettings;
         private readonly ICurrentUserService _currentUserService;
 
         public TransactionRepository(
@@ -26,11 +28,13 @@ namespace Beelina.LIB.BusinessLogic
             IProductTransactionRepository<ProductTransaction> productTransactionRepository,
             IOptions<EmailServerSettings> emailServerSettings,
             IOptions<AppHostInfo> appHostInfo,
+             IOptions<ApplicationSettings> appSettings,
             ICurrentUserService currentUserService
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
             _appHostInfo = appHostInfo;
+            _appSettings = appSettings;
             _currentUserService = currentUserService;
             _emailServerSettings = emailServerSettings;
             _productTransactionRepository = productTransactionRepository;
@@ -200,8 +204,23 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate)
         {
+            return await GetTransactions(status, transactionDate, _currentUserService.CurrentUserId);
+        }
+
+        public async Task<List<TransactionInformation>> GetTransactions(TransactionStatusEnum status, string transactionDate, int userId, string filterKeyword = "")
+        {
             var transactions = await (
                     from t in _beelinaRepository.ClientDbContext.Transactions
+
+                    join u in _beelinaRepository.ClientDbContext.UserAccounts
+                    on t.CreatedById equals u.Id
+                    into transactionCreatedJoin
+                    from uc in transactionCreatedJoin.DefaultIfEmpty()
+
+                    join uu in _beelinaRepository.ClientDbContext.UserAccounts
+                    on t.UpdatedById equals uu.Id
+                    into transactionUpdatedJoin
+                    from up in transactionUpdatedJoin.DefaultIfEmpty()
 
                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                     on t.Id equals pt.TransactionId
@@ -209,35 +228,88 @@ namespace Beelina.LIB.BusinessLogic
                     join s in _beelinaRepository.ClientDbContext.Stores
                     on t.StoreId equals s.Id
 
+                    join b in _beelinaRepository.ClientDbContext.Barangays
+                    on s.BarangayId equals b.Id
+
                     where
-                        t.TransactionDate == Convert.ToDateTime(transactionDate)
-                        && t.Status == status
-                        && t.IsDelete == false
+                        (String.IsNullOrEmpty(transactionDate) || (!String.IsNullOrEmpty(transactionDate) && t.TransactionDate == Convert.ToDateTime(transactionDate)))
+                        && (status == TransactionStatusEnum.All || (status != TransactionStatusEnum.All && t.Status == status))
+                        && (userId == 0 || (userId > 0 && t.CreatedById == userId))
+                        && !t.IsDelete
                         && t.IsActive
-                        && t.CreatedById == _currentUserService.CurrentUserId
 
                     select new
                     {
                         Id = t.Id,
-                        InvoiceNo = t.InvoiceNo,
+                        InvoiceNo = t.InvoiceNo ?? String.Empty,
+                        Status = t.Status,
+                        CreatedById = t.CreatedById,
+                        CreatedBy = uc.PersonFullName ?? String.Empty,
                         StoreId = s.Id,
-                        StoreName = s.Name,
+                        StoreName = s.Name ?? String.Empty,
+                        BarangayName = b.Name ?? String.Empty,
                         TransactionDate = t.TransactionDate,
-                        ProductTransactions = pt
+                        ProductTransaction = pt,
+                        DateUpdated = t.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone),
+                        UpdatedBy = up.PersonFullName ?? String.Empty,
                     }
                 ).ToListAsync();
 
+
+            transactions = (from t in transactions
+
+                            where (String.IsNullOrEmpty(filterKeyword) || (!String.IsNullOrEmpty(filterKeyword) && (t.InvoiceNo.IsMatchAnyKeywords(filterKeyword) || t.StoreName.IsMatchAnyKeywords(filterKeyword) || t.BarangayName.IsMatchAnyKeywords(filterKeyword) || t.CreatedBy.IsMatchAnyKeywords(filterKeyword))))
+
+                            select new
+                            {
+                                Id = t.Id,
+                                InvoiceNo = t.InvoiceNo,
+                                Status = t.Status,
+                                CreatedById = t.CreatedById,
+                                CreatedBy = t.CreatedBy,
+                                StoreId = t.StoreId,
+                                StoreName = t.StoreName,
+                                BarangayName = t.BarangayName,
+                                TransactionDate = t.TransactionDate,
+                                ProductTransaction = t.ProductTransaction,
+                                DateUpdated = t.DateUpdated,
+                                UpdatedBy = t.UpdatedBy,
+                            }).ToList();
+
+
+
             var transactionsWithPaymentStatus = (from t in transactions
-                                                 group t by new { t.Id, t.InvoiceNo, t.StoreId, t.StoreName, t.TransactionDate } into g
+                                                 group t by new
+                                                 {
+                                                     t.Id,
+                                                     t.InvoiceNo,
+                                                     t.StoreId,
+                                                     t.StoreName,
+                                                     t.BarangayName,
+                                                     t.CreatedBy,
+                                                     t.TransactionDate,
+                                                     t.Status,
+                                                     t.CreatedById,
+                                                     t.DateUpdated,
+                                                     t.UpdatedBy
+                                                 } into g
                                                  select new TransactionInformation
                                                  {
                                                      Id = g.Key.Id,
                                                      InvoiceNo = g.Key.InvoiceNo,
+                                                     CreatedById = g.Key.CreatedById,
+                                                     CreatedBy = g.Key.CreatedBy,
+                                                     Status = g.Key.Status,
                                                      StoreId = g.Key.StoreId,
                                                      StoreName = g.Key.StoreName,
+                                                     BarangayName = g.Key.BarangayName,
                                                      TransactionDate = g.Key.TransactionDate,
-                                                     HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransactions.Status)) == 0
+                                                     HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransaction.Status)) == 0,
+                                                     OrderItemsDateUpdated = g.Max(s => s.ProductTransaction.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone)),
+                                                     DetailsDateUpdated = g.Key.DateUpdated,
+                                                     DetailsUpdatedBy = g.Key.UpdatedBy,
                                                  })
+                                                .OrderByDescending(t => t.TransactionDate)
                                                 .ToList();
 
             return transactionsWithPaymentStatus;
@@ -336,7 +408,7 @@ namespace Beelina.LIB.BusinessLogic
                 {
                     await _productTransactionRepository.DeleteProductTransactions(deletedProductTransactions, cancellationToken);
                 }
-                
+
                 await SaveChanges(cancellationToken);
             }
 

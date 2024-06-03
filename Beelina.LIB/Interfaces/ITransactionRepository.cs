@@ -10,6 +10,7 @@ namespace Beelina.LIB.Interfaces
         Task<List<CustomerSaleProduct>> GetTopCustomerSaleProducts(int storeId);
         Task<Transaction> RegisterTransaction(Transaction transaction, List<ProductTransaction> deletedProductTransactions, CancellationToken cancellationToken = default);
         Task<TransactionDetails> GetTransaction(int transactionId);
+        Task<List<TransactionInformation>> GetTransactions(TransactionStatusEnum status, string transactionDate, int userId, string filterKeyword = "");
         Task<bool> SendTransactionEmailReceipt(int transactionId);
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);
         Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);
