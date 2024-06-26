@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit, input, output } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -8,9 +8,12 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./search-field.component.scss'],
 })
 export class SearchFieldComponent implements OnInit {
-  @Input() placeHolderTextIdentifier: string = '';
-  @Output() onSearch = new EventEmitter<string>();
-  @Output() onClear = new EventEmitter<string>();
+  placeHolderTextIdentifier = input<string>('');
+  filterActive = input<boolean>(false);
+  filter = input<boolean>(false);
+  onSearch = output<string>();
+  onClear = output<string>();
+  onFilter = output<string>();
 
   private _searchForm: FormGroup;
 
@@ -30,6 +33,10 @@ export class SearchFieldComponent implements OnInit {
     this.onSearch.emit(field);
   }
 
+  openFilter() {
+    this.onFilter.emit('');
+  }
+
   clear() {
     this._searchForm.get('filterKeyword').setValue('');
     this.onClear.emit('');
@@ -47,6 +54,6 @@ export class SearchFieldComponent implements OnInit {
   }
 
   get placeHolder(): string {
-    return this.translateService.instant(this.placeHolderTextIdentifier);
+    return this.translateService.instant(this.placeHolderTextIdentifier());
   }
 }

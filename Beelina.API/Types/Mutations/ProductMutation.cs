@@ -89,7 +89,7 @@ namespace Beelina.API.Types.Mutations
             {
                 await using Stream stream = file.OpenReadStream();
                 var extractedProducts = await extractProductFileService.ReadFile(stream);
-                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
                 var mapExtractedProductsResult = productRepository.MapProductImport(extractedProducts, warehouseProductsFromRepo);
                 return mapExtractedProductsResult;
             }

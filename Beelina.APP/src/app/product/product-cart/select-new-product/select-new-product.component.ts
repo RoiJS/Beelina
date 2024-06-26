@@ -15,6 +15,7 @@ import { isLoadingSelector } from '../../store/selectors';
 
 import { ProductDataSource } from 'src/app/_models/datasources/product.datasource';
 import { AddToCartProductComponent } from '../../add-to-cart-product/add-to-cart-product.component';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
 
 @Component({
   selector: 'app-select-new-product',
@@ -38,12 +39,13 @@ export class SelectNewProductComponent implements OnInit {
 
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(ProductActions.setSearchProductAction({ keyword: '' }));
+    this.store.dispatch(ProductActions.setFilterProductAction({ productsFilter: new ProductsFilter() }));
     this._dataSource = new ProductDataSource(this.store);
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   addItemToCart(productId: number) {
     this.bottomSheet.open(AddToCartProductComponent, {

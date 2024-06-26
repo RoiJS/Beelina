@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,8 +11,10 @@ import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { WarehouseProductDataSource } from 'src/app/_models/datasources/warehouse-product.datasource';
 import { Product } from 'src/app/_models/product';
+
 import { AddProductStockQuantityDialogComponent } from 'src/app/product/add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { ProductFilterComponent } from '../product/product-filter/product-filter.component';
 import { SearchFieldComponent } from 'src/app/shared/ui/search-field/search-field.component';
 import { TransferProductInventoryComponent } from '../product/transfer-product-inventory/transfer-product-inventory.component';
 
@@ -20,7 +22,8 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import * as WarehouseProductActions from './store/actions';
-import { filterKeywordSelector, isLoadingSelector, totalCountSelector } from './store/selectors';
+import { filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
+import { ProductsFilter } from '../_models/filters/products.filter';
 
 @Component({
   selector: 'app-warehouse',
@@ -31,11 +34,15 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
 
   searchFieldComponent = viewChild(SearchFieldComponent);
 
+  filterKeyword = signal<string>('');
+  productsFilter = signal<ProductsFilter>(new ProductsFilter());
+  selectedProduct = signal<Product>(null);
+  totalProducts = signal<number>(0);
+
+  private _subscription: Subscription = new Subscription();
+  private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
   private _dataSource: WarehouseProductDataSource;
-  private _filterKeyword: string;
-  private _selectedProduct: Product;
-  private _totalProductCount: number;
-  private _dialogRef: MatBottomSheetRef<
+  private _dialogAddQuantityRef: MatBottomSheetRef<
     AddProductStockQuantityDialogComponent,
     {
       additionalStockQuantity: number;
@@ -43,24 +50,26 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     }
   >;
 
-  private _subscription: Subscription = new Subscription();
-  private _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
+  private _dialogOpenFilterRef: MatBottomSheetRef<
+    ProductFilterComponent,
+    {
+      supplierId: number;
+    }
+  >;
 
-  constructor(
-    private dialogService: DialogService,
-    private bottomSheet: MatBottomSheet,
-    private productService: ProductService,
-    private store: Store<AppStateInterface>,
-    private router: Router,
-    private notificationService: NotificationService,
-    private translateService: TranslateService
-  ) {
+  dialogService = inject(DialogService);
+  bottomSheet = inject(MatBottomSheet);
+  productService = inject(ProductService);
+  store = inject(Store<AppStateInterface>);
+  router = inject(Router);
+  notificationService = inject(NotificationService);
+  translateService = inject(TranslateService);
+
+  constructor() {
     super();
 
     this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
-
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
-
     this._dataSource = new WarehouseProductDataSource(this.store);
   }
 
@@ -70,22 +79,33 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   ngOnDestroy() {
     this._subscription.unsubscribe();
     this.store.dispatch(WarehouseProductActions.getWarehouseProductsCancelAction());
+    this._dialogAddQuantityRef = null;
     this._transferInventoryDialogRef = null;
+    this._dialogOpenFilterRef = null;
   }
 
   ngAfterViewInit() {
     this._subscription.add(
       this.store.pipe(select(filterKeywordSelector))
         .subscribe((filterKeyword: string) => {
-          this._filterKeyword = filterKeyword;
+          this.filterKeyword.set(filterKeyword);
           this.searchFieldComponent().value(filterKeyword)
+        })
+    );
+
+    this._subscription.add(
+      this.store.pipe(select(supplierIdSelector))
+        .subscribe((supplierId: number) => {
+          const productsFilter = new ProductsFilter();
+          productsFilter.supplierId = supplierId;
+          this.productsFilter.set(productsFilter);
         })
     );
 
     this._subscription.add(
       this.store.pipe(select(totalCountSelector))
         .subscribe((totalCount: number) => {
-          this._totalProductCount = totalCount;
+          this.totalProducts.set(totalCount);
         })
     );
   }
@@ -100,6 +120,28 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
 
   onClear() {
     this.onSearch('');
+  }
+
+  openFilter() {
+    this._dialogOpenFilterRef = this.bottomSheet.open(ProductFilterComponent, {
+      data: this.productsFilter()
+    });
+
+    this._dialogOpenFilterRef
+      .afterDismissed()
+      .subscribe(
+        (data: {
+          supplierId: number
+        }) => {
+          if (!data) return;
+
+          this.productsFilter().supplierId = data.supplierId;
+          this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
+          this.store.dispatch(WarehouseProductActions.setFilterProductAction({
+            productsFilter: this.productsFilter()
+          }));
+          this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
+        });
   }
 
   editProduct(id: number) {
@@ -138,8 +180,8 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   addProductStockQuantity(product: Product) {
-    this._selectedProduct = product;
-    this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
+    this.selectedProduct.set(product);
+    this._dialogAddQuantityRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
       data: {
         additionalStockQuantity: 0,
         transactionNo: '',
@@ -147,7 +189,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
       },
     });
 
-    this._dialogRef
+    this._dialogAddQuantityRef
       .afterDismissed()
       .subscribe(
         (data: {
@@ -173,16 +215,16 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
               );
 
               const product = new Product();
-              product.id = this._selectedProduct.id;
-              product.name = this._selectedProduct.name;
-              product.code = this._selectedProduct.code;
-              product.description = this._selectedProduct.description;
+              product.id = this.selectedProduct().id;
+              product.name = this.selectedProduct().name;
+              product.code = this.selectedProduct().code;
+              product.description = this.selectedProduct().description;
               product.stockQuantity = data.additionalStockQuantity;
               product.withdrawalSlipNo = data.transactionNo;
-              product.isTransferable = this._selectedProduct.isTransferable;
-              product.numberOfUnits = this._selectedProduct.numberOfUnits;
-              product.pricePerUnit = this._selectedProduct.pricePerUnit;
-              product.productUnit.name = this._selectedProduct.productUnit.name;
+              product.isTransferable = this.selectedProduct().isTransferable;
+              product.numberOfUnits = this.selectedProduct().numberOfUnits;
+              product.pricePerUnit = this.selectedProduct().pricePerUnit;
+              product.productUnit.name = this.selectedProduct().productUnit.name;
 
               this.productService.updateWarehouseProductInformation([product]).subscribe({
                 next: () => {
@@ -240,13 +282,5 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
 
   get dataSource(): WarehouseProductDataSource {
     return this._dataSource;
-  }
-
-  get filterKeyword(): string {
-    return this._filterKeyword;
-  }
-
-  get totalProducts(): number {
-    return this._totalProductCount;
   }
 }

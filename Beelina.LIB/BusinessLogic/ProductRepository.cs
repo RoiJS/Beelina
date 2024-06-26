@@ -5,6 +5,7 @@ using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Beelina.LIB.BusinessLogic
@@ -83,7 +84,7 @@ namespace Beelina.LIB.BusinessLogic
       return productsFromRepo;
     }
 
-    public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default)
+    public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "", ProductsFilter productsFilter = null, CancellationToken cancellationToken = default)
     {
       var finalProductsFromRepo = new List<Product>();
       var generalSetting = await _beelinaRepository
@@ -93,7 +94,6 @@ namespace Beelina.LIB.BusinessLogic
 
       try
       {
-
         var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(_currentUserService.CurrentUserId, ModulesEnum.Distribution);
 
         // Gather products information with product stock per panel and product unit.
@@ -121,6 +121,7 @@ namespace Beelina.LIB.BusinessLogic
                                         && ((productId > 0 && p.Id == productId) || productId == 0)
                                         && (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Manager ||
                                           ((userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User || userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Administrator) && pp != null))
+                                        && (productsFilter == null || (productsFilter != null && ((productsFilter.SupplierId == 0) || (productsFilter.SupplierId > 0 && p.SupplierId == productsFilter.SupplierId))))
 
                                       select new
                                       {
@@ -256,7 +257,7 @@ namespace Beelina.LIB.BusinessLogic
         }
         else
         {
-          var warehouseProducts = await GetWarehouseProducts(1, productId, filterKeyWord, cancellationToken, filteredProductsFromRepo);
+          var warehouseProducts = await GetWarehouseProducts(1, productId, filterKeyWord, productsFilter, cancellationToken, filteredProductsFromRepo);
           finalProductsFromRepo = (from p in filteredProductsFromRepo
                                    join wp in warehouseProducts
                                    on p.Id equals wp.Id
@@ -288,7 +289,7 @@ namespace Beelina.LIB.BusinessLogic
       return finalProductsFromRepo;
     }
 
-    public async Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default, List<FilteredProduct> filteredProducts = null)
+    public async Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", ProductsFilter productsFilter = null, CancellationToken cancellationToken = default, List<FilteredProduct> filteredProducts = null)
     {
       var finalProductsFromRepo = new List<Product>();
       var filteredProductsFromRepo = new List<FilteredProduct>();
@@ -324,6 +325,7 @@ namespace Beelina.LIB.BusinessLogic
                                           !p.IsDelete
                                           && p.IsActive
                                           && ((productId > 0 && p.Id == productId) || productId == 0)
+                                          && (productsFilter == null || (productsFilter != null && ((productsFilter.SupplierId == 0) || (productsFilter.SupplierId > 0 && p.SupplierId == productsFilter.SupplierId))))
 
                                         select new
                                         {
@@ -1089,8 +1091,8 @@ namespace Beelina.LIB.BusinessLogic
     {
       SetCurrentUserId(userAccountId);
 
-      var sourceProductFromRepo = await GetProducts(userAccountId, sourceProductId, "", cancellationToken);
-      var destinationProductFromRepo = await GetProducts(userAccountId, destinationProductId, "", cancellationToken);
+      var sourceProductFromRepo = await GetProducts(userAccountId, sourceProductId, "", null, cancellationToken);
+      var destinationProductFromRepo = await GetProducts(userAccountId, destinationProductId, "", null, cancellationToken);
 
       if (!sourceProductFromRepo[0].IsTransferable) return sourceProductFromRepo[0];
 
@@ -1208,8 +1210,8 @@ namespace Beelina.LIB.BusinessLogic
     {
       SetCurrentUserId(userAccountId);
 
-      var sourceProductFromRepo = await GetWarehouseProducts(warehouseId, sourceProductId, "", cancellationToken);
-      var destinationProductFromRepo = await GetWarehouseProducts(warehouseId, destinationProductId, "", cancellationToken);
+      var sourceProductFromRepo = await GetWarehouseProducts(warehouseId, sourceProductId, "", null, cancellationToken);
+      var destinationProductFromRepo = await GetWarehouseProducts(warehouseId, destinationProductId, "", null, cancellationToken);
 
       if (!sourceProductFromRepo[0].IsTransferable) return sourceProductFromRepo[0];
 
