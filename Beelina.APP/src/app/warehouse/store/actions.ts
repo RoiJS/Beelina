@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
 import { Product } from 'src/app/_models/product';
 
 export const getWarehouseProductsAction = createAction('[Warehouse Product] Get Warehouse Products');
@@ -56,7 +57,12 @@ export const setSearchWarehouseProductAction = createAction(
   props<{ keyword: string }>()
 );
 
-export const resetWarehouseProductState = createAction('[Product] Reset Product State');
+export const setFilterProductAction = createAction(
+  '[Warehouse Product] Filter Products',
+  props<{ productsFilter: ProductsFilter }>()
+);
+
+export const resetWarehouseProductState = createAction('[Warehouse Product] Reset Product State');
 
 // export const resetTextInventoriesState = createAction('[Product] Reset Text Inventories State');
 

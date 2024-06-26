@@ -2,14 +2,15 @@
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 
 namespace Beelina.LIB.Interfaces
 {
     public interface IProductRepository<TEntity>
         : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
-        Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default);
-        Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", CancellationToken cancellationToken = default, List<FilteredProduct> filteredProducts = null);
+        Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "", ProductsFilter productsFilter = null, CancellationToken cancellationToken = default);
+        Task<IList<Product>> GetWarehouseProducts(int warehouseId, int productId, string filterKeyWord = "", ProductsFilter productsFilter = null, CancellationToken cancellationToken = default, List<FilteredProduct> filteredProducts = null);
         Task<Product> UpdateProduct(Product product);
         Task<Product> GetProductByUniqueCode(int productId, string productCode);
         Task<Product> GetProductByCode(string productCode);

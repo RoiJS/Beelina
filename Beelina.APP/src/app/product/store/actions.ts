@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
 import { Product } from 'src/app/_models/product';
 
 export const getProductsAction = createAction('[Product] Get Products');
@@ -40,6 +41,11 @@ export const setUpdateProductLoadingState = createAction(
 export const setSearchProductAction = createAction(
   '[Product] Search Products',
   props<{ keyword: string }>()
+);
+
+export const setFilterProductAction = createAction(
+  '[Product] Filter Products',
+  props<{ productsFilter: ProductsFilter }>()
 );
 
 export const setProductDeductionAction = createAction(

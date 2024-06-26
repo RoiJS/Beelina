@@ -38,7 +38,8 @@
     "SELECT_MULTIPLE": "Select Multiple",
     "SELECT_ALL": "Select All",
     "VIEW": "View",
-    "LAST_SAVED": "Last saved"
+    "LAST_SAVED": "Last saved",
+    "ALL": "All"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -522,6 +523,15 @@
       "UNIT": "Unit",
       "WITHDRAWAL_SLIP_NO": "Withdrawal Slip No.",
       "RETURN_ITEMS": "Return Items"
+    },
+    "PRODUCT_FILTER_DIALOG": {
+      "TITLE": "Product Filter",
+      "FORM_CONTROL_SECTION": {
+        "SUPPLIER_CONTROL": {
+          "LABEL": "Supplier",
+          "HINT": "Please choose supplier"
+        }
+      }
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",

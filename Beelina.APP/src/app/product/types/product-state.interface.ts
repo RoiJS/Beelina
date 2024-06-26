@@ -11,4 +11,5 @@ export interface IProductState extends IBaseState, IBaseStateConnection {
   importedProducts: Array<IProductPayload>;
   totalCount: number;
   textProductInventories: Array<Product>;
+  supplierId: number;
 }

@@ -17,9 +17,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { ProductRoutingModule } from './product.routing.module';
-import { ProductComponent } from './product.component';
-import { TopProductsComponent } from './top-products/top-products.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
+import { ProductComponent } from './product.component';
+import { ProductFilterComponent } from './product-filter/product-filter.component';
+import { TopProductsComponent } from './top-products/top-products.component';
 import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
 
 import * as BarangayReducers from '../barangays/store/reducers';
@@ -79,6 +80,7 @@ import { TopSellingProductEffects } from './top-products/store/effects';
   ],
   declarations: [
     ProductComponent,
+    ProductFilterComponent,
     TopProductsComponent,
     AddToCartProductComponent,
     TransferProductInventoryComponent

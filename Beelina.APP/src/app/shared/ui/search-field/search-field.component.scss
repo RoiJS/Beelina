@@ -1,3 +1,5 @@
+@import "../../../../app-variables";
+
 .search-field-container {
   display: flex;
   justify-content: space-between;
@@ -18,5 +20,18 @@
     right: 88px;
     top: 15px;
     cursor: pointer;
+  }
+
+  &__filter-command-section {
+    position: relative;
+
+    .filter-active {
+      position: absolute;
+      right: -5px;
+      top: -5px;
+      color: $white;
+      background-color: $success;
+      border-radius: 50%;
+    }
   }
 }

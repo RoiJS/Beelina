@@ -5,6 +5,7 @@ using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Query
@@ -37,9 +38,14 @@ namespace Beelina.API.Types.Query
         [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]
-        public async Task<IList<Product>> GetProducts([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int userAccountId, string filterKeyword = "")
+        public async Task<IList<Product>> GetProducts(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int userAccountId,
+            ProductsFilter productsFilter,
+            string filterKeyword = "")
         {
-            return await productRepository.GetProducts(userAccountId, 0, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetProducts(userAccountId, 0, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         [Authorize]
@@ -48,11 +54,14 @@ namespace Beelina.API.Types.Query
             [Service] IProductStockPerWarehouseRepository<ProductStockPerWarehouse> productStockPerWarehouseRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             [Service] ICurrentUserService currentUserService,
-            [Service] IMapper mapper, int productId, int userAccountId)
+            [Service] IMapper mapper,
+            int productId,
+            int userAccountId
+            )
         {
             var warehouseId = 1;
 
-            var productFromRepo = await productRepository.GetProducts(userAccountId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
+            var productFromRepo = await productRepository.GetProducts(userAccountId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
 
             if (productFromRepo == null || productFromRepo?.Count == 0)
             {
@@ -75,7 +84,7 @@ namespace Beelina.API.Types.Query
             // Get remaining stocks from warehouse
             if (currentUserService.CurrrentBusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
             {
-                var warehouseProductFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
+                var warehouseProductFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
                 if (warehouseProductFromRepo != null && warehouseProductFromRepo.Count > 0)
                 {
                     productResult.StocksRemainingFromWarehouse = warehouseProductFromRepo[0].StockQuantity;
@@ -109,9 +118,12 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        public async Task<double> GetInventoryPanelTotalValue([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int userAccountId)
+        public async Task<double> GetInventoryPanelTotalValue(
+            [Service] IProductRepository<Product> productRepository, 
+            [Service] IHttpContextAccessor httpContextAccessor, 
+            int userAccountId)
         {
-            var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+            var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
             var inventoryTotalValue = productsFromRepo.Sum(x => x.StockQuantity * x.Price);
             return inventoryTotalValue;
         }

@@ -181,7 +181,7 @@ namespace Beelina.API.Types.Query
             int userAccountId)
     {
       var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
 
       foreach (Product product in productsFromRepo)
       {
