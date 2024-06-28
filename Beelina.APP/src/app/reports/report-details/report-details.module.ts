@@ -8,12 +8,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 
-import { ReportDetailsComponent } from './report-details.component';
+import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { DateRangeControlComponent } from '../report-controls/date-range-control/date-range-control.component';
 import { DatePickerComponent } from '../report-controls/date-picker/date-picker.component';
-import { SortOrderControlComponent } from '../report-controls/sort-order-control/sort-order-control.component';
-import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
+import { ReportDetailsComponent } from './report-details.component';
+import { ReportGenerateOptionDialogComponent } from './report-generate-option-dialog/report-generate-option-dialog.component';
 import { SalesAgentDropdownControlComponent } from '../report-controls/sales-agent-dropdown-control/sales-agent-dropdown-control.component';
+import { SortOrderControlComponent } from '../report-controls/sort-order-control/sort-order-control.component';
 import { TransactionTypeDropdownControlComponent } from '../report-controls/transaction-type-dropdown-control/transaction-type-dropdown-control.component';
 
 @NgModule({
@@ -30,6 +31,7 @@ import { TransactionTypeDropdownControlComponent } from '../report-controls/tran
   ],
   declarations: [
     ReportDetailsComponent,
+    ReportGenerateOptionDialogComponent,
     DateRangeControlComponent,
     DatePickerComponent,
     SortOrderControlComponent,
