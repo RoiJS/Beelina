@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Apollo, MutationResult, gql } from 'apollo-angular';
-import { map } from 'rxjs';
+import { catchError, map } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { IReportInformationQueryPayload } from '../_interfaces/payloads/ireport-information-query.payload';
+import { IGenerateReportResultQueryPayload } from '../_interfaces/payloads/ireport-generate-result-query.payload';
 import { ReportNotExistsError } from '../_models/errors/report-not-exists.error';
 import { Report } from '../_models/report';
 import { ControlValue } from '../reports/report-details/report-details.component';
 import { IReportNotificationEmailOutput } from '../_interfaces/outputs/ireport-notification-email.output';
 import { ReportNotificationEmailAddressResult } from '../_models/results/report-notification-emailaddress-result';
+import { GenerateReportOptionEnum } from '../_enum/generate-report-option.enum';
 
 const GET_ALL_REPORTS = gql`
   query ($filterKeyword: String) {
@@ -55,10 +57,19 @@ const GET_REPORT_INFORMATION = gql`
 `;
 
 const GENERATE_REPORT = gql`
-  query ($reportId: Int!, $controlValues: [ControlValuesInput!]!) {
-    generateReport(reportId: $reportId, controlValues: $controlValues) {
-      id
-    }
+  query($reportId: Int!, $generateReportOption: GenerateReportOptionEnum!, $controlValues: [ControlValuesInput!]!) {
+    generateReport(
+      reportId: $reportId,
+      generateReportOption: $generateReportOption,
+      controlValues: $controlValues
+      ) {
+          generateReportOption
+          reportData {
+              fileName
+              base64String
+              contentType
+          }
+      }
   }
 `;
 
@@ -185,12 +196,13 @@ export class ReportsService {
       );
   }
 
-  generateReport(reportId: number, controlValues: ControlValue[]) {
+  generateReport(reportId: number, generateReportOption: GenerateReportOptionEnum, controlValues: ControlValue[]) {
     return this.apollo
       .watchQuery({
         query: GENERATE_REPORT,
         variables: {
           reportId,
+          generateReportOption,
           controlValues,
         },
       })
@@ -198,12 +210,15 @@ export class ReportsService {
         map(
           (
             result: ApolloQueryResult<{
-              generateReport: IReportInformationQueryPayload;
+              generateReport: IGenerateReportResultQueryPayload;
             }>
           ) => {
-            return true;
+            return result.data.generateReport;
           }
-        )
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 

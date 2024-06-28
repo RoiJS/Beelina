@@ -1,8 +1,10 @@
 using AutoMapper;
+using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Reports;
 using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Query
@@ -33,12 +35,13 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        public async Task<Report> GenerateReport(
+        public async Task<GenerateReportResult> GenerateReport(
                     [Service] IReportRepository<Report> reportRepository,
                     int reportId,
+                    GenerateReportOptionEnum generateReportOption,
                     List<ControlValues> controlValues)
         {
-            return await reportRepository.GenerateReport(reportId, controlValues);
+            return await reportRepository.GenerateReport(reportId, generateReportOption, controlValues);
         }
 
         [Authorize]

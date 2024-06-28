@@ -1,0 +1,21 @@
+<div class="product-filter-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+
+  <div class="dialog-form-container__body">
+    {{ "REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.CONFIRM" | translate}}
+  </div>
+
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="download()">
+        {{ "REPORT_DETAILS_PAGE.BUTTON_OPTIONS.DOWNLOAD" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="sendEmail()">
+        {{ "REPORT_DETAILS_PAGE.BUTTON_OPTIONS.SEND_EMAIL" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

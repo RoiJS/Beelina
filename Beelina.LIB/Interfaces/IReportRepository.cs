@@ -1,4 +1,6 @@
-﻿using Beelina.LIB.Models;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Models;
+using Beelina.LIB.Models.Reports;
 
 namespace Beelina.LIB.Interfaces
 {
@@ -7,7 +9,7 @@ namespace Beelina.LIB.Interfaces
     {
         Task<Report> GetReportInformation(int reportId);
         Task<IList<Report>> GetAllReports();
-        Task<Report> GenerateReport(int reportId, List<ControlValues> controlValues);
+        Task<GenerateReportResult> GenerateReport(int reportId, GenerateReportOptionEnum generateReportOption, List<ControlValues> controlValues);
         Task<ReportNotificationEmailAddress> GetReportNotificationEmailAddress(int userAccountId);
         Task RegisterNotificationEmailAddress(ReportNotificationEmailAddress reportNotificationEmailAddress);
     }

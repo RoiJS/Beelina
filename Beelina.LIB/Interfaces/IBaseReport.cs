@@ -1,5 +1,6 @@
 using System.Data;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Reports;
 
 namespace Beelina.LIB.Interfaces
 {
@@ -8,5 +9,6 @@ namespace Beelina.LIB.Interfaces
         IBaseReport<TOutput> GenerateAsExcel();
         DataSet GenerateReportData();
         void SendViaEmail(string sender, string receiver, string cc, string bcc);
+        ReportDataResult Download();
     }
 }
