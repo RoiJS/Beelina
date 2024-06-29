@@ -11,9 +11,11 @@
   <div class="dialog-form-container__footer">
     <div class="button-container">
       <button mat-raised-button color="primary" (click)="download()">
+        <mat-icon>file_download</mat-icon>
         {{ "REPORT_DETAILS_PAGE.BUTTON_OPTIONS.DOWNLOAD" | translate }}
       </button>
       <button mat-raised-button color="default" (click)="sendEmail()">
+        <mat-icon>email</mat-icon>
         {{ "REPORT_DETAILS_PAGE.BUTTON_OPTIONS.SEND_EMAIL" | translate }}
       </button>
     </div>
