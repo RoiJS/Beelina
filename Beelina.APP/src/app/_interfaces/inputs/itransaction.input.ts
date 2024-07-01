@@ -7,6 +7,7 @@ export interface ITransactionInput {
   discount: number;
   storeId: number;
   modeOfPayment: number;
+  paid: boolean;
   transactionDate: string;
   dueDate: string;
   status: TransactionStatusEnum;

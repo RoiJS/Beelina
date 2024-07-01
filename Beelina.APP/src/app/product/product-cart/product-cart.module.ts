@@ -4,23 +4,24 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule } from '@angular/router';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { EffectsModule } from '@ngrx/effects';
 
+import { PaymentMethodsEffects } from 'src/app/payment-methods/store/effects';
+import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { AgreementConfirmationComponent } from './agreement-confirmation/agreement-confirmation.component';
 import { ProductCartComponent } from './product-cart.component';
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
-import { PaymentMethodsEffects } from 'src/app/payment-methods/store/effects';
-import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 
 import * as CustomerStoresReducers from '../../customer/store/reducers';
 import * as PaymentMethodReducers from '../../payment-methods/store/reducers';
@@ -37,6 +38,7 @@ import * as ProductTransactionReducers from '../add-to-cart-product/store/reduce
     MatNativeDateModule,
     MatInputModule,
     MatSelectModule,
+    MatSlideToggleModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     MatListModule,

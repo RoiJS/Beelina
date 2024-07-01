@@ -209,6 +209,16 @@ const UPDATE_MODE_OF_PAYMENT = gql`
   }
 `;
 
+const MARK_TRANSACTION_AS_PAID = gql`
+  mutation ($transactionId: Int!, $paid: Boolean!) {
+    markTransactionAsPaid(input: { transactionId: $transactionId, paid: $paid }) {
+      transaction {
+        id
+      }
+    }
+  }
+`;
+
 const GET_TOP_SELLING_PRODUCTS = gql`
   query(
     $userId: Int!,
@@ -367,6 +377,7 @@ export class TransactionDto {
   public status: TransactionStatusEnum;
   public transactionDate: string;
   public dueDate: string;
+  public paid: boolean;
   public productTransactions: Array<ProductTransaction>;
 }
 
@@ -426,6 +437,7 @@ export class TransactionService {
       discount: transaction.discount,
       storeId: transaction.storeId,
       modeOfPayment: transaction.modeOfPayment,
+      paid: transaction.paid,
       status: transaction.status,
       transactionDate: transaction.transactionDate,
       dueDate: transaction.dueDate,
@@ -1034,4 +1046,40 @@ export class TransactionService {
         )
       );
   }
+
+  markTransactionAsPaid(transactionId: number, paid: boolean) {
+    return this.apollo
+      .mutate({
+        mutation: MARK_TRANSACTION_AS_PAID,
+        variables: {
+          transactionId,
+          paid
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{
+              markTransactionAsPaid: ITransactionOutput;
+            }>
+          ) => {
+            const output = result.data.markTransactionAsPaid;
+            const payload = output.transaction;
+            const errors = output.errors;
+
+            if (payload) {
+              return payload;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return null;
+          }
+        )
+      );
+  }
 }
+
+

@@ -133,6 +133,7 @@ export class ProductCartComponent
       paymentMethod: [0, Validators.required],
       transactionDate: [new Date(), Validators.required],
       dueDate: [new Date(), Validators.required],
+      paid: [false]
     });
 
     this._discountForm = this.formBuilder.group({
@@ -254,6 +255,9 @@ export class ProductCartComponent
             this._orderForm
               .get('dueDate')
               .setValue(this.transaction().dueDate || new Date());
+            this._orderForm
+              .get('paid')
+              .setValue(!this.transaction().hasUnpaidProductTransaction);
           }
         })
     );
@@ -353,6 +357,7 @@ export class ProductCartComponent
       transaction.storeId = this._selectedCustomer().id;
       transaction.status = TransactionStatusEnum.DRAFT;
       transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+      transaction.paid = this._orderForm.get('paid').value;
       transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
       transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
@@ -419,6 +424,7 @@ export class ProductCartComponent
       transaction.storeId = this._selectedCustomer().id;
       transaction.status = TransactionStatusEnum.BAD_ORDER;
       transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+      transaction.paid = this._orderForm.get('paid').value;
       transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
       transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
@@ -483,6 +489,37 @@ export class ProductCartComponent
     }
   }
 
+  markTransactionAsPaid(paid: boolean) {
+    const title = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.TITLE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.TITLE');
+    const confirmationMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.CONFIRM' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.CONFIRM');
+    const successMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.SUCCESS_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.SUCCESS_MESSAGE');
+    const errorMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.ERROR_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.ERROR_MESSAGE');
+    const loadingMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.LOADING_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.LOADING_MESSAGE');
+
+    this.dialogService
+      .openConfirmation(title, confirmationMessage)
+      .subscribe((result: ButtonOptions) => {
+        if (result == ButtonOptions.YES) {
+          this._isLoading = true;
+          this.loaderLayoutComponent().label = loadingMessage;
+          this.transactionService
+            .markTransactionAsPaid(this._transactionId(), paid)
+            .subscribe({
+              next: () => {
+                this._isLoading = false;
+                this.notificationService.openSuccessNotification(successMessage);
+                this.router.navigate(['/order-transactions']);
+              },
+
+              error: () => {
+                this._isLoading = false;
+                this.notificationService.openErrorNotification(errorMessage);
+              },
+            });
+        }
+      });
+  }
+
   updateItemToCart(productId: number) {
     this.bottomSheet.open(AddToCartProductComponent, {
       data: { productId, productTransactions: this.productTransactions() },
@@ -526,10 +563,12 @@ export class ProductCartComponent
             .subscribe(
               (data: {
                 confirm: boolean;
+                paid: boolean;
               }) => {
                 if (!data) return;
 
                 if (data.confirm) {
+                  this._orderForm.get('paid').setValue(data.paid);
                   this.proceedConfirm();
                 }
               }
@@ -549,6 +588,7 @@ export class ProductCartComponent
       transaction.storeId = this._selectedCustomer().id;
       transaction.status = this.transaction().status;
       transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+      transaction.paid = this._orderForm.get('paid').value;
       transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
       transaction.discount = this._discountForm.get('discount').value;
       transaction.transactionDate = DateFormatter.format(
@@ -615,6 +655,7 @@ export class ProductCartComponent
     transaction.storeId = this._selectedCustomer().id;
     transaction.status = this.transaction().status;
     transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+    transaction.paid = this._orderForm.get('paid').value;
     transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
     transaction.discount = this._discountForm.get('discount').value;
     transaction.transactionDate = DateFormatter.format(
@@ -666,6 +707,7 @@ export class ProductCartComponent
     transaction.storeId = this._selectedCustomer().id;
     transaction.status = TransactionStatusEnum.CONFIRMED;
     transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+    transaction.paid = this._orderForm.get('paid').value;
     transaction.transactionDate = DateFormatter.format(
       this._orderForm.get('transactionDate').value
     );
@@ -718,7 +760,6 @@ export class ProductCartComponent
       }));
   }
 
-
   private sendOrderReceiptEmailNotification(transactionId: number) {
     this.transactionService
       .sendOrderReceiptEmailNotification(transactionId).subscribe();
@@ -742,8 +783,6 @@ export class ProductCartComponent
   get minDate(): Date {
     return this._orderForm.get('transactionDate').value;
   }
-
-
 
   get customerStoreOptions(): Array<CustomerStore> {
     const currentBarangay = this._orderForm.get('barangay').value.toLowerCase();

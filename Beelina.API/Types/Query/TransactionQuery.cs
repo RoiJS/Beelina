@@ -62,7 +62,7 @@ namespace Beelina.API.Types.Query
           }
         }
 
-        t.Status = (transactionInput.ModeOfPayment == (int)ModeOfPaymentEnum.AccountReceivable) ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+        t.Status = !transactionInput.Paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
 
         if (productQuantityHistories.Count > 0)
         {
