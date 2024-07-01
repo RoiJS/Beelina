@@ -98,7 +98,7 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells["B2"].Value = mainLevel.Date;
                     worksheet.Cells["B3"].Value = mainLevel.SalesAgentName;
                     worksheet.Cells["B4"].Value = $"{mainLevel.StoreName} - {mainLevel.StoreAddress}";
-                    worksheet.Cells["B4"].Value = mainLevel.PaymentMethod;
+                    worksheet.Cells["B5"].Value = mainLevel.PaymentMethod;
 
                     var rowData = reportOutput.ListOutput.Where(l => l.OrderId == mainLevel.OrderId).ToList();
 
