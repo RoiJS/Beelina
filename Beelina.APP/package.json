@@ -24,6 +24,7 @@
     "@apollo/client": "^3.10.1",
     "@auth0/angular-jwt": "^5.2.0",
     "@ngrx/effects": "^17.2.0",
+    "@ngrx/signals": "^17.2.0",
     "@ngrx/store": "^17.2.0",
     "@ngrx/store-devtools": "^17.2.0",
     "@ngx-translate/core": "^15.0.0",

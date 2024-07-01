@@ -51,7 +51,7 @@ export class TransactionOptionMenuComponent implements OnInit {
         if (result == ButtonOptions.YES) {
           this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: true }));
           this.transactionService
-            .deleteTransaction(this.data.transaction.id)
+            .deleteTransactions([this.data.transaction.id])
             .subscribe({
               next: () => {
                 this.notificationService.openSuccessNotification(this.translateService.instant(

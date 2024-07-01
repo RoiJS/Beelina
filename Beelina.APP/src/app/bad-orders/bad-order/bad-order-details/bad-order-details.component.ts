@@ -61,7 +61,7 @@ export class BadOrderDetailsComponent extends BaseComponent implements AfterView
           this._isLoading = true;
           this.loaderLayoutComponent.label = this.translateService.instant('BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.LOADING_MESSAGE');
           this.transactionService
-            .deleteTransaction(this._transactionId)
+            .deleteTransactions([this._transactionId])
             .subscribe({
               next: () => {
                 this._isLoading = false;

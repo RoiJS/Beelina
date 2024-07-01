@@ -14,10 +14,12 @@ import { ProductNotExistsError } from '../_models/errors/product-not-exists.erro
 import {
   endCursorSelector as endCursorProductSelector,
   filterKeywordSelector as filterKeywordProductSelector,
+  supplierIdSelector as supplierIdProductSelector,
 } from '../product/store/selectors';
 import {
   endCursorSelector as endCursorWarehouseProductSelector,
   filterKeywordSelector as filterKeywordWarehouseProductSelector,
+  supplierIdSelector as supplierIdWarehouseProductSelector,
 } from '../warehouse/store/selectors';
 import {
   endCursorSelector as endCursorProductStockAuditSelector, fromDateSelector, sortOrderSelector, stockAuditSourceSelector, toDateSelector,
@@ -60,11 +62,12 @@ query($userAccountId: Int!) {
 `;
 
 const GET_PRODUCTS_QUERY = gql`
-  query ($userAccountId: Int!, $cursor: String, $filterKeyword: String) {
+  query ($userAccountId: Int!, $cursor: String, $filterKeyword: String, $productsFilter: ProductsFilterInput!) {
     products(
       userAccountId: $userAccountId
       after: $cursor
-      filterKeyword: $filterKeyword
+      filterKeyword: $filterKeyword,
+      productsFilter: $productsFilter
     ) {
       nodes {
         id
@@ -94,11 +97,12 @@ const GET_PRODUCTS_QUERY = gql`
 `;
 
 const GET_WAREHOUSE_PRODUCTS_QUERY = gql`
-  query ($warehouseId: Int!, $cursor: String, $filterKeyword: String) {
+  query ($warehouseId: Int!, $cursor: String, $filterKeyword: String, $productsFilter: ProductsFilterInput!) {
     warehouseProducts(
       warehouseId: $warehouseId,
       after: $cursor,
-      filterKeyword: $filterKeyword
+      filterKeyword: $filterKeyword,
+      productsFilter: $productsFilter
     ) {
       nodes {
         id
@@ -142,6 +146,7 @@ const GET_PRODUCT_STORE = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         productUnit {
           name
         }
@@ -167,6 +172,7 @@ const GET_WAREHOUSE_PRODUCT_STORE = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         productUnit {
           name
         }
@@ -447,6 +453,8 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
           id
           code
           name
+          supplierCode
+          supplierId
           description
           isTransferable
           originalName
@@ -457,6 +465,8 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
           originalUnit
           originalPrice
           originalNumberOfUnits
+          originalSupplierCode
+          originalSupplierId
         }
         failedExtractedProducts {
           rowNumber
@@ -481,6 +491,7 @@ export class ProductService {
   getProducts() {
     let cursor = null,
       filterKeyword = '',
+      supplierId = 0,
       productTransactionItems = Array<ProductTransaction>();
 
     this.store
@@ -502,6 +513,13 @@ export class ProductService {
         (productTransactions) => (productTransactionItems = productTransactions)
       );
 
+    this.store
+      .select(supplierIdProductSelector)
+      .pipe(take(1))
+      .subscribe(
+        (currentSupplierId) => (supplierId = currentSupplierId)
+      );
+
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
     return this.apollo
@@ -511,6 +529,9 @@ export class ProductService {
           cursor,
           filterKeyword,
           userAccountId,
+          productsFilter: {
+            supplierId
+          }
         },
       })
       .valueChanges.pipe(
@@ -562,6 +583,7 @@ export class ProductService {
 
   getWarehouseProducts() {
     let cursor = null,
+      supplierId = 0,
       filterKeyword = '';
 
     this.store
@@ -576,6 +598,13 @@ export class ProductService {
         (currentFilterKeyword) => (filterKeyword = currentFilterKeyword)
       );
 
+    this.store
+      .select(supplierIdWarehouseProductSelector)
+      .pipe(take(1))
+      .subscribe(
+        (currentSupplierId) => (supplierId = currentSupplierId)
+      );
+
     const warehouseId = this._warehouseId;
 
     return this.apollo
@@ -585,6 +614,9 @@ export class ProductService {
           cursor,
           filterKeyword,
           warehouseId,
+          productsFilter: {
+            supplierId
+          }
         },
       })
       .valueChanges.pipe(
@@ -671,6 +703,9 @@ export class ProductService {
         cursor: null,
         filterKeyword: productName,
         userAccountId: +this.storageService.getString('currentSalesAgentId'),
+        productsFilter: {
+          supplierId: 0
+        }
       };
 
       return this.apollo
@@ -790,6 +825,7 @@ export class ProductService {
         name: product.name,
         code: product.code,
         description: product.description,
+        supplierId: product.supplierId,
         stockQuantity: product.stockQuantity,
         pricePerUnit: product.pricePerUnit,
         isTransferable: product.isTransferable,
@@ -835,6 +871,7 @@ export class ProductService {
         name: product.name,
         code: product.code,
         description: product.description,
+        supplierId: product.supplierId,
         stockQuantity: product.stockQuantity,
         pricePerUnit: product.pricePerUnit,
         isTransferable: product.isTransferable,

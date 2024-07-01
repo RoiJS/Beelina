@@ -62,7 +62,7 @@ namespace Beelina.API.Types.Query
           }
         }
 
-        t.Status = (transactionInput.ModeOfPayment == (int)ModeOfPaymentEnum.AccountReceivable) ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+        t.Status = !transactionInput.Paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
 
         if (productQuantityHistories.Count > 0)
         {
@@ -79,6 +79,16 @@ namespace Beelina.API.Types.Query
       await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
 
       return transactionFromRepo;
+    }
+
+    [Authorize]
+    [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "")
+    {
+      return await transactionRepository.GetTransactions(TransactionStatusEnum.All, "", 0, filterKeyword);
     }
 
     [Authorize]
@@ -171,7 +181,7 @@ namespace Beelina.API.Types.Query
             int userAccountId)
     {
       var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
 
       foreach (Product product in productsFromRepo)
       {

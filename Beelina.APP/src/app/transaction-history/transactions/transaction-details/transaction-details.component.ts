@@ -114,6 +114,37 @@ export class TransactionDetailsComponent
       });
   }
 
+  markTransactionAsPaid(paid: boolean) {
+    const title = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.TITLE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.TITLE');
+    const confirmationMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.CONFIRM' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.CONFIRM');
+    const successMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.SUCCESS_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.SUCCESS_MESSAGE');
+    const errorMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.ERROR_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.ERROR_MESSAGE');
+    const loadingMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.LOADING_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.LOADING_MESSAGE');
+
+    this.dialogService
+      .openConfirmation(title, confirmationMessage)
+      .subscribe((result: ButtonOptions) => {
+        if (result == ButtonOptions.YES) {
+          this._isLoading = true;
+          this.loaderLayoutComponent.label = loadingMessage;
+          this.transactionService
+            .markTransactionAsPaid(this._transactionId, paid)
+            .subscribe({
+              next: () => {
+                this._isLoading = false;
+                this.notificationService.openSuccessNotification(successMessage);
+                this.router.navigate(['transaction-history']);
+              },
+
+              error: () => {
+                this._isLoading = false;
+                this.notificationService.openErrorNotification(errorMessage);
+              },
+            });
+        }
+      });
+  }
+
   get transactionForm(): FormGroup {
     return this._transactionForm;
   }

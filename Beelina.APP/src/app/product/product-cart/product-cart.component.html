@@ -14,12 +14,12 @@
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.NO_OF_ITEMS.LABEL"
               | translate
               }}:</span>
-            {{ productTransactions.length }}
+            {{ productTransactions().length }}
           </div>
           <br />
           <mat-list role="list" class="product-transaction-list-container">
 
-            @for (item of productTransactions; track item.id) {
+            @for (item of productTransactions(); track item.id) {
             <mat-list-item class="product-transaction-list-container__list-item-section" role="listitem">
               <div class="list-item">
                 <span class="list-item__product-details-information">
@@ -52,7 +52,9 @@
             }
 
           </mat-list>
-          <div *ngIf="isDraftTransaction" class="product-transaction-list-container__button-section">
+
+          @if(isDraftTransaction() || isAdmin()) {
+          <div class="product-transaction-list-container__button-section">
             <button mat-raised-button color="primary" (click)="addINewtemToCart()">
               {{
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.ADD_ITEM"
@@ -60,12 +62,14 @@
               }}
             </button>
           </div>
-          <div class="product-transaction-total-amount-information-container" *ngIf="productTransactions.length > 0">
+          }
+
+          @if(productTransactions().length > 0) {
+          <div class="product-transaction-total-amount-information-container">
             <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
-            <span>{{ grossTotalAmount }}</span>
+            <span>{{ grossTotalAmount() }}</span>
           </div>
-          <div class="product-transaction-total-amount-information-container" *ngIf="productTransactions.length > 0"
-            [formGroup]="discountForm">
+          <div class="product-transaction-total-amount-information-container" [formGroup]="discountForm">
             <span>{{
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
               | translate
@@ -73,10 +77,12 @@
             <input class="product-transaction-total-amount-information-container__input-discount-field" type="number"
               formControlName="discount" />
           </div>
-          <div class="product-transaction-total-amount-information-container" *ngIf="productTransactions.length > 0">
+          <div class="product-transaction-total-amount-information-container">
             <span>{{ "GENERAL_TEXTS.NET_TOTAL" | translate }}</span>
             <span>{{ netTotalAmount }}</span>
           </div>
+          }
+
         </div>
       </div>
 
@@ -96,8 +102,12 @@
               }}:</mat-label>
 
             <mat-select formControlName="barangay">
-              <mat-option *ngFor="let barangay of barangayOptions" [value]="barangay.name">{{ barangay.name
+
+              @for(barangay of barangayOptions(); track barangay.id) {
+              <mat-option [value]="barangay.name">{{ barangay.name
                 }}</mat-option>
+              }
+
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
@@ -107,8 +117,11 @@
               }}:</mat-label>
 
             <mat-select formControlName="name">
-              <mat-option *ngFor="let customer of customerStoreOptions" [value]="customer.name">{{ customer.name
+              @for(customer of customerStoreOptions; track customer.id) {
+              <mat-option [value]="customer.name">{{ customer.name
                 }}</mat-option>
+              }
+
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
@@ -124,9 +137,13 @@
               | translate
               }}:</mat-label>
             <mat-select formControlName="paymentMethod">
-              <mat-option *ngFor="let paymentMethod of paymentMethodOptions" [value]="paymentMethod.id">{{
+
+              @for(paymentMethod of paymentMethodOptions(); track paymentMethod.id) {
+              <mat-option [value]="paymentMethod.id">{{
                 paymentMethod.name
                 }}</mat-option>
+              }
+
             </mat-select>
           </mat-form-field>
           <mat-form-field class="transaction-date" appearance="fill">
@@ -149,26 +166,63 @@
           </mat-form-field>
         </div>
         <div class="panel__footer-section product-transaction-information-container__button-options-section">
+
+          @if (!isAdmin()) {
           <button mat-raised-button color="primary" (click)="confirm()">
+            <mat-icon>check_circle_outline</mat-icon>
             {{ "GENERAL_TEXTS.CONFIRM" | translate }}
           </button>
           <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
+            <mat-icon>remove_shopping_cart</mat-icon>
             {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
           </button>
-          <button *ngIf="isDraftTransaction" mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
+
+          @if (isDraftTransaction()) {
+          <button mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
+            <mat-icon>save</mat-icon>
             {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
           </button>
-          <button *ngIf="!isDraftTransaction" mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
+          } @else {
+          <button mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
+            <mat-icon>archive</mat-icon>
             {{
             "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
             | translate
             }}
           </button>
-          <button *ngIf="!isDraftTransaction" mat-raised-button color="default" (click)="clear()">
+          <button mat-raised-button color="default" (click)="clear()">
+            <mat-icon>clear_all</mat-icon>
             {{ "GENERAL_TEXTS.CLEAR" | translate }}
           </button>
+          }
+          } @else {
+
+          @if(transaction().hasUnpaidProductTransaction){
+          <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
+            <mat-icon>check_circle_outline</mat-icon>
+            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+          </button>
+          } @else {
+          <button mat-raised-button color="default" (click)="markTransactionAsPaid(false)">
+            <mat-icon>not_interested</mat-icon>
+            {{ "GENERAL_TEXTS.MARK_AS_UNPAID" | translate }}
+          </button>
+          }
+
+          <button mat-raised-button color="primary" (click)="saveNewUpdate()">
+            <mat-icon>save</mat-icon>
+            {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
+          </button>
+          }
+
         </div>
       </div>
     </div>
+
+    @if(updatedBy()) {
+    <div>
+      {{ "GENERAL_TEXTS.LAST_SAVED" | translate }}: {{ updatedBy() }} ({{ dateUpdated() }})
+    </div>
+    }
   </div>
 </app-loader-layout>

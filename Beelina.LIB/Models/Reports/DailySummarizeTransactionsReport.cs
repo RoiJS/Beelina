@@ -77,7 +77,6 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"B{cellNumber}"].Value = item.Discount;
                     worksheet.Cells[$"C{cellNumber}"].Value = item.DiscountedCollectibles;
                     worksheet.Cells[$"D{cellNumber}"].Value = item.NetCollectibles;
-                    // worksheet.Cells[$"E{cellNumber}"].Value = item.DueCollectibles;
                     worksheet.Cells[$"F{cellNumber}"].Value = item.StoreName;
                     worksheet.Cells[$"G{cellNumber}"].Value = item.StoreAddress;
                     worksheet.Cells[$"H{cellNumber}"].Value = item.OrderReceived;
@@ -86,10 +85,10 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"J{cellNumber}"].Value = item.AreaCovered;
                     worksheet.Cells[$"K{cellNumber}"].Value = item.OutletTypeName;
                     worksheet.Cells[$"L{cellNumber}"].Value = item.PaymentMethod;
-                    // worksheet.Cells[$"I{cellNumber}"].Value = item.DateCreated;
-                    // worksheet.Cells[$"I{cellNumber}"].Style.Numberformat.Format = "yyyy-MM-dd";
                     cellNumber++;
                 }
+                // Lock the worksheet
+                LockReport(package, worksheet);
 
                 // Save the Excel file
                 ExcelByteArray = package.GetAsByteArray();

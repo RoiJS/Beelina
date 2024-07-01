@@ -6,6 +6,7 @@ using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Query
@@ -37,15 +38,15 @@ namespace Beelina.API.Types.Query
         [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]
-        public async Task<IList<Product>> GetWarehouseProducts([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int warehouseId, string filterKeyword = "")
+        public async Task<IList<Product>> GetWarehouseProducts([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int warehouseId, ProductsFilter productsFilter, string filterKeyword = "")
         {
-            return await productRepository.GetWarehouseProducts(warehouseId, 0, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetWarehouseProducts(warehouseId, 0, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         [Authorize]
         public async Task<IProductPayload> GetWarehouseProduct([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, [Service] IHttpContextAccessor httpContextAccessor, int productId, int warehouseId)
         {
-            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
+            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
 
             if (productFromRepo == null || productFromRepo?.Count == 0)
             {
@@ -71,7 +72,7 @@ namespace Beelina.API.Types.Query
         public async Task<List<InsufficientProductQuantity>> CheckWarehouseProductStockQuantity([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int productId, int warehouseId, int quantity)
         {
             var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", httpContextAccessor.HttpContext.RequestAborted);
+            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
             if (productFromRepo != null && productFromRepo[0].StockQuantity < quantity)
             {
                 var product = productFromRepo[0];
