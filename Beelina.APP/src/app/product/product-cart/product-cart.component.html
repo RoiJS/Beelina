@@ -169,29 +169,48 @@
 
           @if (!isAdmin()) {
           <button mat-raised-button color="primary" (click)="confirm()">
+            <mat-icon>check_circle_outline</mat-icon>
             {{ "GENERAL_TEXTS.CONFIRM" | translate }}
           </button>
           <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
+            <mat-icon>remove_shopping_cart</mat-icon>
             {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
           </button>
 
-          @if (isDraftTransaction) {
+          @if (isDraftTransaction()) {
           <button mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
+            <mat-icon>save</mat-icon>
             {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
           </button>
           } @else {
           <button mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
+            <mat-icon>archive</mat-icon>
             {{
             "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
             | translate
             }}
           </button>
           <button mat-raised-button color="default" (click)="clear()">
+            <mat-icon>clear_all</mat-icon>
             {{ "GENERAL_TEXTS.CLEAR" | translate }}
           </button>
           }
           } @else {
+
+          @if(transaction().hasUnpaidProductTransaction){
+          <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
+            <mat-icon>check_circle_outline</mat-icon>
+            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+          </button>
+          } @else {
+          <button mat-raised-button color="default" (click)="markTransactionAsPaid(false)">
+            <mat-icon>not_interested</mat-icon>
+            {{ "GENERAL_TEXTS.MARK_AS_UNPAID" | translate }}
+          </button>
+          }
+
           <button mat-raised-button color="primary" (click)="saveNewUpdate()">
+            <mat-icon>save</mat-icon>
             {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
           </button>
           }

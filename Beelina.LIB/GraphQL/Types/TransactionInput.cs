@@ -12,6 +12,7 @@ namespace Beelina.LIB.GraphQL.Types
         public string DueDate { get; set; }
         public TransactionStatusEnum Status { get; set; }
         public int ModeOfPayment { get; set; }
+        public bool Paid { get; set; }
         public List<ProductTransactionInput> ProductTransactionInputs { get; set; }
     }
 }

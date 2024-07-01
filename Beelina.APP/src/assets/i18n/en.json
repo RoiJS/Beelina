@@ -20,7 +20,8 @@
     "PAID": "Paid",
     "UNPAID": "Unpaid",
     "BALANCE": "Balance",
-    "MARK_AS_PAID": "Mark as paid",
+    "MARK_AS_PAID": "Mark as Paid",
+    "MARK_AS_UNPAID": "Mark as Unpaid",
     "DELETE": "Delete",
     "EDIT": "Edit",
     "REMOVE": "Remove",
@@ -323,6 +324,9 @@
       },
       "DUE_DATE_CONTROL": {
         "LABEL": "Due Date"
+      },
+      "PAID_CONTROL": {
+        "LABEL": "Do you want to make this order mark as paid?"
       },
       "BUTTON_OPTIONS": {
         "CONFIRM": "Confirm",
@@ -714,6 +718,20 @@
       "SUCCESS_MESSAGE": "Mode of payment has been successfully updated.",
       "ERROR_MESSAGE": "Updating mode of payment failed. Please try again later.",
       "LOADING_MESSAGE": "Updating mode of payment. Please wait..."
+    },
+    "MARK_TRANSACTION_AS_PAID_DIALOG": {
+      "TITLE": "Mark as Paid",
+      "CONFIRM": "Are you sure to mark this transaction as paid?",
+      "SUCCESS_MESSAGE": "Selected transaction is now marked as paid.",
+      "ERROR_MESSAGE": "Marking the transaction as paid failed. Please try again later.",
+      "LOADING_MESSAGE": "Marking transaction as paid. Please wait..."
+    },
+    "MARK_TRANSACTION_AS_UNPAID_DIALOG": {
+      "TITLE": "Mark as Unpaid",
+      "CONFIRM": "Are you sure to mark this transaction as unpaid?",
+      "SUCCESS_MESSAGE": "Selected transaction is now marked as unpaid.",
+      "ERROR_MESSAGE": "Marking the transaction as unpaid failed. Please try again later.",
+      "LOADING_MESSAGE": "Marking transaction as unpaid. Please wait..."
     }
   },
   "BAD_ORDER_DETAILS_PAGE": {
