@@ -306,7 +306,10 @@ export class ProductComponent
         }) => {
           if (!data) return;
 
-          this.productsFilter().supplierId = data.supplierId;
+          const productsFilter = new ProductsFilter();
+          productsFilter.supplierId = data.supplierId;
+          this.productsFilter.set(productsFilter);
+
           this.store.dispatch(ProductActions.resetProductState());
           this.store.dispatch(ProductActions.setFilterProductAction({
             productsFilter: this.productsFilter()
