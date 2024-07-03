@@ -25,6 +25,7 @@ export class ProductFilterComponent extends BaseComponent implements OnInit {
     private formBuilder: FormBuilder,
   ) {
     super();
+    this.supplierStore.reset();
     this.supplierStore.getSuppliers();
     this._productFilterForm = this.formBuilder.group({
       supplierId: [data.supplierId],
