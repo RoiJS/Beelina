@@ -33,7 +33,7 @@ namespace Beelina.LIB.Models.Reports
                     Date = row.Field<string>("Date"),
                 }).FirstOrDefault(),
 
-                ListOutput = reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new DailyDetailedTransactionsReportOutputList
+                ListOutput = [.. reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new DailyDetailedTransactionsReportOutputList
                 {
                     StoreName = row.Field<string>("StoreName"),
                     StoreAddress = row.Field<string>("StoreAddress"),
@@ -51,7 +51,13 @@ namespace Beelina.LIB.Models.Reports
                     Amount = row.Field<decimal>("Amount"),
                     PaidStatus = row.Field<int>("PaidStatus"),
                     OrderStatus = row.Field<int>("OrderStatus"),
-                }).ToList()
+                })],
+
+                FooterOutput = reportOutputDataSet.Tables[2].AsEnumerable().Select(row => new DailyDetailedTransactionsReportOutputFooter
+                {
+                    TotalPaidAmount = row.Field<decimal>("TotalPaidAmount"),
+                    TotalUnpaidAmount = row.Field<decimal>("TotalUnpaidAmount"),
+                }).FirstOrDefault(),
             };
 
             // Add logic here to generate excel file including the excel file saving to the memory stream protected variable.
@@ -86,6 +92,18 @@ namespace Beelina.LIB.Models.Reports
                     cellNumber++;
                 }
 
+                cellNumber++;
+                worksheet.Cells[$"N{cellNumber}"].Value = "Total Paid Amount:";
+                worksheet.Cells[$"N{cellNumber}"].Style.Font.Bold = true;
+                worksheet.Cells[$"O{cellNumber}"].Value = reportOutput.FooterOutput.TotalPaidAmount;
+                worksheet.Cells[$"O{cellNumber}"].Style.Numberformat.Format = "#,##0.00";
+
+                cellNumber++;
+                worksheet.Cells[$"N{cellNumber}"].Value = "Total Unpaid Amount:";
+                worksheet.Cells[$"N{cellNumber}"].Style.Font.Bold = true;
+                worksheet.Cells[$"O{cellNumber}"].Value = reportOutput.FooterOutput.TotalUnpaidAmount;
+                worksheet.Cells[$"O{cellNumber}"].Style.Numberformat.Format = "#,##0.00";
+
                 // Lock the worksheet
                 LockReport(package, worksheet);
 
@@ -101,10 +119,11 @@ namespace Beelina.LIB.Models.Reports
     {
         public DailyDetailedTransactionsReportOutputHeader HeaderOutput { get; set; }
         public List<DailyDetailedTransactionsReportOutputList> ListOutput { get; set; }
+        public DailyDetailedTransactionsReportOutputFooter FooterOutput { get; set; }
 
         public DailyDetailedTransactionsReportOutput() : base()
         {
-            ListOutput = new List<DailyDetailedTransactionsReportOutputList>();
+            ListOutput = [];
         }
     }
 
@@ -163,6 +182,17 @@ namespace Beelina.LIB.Models.Reports
         }
 
         public DailyDetailedTransactionsReportOutputList()
+        {
+
+        }
+    }
+
+    public class DailyDetailedTransactionsReportOutputFooter
+    {
+        public decimal TotalPaidAmount { get; set; }
+        public decimal TotalUnpaidAmount { get; set; }
+
+        public DailyDetailedTransactionsReportOutputFooter()
         {
 
         }

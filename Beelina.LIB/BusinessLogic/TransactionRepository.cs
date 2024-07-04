@@ -456,7 +456,7 @@ namespace Beelina.LIB.BusinessLogic
             var discountedSalesPerTransactions = 0.0;
             var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
 
-            var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
+        var transactionSales = (from t in _beelinaRepository.ClientDbContext.Transactions
                                     join pt in _beelinaRepository.ClientDbContext.ProductTransactions
                                     on t.Id equals pt.TransactionId
 
