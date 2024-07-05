@@ -347,7 +347,7 @@
     "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
       "TITLE": "Save new order",
       "CONFIRM": "Are you sure to save new order?",
-      "SUCCESS_MESSAGE": "New order has been saved!",
+      "SUCCESS_MESSAGE": "New confirm order has been saved!",
       "ERROR_MESSAGE": "Saving order failed. Please again later.",
       "LOADING_MESSAGE": "Saving order as confirmed. Please wait..."
     },

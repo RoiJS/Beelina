@@ -7,6 +7,7 @@ namespace Beelina.LIB.Models
     {
         public int StoreId { get; set; }
         public string StoreName { get; set; }
+        public int NumberOfTransactions { get; set; }
         public OutletTypeEnum? OutletType { get; set; }
         public double TotalSalesAmount { get; set; }
     }
