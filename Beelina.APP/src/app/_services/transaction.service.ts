@@ -317,6 +317,7 @@ const GET_TOP_CUSTOMER_SALES_QUERY = gql`
         storeId
         storeName
         outletType
+        numberOfTransactions
         totalSalesAmount
     }
   }
@@ -403,6 +404,7 @@ export class CustomerSale {
   public storeId: number;
   public storeName: string;
   public outletType: string;
+  public numberOfTransactions: number;
   public totalSalesAmount: number;
 
   get totalSalesAmountFormatted(): string {
@@ -971,6 +973,7 @@ export class TransactionService {
                 const customerSale = new CustomerSale();
                 customerSale.storeId = t.storeId;
                 customerSale.storeName = t.storeName;
+                customerSale.numberOfTransactions = t.numberOfTransactions;
                 customerSale.outletType = t.outletType === OutletTypeEnum.GEN_TRADE ? this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE') : this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT');
                 customerSale.totalSalesAmount = t.totalSalesAmount;
                 return customerSale;

@@ -43,29 +43,30 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate)
         {
-            var customeTransactions = (from t in _beelinaRepository.ClientDbContext.Transactions
+            var customerProductTransactions = (from t in _beelinaRepository.ClientDbContext.Transactions
 
-                                       join p in _beelinaRepository.ClientDbContext.ProductTransactions
-                                          on t.Id equals p.TransactionId
-                                          into joinProductTransactions
-                                       from pt in joinProductTransactions.DefaultIfEmpty()
+                                               join p in _beelinaRepository.ClientDbContext.ProductTransactions
+                                                  on t.Id equals p.TransactionId
+                                                  into joinProductTransactions
+                                               from pt in joinProductTransactions.DefaultIfEmpty()
 
-                                       join s in _beelinaRepository.ClientDbContext.Stores
-                                          on t.StoreId equals s.Id
+                                               join s in _beelinaRepository.ClientDbContext.Stores
+                                                  on t.StoreId equals s.Id
 
-                                       where
-                                          (storeId == 0 || (storeId > 0 && t.StoreId == storeId))
-                                          && s.IsActive
-                                          && !s.IsDelete
-                                          && t.IsActive
-                                          && !t.IsDelete
+                                               where
+                                                  (storeId == 0 || (storeId > 0 && t.StoreId == storeId))
+                                                  && t.Status == TransactionStatusEnum.Confirmed
+                                                  && s.IsActive
+                                                  && !s.IsDelete
+                                                  && t.IsActive
+                                                  && !t.IsDelete
 
-                                       select new
-                                       {
-                                           Store = s,
-                                           Transaction = t,
-                                           ProductTransaction = pt
-                                       }
+                                               select new
+                                               {
+                                                   Store = s,
+                                                   Transaction = t,
+                                                   ProductTransaction = pt
+                                               }
                                 );
 
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
@@ -73,13 +74,15 @@ namespace Beelina.LIB.BusinessLogic
                 fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
                 toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
 
-                customeTransactions = customeTransactions.Where(t =>
+                customerProductTransactions = customerProductTransactions.Where(t =>
                         t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate)
                         && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate)
                 );
             }
 
-            var topCustomerSales = await customeTransactions
+            // (1) Calculate Total sales Per Store
+            // ============================================================================================================
+            var topCustomerSales = await customerProductTransactions
                 .GroupBy(t => new { t.Store.Id, t.Store.Name, t.Store.OutletType })
                 .Select(g => new CustomerSale
                 {
@@ -90,6 +93,40 @@ namespace Beelina.LIB.BusinessLogic
                 })
                 .OrderByDescending(t => t.TotalSalesAmount)
                 .ToListAsync();
+
+            // (2) Calculate number of transactions per store
+            // =============================================================================================================
+            var customerTransactions = await customerProductTransactions
+            .GroupBy(t => new { t.Store.Id, TransactionId = t.Transaction.Id })
+                .Select(g => new
+                {
+                    StoreId = g.Key.Id,
+                    TransactionId = g.Key.TransactionId
+                }).ToListAsync();
+
+            var customerPerNumberOfTransactions = customerTransactions
+                .GroupBy(t => new { t.StoreId })
+                .Select(g => new
+                {
+                    StoreId = g.Key.StoreId,
+                    NumberOfTransactions = g.Count()
+                })
+                .ToList();
+
+            // (3) Construct final customer sale list
+            // ==============================================================================================================
+            topCustomerSales = topCustomerSales.Join(
+                customerPerNumberOfTransactions,
+                customerSales => customerSales.StoreId,
+                customerPerNumberOfTransaction => customerPerNumberOfTransaction.StoreId,
+                (customerSales, customerPerNumberOfTransaction) => new CustomerSale
+                {
+                    StoreId = customerSales.StoreId,
+                    StoreName = customerSales.StoreName,
+                    OutletType = customerSales.OutletType,
+                    NumberOfTransactions = customerPerNumberOfTransaction.NumberOfTransactions,
+                    TotalSalesAmount = customerSales.TotalSalesAmount,
+                }).ToList();
 
             return topCustomerSales;
         }

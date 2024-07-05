@@ -21,9 +21,14 @@
 
     .product-information {
       font-weight: bold;
+      width: 40%;
     }
 
     .product-number-of-transaction {
+      min-width: 50px;
+    }
+
+    .product-total-sales-amount {
       min-width: 100px;
     }
   }

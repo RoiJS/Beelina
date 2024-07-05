@@ -202,11 +202,6 @@
             <mat-icon>check_circle_outline</mat-icon>
             {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
           </button>
-          } @else {
-          <button mat-raised-button color="default" (click)="markTransactionAsPaid(false)">
-            <mat-icon>not_interested</mat-icon>
-            {{ "GENERAL_TEXTS.MARK_AS_UNPAID" | translate }}
-          </button>
           }
 
           <button mat-raised-button color="primary" (click)="saveNewUpdate()">
