@@ -1,5 +1,5 @@
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, computed, inject, OnDestroy, OnInit, signal, viewChild, ViewChild } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { select, Store } from '@ngrx/store';
@@ -52,7 +52,7 @@ import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { Barangay } from 'src/app/_models/barangay';
-import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+import { ProductTransactionOverallQuantities } from 'src/app/_models/insufficient-product-quantity';
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 
@@ -530,12 +530,28 @@ export class ProductCartComponent
     this._orderForm.markAllAsTouched();
     if (!this._orderForm.valid) return;
 
+    const transaction = new TransactionDto();
+    transaction.id = this._transactionId();
+    transaction.storeId = this._selectedCustomer().id;
+    transaction.status = this.transaction().status;
+    transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+    transaction.paid = this._orderForm.get('paid').value;
+    transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+    transaction.discount = this._discountForm.get('discount').value;
+    transaction.transactionDate = DateFormatter.format(
+      this._orderForm.get('transactionDate').value
+    );
+    transaction.dueDate = DateFormatter.format(
+      this._orderForm.get('dueDate').value
+    );
+    transaction.productTransactions = this.productTransactions();
+
     this._isLoading = true;
     this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
     this.productService
-      .validateProductionTransactionsQuantities(this.productTransactions())
+      .validateProductionTransactionsQuantities_NEW([transaction])
       .subscribe(
-        (insufficientProductQuantities: Array<InsufficientProductQuantity>) => {
+        (insufficientProductQuantities: Array<ProductTransactionOverallQuantities>) => {
           this._isLoading = false;
           if (insufficientProductQuantities.length > 0) {
             let errorMessage = this.translateService.instant(

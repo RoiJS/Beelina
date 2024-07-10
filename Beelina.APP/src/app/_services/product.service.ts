@@ -34,7 +34,7 @@ import { IProductInput } from '../_interfaces/inputs/iproduct.input';
 import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
 import { Product } from '../_models/product';
 import { ProductTransaction } from '../_models/transaction';
-import { InsufficientProductQuantity } from '../_models/insufficient-product-quantity';
+import { InsufficientProductQuantity, ProductTransactionOverallQuantities } from '../_models/insufficient-product-quantity';
 
 import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
 import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
@@ -54,6 +54,9 @@ import { getProductSourceEnum, ProductSourceEnum } from '../_enum/product-source
 import { IExtractedProductsFileOutput } from '../_interfaces/outputs/iproduct-import-file.output';
 
 import { environment } from 'src/environments/environment';
+import { TransactionDto } from './transaction.service';
+import { ITransactionInput } from '../_interfaces/inputs/itransaction.input';
+import { IProductTransactionInput } from '../_interfaces/inputs/iproduct-transaction.input';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
 query($userAccountId: Int!) {
@@ -246,10 +249,13 @@ const VALIDATE_PRODUCT_QUANTITIES = gql`
       userAccountId: $userAccountId
     ) {
       productId
-      productName
       productCode
-      selectedQuantity
+      overallQuantity
       currentQuantity
+      productTransactionOverallQuantitiesTransactions {
+        transactionId
+        transationCode
+      }
     }
   }
 `;
@@ -1049,6 +1055,73 @@ export class ProductService {
                   productCode: i.productCode,
                   currentQuantity: i.currentQuantity,
                   selectedQuantity: i.selectedQuantity,
+                };
+              });
+
+            return insufficientProductQuantities;
+          }
+        )
+      );
+  }
+
+  validateProductionTransactionsQuantities_NEW(transactions: Array<TransactionDto>) {
+    const transactionInputs: Array<ITransactionInput> = transactions.map((transaction) => {
+      const transactionInput: ITransactionInput = {
+        id: transaction.id,
+        invoiceNo: transaction.invoiceNo,
+        discount: transaction.discount,
+        storeId: transaction.storeId,
+        modeOfPayment: transaction.modeOfPayment,
+        paid: transaction.paid,
+        status: transaction.status,
+        transactionDate: transaction.transactionDate,
+        dueDate: transaction.dueDate,
+        productTransactionInputs: transaction.productTransactions.map((p) => {
+          const productTransaction: IProductTransactionInput = {
+            id: p.id,
+            productId: p.productId,
+            quantity: p.quantity,
+            price: p.price,
+            currentQuantity: p.currentQuantity,
+          };
+
+          return productTransaction;
+        })
+      };
+
+      return transactionInput;
+    });
+
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
+    return this.apollo
+      .watchQuery({
+        query: VALIDATE_PRODUCT_QUANTITIES,
+        variables: {
+          transactionInputs,
+          userAccountId,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              validateProductionTransactionsQuantities_NEW: Array<ProductTransactionOverallQuantities>;
+            }>
+          ) => {
+            const data = <Array<ProductTransactionOverallQuantities>>(
+              result.data.validateProductionTransactionsQuantities_NEW
+            );
+
+            const insufficientProductQuantities: Array<ProductTransactionOverallQuantities> =
+              data.map((i) => {
+                return <ProductTransactionOverallQuantities>{
+                  productId: i.productId,
+                  productCode: i.productCode,
+                  productName: i.productName,
+                  currentQuantity: i.currentQuantity,
+                  overallQuantity: i.overallQuantity,
+                  productTransactionOverallQuantitiesTransactions: i.productTransactionOverallQuantitiesTransactions
                 };
               });
 

@@ -207,6 +207,65 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
+    public async Task<List<ProductTransactionOverallQuantities>> ValidateProductionTransactionsQuantities_NEW(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            List<TransactionInput> transactionInputs,
+            int userAccountId)
+    {
+      var insufficientProductQuantities = new List<InsufficientProductQuantity>();
+      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
+
+      List<ProductTransactionOverallQuantities> allProductTransactionOverallQuantities = [];
+      List<ProductTransactionOverallQuantities> invalidProductTransactionOverallQuantities = [];
+
+      foreach (TransactionInput transactionInput in transactionInputs)
+      {
+        foreach (ProductTransactionInput productTransaction in transactionInput.ProductTransactionInputs)
+        {
+          var productTransactionOverallQuantities = allProductTransactionOverallQuantities.Where(p => p.ProductId == productTransaction.ProductId).FirstOrDefault();
+
+          if (productTransactionOverallQuantities is null)
+          {
+            allProductTransactionOverallQuantities.Add(new ProductTransactionOverallQuantities
+            {
+              ProductId = productTransaction.ProductId,
+              OverallQuantity = productTransaction.Quantity,
+              ProductTransactionOverallQuantitiesTransactions = [new ProductTransactionOverallQuantitiesTransaction { TransactionId = transactionInput.Id, TransationCode = transactionInput.InvoiceNo }]
+            });
+          }
+          else
+          {
+            productTransactionOverallQuantities.OverallQuantity += productTransaction.Quantity;
+            productTransactionOverallQuantities.ProductTransactionOverallQuantitiesTransactions.Add(new ProductTransactionOverallQuantitiesTransaction
+            {
+              TransactionId = transactionInput.Id,
+              TransationCode = transactionInput.InvoiceNo
+            });
+          }
+        }
+      }
+
+      foreach (var productTransactionOverallQuantity in allProductTransactionOverallQuantities)
+      {
+        var product = productsFromRepo.Where(p => p.Id == productTransactionOverallQuantity.ProductId).FirstOrDefault();
+
+        if (product is not null)
+        {
+          if (product.Id == productTransactionOverallQuantity.ProductId && product.StockQuantity < productTransactionOverallQuantity.OverallQuantity)
+          {
+            productTransactionOverallQuantity.ProductCode = product.Code;
+            productTransactionOverallQuantity.ProductName = product.Name;
+            productTransactionOverallQuantity.CurrentQuantity = product.StockQuantity;
+            invalidProductTransactionOverallQuantities.Add(productTransactionOverallQuantity);
+          }
+        }
+      }
+
+      return invalidProductTransactionOverallQuantities;
+    }
+
+    [Authorize]
     public async Task<List<ProductTransactionDto>> AnalyzeTextOrders(
           [Service] IProductRepository<Product> productRepository,
           [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
