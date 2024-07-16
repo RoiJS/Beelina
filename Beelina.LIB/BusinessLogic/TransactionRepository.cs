@@ -28,7 +28,7 @@ namespace Beelina.LIB.BusinessLogic
             IProductTransactionRepository<ProductTransaction> productTransactionRepository,
             IOptions<EmailServerSettings> emailServerSettings,
             IOptions<AppHostInfo> appHostInfo,
-             IOptions<ApplicationSettings> appSettings,
+            IOptions<ApplicationSettings> appSettings,
             ICurrentUserService currentUserService
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
@@ -287,7 +287,7 @@ namespace Beelina.LIB.BusinessLogic
                         BarangayName = b.Name ?? String.Empty,
                         TransactionDate = t.TransactionDate,
                         ProductTransaction = pt,
-                        DateUpdated = t.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone),
+                        DateUpdated = t.DateUpdated,
                         UpdatedBy = up.PersonFullName ?? String.Empty,
                     }
                 ).ToListAsync();
@@ -343,7 +343,7 @@ namespace Beelina.LIB.BusinessLogic
                                                      TransactionDate = g.Key.TransactionDate,
                                                      HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransaction.Status)) == 0,
                                                      OrderItemsDateUpdated = g.Max(s => s.ProductTransaction.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone)),
-                                                     DetailsDateUpdated = g.Key.DateUpdated,
+                                                     DetailsDateUpdated = g.Key.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone),
                                                      DetailsUpdatedBy = g.Key.UpdatedBy,
                                                  })
                                                 .OrderByDescending(t => t.TransactionDate)
@@ -413,6 +413,7 @@ namespace Beelina.LIB.BusinessLogic
             var badOrdersAmount = 0.0;
             var transactionFromRepo = await GetEntity(transactionId)
                             .Includes(
+                                t => t.Payments,
                                 t => t.Store,
                                 t => t.Store.Barangay,
                                 t => t.Store.PaymentMethod

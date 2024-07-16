@@ -50,10 +50,14 @@ export class Transaction extends Entity implements IModelNode {
     return NumberFormatter.formatCurrency(this.badOrderAmount);
   }
 
-  get netTotalFormatted(): string {
+  get netTotal(): number {
     const calculatedNetTotalAmount =
       (this.total - (this.discount / 100) * this.total) - this.badOrderAmount;
-    return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
+    return calculatedNetTotalAmount;
+  }
+
+  get netTotalFormatted(): string {
+    return NumberFormatter.formatCurrency(this.netTotal);
   }
 
   get balanceFormatted(): string {

@@ -13,7 +13,8 @@
       <div *cdkVirtualFor="let item of transactions">
         <div matRipple
           class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
-          [ngClass]="{ unpaid: item.hasUnpaidProductTransaction }" (click)="goToTransaction(item.id)">
+          [ngClass]="{ unpaid: item.hasUnpaidProductTransaction }" (click)="goToTransaction(item.id)" appLongPress
+          (longPress)="openMenu(item)">
           <div>
             <span># {{ item.invoiceNo }}</span> - <span>{{ item.store.name }}</span>
           </div>
