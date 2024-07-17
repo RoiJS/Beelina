@@ -431,6 +431,7 @@ namespace Beelina.LIB.BusinessLogic
                 badOrdersAmount = await GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId);
             }
 
+            transactionFromRepo.BadOrderAmount = badOrdersAmount;
             transactionFromRepo.ProductTransactions = await _productTransactionRepository.GetProductTransactions(transactionId);
 
             return new TransactionDetails { Transaction = transactionFromRepo, BadOrderAmount = badOrdersAmount };
