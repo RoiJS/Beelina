@@ -34,6 +34,10 @@ import { TransactionDetailsComponent } from './transaction-details.component';
         component: TransactionDetailsComponent,
         title: 'TRANSACTION_DETAILS_PAGE.TITLE',
       },
+      {
+        path: ':transactionId',
+        loadChildren: () => import('./payments/payments.module').then(m => m.PaymentsModule),
+      },
     ]),
     TranslateModule.forChild(),
   ],

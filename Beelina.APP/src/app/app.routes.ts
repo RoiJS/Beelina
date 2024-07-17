@@ -69,7 +69,7 @@ export const routes: Routes = [
         (m) => m.TransactionHistoryModule
       ),
     canLoad: [AuthGuard],
-    canActivate: [AccessGuard]
+    // canActivate: [AccessGuard]
   },
   {
     path: 'draft-transactions',

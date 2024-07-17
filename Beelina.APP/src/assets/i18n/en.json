@@ -210,6 +210,35 @@
       "ERROR_MESSAGE": "Updating supplier failed. Please again later."
     }
   },
+  "PAYMENTS_PAGE": {
+    "TITLE": "Payments",
+    "DESCRIPTION": "Registered payments for the transaction are available here. Click add button to add new payment.",
+    "REGISTER_PAYMENT_DIALOG": {
+      "TITLE": "Payment Details",
+      "FORM_CONTROL_SECTION": {
+        "PAYMENT_DATE_CONTROL": {
+          "LABEL": "Payment Date"
+        },
+        "AMOUNT_CONTROL": {
+          "LABEL": "Amount"
+        },
+        "NOTES_CONTROL": {
+          "LABEL": "Notes",
+          "HINT": "Enter notes (optional)"
+        },
+        "PAID_CONTROL": {
+          "LABEL": "Do you want to make the order transaction mark as paid?"
+        }
+      }
+    },
+    "SAVE_PAYMENT_DIALOG": {
+      "TITLE": "Register Payment",
+      "LOADING_MESSAGE": "Registering payment. Please wait...",
+      "CONFIRM_MESSAGE": "You are about to register new payment. Do you want to proceed?",
+      "SUCCESS_MESSAGE": "New payment has been successfully registered!",
+      "ERROR_MESSAGE": "Registering payment failed. Please again later."
+    }
+  },
   "EDIT_CUSTOMER_DETAILS_PAGE": {
     "TITLE": "Edit Customer",
     "FORM_CONTROL_SECTION": {
@@ -331,7 +360,8 @@
       "BUTTON_OPTIONS": {
         "CONFIRM": "Confirm",
         "DRAFT": "Draft",
-        "ADD_ITEM": "Add Item +"
+        "ADD_ITEM": "Add Item +",
+        "REGISTER_PAYMENT": "Register Payment"
       }
     },
     "AGREEMENT_CONFIRMATION_DIALOG": {
@@ -691,6 +721,10 @@
     "DELETE_ORDER": {
       "LABEL": "Delete order",
       "DESCRIPTIONS": "Delete selected order from the list"
+    },
+    "REGISTER_PAYMENT": {
+      "LABEL": "Register Payment",
+      "DESCRIPTIONS": "Register payment for the selected order"
     },
     "DELETE_TRANSACTION_BY_DATE_DIALOG": {
       "TITLE": "Delete Orders",

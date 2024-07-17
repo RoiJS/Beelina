@@ -643,6 +643,24 @@ export class ProductCartComponent
     }
   }
 
+  registerPayment() {
+    const transactionDate = DateFormatter.format(this.transaction().transactionDate);
+    this.router.navigate([`transaction-history/transactions/${transactionDate}/${this._transactionId()}/payments`], {
+      state: {
+        openRegisterDialog: true
+      }
+    });
+  }
+
+  goToPaymentHistory() {
+    const transactionDate = DateFormatter.format(this.transaction().transactionDate);
+    this.router.navigate([`transaction-history/transactions/${transactionDate}/${this._transactionId()}/payments`], {
+      state: {
+        openRegisterDialog: false
+      }
+    });
+  }
+
   addINewtemToCart() {
     this.bottomSheet.open(SelectNewProductComponent, {
       data: { productTransactions: this.productTransactions() },

@@ -76,6 +76,21 @@ namespace Beelina.API.Types.Query
 
       transactionFromRepo.ProductTransactions = updatedProductTransactions;
 
+      // Register Payment
+      if (transactionInput.Paid &&
+        transactionInput.Status == TransactionStatusEnum.Confirmed &&
+        transactionFromRepo.Payments.Count == 0)
+      {
+        var newPayment = new Payment();
+        newPayment.Amount = transactionFromRepo.NetTotal;
+        newPayment.PaymentDate = transactionFromRepo.TransactionDate
+                    .AddHours(DateTime.Now.Hour)
+                    .AddMinutes(DateTime.Now.Minute)
+                    .AddSeconds(DateTime.Now.Second);
+        newPayment.Notes = "Automatic Payment Registration";
+        transactionFromRepo.Payments.Add(newPayment);
+      }
+
       await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
 
       return transactionFromRepo;

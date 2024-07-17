@@ -26,6 +26,7 @@ namespace Beelina.LIB.DbContexts
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<ProductTransaction> ProductTransactions { get; set; }
         public DbSet<ProductTransactionQuantityHistory> ProductTransactionQuantityHistory { get; set; }
         public DbSet<ReportNotificationEmailAddress> ReportNotificationEmailAddresses { get; set; }
