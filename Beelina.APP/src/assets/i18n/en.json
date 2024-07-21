@@ -863,7 +863,9 @@
       "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_NAME": "Customer Detailed Transactions Report",
       "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate the detailed transactions of customers on a given date. Each transactions are generated per sheet.",
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_NAME": "Sales Agent Collection Summary Report",
-      "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date."
+      "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date.",
+      "CUSTOMER_COLLECTION_SUMMARY_REPORT_NAME": "Customer Collection Summary Report",
+      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date."
     }
   },
   "REPORT_DETAILS_PAGE": {
@@ -885,6 +887,9 @@
       },
       "SALES_AGENT_DROPDOWN_CONTROL": {
         "LABEL": "Sales Agent"
+      },
+      "CUSTOMER_DROPDOWN_CONTROL": {
+        "LABEL": "Store"
       },
       "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
         "LABEL": "Order Transaction Type",

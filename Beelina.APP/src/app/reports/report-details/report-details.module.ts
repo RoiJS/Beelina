@@ -16,6 +16,7 @@ import { ReportGenerateOptionDialogComponent } from './report-generate-option-di
 import { SalesAgentDropdownControlComponent } from '../report-controls/sales-agent-dropdown-control/sales-agent-dropdown-control.component';
 import { SortOrderControlComponent } from '../report-controls/sort-order-control/sort-order-control.component';
 import { TransactionTypeDropdownControlComponent } from '../report-controls/transaction-type-dropdown-control/transaction-type-dropdown-control.component';
+import { CustomerDropdownControlComponent } from '../report-controls/customer-dropdown-control/customer-dropdown-control.component';
 
 @NgModule({
   imports: [
@@ -36,6 +37,7 @@ import { TransactionTypeDropdownControlComponent } from '../report-controls/tran
     DatePickerComponent,
     SortOrderControlComponent,
     SalesAgentDropdownControlComponent,
+    CustomerDropdownControlComponent,
     TransactionTypeDropdownControlComponent,
   ],
 })

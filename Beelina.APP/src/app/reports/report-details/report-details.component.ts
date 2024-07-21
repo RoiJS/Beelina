@@ -120,7 +120,7 @@ export class ReportDetailsComponent
     const componentRefInstance = componentRef.instance as BaseControlComponent;
     componentRefInstance.setControlLabelIdentifier(controlLabelIdentifier);
     componentRefInstance.setControlVisibility(show);
-    componentRefInstance.setAllowAllOption(show);
+    componentRefInstance.setAllowAllOption(allowAllOption);
 
     this.controlComponents.push({
       id: id,
