@@ -861,7 +861,9 @@
       "PRODUCT_WITHDRAWAL_REPORT_NAME_2": "Product Withdrawal Report",
       "PRODUCT_WITHDRAWAL_REPORT_DESC_2": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date.",
       "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_NAME": "Customer Detailed Transactions Report",
-      "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate the detailed transactions of customers on a given date. Each transactions are generated per sheet."
+      "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate the detailed transactions of customers on a given date. Each transactions are generated per sheet.",
+      "SALES_AGENT_COLLECTION_SUMMARY_REPORT_NAME": "Sales Agent Collection Summary Report",
+      "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date."
     }
   },
   "REPORT_DETAILS_PAGE": {
