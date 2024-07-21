@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseControlComponent } from '../base-control/base-control.component';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { User } from 'src/app/_models/user.model';
+
+import { BaseControlComponent } from '../base-control/base-control.component';
 
 @Component({
   selector: 'app-sales-agent-dropdown-control',

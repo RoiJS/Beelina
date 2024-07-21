@@ -2,6 +2,9 @@
   <mat-form-field appearance="fill">
     <mat-label>{{ controLabel }}:</mat-label>
     <mat-select formControlName="salesAgent">
+      @if(allowAllOption) {
+      <mat-option [value]="0">{{ 'GENERAL_TEXTS.ALL' | translate }}</mat-option>
+      }
       <mat-option *ngFor="let salesAgent of salesAgents" [value]="salesAgent.id">{{ salesAgent.fullname }}</mat-option>
     </mat-select>
   </mat-form-field>
