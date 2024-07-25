@@ -28,21 +28,13 @@ namespace Beelina.API.Types.Mutations
         }
 
         [Authorize]
-        public async Task<Transaction> MarkTransactionAsPaid(
+        public async Task<List<Transaction>> MarkTransactionsAsPaid(
             [Service] ITransactionRepository<Transaction> transactionRepository,
-            [Service] ICurrentUserService currentUserService,
-            int transactionId,
+            List<int> transactionIds,
             bool paid)
         {
-            var transactionFromRepo = await transactionRepository.GetEntity(transactionId).Includes(t => t.ProductTransactions).ToObjectAsync();
-
-            transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-
-            transactionFromRepo.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid);
-
-            await transactionRepository.SaveChanges();
-
-            return transactionFromRepo;
+            var transactionsFromRepo = await transactionRepository.MarkTransactionsAsPaid(transactionIds, paid);
+            return transactionsFromRepo;
         }
 
         [Authorize]

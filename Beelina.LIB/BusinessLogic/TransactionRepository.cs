@@ -5,6 +5,7 @@ using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ReserbizAPP.LIB.Helpers.Class;
@@ -241,10 +242,15 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate)
         {
-            return await GetTransactions(status, transactionDate, _currentUserService.CurrentUserId);
+            var transactionsFilter = new TransactionsFilter
+            {
+                Status = status,
+                TransactionDate = transactionDate
+            };
+            return await GetTransactions(_currentUserService.CurrentUserId, "", transactionsFilter);
         }
 
-        public async Task<List<TransactionInformation>> GetTransactions(TransactionStatusEnum status, string transactionDate, int userId, string filterKeyword = "")
+        public async Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null)
         {
             var transactions = await (
                     from t in _beelinaRepository.ClientDbContext.Transactions
@@ -269,9 +275,9 @@ namespace Beelina.LIB.BusinessLogic
                     on s.BarangayId equals b.Id
 
                     where
-                        (String.IsNullOrEmpty(transactionDate) || (!String.IsNullOrEmpty(transactionDate) && t.TransactionDate == Convert.ToDateTime(transactionDate)))
-                        && (status == TransactionStatusEnum.All || (status != TransactionStatusEnum.All && t.Status == status))
+                        (transactionsFilter.Status == TransactionStatusEnum.All || (transactionsFilter.Status != TransactionStatusEnum.All && t.Status == transactionsFilter.Status))
                         && (userId == 0 || (userId > 0 && t.CreatedById == userId))
+                        && (transactionsFilter == null || (transactionsFilter != null && ((String.IsNullOrEmpty(transactionsFilter.TransactionDate) || (!String.IsNullOrEmpty(transactionsFilter.TransactionDate) && t.TransactionDate == Convert.ToDateTime(transactionsFilter.TransactionDate))))))
                         && !t.IsDelete
                         && t.IsActive
 
@@ -787,6 +793,26 @@ namespace Beelina.LIB.BusinessLogic
                                 .ToListAsync();
 
             DeleteMultipleEntities(transactionsFromRepo);
+        }
+
+        public async Task<List<Transaction>> MarkTransactionsAsPaid(List<int> transactionIds, bool paid)
+        {
+            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t => transactionIds.Contains(t.Id))
+                                .Includes(t => t.ProductTransactions)
+                                .ToListAsync();
+
+            // var transactionFromRepo = await transactionRepository.GetEntity(transactionId).Includes(t => t.ProductTransactions).ToObjectAsync();
+
+            SetCurrentUserId(_currentUserService.CurrentUserId);
+
+            transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));
+
+            // transactionFromRepo.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid);
+
+            await SaveChanges();
+
+            return transactionsFromRepo;
         }
 
         public async Task<bool> SendTransactionEmailReceipt(int transactionId)

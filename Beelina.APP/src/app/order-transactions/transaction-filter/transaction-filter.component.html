@@ -1,0 +1,53 @@
+<div class="transaction-filter-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body" [formGroup]="transactionFilterForm">
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_STATUS_CONTROL.LABEL" |
+        translate }}:</mat-label>
+
+      <mat-select formControlName="transactionStatus">
+        <mat-option [value]="'ALL'">{{
+          "GENERAL_TEXTS.ALL" |translate
+          }}</mat-option>
+        <mat-option [value]="'CONFIRMED'">{{
+          "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.CONFIRM_OPTION"
+          | translate
+          }}</mat-option>
+        <mat-option [value]="'DRAFT'">{{
+          "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.DRAFT_OPTION"
+          | translate
+          }}</mat-option>
+        <mat-option [value]="'BAD_ORDER'">{{
+          "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.BAD_OPTION"
+          | translate
+          }}</mat-option>
+      </mat-select>
+
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="date-picker-control">
+      <mat-label>{{
+        "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_DATE_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <input matInput [matDatepicker]="transactiondate" formControlName="transactionDate" />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="transactiondate"></mat-datepicker-toggle>
+      <mat-datepicker #transactiondate></mat-datepicker>
+    </mat-form-field>
+
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onReset()">
+        {{ "GENERAL_TEXTS.RESET" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

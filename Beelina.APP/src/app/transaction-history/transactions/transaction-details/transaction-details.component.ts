@@ -131,7 +131,7 @@ export class TransactionDetailsComponent
           this._isLoading = true;
           this.loaderLayoutComponent().label = loadingMessage;
           this.transactionService
-            .markTransactionAsPaid(this._transactionId, paid)
+            .markTransactionsAsPaid([this._transactionId], paid)
             .subscribe({
               next: () => {
                 this._isLoading = false;

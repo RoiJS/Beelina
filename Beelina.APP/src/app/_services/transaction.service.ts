@@ -39,6 +39,7 @@ import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
 import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
+import { TransactionsFilter } from '../_models/filters/transactions.filter';
 
 const REGISTER_TRANSACTION_QUERY = gql`
   query ($transactionInput: TransactionInput!) {
@@ -102,30 +103,37 @@ const GET_TRANSACTION_DATES = gql`
 `;
 
 const GET_TRANSACTIONS_QUERY = gql`
-  query($filterKeyword: String, $cursor: String) {
-    transactions(filterKeyword: $filterKeyword, after: $cursor) {
+  query(
+  $filterKeyword: String,
+  $cursor: String,
+  $transactionsFilter: TransactionsFilterInput!) {
+    transactions(
+    filterKeyword: $filterKeyword,
+    after: $cursor,
+    transactionsFilter: $transactionsFilter
+  ) {
       nodes {
-          id,
-          storeId,
-          invoiceNo,
-          createdBy,
-          detailsUpdatedBy
-          detailsDateUpdated
-          orderItemsDateUpdated
-          finalDateUpdated
-          createdById,
-          transactionDate,
-          hasUnpaidProductTransaction,
-          barangayName
-          storeName
-          status
+        id,
+        storeId,
+        invoiceNo,
+        createdBy,
+        detailsUpdatedBy
+        detailsDateUpdated
+        orderItemsDateUpdated
+        finalDateUpdated
+        createdById,
+        transactionDate,
+        hasUnpaidProductTransaction,
+        barangayName
+        storeName
+        status
       }
       pageInfo {
-          endCursor
-          hasNextPage
-          hasPreviousPage
-          startCursor
-        }
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
       totalCount
     }
   }
@@ -209,10 +217,11 @@ const UPDATE_MODE_OF_PAYMENT = gql`
   }
 `;
 
-const MARK_TRANSACTION_AS_PAID = gql`
-  mutation ($transactionId: Int!, $paid: Boolean!) {
-    markTransactionAsPaid(input: { transactionId: $transactionId, paid: $paid }) {
-      transaction {
+
+const MARK_TRANSACTIONS_AS_PAID = gql`
+  mutation($transactionIds: [Int!]!, $paid: Boolean!) {
+    markTransactionsAsPaid(input: { transactionIds: $transactionIds, paid: $paid }) {
+      transaction{
         id
       }
     }
@@ -579,13 +588,15 @@ export class TransactionService {
   getTransactions(
     cursor: string,
     filterKeyword: string,
+    transactionsFilter: TransactionsFilter
   ) {
     return this.apollo
       .watchQuery({
         query: GET_TRANSACTIONS_QUERY,
         variables: {
           filterKeyword,
-          cursor
+          cursor,
+          transactionsFilter
         },
       })
       .valueChanges.pipe(
@@ -1050,12 +1061,12 @@ export class TransactionService {
       );
   }
 
-  markTransactionAsPaid(transactionId: number, paid: boolean) {
+  markTransactionsAsPaid(transactionIds: Array<number>, paid: boolean) {
     return this.apollo
       .mutate({
-        mutation: MARK_TRANSACTION_AS_PAID,
+        mutation: MARK_TRANSACTIONS_AS_PAID,
         variables: {
-          transactionId,
+          transactionIds,
           paid
         },
       })
@@ -1063,10 +1074,10 @@ export class TransactionService {
         map(
           (
             result: MutationResult<{
-              markTransactionAsPaid: ITransactionOutput;
+              markTransactionsAsPaid: ITransactionOutput;
             }>
           ) => {
-            const output = result.data.markTransactionAsPaid;
+            const output = result.data.markTransactionsAsPaid;
             const payload = output.transaction;
             const errors = output.errors;
 
