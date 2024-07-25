@@ -97,9 +97,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit,
   }
 
   openFilter() {
-    this._dialogOpenFilterRef = this.bottomSheet.open(TransactionFilterComponent, {
-      data: this.transactionsFilter()
-    });
+    this._dialogOpenFilterRef = this.bottomSheet.open(TransactionFilterComponent);
 
     this._dialogOpenFilterRef
       .afterDismissed()
@@ -112,7 +110,6 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit,
 
           this.transactionsFilter.update(() => {
             const newTransactionsFilter = new TransactionsFilter();
-            newTransactionsFilter.transactionDate = DateFormatter.format(new Date());
             newTransactionsFilter.transactionDate = DateFormatter.format(data.transactionDate);
             return newTransactionsFilter;
           });

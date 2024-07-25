@@ -17,10 +17,6 @@ export class ViewSelectedOrdersComponent implements OnInit {
 
   constructor(
     private _bottomSheetRef: MatBottomSheetRef<ViewSelectedOrdersComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      transactions: Array<Transaction>
-    },
     public multipleItemsService: MultipleEntitiesService<Transaction>,
   ) {
     this.currentSelectedItems.set(this.multipleItemsService.selectedItems());
