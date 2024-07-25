@@ -5,6 +5,7 @@ using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
+using Beelina.LIB.Models.Filters;
 
 namespace Beelina.API.Types.Query
 {
@@ -101,9 +102,9 @@ namespace Beelina.API.Types.Query
     [UseProjection]
     [UseFiltering]
     [UseSorting]
-    public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "")
+    public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "", TransactionsFilter transactionsFilter = null)
     {
-      return await transactionRepository.GetTransactions(TransactionStatusEnum.All, "", 0, filterKeyword);
+      return await transactionRepository.GetTransactions(0, filterKeyword, transactionsFilter);
     }
 
     [Authorize]

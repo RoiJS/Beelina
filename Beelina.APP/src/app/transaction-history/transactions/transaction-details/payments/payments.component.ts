@@ -131,9 +131,9 @@ export class PaymentsComponent extends BaseComponent implements OnInit {
   private markOrderPaid() {
     this.loaderLayoutComponent().label = this.translateService.instant('TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.LOADING_MESSAGE');
     this.transactionService
-      .markTransactionAsPaid(this._transactionId, true)
+      .markTransactionsAsPaid([this._transactionId], true)
       .subscribe({
-        next: () => {
+         next: () => {
           this.showSuccessMessage();
         },
         error: () => {

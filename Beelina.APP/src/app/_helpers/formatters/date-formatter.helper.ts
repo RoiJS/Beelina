@@ -13,8 +13,16 @@ export class DateFormatter {
     return moment(date).startOf('hour').fromNow();
   }
 
+  static toDate(date: string) {
+    return moment(date).toDate();
+  }
+
   static isValidDate(date: string): boolean {
     const dateToCompare = new Date(date);
     return dateToCompare.getFullYear() !== 1;
+  }
+
+  static nowDate() {
+    return moment().format('YYYY-MM-DD');
   }
 }

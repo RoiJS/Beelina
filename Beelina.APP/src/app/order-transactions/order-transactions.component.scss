@@ -82,6 +82,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         line-height: 1.3em;
+        flex: 1;
 
         &__invoice-no {
           color: $alt-text-color;

@@ -706,7 +706,13 @@
   "TRANSACTION_SELECT_MULTIPLE_MODE": {
     "LABEL": "Selected Order(s)",
     "OPTIONS": {
-      "DELETE_SELECTED_ORDERS": "Delete Selected Order(s)"
+      "DELETE_SELECTED_ORDERS": "Delete Selected Order(s)",
+      "MARK_AS_PAID_SELECTED_ORDERS": "Mark Order(s) as Paid",
+      "VIEW_SELECTED_ORDERS": "View Selected Order(s)"
+    },
+    "DEACTIVATE_SELECT_MULTIPLE_DIALOG": {
+      "TITLE": "Deactivate Multi-select item(s)",
+      "CONFIRM_MESSAGE": "Deactivating multi-select will clear the selected item(s). Are you really sure to proceed?"
     }
   },
   "TRANSACTION_OPTION_MENU": {
@@ -1113,6 +1119,32 @@
     },
     "ORDER_TRANSACTION_LIST_EMPTY_LABEL": {
       "LABEL": "Search Transaction by typing Invoice No., Sales Agent, Barangay Name, or Customer Name"
+    },
+    "TRANSACTION_FILTER_DIALOG": {
+      "TITLE": "Transaction Filter",
+      "FORM_CONTROL_SECTION": {
+        "TRANSACTION_STATUS_CONTROL": {
+          "LABEL": "Order Status",
+          "DROPDOWN_OPTION_CONTROL": {
+            "CONFIRM_OPTION": "Confirm",
+            "DRAFT_OPTION": "Draft",
+            "BAD_OPTION": "Bad Order"
+          }
+        },
+        "TRANSACTION_DATE_CONTROL": {
+          "LABEL": "Date"
+        }
+      }
+    },
+    "VIEW_SELECTED_ORDERS_DIALOG": {
+      "TITLE": "View Selected Orders"
+    },
+    "MARK_ORDER_AS_PAID_DIALOG": {
+      "TITLE": "Mark Order(s) as Paid'",
+      "CONFIRM_MESSAGE": "Selected order(s) will be marked as paid. Are you sure to proceed?",
+      "SUCCESS_MESSAGE": "Selected order(s) have been successfully marked as Paid!",
+      "ERROR_MESSAGE": "Failed to mark as paid selected order(s). Please try again later!",
+      "WARNING_MESSAGE": "There are non confirmed order(s) selected. Marking orders as paid is only allowed for confirmed orders."
     }
   },
   "MANAGE_ACCOUNT_PAGE": {
