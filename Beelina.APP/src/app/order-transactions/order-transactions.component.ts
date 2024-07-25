@@ -171,7 +171,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit,
               this.orderTransactionStore.setLoadingStatus(false);
             },
             error: () => {
-              this.notificationService.openSuccessNotification(this.translateService.instant('ORDER_TRANSACTIONS_PAGE.MARK_ORDER_AS_PAID_DIALOG.ERROR_MESSAGE'));
+              this.notificationService.openErrorNotification(this.translateService.instant('ORDER_TRANSACTIONS_PAGE.MARK_ORDER_AS_PAID_DIALOG.ERROR_MESSAGE'));
               this.orderTransactionStore.setLoadingStatus(false);
             }
           });
