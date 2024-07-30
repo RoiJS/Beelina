@@ -77,6 +77,7 @@ services.AddGraphQLServer()
         .AddType<SupplierQuery>()
         .AddType<PaymentQuery>()
         .AddType<GeneralInformationQuery>()
+        .AddType<GeneralSettingsQuery>()
         .AddType<UserAccountMutation>()
         .AddType<BarangayMutation>()
         .AddType<SupplierMutation>()
@@ -172,7 +173,7 @@ else
 
             options.UseSqlServer(clientConnectionString);
         }
-    });
+    }, ServiceLifetime.Transient);
 }
 #endregion
 

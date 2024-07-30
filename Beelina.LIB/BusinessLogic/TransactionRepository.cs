@@ -422,7 +422,8 @@ namespace Beelina.LIB.BusinessLogic
                                 t => t.Payments,
                                 t => t.Store,
                                 t => t.Store.Barangay,
-                                t => t.Store.PaymentMethod
+                                t => t.Store.PaymentMethod,
+                                t => t.CreatedBy
                             )
                             .ToObjectAsync();
 
@@ -434,7 +435,7 @@ namespace Beelina.LIB.BusinessLogic
             // Only get for bad order amount if the transaction status is confirmed
             if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
             {
-                badOrdersAmount = await GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId);
+                badOrdersAmount = await GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId, transactionFromRepo.CreatedById);
             }
 
             transactionFromRepo.BadOrderAmount = badOrdersAmount;
@@ -460,7 +461,7 @@ namespace Beelina.LIB.BusinessLogic
             return transaction;
         }
 
-        public async Task<double> GetBadOrderAmount(string transactionNo, int storeId)
+        public async Task<double> GetBadOrderAmount(string transactionNo, int storeId, int? userId)
         {
             var badOrdersFromRepo = (from t in _beelinaRepository.ClientDbContext.Transactions
                                      join pt in _beelinaRepository.ClientDbContext.ProductTransactions
@@ -468,7 +469,7 @@ namespace Beelina.LIB.BusinessLogic
 
                                      where
                                          t.Status == TransactionStatusEnum.BadOrder
-                                         && t.CreatedById == _currentUserService.CurrentUserId
+                                         && t.CreatedById == userId
                                          && t.IsDelete == false
                                          && t.IsActive == true
                                          && t.StoreId == storeId
