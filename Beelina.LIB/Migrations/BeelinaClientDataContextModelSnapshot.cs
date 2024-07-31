@@ -72,11 +72,92 @@ namespace Beelina.LIB.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("BusinessModel")
                         .HasColumnType("int");
 
                     b.Property<bool>("ByPassAuthentication")
                         .HasColumnType("bit");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeactivatedById")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeletedById")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FaxTelephone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceFooterText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceFooterText1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OwnerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("SendOrderTransactionReceipt")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Telephone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DeactivatedById");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("GeneralSettings");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
@@ -105,8 +186,14 @@ namespace Beelina.LIB.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("SendOrderTransactionReceipt")
-                        .HasColumnType("bit");
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
@@ -119,9 +206,11 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("DeletedById");
 
+                    b.HasIndex("TransactionId");
+
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("GeneralSettings");
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.PaymentMethod", b =>
@@ -1137,6 +1226,41 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.Payment", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeactivatedBy")
+                        .WithMany()
+                        .HasForeignKey("DeactivatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById");
+
+                    b.HasOne("Beelina.LIB.Models.Transaction", "Transaction")
+                        .WithMany("Payments")
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("DeactivatedBy");
+
+                    b.Navigation("DeletedBy");
+
+                    b.Navigation("Transaction");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
@@ -1581,6 +1705,8 @@ namespace Beelina.LIB.Migrations
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("ProductTransactions");
                 });
 

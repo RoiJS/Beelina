@@ -5,16 +5,22 @@ import { IBaseStateConnection } from "../_interfaces/states/ibase-connection.sta
 import { IBaseState } from "../_interfaces/states/ibase.state";
 import { Transaction } from "../_models/transaction";
 import { TransactionService } from "../_services/transaction.service";
+import { TransactionStatusEnum } from "../_enum/transaction-status.enum";
+import { TransactionsFilter } from "../_models/filters/transactions.filter";
 
 export interface IOrderTransactionState extends IBaseState, IBaseStateConnection {
   transactions: Array<Transaction>;
   totalCount: number;
+  transactionStatus: TransactionStatusEnum;
+  transactionDate: string;
 }
 
 export const initialState: IOrderTransactionState = {
   isLoading: false,
   isUpdateLoading: false,
   transactions: new Array<Transaction>(),
+  transactionStatus: TransactionStatusEnum.ALL,
+  transactionDate: '',
   endCursor: null,
   filterKeyword: '',
   hasNextPage: false,
@@ -29,8 +35,12 @@ export const OrderTransactionStore = signalStore(
     getOrderTransactions: () => {
       patchState(store, { isLoading: true });
 
-      if (store.filterKeyword()) {
-        return transactionService.getTransactions(store.endCursor(), store.filterKeyword()).subscribe({
+      const transactionsFilter = new TransactionsFilter();
+      transactionsFilter.status = store.transactionStatus();
+      transactionsFilter.transactionDate = store.transactionDate();
+
+      if (store.filterKeyword() || transactionsFilter.isActive()) {
+        return transactionService.getTransactions(store.endCursor(), store.filterKeyword(), transactionsFilter).subscribe({
           next: (data) => {
             patchState(store, {
               transactions: store.transactions().concat(data.transactions),
@@ -40,7 +50,7 @@ export const OrderTransactionStore = signalStore(
             });
           },
           error: (error) => {
-            patchState(store, { error: error.message });
+            patchState(store, { isLoading: false, error: error.message });
           },
         });
       } else {
@@ -54,8 +64,16 @@ export const OrderTransactionStore = signalStore(
       }
     },
 
+    setLoadingStatus: (isLoading: boolean) => {
+      patchState(store, { isLoading });
+    },
+
     setSearchSuppliers: (keyword: string) => {
       patchState(store, { filterKeyword: keyword });
+    },
+
+    setTransactionFilter: (transactionFilter: TransactionsFilter) => {
+      patchState(store, { transactionStatus: transactionFilter.status, transactionDate: transactionFilter.transactionDate });
     },
 
     reset: () => {
@@ -63,7 +81,12 @@ export const OrderTransactionStore = signalStore(
     },
 
     resetList: () => {
-      patchState(store, { transactions: initialState.transactions, endCursor: initialState.endCursor });
+      patchState(store, {
+        transactions: initialState.transactions,
+        endCursor: initialState.endCursor,
+        transactionDate: initialState.transactionDate,
+        transactionStatus: initialState.transactionStatus
+      });
     }
   }))
 );

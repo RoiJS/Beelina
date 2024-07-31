@@ -5,6 +5,7 @@ using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ReserbizAPP.LIB.Helpers.Class;
@@ -28,7 +29,7 @@ namespace Beelina.LIB.BusinessLogic
             IProductTransactionRepository<ProductTransaction> productTransactionRepository,
             IOptions<EmailServerSettings> emailServerSettings,
             IOptions<AppHostInfo> appHostInfo,
-             IOptions<ApplicationSettings> appSettings,
+            IOptions<ApplicationSettings> appSettings,
             ICurrentUserService currentUserService
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
@@ -241,10 +242,15 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate)
         {
-            return await GetTransactions(status, transactionDate, _currentUserService.CurrentUserId);
+            var transactionsFilter = new TransactionsFilter
+            {
+                Status = status,
+                TransactionDate = transactionDate
+            };
+            return await GetTransactions(_currentUserService.CurrentUserId, "", transactionsFilter);
         }
 
-        public async Task<List<TransactionInformation>> GetTransactions(TransactionStatusEnum status, string transactionDate, int userId, string filterKeyword = "")
+        public async Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null)
         {
             var transactions = await (
                     from t in _beelinaRepository.ClientDbContext.Transactions
@@ -269,9 +275,9 @@ namespace Beelina.LIB.BusinessLogic
                     on s.BarangayId equals b.Id
 
                     where
-                        (String.IsNullOrEmpty(transactionDate) || (!String.IsNullOrEmpty(transactionDate) && t.TransactionDate == Convert.ToDateTime(transactionDate)))
-                        && (status == TransactionStatusEnum.All || (status != TransactionStatusEnum.All && t.Status == status))
+                        (transactionsFilter.Status == TransactionStatusEnum.All || (transactionsFilter.Status != TransactionStatusEnum.All && t.Status == transactionsFilter.Status))
                         && (userId == 0 || (userId > 0 && t.CreatedById == userId))
+                        && (transactionsFilter == null || (transactionsFilter != null && ((String.IsNullOrEmpty(transactionsFilter.TransactionDate) || (!String.IsNullOrEmpty(transactionsFilter.TransactionDate) && t.TransactionDate == Convert.ToDateTime(transactionsFilter.TransactionDate))))))
                         && !t.IsDelete
                         && t.IsActive
 
@@ -287,7 +293,7 @@ namespace Beelina.LIB.BusinessLogic
                         BarangayName = b.Name ?? String.Empty,
                         TransactionDate = t.TransactionDate,
                         ProductTransaction = pt,
-                        DateUpdated = t.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone),
+                        DateUpdated = t.DateUpdated,
                         UpdatedBy = up.PersonFullName ?? String.Empty,
                     }
                 ).ToListAsync();
@@ -343,7 +349,7 @@ namespace Beelina.LIB.BusinessLogic
                                                      TransactionDate = g.Key.TransactionDate,
                                                      HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransaction.Status)) == 0,
                                                      OrderItemsDateUpdated = g.Max(s => s.ProductTransaction.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone)),
-                                                     DetailsDateUpdated = g.Key.DateUpdated,
+                                                     DetailsDateUpdated = g.Key.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone),
                                                      DetailsUpdatedBy = g.Key.UpdatedBy,
                                                  })
                                                 .OrderByDescending(t => t.TransactionDate)
@@ -413,9 +419,11 @@ namespace Beelina.LIB.BusinessLogic
             var badOrdersAmount = 0.0;
             var transactionFromRepo = await GetEntity(transactionId)
                             .Includes(
+                                t => t.Payments,
                                 t => t.Store,
                                 t => t.Store.Barangay,
-                                t => t.Store.PaymentMethod
+                                t => t.Store.PaymentMethod,
+                                t => t.CreatedBy
                             )
                             .ToObjectAsync();
 
@@ -427,9 +435,10 @@ namespace Beelina.LIB.BusinessLogic
             // Only get for bad order amount if the transaction status is confirmed
             if (transactionFromRepo.Status == TransactionStatusEnum.Confirmed)
             {
-                badOrdersAmount = await GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId);
+                badOrdersAmount = await GetBadOrderAmount(transactionFromRepo.InvoiceNo, transactionFromRepo.StoreId, transactionFromRepo.CreatedById);
             }
 
+            transactionFromRepo.BadOrderAmount = badOrdersAmount;
             transactionFromRepo.ProductTransactions = await _productTransactionRepository.GetProductTransactions(transactionId);
 
             return new TransactionDetails { Transaction = transactionFromRepo, BadOrderAmount = badOrdersAmount };
@@ -452,7 +461,7 @@ namespace Beelina.LIB.BusinessLogic
             return transaction;
         }
 
-        public async Task<double> GetBadOrderAmount(string transactionNo, int storeId)
+        public async Task<double> GetBadOrderAmount(string transactionNo, int storeId, int? userId)
         {
             var badOrdersFromRepo = (from t in _beelinaRepository.ClientDbContext.Transactions
                                      join pt in _beelinaRepository.ClientDbContext.ProductTransactions
@@ -460,7 +469,7 @@ namespace Beelina.LIB.BusinessLogic
 
                                      where
                                          t.Status == TransactionStatusEnum.BadOrder
-                                         && t.CreatedById == _currentUserService.CurrentUserId
+                                         && t.CreatedById == userId
                                          && t.IsDelete == false
                                          && t.IsActive == true
                                          && t.StoreId == storeId
@@ -785,6 +794,26 @@ namespace Beelina.LIB.BusinessLogic
                                 .ToListAsync();
 
             DeleteMultipleEntities(transactionsFromRepo);
+        }
+
+        public async Task<List<Transaction>> MarkTransactionsAsPaid(List<int> transactionIds, bool paid)
+        {
+            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t => transactionIds.Contains(t.Id))
+                                .Includes(t => t.ProductTransactions)
+                                .ToListAsync();
+
+            // var transactionFromRepo = await transactionRepository.GetEntity(transactionId).Includes(t => t.ProductTransactions).ToObjectAsync();
+
+            SetCurrentUserId(_currentUserService.CurrentUserId);
+
+            transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));
+
+            // transactionFromRepo.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid);
+
+            await SaveChanges();
+
+            return transactionsFromRepo;
         }
 
         public async Task<bool> SendTransactionEmailReceipt(int transactionId)

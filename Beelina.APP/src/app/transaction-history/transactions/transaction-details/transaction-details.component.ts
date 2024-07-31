@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -28,8 +28,10 @@ import { Transaction } from 'src/app/_models/transaction';
 export class TransactionDetailsComponent
   extends BaseComponent
   implements AfterViewInit, OnDestroy {
-  @ViewChild(LoaderLayoutComponent) loaderLayoutComponent: LoaderLayoutComponent;
+  loaderLayoutComponent = viewChild(LoaderLayoutComponent);
+
   private _transactionId: number;
+  private _transactionDate: string;
   private _transaction: Transaction;
   private _paymentMethodOptions: PaymentMethod[];
   private _subscription: Subscription = new Subscription();
@@ -51,6 +53,7 @@ export class TransactionDetailsComponent
     });
 
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
+    this._transactionDate = this.activatedRoute.snapshot.paramMap.get('date');
     this._isLoading = true;
 
     this.store.dispatch(PaymentMethodActions.getPaymentMethodsAction());
@@ -63,7 +66,7 @@ export class TransactionDetailsComponent
   }
 
   ngAfterViewInit() {
-    this.loaderLayoutComponent.label = this.translateService.instant('LOADER_LAYOUT.LOADING_TEXT');
+    this.loaderLayoutComponent().label = this.translateService.instant('LOADER_LAYOUT.LOADING_TEXT');
     this.transactionService
       .getTransaction(this._transactionId)
       .subscribe((transaction: Transaction) => {
@@ -90,7 +93,7 @@ export class TransactionDetailsComponent
       .subscribe((result: ButtonOptions) => {
         if (result == ButtonOptions.YES) {
           this._isLoading = true;
-          this.loaderLayoutComponent.label = this.translateService.instant('TRANSACTION_DETAILS_PAGE.UPDATE_MODE_OF_PAYMENT_DIALOG.LOADING_MESSAGE');
+          this.loaderLayoutComponent().label = this.translateService.instant('TRANSACTION_DETAILS_PAGE.UPDATE_MODE_OF_PAYMENT_DIALOG.LOADING_MESSAGE');
           const modeOfPayment = +this._transactionForm.get('paymentMethod').value;
           this.transactionService
             .updateModeOfPayment(this._transactionId, modeOfPayment)
@@ -126,9 +129,9 @@ export class TransactionDetailsComponent
       .subscribe((result: ButtonOptions) => {
         if (result == ButtonOptions.YES) {
           this._isLoading = true;
-          this.loaderLayoutComponent.label = loadingMessage;
+          this.loaderLayoutComponent().label = loadingMessage;
           this.transactionService
-            .markTransactionAsPaid(this._transactionId, paid)
+            .markTransactionsAsPaid([this._transactionId], paid)
             .subscribe({
               next: () => {
                 this._isLoading = false;
@@ -143,6 +146,22 @@ export class TransactionDetailsComponent
             });
         }
       });
+  }
+
+  registerPayment() {
+    this.router.navigate([`transaction-history/transactions/${this._transactionDate}/${this._transactionId}/payments`], {
+      state: {
+        openRegisterDialog: true
+      }
+    });
+  }
+
+  goToPaymentHistory() {
+    this.router.navigate([`transaction-history/transactions/${this._transactionDate}/${this._transactionId}/payments`], {
+      state: {
+        openRegisterDialog: false
+      }
+    });
   }
 
   get transactionForm(): FormGroup {

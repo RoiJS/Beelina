@@ -92,7 +92,7 @@ export class ReportDetailsComponent
               const show = (!relation.onlyAvailableOnBusinessModel && !relation.onlyAvailableOnBusinessModelForMinimumPrivilege) || (businessModel === getBusinessModelEnum(relation.onlyAvailableOnBusinessModel?.toString())
                 && userPrivileges >= getPermissionLevelEnum(relation.onlyAvailableOnBusinessModelForMinimumPrivilege));
 
-              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show);
+              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show, relation.allowAllOption);
             }
           );
         });
@@ -110,7 +110,8 @@ export class ReportDetailsComponent
     id: number,
     componentName: string,
     controlLabelIdentifier: string,
-    show: boolean
+    show: boolean,
+    allowAllOption: boolean
   ) {
     // Attach the component to the ViewContainerRef
     const componentRef = this.container.createComponent(
@@ -119,6 +120,7 @@ export class ReportDetailsComponent
     const componentRefInstance = componentRef.instance as BaseControlComponent;
     componentRefInstance.setControlLabelIdentifier(controlLabelIdentifier);
     componentRefInstance.setControlVisibility(show);
+    componentRefInstance.setAllowAllOption(allowAllOption);
 
     this.controlComponents.push({
       id: id,

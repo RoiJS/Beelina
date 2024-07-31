@@ -1,4 +1,12 @@
-<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"> </app-tool-bar>
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
+
+  @if (isAdmin()) {
+  <button mat-icon-button class="toolbar-option" (click)="goToPaymentHistory()">
+    <mat-icon>payment</mat-icon>
+  </button>
+  }
+
+</app-tool-bar>
 <app-loader-layout [busy]="isLoading">
   <div class="page-container slide-in-left-animation">
     <div class="panel product-cart-container">
@@ -65,6 +73,17 @@
           }
 
           @if(productTransactions().length > 0) {
+          @if (isAdmin()) {
+          <div class="product-transaction-total-amount-information-container">
+            <span>{{ "GENERAL_TEXTS.BALANCE" | translate }}</span>
+            <span>{{ transaction()?.balanceFormatted }}</span>
+          </div>
+
+          <div class="product-transaction-total-amount-information-container">
+            <span>{{ "GENERAL_TEXTS.BAD_ORDERS_AMOUNT" | translate }}</span>
+            <span>{{ transaction()?.badOrderFormatted }}</span>
+          </div>
+          }
           <div class="product-transaction-total-amount-information-container">
             <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
             <span>{{ grossTotalAmount() }}</span>
@@ -197,12 +216,26 @@
           }
           } @else {
 
-          @if(transaction().hasUnpaidProductTransaction){
+          @if (transaction().balance > 0) {
+          <button mat-raised-button color="default" (click)="registerPayment()">
+            <mat-icon>payment</mat-icon>
+            {{"PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.REGISTER_PAYMENT"
+            | translate}}
+          </button>
+          }
+
+          @if(transaction().balance === 0 && transaction().hasUnpaidProductTransaction &&
+          orderForm.get('paymentMethod').value !== 3) {
           <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
             <mat-icon>check_circle_outline</mat-icon>
             {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
           </button>
           }
+
+          <button mat-raised-button color="default" (click)="printReceipt()">
+            <mat-icon>print</mat-icon>
+            {{ "GENERAL_TEXTS.PRINT" | translate }}
+          </button>
 
           <button mat-raised-button color="primary" (click)="saveNewUpdate()">
             <mat-icon>save</mat-icon>

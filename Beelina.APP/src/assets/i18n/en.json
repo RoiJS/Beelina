@@ -40,7 +40,8 @@
     "SELECT_ALL": "Select All",
     "VIEW": "View",
     "LAST_SAVED": "Last saved",
-    "ALL": "All"
+    "ALL": "All",
+    "PRINT": "Print"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -210,6 +211,35 @@
       "ERROR_MESSAGE": "Updating supplier failed. Please again later."
     }
   },
+  "PAYMENTS_PAGE": {
+    "TITLE": "Payments",
+    "DESCRIPTION": "Registered payments for the transaction are available here. Click add button to add new payment.",
+    "REGISTER_PAYMENT_DIALOG": {
+      "TITLE": "Payment Details",
+      "FORM_CONTROL_SECTION": {
+        "PAYMENT_DATE_CONTROL": {
+          "LABEL": "Payment Date"
+        },
+        "AMOUNT_CONTROL": {
+          "LABEL": "Amount"
+        },
+        "NOTES_CONTROL": {
+          "LABEL": "Notes",
+          "HINT": "Enter notes (optional)"
+        },
+        "PAID_CONTROL": {
+          "LABEL": "Do you want to make the order transaction mark as paid?"
+        }
+      }
+    },
+    "SAVE_PAYMENT_DIALOG": {
+      "TITLE": "Register Payment",
+      "LOADING_MESSAGE": "Registering payment. Please wait...",
+      "CONFIRM_MESSAGE": "You are about to register new payment. Do you want to proceed?",
+      "SUCCESS_MESSAGE": "New payment has been successfully registered!",
+      "ERROR_MESSAGE": "Registering payment failed. Please again later."
+    }
+  },
   "EDIT_CUSTOMER_DETAILS_PAGE": {
     "TITLE": "Edit Customer",
     "FORM_CONTROL_SECTION": {
@@ -331,7 +361,8 @@
       "BUTTON_OPTIONS": {
         "CONFIRM": "Confirm",
         "DRAFT": "Draft",
-        "ADD_ITEM": "Add Item +"
+        "ADD_ITEM": "Add Item +",
+        "REGISTER_PAYMENT": "Register Payment"
       }
     },
     "AGREEMENT_CONFIRMATION_DIALOG": {
@@ -676,7 +707,13 @@
   "TRANSACTION_SELECT_MULTIPLE_MODE": {
     "LABEL": "Selected Order(s)",
     "OPTIONS": {
-      "DELETE_SELECTED_ORDERS": "Delete Selected Order(s)"
+      "DELETE_SELECTED_ORDERS": "Delete Selected Order(s)",
+      "MARK_AS_PAID_SELECTED_ORDERS": "Mark Order(s) as Paid",
+      "VIEW_SELECTED_ORDERS": "View Selected Order(s)"
+    },
+    "DEACTIVATE_SELECT_MULTIPLE_DIALOG": {
+      "TITLE": "Deactivate Multi-select item(s)",
+      "CONFIRM_MESSAGE": "Deactivating multi-select will clear the selected item(s). Are you really sure to proceed?"
     }
   },
   "TRANSACTION_OPTION_MENU": {
@@ -691,6 +728,10 @@
     "DELETE_ORDER": {
       "LABEL": "Delete order",
       "DESCRIPTIONS": "Delete selected order from the list"
+    },
+    "REGISTER_PAYMENT": {
+      "LABEL": "Register Payment",
+      "DESCRIPTIONS": "Register payment for the selected order"
     },
     "DELETE_TRANSACTION_BY_DATE_DIALOG": {
       "TITLE": "Delete Orders",
@@ -827,7 +868,11 @@
       "PRODUCT_WITHDRAWAL_REPORT_NAME_2": "Product Withdrawal Report",
       "PRODUCT_WITHDRAWAL_REPORT_DESC_2": "This report can generate the product withdrawal on a given date. This can help administrators to analyze the product withdrawal per sales agent on a given date.",
       "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_NAME": "Customer Detailed Transactions Report",
-      "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate the detailed transactions of customers on a given date. Each transactions are generated per sheet."
+      "CUSTOMER_DETAILED_TRANSACTIONS_REPORT_DESC": "This report can generate the detailed transactions of customers on a given date. Each transactions are generated per sheet.",
+      "SALES_AGENT_COLLECTION_SUMMARY_REPORT_NAME": "Sales Agent Collection Summary Report",
+      "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date.",
+      "CUSTOMER_COLLECTION_SUMMARY_REPORT_NAME": "Customer Collection Summary Report",
+      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date."
     }
   },
   "REPORT_DETAILS_PAGE": {
@@ -849,6 +894,9 @@
       },
       "SALES_AGENT_DROPDOWN_CONTROL": {
         "LABEL": "Sales Agent"
+      },
+      "CUSTOMER_DROPDOWN_CONTROL": {
+        "LABEL": "Store"
       },
       "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
         "LABEL": "Order Transaction Type",
@@ -1072,6 +1120,32 @@
     },
     "ORDER_TRANSACTION_LIST_EMPTY_LABEL": {
       "LABEL": "Search Transaction by typing Invoice No., Sales Agent, Barangay Name, or Customer Name"
+    },
+    "TRANSACTION_FILTER_DIALOG": {
+      "TITLE": "Transaction Filter",
+      "FORM_CONTROL_SECTION": {
+        "TRANSACTION_STATUS_CONTROL": {
+          "LABEL": "Order Status",
+          "DROPDOWN_OPTION_CONTROL": {
+            "CONFIRM_OPTION": "Confirm",
+            "DRAFT_OPTION": "Draft",
+            "BAD_OPTION": "Bad Order"
+          }
+        },
+        "TRANSACTION_DATE_CONTROL": {
+          "LABEL": "Date"
+        }
+      }
+    },
+    "VIEW_SELECTED_ORDERS_DIALOG": {
+      "TITLE": "View Selected Orders"
+    },
+    "MARK_ORDER_AS_PAID_DIALOG": {
+      "TITLE": "Mark Order(s) as Paid'",
+      "CONFIRM_MESSAGE": "Selected order(s) will be marked as paid. Are you sure to proceed?",
+      "SUCCESS_MESSAGE": "Selected order(s) have been successfully marked as Paid!",
+      "ERROR_MESSAGE": "Failed to mark as paid selected order(s). Please try again later!",
+      "WARNING_MESSAGE": "There are non confirmed order(s) selected. Marking orders as paid is only allowed for confirmed orders."
     }
   },
   "MANAGE_ACCOUNT_PAGE": {

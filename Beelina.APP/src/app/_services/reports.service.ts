@@ -36,6 +36,7 @@ const GET_REPORT_INFORMATION = gql`
           reportControlId
           defaultValue
           order
+          allowAllOption
           onlyAvailableOnBusinessModel
           onlyAvailableOnBusinessModelForMinimumPrivilege
           reportControl {

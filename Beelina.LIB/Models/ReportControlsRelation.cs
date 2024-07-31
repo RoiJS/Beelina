@@ -9,6 +9,7 @@ namespace Beelina.LIB.Models
         public int ReportControlId { get; set; }
         public int Order { get; set; }
         public string DefaultValue { get; set; }
+        public bool AllowAllOption { get; set; } = false;
         public BusinessModelEnum? OnlyAvailableOnBusinessModel { get; set; }
         public PermissionLevelEnum? OnlyAvailableOnBusinessModelForMinimumPrivilege { get; set; }
 

@@ -39,6 +39,9 @@ import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
 import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
+import { TransactionsFilter } from '../_models/filters/transactions.filter';
+import { GeneralSettings } from '../_models/general-settings.model';
+import { User } from '../_models/user.model';
 
 const REGISTER_TRANSACTION_QUERY = gql`
   query ($transactionInput: TransactionInput!) {
@@ -102,30 +105,37 @@ const GET_TRANSACTION_DATES = gql`
 `;
 
 const GET_TRANSACTIONS_QUERY = gql`
-  query($filterKeyword: String, $cursor: String) {
-    transactions(filterKeyword: $filterKeyword, after: $cursor) {
+  query(
+  $filterKeyword: String,
+  $cursor: String,
+  $transactionsFilter: TransactionsFilterInput!) {
+    transactions(
+    filterKeyword: $filterKeyword,
+    after: $cursor,
+    transactionsFilter: $transactionsFilter
+  ) {
       nodes {
-          id,
-          storeId,
-          invoiceNo,
-          createdBy,
-          detailsUpdatedBy
-          detailsDateUpdated
-          orderItemsDateUpdated
-          finalDateUpdated
-          createdById,
-          transactionDate,
-          hasUnpaidProductTransaction,
-          barangayName
-          storeName
-          status
+        id,
+        storeId,
+        invoiceNo,
+        createdBy,
+        detailsUpdatedBy
+        detailsDateUpdated
+        orderItemsDateUpdated
+        finalDateUpdated
+        createdById,
+        transactionDate,
+        hasUnpaidProductTransaction,
+        barangayName
+        storeName
+        status
       }
       pageInfo {
-          endCursor
-          hasNextPage
-          hasPreviousPage
-          startCursor
-        }
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
       totalCount
     }
   }
@@ -209,10 +219,11 @@ const UPDATE_MODE_OF_PAYMENT = gql`
   }
 `;
 
-const MARK_TRANSACTION_AS_PAID = gql`
-  mutation ($transactionId: Int!, $paid: Boolean!) {
-    markTransactionAsPaid(input: { transactionId: $transactionId, paid: $paid }) {
-      transaction {
+
+const MARK_TRANSACTIONS_AS_PAID = gql`
+  mutation($transactionIds: [Int!]!, $paid: Boolean!) {
+    markTransactionsAsPaid(input: { transactionIds: $transactionIds, paid: $paid }) {
+      transaction{
         id
       }
     }
@@ -303,6 +314,75 @@ const GET_CUSTOMER_SALES_PRODUCTS_QUERY = gql`
     }
   }
 `;
+
+const GET_INVOICE_DATA_QUERY = gql`
+  query($transactionId: Int!) {
+    generalSettings {
+      companyName
+      ownerName
+      address
+      invoiceFooterText
+      invoiceFooterText1
+      telephone
+      faxTelephone
+      tin
+    }
+    transaction(transactionId: $transactionId) {
+        transaction {
+          id
+          storeId
+          invoiceNo
+          discount
+          transactionDate
+          dueDate
+          hasUnpaidProductTransaction
+          status
+          total
+          balance
+          createdBy {
+              id
+              firstName
+              lastName
+          }
+          store {
+              id
+              name
+              address
+              paymentMethod {
+              name
+              }
+              barangay {
+              name
+              }
+          }
+          productTransactions {
+              id
+              transactionId
+              productId
+              quantity
+              price
+              status
+              currentQuantity
+              product {
+                  id
+                  code
+                  name
+                  price
+                  productUnit {
+                      name
+                  }
+              }
+              productTransactionQuantityHistory {
+                  quantity
+                  dateCreated
+              }
+          }
+        }
+        badOrderAmount
+    }
+  }
+`;
+
 const GET_TOP_CUSTOMER_SALES_QUERY = gql`
   query(
     $storeId: Int!,
@@ -345,7 +425,6 @@ export class TransactionInformation {
   public hasUnpaidProductTransaction: boolean;
   public status: TransactionStatusEnum;
 }
-
 
 export class TransactionDetails {
   public transaction: Transaction;
@@ -421,6 +500,16 @@ export class CustomerSaleProduct {
 
   get totalSalesAmountFormatted(): string {
     return NumberFormatter.formatCurrency(this.totalSalesAmount);
+  }
+}
+
+export class InvoiceData {
+  public generalSettings: GeneralSettings;
+  public transaction: TransactionDetails;
+
+  constructor() {
+    this.generalSettings = new GeneralSettings();
+    this.transaction = new TransactionDetails();
   }
 }
 
@@ -579,13 +668,15 @@ export class TransactionService {
   getTransactions(
     cursor: string,
     filterKeyword: string,
+    transactionsFilter: TransactionsFilter
   ) {
     return this.apollo
       .watchQuery({
         query: GET_TRANSACTIONS_QUERY,
         variables: {
           filterKeyword,
-          cursor
+          cursor,
+          transactionsFilter
         },
       })
       .valueChanges.pipe(
@@ -1016,6 +1107,72 @@ export class TransactionService {
       );
   }
 
+  getInvoiceData(transactionId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_INVOICE_DATA_QUERY,
+        variables: { transactionId },
+      })
+      .valueChanges.pipe(
+        map(
+          (result: ApolloQueryResult<InvoiceData>) => {
+            const resultData = result.data;
+
+            const transactionFromRepo = resultData.transaction;
+            const transaction = new Transaction();
+            transaction.id = transactionFromRepo.transaction.id;
+            transaction.badOrderAmount = transactionFromRepo.badOrderAmount;
+            transaction.invoiceNo = transactionFromRepo.transaction.invoiceNo;
+            transaction.discount = transactionFromRepo.transaction.discount;
+            transaction.transactionDate = transactionFromRepo.transaction.transactionDate;
+            transaction.dueDate = transactionFromRepo.transaction.dueDate;
+            transaction.storeId = transactionFromRepo.transaction.storeId;
+            transaction.store = transactionFromRepo.transaction.store;
+            transaction.modeOfPayment = transactionFromRepo.transaction.modeOfPayment;
+            transaction.balance = transactionFromRepo.transaction.balance;
+            transaction.total = transactionFromRepo.transaction.total;
+            transaction.hasUnpaidProductTransaction =
+              transactionFromRepo.transaction.hasUnpaidProductTransaction;
+            transaction.status = transactionFromRepo.transaction.status;
+
+            const user = new User();
+            user.firstName = (<User>transactionFromRepo.transaction.createdBy).firstName;
+            user.lastName = (<User>transactionFromRepo.transaction.createdBy).lastName;
+            transaction.createdBy = user;
+
+            transaction.productTransactions =
+              transactionFromRepo.transaction.productTransactions.map((pt) => {
+                const productTransaction = new ProductTransaction();
+                productTransaction.id = pt.id;
+                productTransaction.quantity = pt.quantity;
+                productTransaction.currentQuantity = pt.currentQuantity;
+                productTransaction.price = pt.price;
+                productTransaction.status = pt.status;
+                productTransaction.productName = pt.product.name;
+                productTransaction.productId = pt.product.id;
+                productTransaction.code = pt.product.code;
+
+                productTransaction.product = new Product();
+                productTransaction.product.id = pt.product.id;
+                productTransaction.product.code = pt.product.code;
+                productTransaction.product.name = pt.product.name;
+                productTransaction.product.price = pt.product.price;
+                productTransaction.product.productUnit = pt.product.productUnit;
+
+                return productTransaction;
+              });
+
+            const invoiceData = new InvoiceData();
+            invoiceData.transaction.transaction = transaction;
+            invoiceData.transaction.badOrderAmount = transaction.badOrderAmount;
+            invoiceData.generalSettings = resultData.generalSettings;
+
+            return invoiceData;
+          }
+        )
+      );
+  }
+
   updateModeOfPayment(transactionId: number, modeOfPayment: number) {
     return this.apollo
       .mutate({
@@ -1050,12 +1207,12 @@ export class TransactionService {
       );
   }
 
-  markTransactionAsPaid(transactionId: number, paid: boolean) {
+  markTransactionsAsPaid(transactionIds: Array<number>, paid: boolean) {
     return this.apollo
       .mutate({
-        mutation: MARK_TRANSACTION_AS_PAID,
+        mutation: MARK_TRANSACTIONS_AS_PAID,
         variables: {
-          transactionId,
+          transactionIds,
           paid
         },
       })
@@ -1063,10 +1220,10 @@ export class TransactionService {
         map(
           (
             result: MutationResult<{
-              markTransactionAsPaid: ITransactionOutput;
+              markTransactionsAsPaid: ITransactionOutput;
             }>
           ) => {
-            const output = result.data.markTransactionAsPaid;
+            const output = result.data.markTransactionsAsPaid;
             const payload = output.transaction;
             const errors = output.errors;
 

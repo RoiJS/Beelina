@@ -1,0 +1,36 @@
+<div class="view-selected-orders-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "ORDER_TRANSACTIONS_PAGE.VIEW_SELECTED_ORDERS_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body">
+
+    <mat-checkbox [checked]="isSelectedAll()" (change)="selectAllItems($event.checked)" [labelPosition]="'after'">{{
+      'GENERAL_TEXTS.SELECT_ALL' | translate }}</mat-checkbox>
+
+    <cdk-virtual-scroll-viewport itemSize="10" class="list-container view-selected-order-list">
+      <div *cdkVirtualFor="let item of currentSelectedItems()">
+        <div matRipple
+          class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between list-container__item-section--align-items-center">
+          <div class="list-container__item-section--check-box-item-section">
+            <mat-checkbox [checked]="isSelected(item)" [id]="item.id.toString()"
+              (change)="selectItem($event.checked, item)"></mat-checkbox>
+            <span># {{ item.invoiceNo }}</span> - <span>{{ item.store.name }}</span>
+          </div>
+          <mat-icon>keyboard_arrow_right</mat-icon>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CLOSE" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
