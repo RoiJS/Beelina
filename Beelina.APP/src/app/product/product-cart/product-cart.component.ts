@@ -713,9 +713,11 @@ export class ProductCartComponent
   }
 
   printReceipt() {
+    this._isLoading = true;
     this.transactionService
       .getInvoiceData(this._transactionId())
       .subscribe((data: InvoiceData) => {
+        this._isLoading = false;
         const invoiceReceiptTemplate = this.constructReceiptTemplate(data);
 
         const options = {
@@ -756,7 +758,7 @@ export class ProductCartComponent
     const badOrderTemplate = transaction.badOrderAmount > 0 ? `
       <div class="invoice-summary-amount-section__details">
           <span class="property">Bad Order: </span>
-          <span class="value">${NumberFormatter.formatCurrencyWithoutSymbol(data.transaction.badOrderAmount)}</span>
+          <span class="value">${NumberFormatter.formatCurrency(data.transaction.badOrderAmount, false)}</span>
       </div>
     ` : '';
 
@@ -828,7 +830,7 @@ export class ProductCartComponent
                                     <td class="footer-product-quantity-count">${transaction.productTransactions.reduce((acc, transaction) => acc + transaction.quantity, 0)}</td>
                                     <td></td>
                                     <td></td>
-                                    <td class="product-total-amount-column">${NumberFormatter.formatCurrencyWithoutSymbol(transaction.total)}</td>
+                                    <td class="product-total-amount-column">${NumberFormatter.formatCurrency(transaction.total, false)}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -844,15 +846,15 @@ export class ProductCartComponent
                     <div class="invoice-summary-amount-section">
                         <div class="invoice-summary-amount-section__details">
                             <span class="property">Vatable Amount: </span>
-                            <span class="value">${NumberFormatter.formatCurrencyWithoutSymbol(transaction.vatableAmount)}</span>
+                            <span class="value">${NumberFormatter.formatCurrency(transaction.vatableAmount, false)}</span>
                         </div>
                         <div class="invoice-summary-amount-section__details">
                             <span class="property">Value Added Tax: </span>
-                            <span class="value">${NumberFormatter.formatCurrencyWithoutSymbol(transaction.valueAddedTax)}</span>
+                            <span class="value">${NumberFormatter.formatCurrency(transaction.valueAddedTax, false)}</span>
                         </div>
                         <div class="invoice-summary-amount-section__details">
                             <span class="property">Amount Sales: </span>
-                            <span class="value">${NumberFormatter.formatCurrencyWithoutSymbol(transaction.netTotal)}</span>
+                            <span class="value">${NumberFormatter.formatCurrency(transaction.netTotal, false)}</span>
                         </div>
                         ${badOrderTemplate}
                         ${discountTemplate}
@@ -862,7 +864,7 @@ export class ProductCartComponent
                         </div>
                         <div class="invoice-summary-amount-section__details invoice-summary-amount-section__total-payable-amount">
                             <span class="property">Total Payable: </span>
-                            <span class="value">${NumberFormatter.formatCurrencyWithoutSymbol(transaction.netTotal)}</span>
+                            <span class="value">${NumberFormatter.formatCurrency(transaction.netTotal, false)}</span>
                         </div>
                     </div>
                 </div>
@@ -1049,8 +1051,8 @@ export class ProductCartComponent
           <td class="product-description-column">${productTransaction[i].product.name}</td>
           <td class="product-quantity-column">${productTransaction[i].quantity}</td>
           <td class="product-unit-column">${productTransaction[i].product.productUnit.name}</td>
-          <td class="product-unit-price-column">${NumberFormatter.formatCurrencyWithoutSymbol(productTransaction[i].price)}</td>
-          <td class="product-amount-column">${NumberFormatter.formatCurrencyWithoutSymbol(productTransaction[i].price * productTransaction[i].quantity)}</td>
+          <td class="product-unit-price-column">${NumberFormatter.formatCurrency(productTransaction[i].price, false)}</td>
+          <td class="product-amount-column">${NumberFormatter.formatCurrency(productTransaction[i].price * productTransaction[i].quantity, false)}</td>
         </tr>
       `;
     }

@@ -1,6 +1,7 @@
 export class NumberFormatter {
-  static formatCurrency(value: number) {
-    return `₱ ${value
+  static formatCurrency(value: number, withCurrencySymbol = true, currencySymbol = '₱') {
+    if (!withCurrencySymbol) currencySymbol = '';
+    return `${currencySymbol} ${value
       .toFixed(2)
       .toString()
       .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
