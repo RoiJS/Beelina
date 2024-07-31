@@ -113,6 +113,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit,
           this.transactionsFilter.update(() => {
             const newTransactionsFilter = new TransactionsFilter();
             newTransactionsFilter.transactionDate = DateFormatter.format(data.transactionDate);
+            newTransactionsFilter.status = data.transactionStatus;
             return newTransactionsFilter;
           });
 
