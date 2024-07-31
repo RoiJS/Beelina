@@ -7,6 +7,7 @@ export class ReportControlsRelation {
   reportControlId: number;
   order: number;
   defaultValue: string;
+  allowAllOption: boolean;
   onlyAvailableOnBusinessModel: BusinessModelEnum;
   onlyAvailableOnBusinessModelForMinimumPrivilege: PermissionLevelEnum;
 

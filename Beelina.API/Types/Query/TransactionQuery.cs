@@ -5,6 +5,7 @@ using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
+using Beelina.LIB.Models.Filters;
 
 namespace Beelina.API.Types.Query
 {
@@ -76,6 +77,21 @@ namespace Beelina.API.Types.Query
 
       transactionFromRepo.ProductTransactions = updatedProductTransactions;
 
+      // Register Payment
+      if (transactionInput.Paid &&
+        transactionInput.Status == TransactionStatusEnum.Confirmed &&
+        transactionFromRepo.Payments.Count == 0)
+      {
+        var newPayment = new Payment();
+        newPayment.Amount = transactionFromRepo.NetTotal;
+        newPayment.PaymentDate = transactionFromRepo.TransactionDate
+                    .AddHours(DateTime.Now.Hour)
+                    .AddMinutes(DateTime.Now.Minute)
+                    .AddSeconds(DateTime.Now.Second);
+        newPayment.Notes = "Automatic Payment Registration";
+        transactionFromRepo.Payments.Add(newPayment);
+      }
+
       await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
 
       return transactionFromRepo;
@@ -86,9 +102,9 @@ namespace Beelina.API.Types.Query
     [UseProjection]
     [UseFiltering]
     [UseSorting]
-    public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "")
+    public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "", TransactionsFilter transactionsFilter = null)
     {
-      return await transactionRepository.GetTransactions(TransactionStatusEnum.All, "", 0, filterKeyword);
+      return await transactionRepository.GetTransactions(0, filterKeyword, transactionsFilter);
     }
 
     [Authorize]

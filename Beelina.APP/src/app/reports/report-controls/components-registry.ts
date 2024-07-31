@@ -1,3 +1,4 @@
+import { CustomerDropdownControlComponent } from './customer-dropdown-control/customer-dropdown-control.component';
 import { DatePickerComponent } from './date-picker/date-picker.component';
 import { DateRangeControlComponent } from './date-range-control/date-range-control.component';
 import { SalesAgentDropdownControlComponent } from './sales-agent-dropdown-control/sales-agent-dropdown-control.component';
@@ -13,4 +14,5 @@ export const componentsRegistry: { [key: string]: any } = {
   SortOrderDropdownControl: SortOrderControlComponent,
   SalesAgentDropdownControl: SalesAgentDropdownControlComponent,
   TransactionTypeDropdownControl: TransactionTypeDropdownControlComponent,
+  CustomerDropdownControl: CustomerDropdownControlComponent,
 };

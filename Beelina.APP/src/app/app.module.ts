@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTreeModule } from '@angular/material/tree';
-import { MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { GraphQLModule } from './graphql.module';
@@ -49,6 +49,7 @@ import { TemplatePageTitleStrategyService } from './_services/title-strategy.ser
     MatTreeModule,
     MatIconModule,
     MatRippleModule,
+    MatNativeDateModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

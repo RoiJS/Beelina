@@ -52,7 +52,7 @@
         <div *cdkVirtualFor="let item of dataSource">
           <div matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between"
-            (click)="goToTransactionDate(item.transactionDate)" longPress (onLongPress)="openMoreActions(item)">
+            (click)="goToTransactionDate(item.transactionDate)" appLongPress (longPress)="openMoreActions(item)">
             <div class="list-container__item-section--check-box-item-section">
               @if(multipleItemsService.selectMultipleActive()) {
               <mat-checkbox [checked]="multipleItemsService.isSelected(item.transactionDate)"

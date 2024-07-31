@@ -6,5 +6,6 @@ export enum PlaceholderEntityTemplateEnum {
   REPORTS = 'REPORTS',
   SALES_AGENTS = 'SALES_AGENTS',
   LOGIN = 'LOGIN',
-  USER_ACCOUNTS = 'USER_ACCOUNTS'
+  USER_ACCOUNTS = 'USER_ACCOUNTS',
+  PAYMENTS = 'PAYMENTS'
 }

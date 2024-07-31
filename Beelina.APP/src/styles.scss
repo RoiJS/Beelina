@@ -266,6 +266,10 @@ button[mat-raised-button] {
       button {
         width: 50%;
       }
+
+      button.width-stretch {
+        width: 100%;
+      }
     }
   }
 }
@@ -386,7 +390,7 @@ app-tool-bar {
     > div.cdk-virtual-scroll-content-wrapper,
   cdk-virtual-scroll-viewport.user-account-list
     > div.cdk-virtual-scroll-content-wrapper,
-    cdk-virtual-scroll-viewport.order-transactions-list
+  cdk-virtual-scroll-viewport.order-transactions-list
     > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -403,7 +407,7 @@ app-tool-bar {
     > div.cdk-virtual-scroll-content-wrapper,
   cdk-virtual-scroll-viewport.user-account-list
     > div.cdk-virtual-scroll-content-wrapper,
-    cdk-virtual-scroll-viewport.order-transactions-list
+  cdk-virtual-scroll-viewport.order-transactions-list
     > div.cdk-virtual-scroll-content-wrapper {
     display: flex;
     flex-wrap: wrap;

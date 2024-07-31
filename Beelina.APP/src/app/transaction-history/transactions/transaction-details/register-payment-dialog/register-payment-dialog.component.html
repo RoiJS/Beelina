@@ -1,0 +1,65 @@
+<div class="register-payment-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "PAYMENTS_PAGE.REGISTER_PAYMENT_DIALOG.TITLE"
+      | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body" [formGroup]="registerPaymentForm">
+
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "PAYMENTS_PAGE.REGISTER_PAYMENT_DIALOG.FORM_CONTROL_SECTION.PAYMENT_DATE_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <input matInput [readonly]="data.payment.id > 0" [matDatepicker]="duedatepicker" formControlName="paymentDate" />
+      <mat-datepicker-toggle matIconSuffix [for]="duedatepicker"></mat-datepicker-toggle>
+      <mat-datepicker #duedatepicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "PAYMENTS_PAGE.REGISTER_PAYMENT_DIALOG.FORM_CONTROL_SECTION.AMOUNT_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <input matInput [readonly]="data.payment.id > 0" type="number" formControlName="amount" />
+      <mat-hint>Max Amount: {{ maxAmountHint() }}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "PAYMENTS_PAGE.REGISTER_PAYMENT_DIALOG.FORM_CONTROL_SECTION.NOTES_CONTROL.LABEL"
+        | translate
+        }}:</mat-label>
+      <textarea matInput [readonly]="data.payment.id > 0" type="text" rows="6" formControlName="notes"
+        [placeholder]="notesControlHintText"></textarea>
+    </mat-form-field>
+
+    @if(registerPaymentForm.get('amount').value === maxAmount()) {
+    <div>
+      <mat-slide-toggle formControlName="paid">{{
+        "PAYMENTS_PAGE.REGISTER_PAYMENT_DIALOG.FORM_CONTROL_SECTION.PAID_CONTROL.LABEL"
+        | translate
+        }}</mat-slide-toggle>
+    </div>
+    }
+
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+
+      @if (data.payment.id === 0) {
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CANCEL" | translate }}
+      </button>
+      } @else {
+      <button mat-raised-button color="default" class="width-stretch" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CLOSE" | translate }}
+      </button>
+      }
+
+    </div>
+  </div>
+</div>

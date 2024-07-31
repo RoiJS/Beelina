@@ -9,10 +9,11 @@ import { TranslateService } from '@ngx-translate/core';
 export class BaseControlComponent implements OnInit {
   protected controlLabelIdentifier: string;
   protected hide: boolean;
+  protected allowAllOption: boolean;
 
-  constructor(protected translateService: TranslateService) {}
+  constructor(protected translateService: TranslateService) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   value(value: any = null) {
     console.warn('Implement value() function!');
@@ -28,6 +29,10 @@ export class BaseControlComponent implements OnInit {
 
   setControlVisibility(show: boolean) {
     this.hide = !show;
+  }
+
+  setAllowAllOption(activateAllOption: boolean) {
+    this.allowAllOption = activateAllOption;
   }
 
   get controLabel(): string {

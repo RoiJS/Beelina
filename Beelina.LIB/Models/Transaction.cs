@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Enums;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Beelina.LIB.Enums;
 using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
@@ -15,8 +16,13 @@ namespace Beelina.LIB.Models
         public int WarehouseId { get; set; } = 1; // Default to the first warehouse
 
         public List<ProductTransaction> ProductTransactions { get; set; } = [];
+        public List<Payment> Payments { get; set; } = [];
+
         public string InvoiceNo { get; set; }
         public double Discount { get; set; }
+
+        [NotMapped]
+        public double BadOrderAmount { get; set; }
 
         public bool HasUnpaidProductTransaction
         {
@@ -30,7 +36,8 @@ namespace Beelina.LIB.Models
         {
             get
             {
-                return (double)ProductTransactions.Where(p => p.Status == PaymentStatusEnum.Unpaid).Sum(s => s.Quantity * s.Price);
+                var payments = Payments.Sum(s => s.Amount);
+                return NetTotal - payments;
             }
         }
 
@@ -39,6 +46,14 @@ namespace Beelina.LIB.Models
             get
             {
                 return (double)ProductTransactions.Sum(s => s.Quantity * s.Price);
+            }
+        }
+
+        public double NetTotal
+        {
+            get
+            {
+                return Total - ((Discount / 100) * Total) - BadOrderAmount;
             }
         }
 
