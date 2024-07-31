@@ -40,7 +40,8 @@
     "SELECT_ALL": "Select All",
     "VIEW": "View",
     "LAST_SAVED": "Last saved",
-    "ALL": "All"
+    "ALL": "All",
+    "PRINT": "Print"
   },
   "MAIN_MENU": {
     "SALES": "Sales",

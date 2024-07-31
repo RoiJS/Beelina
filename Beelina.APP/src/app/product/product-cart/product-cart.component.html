@@ -76,7 +76,12 @@
           @if (isAdmin()) {
           <div class="product-transaction-total-amount-information-container">
             <span>{{ "GENERAL_TEXTS.BALANCE" | translate }}</span>
-            <span>{{ transaction().balanceFormatted }}</span>
+            <span>{{ transaction()?.balanceFormatted }}</span>
+          </div>
+
+          <div class="product-transaction-total-amount-information-container">
+            <span>{{ "GENERAL_TEXTS.BAD_ORDERS_AMOUNT" | translate }}</span>
+            <span>{{ transaction()?.badOrderFormatted }}</span>
           </div>
           }
           <div class="product-transaction-total-amount-information-container">
@@ -213,6 +218,7 @@
 
           @if (transaction().balance > 0) {
           <button mat-raised-button color="default" (click)="registerPayment()">
+            <mat-icon>payment</mat-icon>
             {{"PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.REGISTER_PAYMENT"
             | translate}}
           </button>
@@ -225,6 +231,11 @@
             {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
           </button>
           }
+
+          <button mat-raised-button color="default" (click)="printReceipt()">
+            <mat-icon>print</mat-icon>
+            {{ "GENERAL_TEXTS.PRINT" | translate }}
+          </button>
 
           <button mat-raised-button color="primary" (click)="saveNewUpdate()">
             <mat-icon>save</mat-icon>

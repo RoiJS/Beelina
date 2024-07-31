@@ -7,6 +7,7 @@ import { Barangay } from './barangay';
 import { CustomerStore } from './customer-store';
 import { Entity } from './entity.model';
 import { Product } from './product';
+import { User } from './user.model';
 
 export class Transaction extends Entity implements IModelNode {
   public storeId: number;
@@ -15,7 +16,7 @@ export class Transaction extends Entity implements IModelNode {
   public transactionDate: Date;
   public dueDate: Date;
   public createdById: number;
-  public createdBy: string;
+  public createdBy: string | User;
   public detailsUpdatedBy: string;
   public detailsDateUpdated: Date;
   public orderItemsDateUpdated: Date;
@@ -62,6 +63,18 @@ export class Transaction extends Entity implements IModelNode {
 
   get balanceFormatted(): string {
     return NumberFormatter.formatCurrency(this.balance);
+  }
+
+  get vatableAmount(): number {
+    return NumberFormatter.roundToDecimalPlaces(this.netTotal / (1 + (this.vatPercentage / 100)), 2);
+  }
+
+  get valueAddedTax(): number {
+    return this.netTotal - this.vatableAmount;
+  }
+
+  get vatPercentage(): number {
+    return 12; // Default fix value for now
   }
 
   constructor() {
