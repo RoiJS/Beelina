@@ -1,5 +1,7 @@
-<app-screen-not-supported *ngIf="isHandset"></app-screen-not-supported>
-<div *ngIf="!isHandset">
+@if (isHandset) {
+<app-screen-not-supported></app-screen-not-supported>
+} @else {
+<div>
   <router-outlet name="adminDashboard"></router-outlet>
   <mat-toolbar class="bottom-nav-container">
     <button mat-flat-button routerLink="/dashboard" routerLinkActive="active-link" outlet="adminDashboard">
@@ -16,3 +18,5 @@
     </button>
   </mat-toolbar>
 </div>
+
+}

@@ -2,7 +2,8 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
   <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item (click)="activateSelectMultiple(true)">
+    <button [disabled]="dataSource?.itemCount === 0" mat-menu-item
+      (click)="activateSelectMultiple(true)">
       <mat-icon>list</mat-icon>
       {{ 'GENERAL_TEXTS.SELECT_MULTIPLE' | translate }}
     </button>
