@@ -97,7 +97,9 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit,
   }
 
   openFilter() {
-    this._dialogOpenFilterRef = this.bottomSheet.open(TransactionFilterComponent);
+    this._dialogOpenFilterRef = this.bottomSheet.open(TransactionFilterComponent, {
+      data: this.transactionsFilter()
+    });
 
     this._dialogOpenFilterRef
       .afterDismissed()
