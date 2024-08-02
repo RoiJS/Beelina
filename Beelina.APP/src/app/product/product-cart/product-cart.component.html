@@ -216,6 +216,11 @@
           }
           } @else {
 
+          <button mat-raised-button color="default" (click)="printReceipt()">
+            <mat-icon>print</mat-icon>
+            {{ "GENERAL_TEXTS.PRINT" | translate }}
+          </button>
+
           @if (transaction().balance > 0) {
           <button mat-raised-button color="default" (click)="registerPayment()">
             <mat-icon>payment</mat-icon>
@@ -231,11 +236,6 @@
             {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
           </button>
           }
-
-          <button mat-raised-button color="default" (click)="printReceipt()">
-            <mat-icon>print</mat-icon>
-            {{ "GENERAL_TEXTS.PRINT" | translate }}
-          </button>
 
           <button mat-raised-button color="primary" (click)="saveNewUpdate()">
             <mat-icon>save</mat-icon>
