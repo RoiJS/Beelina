@@ -1161,7 +1161,7 @@ export class ProductCartComponent
   get netTotalAmount(): string {
     const discount = this._discountForm.get('discount').value;
     const calculatedNetTotalAmount =
-      this._totalAmount() - (discount / 100) * this._totalAmount() - this.transaction().badOrderAmount;
+      this._totalAmount() - (discount / 100) * this._totalAmount() - this.transaction()?.badOrderAmount;
     return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
   }
 
