@@ -28,7 +28,7 @@ export class Transaction extends Entity implements IModelNode {
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
   public total: number;
-  public badOrderAmount: number;
+  public badOrderAmount: number = 0;
   public status: TransactionStatusEnum;
 
   get transactionDateFormatted(): string {
