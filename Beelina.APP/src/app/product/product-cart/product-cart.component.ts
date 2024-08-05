@@ -858,10 +858,6 @@ export class ProductCartComponent
                         </div>
                         ${badOrderTemplate}
                         ${discountTemplate}
-                        <div class="invoice-summary-amount-section__details">
-                            <span class="property">Freight & Hand: </span>
-                            <span class="value">0.00</span>
-                        </div>
                         <div class="invoice-summary-amount-section__details invoice-summary-amount-section__total-payable-amount">
                             <span class="property">Total Payable: </span>
                             <span class="value">${NumberFormatter.formatCurrency(transaction.netTotal, false)}</span>

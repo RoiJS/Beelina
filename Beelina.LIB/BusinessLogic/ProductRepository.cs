@@ -738,7 +738,7 @@ namespace Beelina.LIB.BusinessLogic
           Name = unitName
         };
 
-        _beelinaRepository.ClientDbContext.ProductUnits.Add(productUnitFromRepo);
+        await _beelinaRepository.ClientDbContext.ProductUnits.AddAsync(productUnitFromRepo);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
       }
 
@@ -764,8 +764,14 @@ namespace Beelina.LIB.BusinessLogic
       }
 
       if (productStockPerPanelFromRepo.Id == 0)
+      {
         await _beelinaRepository.ClientDbContext.ProductStockPerPanels.AddAsync(productStockPerPanelFromRepo);
-      await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+      }
+      else
+      {
+        await _productStockPerPanelRepository.SaveChanges(cancellationToken);
+      }
 
       return productStockPerPanelFromRepo;
     }
@@ -789,8 +795,14 @@ namespace Beelina.LIB.BusinessLogic
       }
 
       if (productStockPerWarehouseFromRepo.Id == 0)
+      {
         await _beelinaRepository.ClientDbContext.ProductStockPerWarehouse.AddAsync(productStockPerWarehouseFromRepo);
-      await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+      }
+      else
+      {
+        await _productStockPerWarehouseRepository.SaveChanges(cancellationToken);
+      }
 
       return productStockPerWarehouseFromRepo;
     }

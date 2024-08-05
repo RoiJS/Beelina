@@ -11,6 +11,7 @@ import { BaseComponent } from '../shared/components/base-component/base.componen
 import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 import { UserAccountService } from '../_services/user-account.service';
+import { ButtonOptions } from '../_enum/button-options.enum';
 
 @Component({
   selector: 'app-profile',
@@ -122,8 +123,8 @@ export class ProfileComponent extends BaseComponent implements OnInit {
             'PROFILE_PAGE.EDIT_PROFILE_DIALOG.CONFIRM'
           )
         )
-        .subscribe((result: boolean) => {
-          if (result) {
+        .subscribe((result: ButtonOptions) => {
+          if (result == ButtonOptions.YES) {
             this._isLoading = true;
             this.userAccountService.updateAccountInformation(user).subscribe({
               next: () => {
