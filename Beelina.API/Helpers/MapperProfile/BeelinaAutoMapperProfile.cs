@@ -33,6 +33,9 @@ namespace Beelina.API.Helpers.MapperProfile
             CreateMap<UserAccountDto, Account>();
             CreateMap<Account, UserAccountDto>();
             CreateMap<ClientDto, Client>();
+
+            CreateMap<Transaction, TransactionInput>();
+            CreateMap<ProductTransaction, ProductTransactionInput>();
         }
     }
 }

@@ -59,6 +59,14 @@ mutation($transactionIds: [Int!]!) {
 }
 `;
 
+const SET_TRANSACTION_STATUS = gql`
+mutation($transactionIds: [Int!]!, $status: TransactionStatusEnum!) {
+  setTransactionsStatus(input: { transactionIds: $transactionIds, status: $status }) {
+    boolean
+  }
+}
+`;
+
 const DELETE_TRANSACTIONS_BY_DATE = gql`
 mutation($transactionStatus: TransactionStatusEnum!, $transactionDates: [String!]!) {
   deleteTransactionsByDate(input: { transactionStatus: $transactionStatus, transactionDates: $transactionDates }) {
@@ -586,6 +594,36 @@ export class TransactionService {
             result: MutationResult<{ deleteTransactions: { boolean: boolean } }>
           ) => {
             const output = result.data.deleteTransactions;
+            const payload = output.boolean;
+
+            if (payload) {
+              return payload;
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
+  setTransactionsStatus(transactionIds: Array<number>, status: TransactionStatusEnum) {
+    return this.apollo
+      .mutate({
+        mutation: SET_TRANSACTION_STATUS,
+        variables: {
+          transactionIds,
+          status
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{ setTransactionsStatus: { boolean: boolean } }>
+          ) => {
+            const output = result.data.setTransactionsStatus;
             const payload = output.boolean;
 
             if (payload) {

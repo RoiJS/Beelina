@@ -6,6 +6,7 @@ using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
 using Beelina.LIB.Models.Filters;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Beelina.API.Types.Query
 {
@@ -223,7 +224,38 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
-    public async Task<List<ProductTransactionOverallQuantities>> ValidateProductionTransactionsQuantities_NEW(
+    public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateMutlipleTransactionsProductQuantities(
+      [Service] IProductRepository<Product> productRepository,
+      [Service] ITransactionRepository<Transaction> transactionRepository,
+      [Service] IHttpContextAccessor httpContextAccessor,
+      [Service] IMapper mapper,
+      List<int> transactionIds,
+      int userAccountId
+    )
+    {
+      var transactions = await transactionRepository.GetTransactions(transactionIds);
+      var transactionInputs = mapper.Map<List<TransactionInput>>(transactions);
+      transactionInputs.ForEach(transactionInput =>
+      {
+        var transaction = transactions.Where(t => t.Id == transactionInput.Id).FirstOrDefault();
+        if (transaction is not null)
+        {
+          transactionInput.ProductTransactionInputs = mapper.Map<List<ProductTransactionInput>>(transaction.ProductTransactions);
+        }
+      });
+
+      var invalidProductTransactionOverallQuantities = await ValidateProductionTransactionsQuantities_NEW(
+                                                        productRepository,
+                                                        httpContextAccessor,
+                                                        transactionInputs,
+                                                        userAccountId
+                                                      );
+
+      return invalidProductTransactionOverallQuantities;
+    }
+
+    [Authorize]
+    public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductionTransactionsQuantities_NEW(
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             List<TransactionInput> transactionInputs,
@@ -247,7 +279,7 @@ namespace Beelina.API.Types.Query
             {
               ProductId = productTransaction.ProductId,
               OverallQuantity = productTransaction.Quantity,
-              ProductTransactionOverallQuantitiesTransactions = [new ProductTransactionOverallQuantitiesTransaction { TransactionId = transactionInput.Id, TransationCode = transactionInput.InvoiceNo }]
+              ProductTransactionOverallQuantitiesTransactions = [new ProductTransactionOverallQuantitiesTransaction { TransactionId = transactionInput.Id, TransactionCode = transactionInput.InvoiceNo }]
             });
           }
           else
@@ -256,7 +288,7 @@ namespace Beelina.API.Types.Query
             productTransactionOverallQuantities.ProductTransactionOverallQuantitiesTransactions.Add(new ProductTransactionOverallQuantitiesTransaction
             {
               TransactionId = transactionInput.Id,
-              TransationCode = transactionInput.InvoiceNo
+              TransactionCode = transactionInput.InvoiceNo
             });
           }
         }
@@ -278,7 +310,49 @@ namespace Beelina.API.Types.Query
         }
       }
 
-      return invalidProductTransactionOverallQuantities;
+      List<InvalidProductTransactionOverallQuantitiesTransaction> invalidProductTransactions = [];
+
+      foreach (var invalid in invalidProductTransactionOverallQuantities)
+      {
+        foreach (var transaction in invalid.ProductTransactionOverallQuantitiesTransactions)
+        {
+          var invalidProductTransaction = invalidProductTransactions.Where(i => i.TransactionId == transaction.TransactionId).FirstOrDefault();
+
+          if (invalidProductTransaction is null)
+          {
+            var invalidPT = new InvalidProductTransactionOverallQuantitiesTransaction
+            {
+              TransactionId = transaction.TransactionId,
+              TransactionCode = transaction.TransactionCode
+            };
+            invalidPT.InvalidProductTransactionOverallQuantities.Add(new InvalidProductTransactionOverallQuantities
+            {
+              ProductId = invalid.ProductId,
+              ProductCode = invalid.ProductCode,
+              ProductName = invalid.ProductName,
+              CurrentQuantity = invalid.CurrentQuantity,
+              OverallQuantity = invalid.OverallQuantity,
+            });
+
+            invalidProductTransactions.Add(invalidPT);
+          }
+          else
+          {
+            invalidProductTransaction.InvalidProductTransactionOverallQuantities.Add(
+              new InvalidProductTransactionOverallQuantities
+              {
+                ProductId = invalid.ProductId,
+                ProductCode = invalid.ProductCode,
+                ProductName = invalid.ProductName,
+                CurrentQuantity = invalid.CurrentQuantity,
+                OverallQuantity = invalid.OverallQuantity
+              }
+            );
+          }
+        }
+      }
+
+      return invalidProductTransactions;
     }
 
     [Authorize]

@@ -24,3 +24,22 @@ export class ProductTransactionOverallQuantitiesTransactions {
   public transactionId: number;
   public transationCode: string;
 }
+
+
+export class InvalidProductTransactionOverallQuantitiesTransactions {
+  public transactionId: number;
+  public transactionCode: string;
+  public invalidProductTransactionOverallQuantities: Array<InvalidProductTransactionOverallQuantities>;
+
+  constructor() {
+    this.invalidProductTransactionOverallQuantities = [];
+  }
+}
+
+export class InvalidProductTransactionOverallQuantities {
+  public productId: number;
+  public productCode: string;
+  public productName: string;
+  public currentQuantity: number;
+  public overallQuantity: number;
+}

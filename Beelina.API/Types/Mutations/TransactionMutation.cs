@@ -63,6 +63,32 @@ namespace Beelina.API.Types.Mutations
         }
 
         [Authorize]
+        public async Task<bool> SetTransactionsStatus(
+                [Service] ITransactionRepository<Transaction> transactionRepository,
+                [Service] ICurrentUserService currentUserService,
+                [Service] IHttpContextAccessor httpContextAccessor,
+                List<int> transactionIds,
+                TransactionStatusEnum status)
+        {
+            var result = true;
+
+            try
+            {
+                transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+                await transactionRepository.SetTransactionsStatus(transactionIds, status);
+
+                await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Console.Write($"Error setting order transaction(s) status: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        [Authorize]
         public async Task<bool> DeleteTransactionsByDate(
                 [Service] ITransactionRepository<Transaction> transactionRepository,
                 [Service] ICurrentUserService currentUserService,

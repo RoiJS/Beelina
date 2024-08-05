@@ -708,6 +708,7 @@
     "LABEL": "Selected Order(s)",
     "OPTIONS": {
       "DELETE_SELECTED_ORDERS": "Delete Selected Order(s)",
+      "CONFIRM_SELECTED_ORDERS": "Confirm Order(s)",
       "MARK_AS_PAID_SELECTED_ORDERS": "Mark Order(s) as Paid",
       "VIEW_SELECTED_ORDERS": "View Selected Order(s)"
     },

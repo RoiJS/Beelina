@@ -34,7 +34,7 @@ import { IProductInput } from '../_interfaces/inputs/iproduct.input';
 import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
 import { Product } from '../_models/product';
 import { ProductTransaction } from '../_models/transaction';
-import { InsufficientProductQuantity, ProductTransactionOverallQuantities } from '../_models/insufficient-product-quantity';
+import { InsufficientProductQuantity, InvalidProductTransactionOverallQuantitiesTransactions, ProductTransactionOverallQuantities } from '../_models/insufficient-product-quantity';
 
 import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
 import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
@@ -255,6 +255,38 @@ const VALIDATE_PRODUCT_QUANTITIES = gql`
       productTransactionOverallQuantitiesTransactions {
         transactionId
         transationCode
+      }
+    }
+  }
+`;
+
+const VALIDATE_PRODUCT_QUANTITIES_NEW = gql`
+  query ($userAccountId: Int!, $transactionInputs: [TransactionInput!]!) {
+    validateProductionTransactionsQuantities_NEW(transactionInputs: $transactionInputs, userAccountId: $userAccountId) {
+      transactionCode
+      transactionId
+      invalidProductTransactionOverallQuantities {
+        productId
+        productCode
+        productName
+        overallQuantity
+        currentQuantity
+      }
+    }
+  }
+`;
+
+const VALIDATE_MULTIPLE_TRANSACTIONS_PRODUCT_QUANTITIES = gql`
+  query ($userAccountId: Int!, $transactionIds: [Int!]!) {
+    validateMutlipleTransactionsProductQuantities(transactionIds: $transactionIds, userAccountId: $userAccountId) {
+        transactionCode
+        transactionId
+        invalidProductTransactionOverallQuantities {
+          productId
+          productCode
+          productName
+          overallQuantity
+          currentQuantity
       }
     }
   }
@@ -1096,7 +1128,7 @@ export class ProductService {
 
     return this.apollo
       .watchQuery({
-        query: VALIDATE_PRODUCT_QUANTITIES,
+        query: VALIDATE_PRODUCT_QUANTITIES_NEW,
         variables: {
           transactionInputs,
           userAccountId,
@@ -1106,26 +1138,59 @@ export class ProductService {
         map(
           (
             result: ApolloQueryResult<{
-              validateProductionTransactionsQuantities_NEW: Array<ProductTransactionOverallQuantities>;
+              validateProductionTransactionsQuantities_NEW: Array<InvalidProductTransactionOverallQuantitiesTransactions>;
             }>
           ) => {
-            const data = <Array<ProductTransactionOverallQuantities>>(
+            const data = <Array<InvalidProductTransactionOverallQuantitiesTransactions>>(
               result.data.validateProductionTransactionsQuantities_NEW
             );
 
-            const insufficientProductQuantities: Array<ProductTransactionOverallQuantities> =
+            const productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions> =
               data.map((i) => {
-                return <ProductTransactionOverallQuantities>{
-                  productId: i.productId,
-                  productCode: i.productCode,
-                  productName: i.productName,
-                  currentQuantity: i.currentQuantity,
-                  overallQuantity: i.overallQuantity,
-                  productTransactionOverallQuantitiesTransactions: i.productTransactionOverallQuantitiesTransactions
+                return <InvalidProductTransactionOverallQuantitiesTransactions>{
+                  transactionId: i.transactionId,
+                  transactionCode: i.transactionCode,
+                  invalidProductTransactionOverallQuantities: i.invalidProductTransactionOverallQuantities
                 };
               });
 
-            return insufficientProductQuantities;
+            return productsWithInsufficientQuantities;
+          }
+        )
+      );
+  }
+
+  validateMutlipleTransactionsProductQuantities(transactionIds: Array<number>) {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+    return this.apollo
+      .watchQuery({
+        query: VALIDATE_MULTIPLE_TRANSACTIONS_PRODUCT_QUANTITIES,
+        variables: {
+          transactionIds,
+          userAccountId,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              validateMutlipleTransactionsProductQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>;
+            }>
+          ) => {
+            const data = <Array<InvalidProductTransactionOverallQuantitiesTransactions>>(
+              result.data.validateMutlipleTransactionsProductQuantities
+            );
+
+            const productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions> =
+              data.map((i) => {
+                return <InvalidProductTransactionOverallQuantitiesTransactions>{
+                  transactionId: i.transactionId,
+                  transactionCode: i.transactionCode,
+                  invalidProductTransactionOverallQuantities: i.invalidProductTransactionOverallQuantities
+                };
+              });
+
+            return productsWithInsufficientQuantities;
           }
         )
       );

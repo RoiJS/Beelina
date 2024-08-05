@@ -41,6 +41,27 @@ namespace Beelina.LIB.Dtos
     public class ProductTransactionOverallQuantitiesTransaction
     {
         public int TransactionId { get; set; }
-        public string TransationCode { get; set; }
+        public string TransactionCode { get; set; }
+    }
+
+    public class InvalidProductTransactionOverallQuantitiesTransaction
+        : ProductTransactionOverallQuantitiesTransaction
+    {
+        public List<InvalidProductTransactionOverallQuantities> InvalidProductTransactionOverallQuantities { get; set; }
+
+        public InvalidProductTransactionOverallQuantitiesTransaction()
+            : base()
+        {
+            InvalidProductTransactionOverallQuantities = [];
+        }
+    }
+
+    public class InvalidProductTransactionOverallQuantities
+        : ProductTransactionOverallQuantities
+    {
+        public InvalidProductTransactionOverallQuantities() : base()
+        {
+
+        }
     }
 }

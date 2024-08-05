@@ -22,6 +22,10 @@
       <mat-icon>delete</mat-icon>
       {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.DELETE_SELECTED_ORDERS' | translate }}
     </button>
+    <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item (click)="confirmOrders()">
+      <mat-icon>delete</mat-icon>
+      {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.CONFIRM_SELECTED_ORDERS' | translate }}
+    </button>
   </mat-menu>
 </app-tool-bar>
 }

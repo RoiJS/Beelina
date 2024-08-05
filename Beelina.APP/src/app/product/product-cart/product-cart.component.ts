@@ -54,7 +54,7 @@ import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { Barangay } from 'src/app/_models/barangay';
-import { ProductTransactionOverallQuantities } from 'src/app/_models/insufficient-product-quantity';
+import { InvalidProductTransactionOverallQuantitiesTransactions, ProductTransactionOverallQuantities } from 'src/app/_models/insufficient-product-quantity';
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 import { User } from 'src/app/_models/user.model';
@@ -554,15 +554,19 @@ export class ProductCartComponent
     this.productService
       .validateProductionTransactionsQuantities_NEW([transaction])
       .subscribe(
-        (insufficientProductQuantities: Array<ProductTransactionOverallQuantities>) => {
+        (productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
+          console.log(productsWithInsufficientQuantities);
+
           this._isLoading = false;
-          if (insufficientProductQuantities.length > 0) {
+          if (productsWithInsufficientQuantities.length > 0) {
             let errorMessage = this.translateService.instant(
               'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
             );
 
-            insufficientProductQuantities.forEach((i) => {
-              errorMessage += `- <strong>(${i.productCode})</strong> ${i.productName} <br>`;
+            const products = productsWithInsufficientQuantities[0].invalidProductTransactionOverallQuantities;
+
+            products.forEach((i) => {
+              errorMessage += `<strong>(${i.productCode})</strong> ${i.productName} <br>`;
             });
 
             this.dialogService.openAlert(
