@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
@@ -61,6 +61,8 @@ export class AddProductDetailsComponent implements OnInit {
   uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
   supplierStore = inject(SupplierStore);
   translateService = inject(TranslateService);
+
+  suppliers = computed(() => this.supplierStore.suppliers());
 
   constructor() {
     const state = <any>this.router.getCurrentNavigation().extras.state;
