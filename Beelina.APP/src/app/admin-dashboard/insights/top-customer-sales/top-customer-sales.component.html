@@ -19,10 +19,17 @@
     <div *cdkVirtualFor="let item of customerSales">
       <div matRipple (click)="showTopProducts(item.storeId)"
         class="list-container__item-section top-store-list-container__item-section">
+
         <span class="product-information">{{ item.storeName }} <span class="alt-label">({{
-            item.outletType }})</span></span>
-        <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.SUCCESS"
+            item.outletType }})</span>
+        </span>
+
+        <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.WARNING"
+          [label]="item.numberOfTransactions"></app-badge>
+
+        <app-badge class="product-total-sales-amount" [type]="bannerTypeEnum.SUCCESS"
           [label]="item.totalSalesAmountFormatted"></app-badge>
+
       </div>
     </div>
   </cdk-virtual-scroll-viewport>

@@ -96,6 +96,20 @@ export class SidedrawerService {
         maximumPermissionLevel: administratorPermissionLevel,
       },
       {
+        name: 'MAIN_MENU.ORDER_TRANSACTIONS',
+        url: '/order-transactions',
+        icon: 'assignment',
+        minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+      },
+      {
+        name: 'MAIN_MENU.SUPPLIERS',
+        url: '/suppliers',
+        icon: 'local_mall',
+        minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+      },
+      {
         name: 'MAIN_MENU.ACCOUNTS',
         url: '/accounts',
         icon: 'person_pin',

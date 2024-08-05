@@ -1,0 +1,11 @@
+<div [ngClass]="{ 'no-display': hide }" [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label>{{ controLabel }}:</mat-label>
+    <mat-select formControlName="store">
+      @if(allowAllOption) {
+      <mat-option [value]="0">{{ 'GENERAL_TEXTS.ALL' | translate }}</mat-option>
+      }
+      <mat-option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

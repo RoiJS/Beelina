@@ -81,15 +81,15 @@ namespace Beelina.API.Types.Mutations
         public async Task<MapExtractedProductResult> ExtractProductsFile(
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IExtractProductFileService extractProductFileService,
             int warehouseId,
             IFile file)
         {
             try
             {
                 await using Stream stream = file.OpenReadStream();
-                var extractProductFileService = new ExtractProductFileService(stream);
-                var extractedProducts = extractProductFileService.ReadFile();
-                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+                var extractedProducts = await extractProductFileService.ReadFile(stream);
+                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
                 var mapExtractedProductsResult = productRepository.MapProductImport(extractedProducts, warehouseProductsFromRepo);
                 return mapExtractedProductsResult;
             }

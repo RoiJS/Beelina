@@ -19,6 +19,7 @@ namespace Beelina.API.Helpers.MapperProfile
             CreateMap<StoreInput, Store>();
             CreateMap<PaymentMethodInput, PaymentMethod>();
             CreateMap<BarangayInput, Barangay>();
+            CreateMap<SupplierInput, Supplier>();
 
             CreateMap<Client, ClientInformationResult>();
             CreateMap<Store, StoreInformationResult>();

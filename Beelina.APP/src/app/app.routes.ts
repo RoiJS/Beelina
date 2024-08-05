@@ -43,6 +43,19 @@ export const routes: Routes = [
     canActivate: [AccessGuard]
   },
   {
+    path: 'order-transactions',
+    loadChildren: () =>
+      import('./order-transactions/order-transactions.module').then((m) => m.OrderTransactionsModule),
+    canLoad: [AuthGuard],
+  },
+  {
+    path: 'suppliers',
+    loadChildren: () =>
+      import('./suppliers/suppliers.module').then((m) => m.SuppliersModule),
+    canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
+  },
+  {
     path: 'sales',
     loadChildren: () =>
       import('./sales/sales.module').then((m) => m.SalesModule),
@@ -56,7 +69,7 @@ export const routes: Routes = [
         (m) => m.TransactionHistoryModule
       ),
     canLoad: [AuthGuard],
-    canActivate: [AccessGuard]
+    // canActivate: [AccessGuard]
   },
   {
     path: 'draft-transactions',

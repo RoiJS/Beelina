@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatStepper } from '@angular/material/stepper';
 import { MatTableDataSource } from '@angular/material/table';
@@ -6,7 +6,6 @@ import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { FilePickerComponent, UploadResponse, ValidationError } from 'ngx-awesome-uploader';
-
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
@@ -32,25 +31,27 @@ import { WarehouseFilePickerAdapter } from '../warehouse-file-picker.adapter';
   styleUrls: ['./product-import.component.scss']
 })
 export class ProductImportComponent extends BaseComponent implements OnInit, OnDestroy {
-  warehouseFilePickerAdapter = new WarehouseFilePickerAdapter(this.productService);
 
-  @ViewChild(MatStepper) stepper: MatStepper;
-  @ViewChild(FilePickerComponent) filePicker: FilePickerComponent;
-  @ViewChild(LoaderLayoutComponent) loader: LoaderLayoutComponent;
-  @ViewChild('successProductImportPaginator', { static: true }) successProductImportPaginator: MatPaginator;
-  @ViewChild('failedProductImportPaginator', { static: true }) failedProductImportPaginator: MatPaginator;
-  private _successProductsImportsDatasource = new MatTableDataSource<IMapExtractedProductPayload>([]);
-  private _failedProductsImportsDatasource = new MatTableDataSource<IFailedExtractedProductPayload>([]);
+  stepper = viewChild(MatStepper);
+  filePicker = viewChild(FilePickerComponent);
+  loader = viewChild(LoaderLayoutComponent);
+  successProductImportPaginator = viewChild<MatPaginator>('successProductImportPaginator');
+  failedProductImportPaginator = viewChild<MatPaginator>('failedProductImportPaginator');
+
+  successProductsImportsDatasource = new MatTableDataSource<IMapExtractedProductPayload>([]);
+  failedProductsImportsDatasource = new MatTableDataSource<IFailedExtractedProductPayload>([]);
   $isExtractionLoading: Observable<boolean>;
   $isImportLoading: Observable<boolean>;
 
-  constructor(
-    private productService: ProductService,
-    private store: Store<AppStateInterface>,
-    private dialogService: DialogService,
-    private notificationService: NotificationService,
-    public translateService: TranslateService,
-  ) {
+  productService = inject(ProductService);
+  store = inject(Store<AppStateInterface>);
+  dialogService = inject(DialogService);
+  notificationService = inject(NotificationService);
+  translateService = inject(TranslateService);
+
+  warehouseFilePickerAdapter = new WarehouseFilePickerAdapter(this.productService);
+
+  constructor() {
     super();
     this.$isExtractionLoading = this.store.pipe(select(isLoadingSelector));
     this.$isImportLoading = this.store.pipe(select(isImportLoadingSelector));
@@ -72,8 +73,8 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
   }
 
   ngAfterViewInit() {
-    this._successProductsImportsDatasource.paginator = this.successProductImportPaginator;
-    this._failedProductsImportsDatasource.paginator = this.failedProductImportPaginator;
+    this.successProductsImportsDatasource.paginator = this.successProductImportPaginator();
+    this.failedProductsImportsDatasource.paginator = this.failedProductImportPaginator();
   }
 
   onValidationError(e: ValidationError) {
@@ -94,30 +95,31 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
 
   extractFile() {
     this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: true }));
-    const item = this.filePicker.files;
-    this.loader.label = this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.EXTRACT_PROCESS_TEXT');
-    this.filePicker.adapter.uploadFile(item[0]).subscribe({
+    const item = this.filePicker().files;
+    this.loader().label = this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.EXTRACT_PROCESS_TEXT');
+    this.filePicker().adapter.uploadFile(item[0]).subscribe({
       next: (result: UploadResponse) => {
         this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: false }));
         const data = result.body;
-        this._successProductsImportsDatasource.data = data.successExtractedProducts;
-        this._failedProductsImportsDatasource.data = data.failedExtractedProducts;
-        this.stepper.next();
+        this.successProductsImportsDatasource.data = data.successExtractedProducts;
+        this.failedProductsImportsDatasource.data = data.failedExtractedProducts;
+        this.stepper().next();
       },
       error: (e) => {
         this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: false }));
         this.dialogService.openAlert(this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.UPLOAD_FILE_VALIDATION_DIALOG.EXTRACT_FILE_ERROR_DIALOG.TITLE'), e.message);
-        this.filePicker.removeFileFromList(item[0]);
+        this.filePicker().removeFileFromList(item[0]);
       }
     });
   }
 
   importProducts() {
-    const products = this._successProductsImportsDatasource.data.map((extractedProduct: IMapExtractedProductPayload) => {
+    const products = this.successProductsImportsDatasource.data.map((extractedProduct: IMapExtractedProductPayload) => {
       const product = new Product();
       product.id = extractedProduct.id;
       product.name = extractedProduct.name;
       product.code = extractedProduct.code;
+      product.supplierId = extractedProduct.supplierId;
       product.description = extractedProduct.description;
       product.stockQuantity = extractedProduct.quantity;
       product.isTransferable = extractedProduct.isTransferable;
@@ -150,23 +152,15 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
   }
 
   resetAction() {
-    const item = this.filePicker.files;
-    this.filePicker.removeFileFromList(item[0]);
-    this._successProductsImportsDatasource.data = [];
-    this._failedProductsImportsDatasource.data = [];
-    this.stepper.reset();
-  }
-
-  get successProductImportsDatasource(): MatTableDataSource<IMapExtractedProductPayload> {
-    return this._successProductsImportsDatasource;
-  }
-
-  get failedProductImportsDatasource(): MatTableDataSource<IFailedExtractedProductPayload> {
-    return this._failedProductsImportsDatasource;
+    const item = this.filePicker().files;
+    this.filePicker().removeFileFromList(item[0]);
+    this.successProductsImportsDatasource.data = [];
+    this.failedProductsImportsDatasource.data = [];
+    this.stepper().reset();
   }
 
   get successProductImportColumns(): string[] {
-    return ['status', 'code', 'name', 'quantity', 'unit', 'price', 'numberOfUnits'];
+    return ['status', 'code', 'name', 'supplierCode', 'quantity', 'unit', 'price', 'numberOfUnits'];
   }
 
   get failedProductImportColumns(): string[] {

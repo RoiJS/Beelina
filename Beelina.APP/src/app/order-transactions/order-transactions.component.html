@@ -1,0 +1,113 @@
+@if(!multipleItemsService.selectMultipleActive()) {
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
+  <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
+  <mat-menu #menu="matMenu">
+    <button [disabled]="dataSource?.itemCount === 0" mat-menu-item
+      (click)="activateSelectMultiple(true)">
+      <mat-icon>list</mat-icon>
+      {{ 'GENERAL_TEXTS.SELECT_MULTIPLE' | translate }}
+    </button>
+  </mat-menu>
+</app-tool-bar>
+} @else {
+<app-tool-bar [title]="multipleItemsService.selectedItemsCountLabel('TRANSACTION_SELECT_MULTIPLE_MODE.LABEL')"
+  [showBackButton]="false">
+  <button mat-icon-button class="toolbar-option" (click)="activateSelectMultiple(false)">
+    <mat-icon matBadgeColor="warn">highlight_off</mat-icon>
+  </button>
+
+  <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
+  <mat-menu #menu="matMenu">
+    <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item (click)="markOrdersAsPaid()">
+      <mat-icon>check_circle_outline</mat-icon>
+      {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.MARK_AS_PAID_SELECTED_ORDERS' | translate }}
+    </button>
+    <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item (click)="viewSelectedOrders()">
+      <mat-icon>list</mat-icon>
+      {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.VIEW_SELECTED_ORDERS' | translate }}
+    </button>
+  </mat-menu>
+</app-tool-bar>
+}
+
+<app-loader-layout [busy]="orderTransactionStore.isLoading()">
+  <div class="page-container scale-in-center-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "ORDER_TRANSACTIONS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "ORDER_TRANSACTIONS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-search-field [filter]="true" (onSearch)="onSearch($event)" (onClear)="onClear()" (onFilter)="openFilter()"
+      [filterActive]="transactionsFilter().isActive()" [placeHolderTextIdentifier]="
+        'ORDER_TRANSACTIONS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "></app-search-field>
+    <div class="order-transactions-list-status-bar-container">
+
+      @if (orderTransactionStore.filterKeyword()?.length > 0) {
+      <div class="order-transactions-list-status-bar-container__search-result-counter-section">
+        <span>{{ 'ORDER_TRANSACTIONS_PAGE.ORDER_TRANSACTION_LIST_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+        <app-badge class="value" [type]="bannerTypeEnum.WARNING"
+          [label]="orderTransactionStore.totalCount().toString()"></app-badge>
+      </div>
+      }
+    </div>
+
+    <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
+      [labelInformationTextIdentifier]="'ORDER_TRANSACTIONS_PAGE.ORDER_TRANSACTION_LIST_EMPTY_LABEL.LABEL'"
+      [count]="dataSource?.itemCount">
+
+      @if(multipleItemsService.selectMultipleActive()) {
+      <mat-checkbox [checked]="multipleItemsService.isSelectedAll()" (change)="selectAllItems($event.checked)"
+        [labelPosition]="'after'">{{
+        'GENERAL_TEXTS.SELECT_ALL' | translate }}</mat-checkbox>
+      }
+
+
+      <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container order-transactions-list">
+
+        <div *cdkVirtualFor="let item of dataSource">
+
+          <div class="order-transactions-item-container">
+            <div matRipple class="order-transactions-item-container__order-transactions-icon-container"
+              (click)="viewTransaction(item)">
+              <div class="order-transactions-icon">
+                <mat-icon>assignment</mat-icon>
+              </div>
+            </div>
+            <div matRipple class="order-transactions-item-container__order-transactions-info-container">
+              <div class="order-transactions-info" (click)="viewTransaction(item)">
+                <span class="order-transactions-info__invoice-no">{{ item.invoiceNo }}
+                  @switch(item.status) {
+                  @case(_transactionStatusType.DRAFT) {
+                  <app-badge [type]="bannerTypeEnum.INFO" [textIdentifier]="'ORDER_TYPE.DRAFT'"></app-badge>
+                  }
+                  @case(_transactionStatusType.BAD_ORDER) {
+                  <app-badge [type]="bannerTypeEnum.ERROR" [textIdentifier]="'ORDER_TYPE.BAD_ORDER'"></app-badge>
+                  }
+                  @case(_transactionStatusType.CONFIRMED) {
+                  <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'ORDER_TYPE.CONFIRM'"></app-badge>
+                  }
+                  }
+                </span>
+                <span class="order-transactions-info__created-by">{{ item.createdBy }}</span><br>
+                <span class="order-transactions-info__order-transactions-date">{{ item.transactionDateFormatted
+                  }}</span>
+              </div>
+              <div class="order-transactions-actions">
+
+                @if(multipleItemsService.selectMultipleActive()) {
+                <mat-checkbox [checked]="multipleItemsService.isSelected(item)" [id]="item.id.toString()"
+                  (change)="selectItem($event.checked, $event.source.id)"></mat-checkbox>
+                }
+
+                <mat-icon (click)="viewTransaction(item)">keyboard_arrow_right</mat-icon>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
+  </div>
+</app-loader-layout>

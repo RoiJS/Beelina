@@ -1,0 +1,32 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
+<app-loader-layout [busy]="paymentStore.isLoading()">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "PAYMENTS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "PAYMENTS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-list-container [templateType]="emptyEntityTemplateEnum.PAYMENTS" [count]="dataSource.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container payment-list">
+        <div *cdkVirtualFor="let item of dataSource">
+          <div class="list-container__item-section" matRipple (click)="openPayment(item)">
+            <div class="list-container__icon-section list-container__icon-section--right-space">
+              <div class="list-container__icon-section--icon-container">
+                <mat-icon>payment</mat-icon>
+              </div>
+            </div>
+            <div class="list-container__details-section">
+              <label class="main-label">{{ item.amountFormatted }}</label>
+              <label class="sub-label">{{ item.paymentDateFormatted }}</label>
+            </div>
+            <div class="list-container__options-section">
+            </div>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
+  </div>
+
+  <app-floating-button (tapButton)="addPayment()" [icon]="'add'"></app-floating-button>
+</app-loader-layout>

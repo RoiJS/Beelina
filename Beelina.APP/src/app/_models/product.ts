@@ -7,6 +7,7 @@ export class Product extends Entity implements IModelNode {
   public name: string;
   public code: string;
   public description: string;
+  public supplierId: number;
   public stockQuantity: number;
   public pricePerUnit: number;
   public price: number;

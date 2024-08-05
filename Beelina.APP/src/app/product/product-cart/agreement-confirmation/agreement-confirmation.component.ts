@@ -15,6 +15,7 @@ export class AgreementConfirmationComponent implements OnInit {
   ) {
     this._agreementConfirmationForm = this.formBuilder.group({
       confirm: [false],
+      paid: [false]
     });
   }
 
@@ -27,7 +28,8 @@ export class AgreementConfirmationComponent implements OnInit {
 
   onConfirm() {
     const confirm = this._agreementConfirmationForm.get('confirm').value;
-    this._bottomSheetRef.dismiss({ confirm });
+    const paid = this._agreementConfirmationForm.get('paid').value;
+    this._bottomSheetRef.dismiss({ confirm, paid });
   }
 
   get agreementConfirmationForm(): FormGroup {

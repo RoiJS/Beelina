@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 
@@ -16,6 +16,7 @@ import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 import { IBarangayInput } from '../_interfaces/inputs/ibarangay.input';
 import { IBarangayOutput } from '../_interfaces/outputs/ibarangay.output';
 import { Barangay } from '../_models/barangay';
+import { StorageService } from './storage.service';
 
 const UPDATE_BARANGAY_MUTATION = gql`
   mutation ($barangayInput: BarangayInput!) {
@@ -56,8 +57,8 @@ const GET_BARANGAYS = gql`
 `;
 
 const GET_ALL_BARANGAYS = gql`
-  query {
-    allBarangays {
+  query($userId: Int!) {
+    allBarangays(userId: $userId) {
       id
       name
     }
@@ -86,10 +87,12 @@ const DELETE_BARANGAY_MUTATION = gql`
 
 @Injectable({ providedIn: 'root' })
 export class BarangayService {
-  constructor(
-    private apollo: Apollo,
-    private store: Store<AppStateInterface>
-  ) {}
+
+  apollo = inject(Apollo);
+  store = inject(Store<AppStateInterface>);
+  storageService = inject(StorageService);
+
+  constructor() { }
 
   getBarangays() {
     let cursor = null,
@@ -112,7 +115,7 @@ export class BarangayService {
         query: GET_BARANGAYS,
         variables: {
           cursor,
-          filterKeyword,
+          filterKeyword
         },
       })
       .valueChanges.pipe(
@@ -141,9 +144,13 @@ export class BarangayService {
   }
 
   getAllBarangays() {
+    const userId = +this.storageService.getString('currentSalesAgentId');
     return this.apollo
       .watchQuery({
         query: GET_ALL_BARANGAYS,
+        variables: {
+          userId
+        }
       })
       .valueChanges.pipe(
         map((result: ApolloQueryResult<{ allBarangays: Array<Barangay> }>) => {

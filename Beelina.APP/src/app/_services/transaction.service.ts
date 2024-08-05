@@ -37,9 +37,11 @@ import {
 import { DateRange } from '../_models/date-range';
 import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
-import { ITransactionInformationOutput } from '../_interfaces/outputs/itransaction-information.output';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
 import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
+import { TransactionsFilter } from '../_models/filters/transactions.filter';
+import { GeneralSettings } from '../_models/general-settings.model';
+import { User } from '../_models/user.model';
 
 const REGISTER_TRANSACTION_QUERY = gql`
   query ($transactionInput: TransactionInput!) {
@@ -50,23 +52,19 @@ const REGISTER_TRANSACTION_QUERY = gql`
 `;
 
 const DELETE_TRANSACTION = gql`
-  mutation ($transactionId: Int!) {
-    deleteTransaction(input: { transactionId: $transactionId }) {
-      transaction {
-        id
-      }
-    }
+mutation($transactionIds: [Int!]!) {
+  deleteTransactions(input: { transactionIds: $transactionIds }) {
+    boolean
   }
+}
 `;
 
 const DELETE_TRANSACTIONS_BY_DATE = gql`
-  mutation($transactionStatus: TransactionStatusEnum!, $transactionDate: String!) {
-    deleteTransactionsByDate(input: { transactionStatus: $transactionStatus, transactionDate: $transactionDate }) {
-      transactionInformation {
-          id
-      }
-    }
+mutation($transactionStatus: TransactionStatusEnum!, $transactionDates: [String!]!) {
+  deleteTransactionsByDate(input: { transactionStatus: $transactionStatus, transactionDates: $transactionDates }) {
+    boolean
   }
+}
 `;
 
 const GET_TRANSACTION_DATES = gql`
@@ -106,6 +104,43 @@ const GET_TRANSACTION_DATES = gql`
   }
 `;
 
+const GET_TRANSACTIONS_QUERY = gql`
+  query(
+  $filterKeyword: String,
+  $cursor: String,
+  $transactionsFilter: TransactionsFilterInput!) {
+    transactions(
+    filterKeyword: $filterKeyword,
+    after: $cursor,
+    transactionsFilter: $transactionsFilter
+  ) {
+      nodes {
+        id,
+        storeId,
+        invoiceNo,
+        createdBy,
+        detailsUpdatedBy
+        detailsDateUpdated
+        orderItemsDateUpdated
+        finalDateUpdated
+        createdById,
+        transactionDate,
+        hasUnpaidProductTransaction,
+        barangayName
+        storeName
+        status
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_APPROVED_TRANSACTIONS_BY_DATE = gql`
   query ($transactionDate: String!, $status: TransactionStatusEnum!) {
     transactionsByDate(transactionDate: $transactionDate, status: $status) {
@@ -130,6 +165,7 @@ const GET_TRANSACTION = gql`
         transactionDate
         dueDate
         hasUnpaidProductTransaction
+        status
         total
         balance
         modeOfPayment
@@ -177,6 +213,17 @@ const UPDATE_MODE_OF_PAYMENT = gql`
   mutation ($transactionId: Int!, $modeOfPayment: Int!) {
     updateModeOfPayment(input: { transactionId: $transactionId, modeOfPayment: $modeOfPayment }) {
       transaction {
+        id
+      }
+    }
+  }
+`;
+
+
+const MARK_TRANSACTIONS_AS_PAID = gql`
+  mutation($transactionIds: [Int!]!, $paid: Boolean!) {
+    markTransactionsAsPaid(input: { transactionIds: $transactionIds, paid: $paid }) {
+      transaction{
         id
       }
     }
@@ -267,6 +314,75 @@ const GET_CUSTOMER_SALES_PRODUCTS_QUERY = gql`
     }
   }
 `;
+
+const GET_INVOICE_DATA_QUERY = gql`
+  query($transactionId: Int!) {
+    generalSettings {
+      companyName
+      ownerName
+      address
+      invoiceFooterText
+      invoiceFooterText1
+      telephone
+      faxTelephone
+      tin
+    }
+    transaction(transactionId: $transactionId) {
+        transaction {
+          id
+          storeId
+          invoiceNo
+          discount
+          transactionDate
+          dueDate
+          hasUnpaidProductTransaction
+          status
+          total
+          balance
+          createdBy {
+              id
+              firstName
+              lastName
+          }
+          store {
+              id
+              name
+              address
+              paymentMethod {
+              name
+              }
+              barangay {
+              name
+              }
+          }
+          productTransactions {
+              id
+              transactionId
+              productId
+              quantity
+              price
+              status
+              currentQuantity
+              product {
+                  id
+                  code
+                  name
+                  price
+                  productUnit {
+                      name
+                  }
+              }
+              productTransactionQuantityHistory {
+                  quantity
+                  dateCreated
+              }
+          }
+        }
+        badOrderAmount
+    }
+  }
+`;
+
 const GET_TOP_CUSTOMER_SALES_QUERY = gql`
   query(
     $storeId: Int!,
@@ -281,6 +397,7 @@ const GET_TOP_CUSTOMER_SALES_QUERY = gql`
         storeId
         storeName
         outletType
+        numberOfTransactions
         totalSalesAmount
     }
   }
@@ -295,12 +412,19 @@ const SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION = gql`
 export class TransactionInformation {
   public id: number;
   public invoiceNo: string;
+  public createdBy: string;
+  public detailsUpdatedBy: string;
+  public detailsDateUpdated: Date;
+  public orderItemsDateUpdated: Date;
+  public finalDateUpdated: Date;
+  public createdById: number;
   public storeId: number;
   public storeName: string;
+  public barangayName: string;
   public transactionDate: Date;
   public hasUnpaidProductTransaction: boolean;
+  public status: TransactionStatusEnum;
 }
-
 
 export class TransactionDetails {
   public transaction: Transaction;
@@ -333,6 +457,7 @@ export class TransactionDto {
   public status: TransactionStatusEnum;
   public transactionDate: string;
   public dueDate: string;
+  public paid: boolean;
   public productTransactions: Array<ProductTransaction>;
 }
 
@@ -358,6 +483,7 @@ export class CustomerSale {
   public storeId: number;
   public storeName: string;
   public outletType: string;
+  public numberOfTransactions: number;
   public totalSalesAmount: number;
 
   get totalSalesAmountFormatted(): string {
@@ -377,6 +503,16 @@ export class CustomerSaleProduct {
   }
 }
 
+export class InvoiceData {
+  public generalSettings: GeneralSettings;
+  public transaction: TransactionDetails;
+
+  constructor() {
+    this.generalSettings = new GeneralSettings();
+    this.transaction = new TransactionDetails();
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
   constructor(
@@ -392,6 +528,7 @@ export class TransactionService {
       discount: transaction.discount,
       storeId: transaction.storeId,
       modeOfPayment: transaction.modeOfPayment,
+      paid: transaction.paid,
       status: transaction.status,
       transactionDate: transaction.transactionDate,
       dueDate: transaction.dueDate,
@@ -435,66 +572,62 @@ export class TransactionService {
       );
   }
 
-  deleteTransaction(transactionId: number) {
+  deleteTransactions(transactionIds: Array<number>) {
     return this.apollo
       .mutate({
         mutation: DELETE_TRANSACTION,
         variables: {
-          transactionId,
+          transactionIds,
         },
       })
       .pipe(
         map(
           (
-            result: MutationResult<{ deleteTransaction: ITransactionOutput }>
+            result: MutationResult<{ deleteTransactions: { boolean: boolean } }>
           ) => {
-            const output = result.data.deleteTransaction;
-            const payload = output.transaction;
-            const errors = output.errors;
+            const output = result.data.deleteTransactions;
+            const payload = output.boolean;
 
             if (payload) {
               return payload;
             }
 
-            if (errors && errors.length > 0) {
-              throw new Error(errors[0].message);
-            }
-
             return null;
           }
-        )
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 
-  deleteTransactionsByDate(transactionStatus: TransactionStatusEnum, transactionDate: string) {
+  deleteTransactionsByDate(transactionStatus: TransactionStatusEnum, transactionDates: Array<string>) {
     return this.apollo
       .mutate({
         mutation: DELETE_TRANSACTIONS_BY_DATE,
         variables: {
           transactionStatus,
-          transactionDate
+          transactionDates
         },
       })
       .pipe(
         map(
           (
-            result: MutationResult<{ deleteTransactionsByDate: ITransactionInformationOutput }>
+            result: MutationResult<{ deleteTransactionsByDate: { boolean: boolean } }>
           ) => {
             const output = result.data.deleteTransactionsByDate;
-            const payload = output.transactionInformation;
-            const errors = output.errors;
+            const payload = output.boolean;
 
             if (payload) {
               return payload;
             }
 
-            if (errors && errors.length > 0) {
-              throw new Error(errors[0].message);
-            }
-
             return null;
           }
-        )
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 
@@ -529,6 +662,72 @@ export class TransactionService {
             });
           }
         )
+      );
+  }
+
+  getTransactions(
+    cursor: string,
+    filterKeyword: string,
+    transactionsFilter: TransactionsFilter
+  ) {
+    return this.apollo
+      .watchQuery({
+        query: GET_TRANSACTIONS_QUERY,
+        variables: {
+          filterKeyword,
+          cursor,
+          transactionsFilter
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              transactions: IBaseConnection;
+            }>
+          ) => {
+
+            const data = result.data.transactions;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+            const totalCount = data.totalCount;
+            const transactionsDto = <Array<TransactionInformation>>data.nodes;
+
+            const transactions = transactionsDto.map((t) => {
+              const transaction = new Transaction();
+              transaction.id = t.id;
+              transaction.invoiceNo = t.invoiceNo;
+              transaction.storeId = t.storeId;
+              transaction.createdBy = t.createdBy;
+              transaction.detailsUpdatedBy = t.detailsUpdatedBy;
+              transaction.detailsDateUpdated = t.detailsDateUpdated;
+              transaction.orderItemsDateUpdated = t.orderItemsDateUpdated;
+              transaction.finalDateUpdated = t.finalDateUpdated;
+              transaction.createdById = t.createdById;
+              transaction.status = t.status;
+              transaction.transactionDate = t.transactionDate;
+              transaction.store.name = t.storeName;
+              transaction.barangay.name = t.barangayName;
+              transaction.hasUnpaidProductTransaction =
+                t.hasUnpaidProductTransaction;
+              return transaction;
+            });
+
+            if (transactions) {
+              return {
+                endCursor,
+                hasNextPage,
+                transactions,
+                totalCount
+              };
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 
@@ -585,6 +784,8 @@ export class TransactionService {
             transaction.total = transactionFromRepo.transaction.total;
             transaction.hasUnpaidProductTransaction =
               transactionFromRepo.transaction.hasUnpaidProductTransaction;
+            transaction.status = transactionFromRepo.transaction.status;
+
             transaction.productTransactions =
               transactionFromRepo.transaction.productTransactions.map((pt) => {
                 const productTransaction = new ProductTransaction();
@@ -863,6 +1064,7 @@ export class TransactionService {
                 const customerSale = new CustomerSale();
                 customerSale.storeId = t.storeId;
                 customerSale.storeName = t.storeName;
+                customerSale.numberOfTransactions = t.numberOfTransactions;
                 customerSale.outletType = t.outletType === OutletTypeEnum.GEN_TRADE ? this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE') : this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT');
                 customerSale.totalSalesAmount = t.totalSalesAmount;
                 return customerSale;
@@ -905,6 +1107,72 @@ export class TransactionService {
       );
   }
 
+  getInvoiceData(transactionId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_INVOICE_DATA_QUERY,
+        variables: { transactionId },
+      })
+      .valueChanges.pipe(
+        map(
+          (result: ApolloQueryResult<InvoiceData>) => {
+            const resultData = result.data;
+
+            const transactionFromRepo = resultData.transaction;
+            const transaction = new Transaction();
+            transaction.id = transactionFromRepo.transaction.id;
+            transaction.badOrderAmount = transactionFromRepo.badOrderAmount;
+            transaction.invoiceNo = transactionFromRepo.transaction.invoiceNo;
+            transaction.discount = transactionFromRepo.transaction.discount;
+            transaction.transactionDate = transactionFromRepo.transaction.transactionDate;
+            transaction.dueDate = transactionFromRepo.transaction.dueDate;
+            transaction.storeId = transactionFromRepo.transaction.storeId;
+            transaction.store = transactionFromRepo.transaction.store;
+            transaction.modeOfPayment = transactionFromRepo.transaction.modeOfPayment;
+            transaction.balance = transactionFromRepo.transaction.balance;
+            transaction.total = transactionFromRepo.transaction.total;
+            transaction.hasUnpaidProductTransaction =
+              transactionFromRepo.transaction.hasUnpaidProductTransaction;
+            transaction.status = transactionFromRepo.transaction.status;
+
+            const user = new User();
+            user.firstName = (<User>transactionFromRepo.transaction.createdBy).firstName;
+            user.lastName = (<User>transactionFromRepo.transaction.createdBy).lastName;
+            transaction.createdBy = user;
+
+            transaction.productTransactions =
+              transactionFromRepo.transaction.productTransactions.map((pt) => {
+                const productTransaction = new ProductTransaction();
+                productTransaction.id = pt.id;
+                productTransaction.quantity = pt.quantity;
+                productTransaction.currentQuantity = pt.currentQuantity;
+                productTransaction.price = pt.price;
+                productTransaction.status = pt.status;
+                productTransaction.productName = pt.product.name;
+                productTransaction.productId = pt.product.id;
+                productTransaction.code = pt.product.code;
+
+                productTransaction.product = new Product();
+                productTransaction.product.id = pt.product.id;
+                productTransaction.product.code = pt.product.code;
+                productTransaction.product.name = pt.product.name;
+                productTransaction.product.price = pt.product.price;
+                productTransaction.product.productUnit = pt.product.productUnit;
+
+                return productTransaction;
+              });
+
+            const invoiceData = new InvoiceData();
+            invoiceData.transaction.transaction = transaction;
+            invoiceData.transaction.badOrderAmount = transaction.badOrderAmount;
+            invoiceData.generalSettings = resultData.generalSettings;
+
+            return invoiceData;
+          }
+        )
+      );
+  }
+
   updateModeOfPayment(transactionId: number, modeOfPayment: number) {
     return this.apollo
       .mutate({
@@ -938,4 +1206,40 @@ export class TransactionService {
         )
       );
   }
+
+  markTransactionsAsPaid(transactionIds: Array<number>, paid: boolean) {
+    return this.apollo
+      .mutate({
+        mutation: MARK_TRANSACTIONS_AS_PAID,
+        variables: {
+          transactionIds,
+          paid
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{
+              markTransactionsAsPaid: ITransactionOutput;
+            }>
+          ) => {
+            const output = result.data.markTransactionsAsPaid;
+            const payload = output.transaction;
+            const errors = output.errors;
+
+            if (payload) {
+              return payload;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return null;
+          }
+        )
+      );
+  }
 }
+
+

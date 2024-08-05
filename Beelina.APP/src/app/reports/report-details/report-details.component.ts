@@ -7,20 +7,22 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 import { ReportControlsRelation } from 'src/app/_models/report-control-relation';
 import { ReportInformationResult } from 'src/app/_models/results/report-information-result';
+import { BaseControlComponent } from '../report-controls/base-control/base-control.component';
+import { ReportGenerateOptionDialogComponent } from './report-generate-option-dialog/report-generate-option-dialog.component';
 import { ReportsService } from 'src/app/_services/reports.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import { BaseControlComponent } from '../report-controls/base-control/base-control.component';
 import { componentsRegistry } from '../report-controls/components-registry';
-import { ButtonOptions } from 'src/app/_enum/button-options.enum';
-import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { AuthService } from 'src/app/_services/auth.service';
-import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { getBusinessModelEnum } from 'src/app/_enum/business-model.enum';
 import { getPermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
+import { GenerateReportOptionEnum } from 'src/app/_enum/generate-report-option.enum';
+import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { IGenerateReportResultQueryPayload } from 'src/app/_interfaces/payloads/ireport-generate-result-query.payload';
 
 @Component({
   selector: 'app-report-details',
@@ -43,10 +45,14 @@ export class ReportDetailsComponent
 
   private _loadingLabel: string;
 
+  _dialogGenerateReportRef: MatBottomSheetRef<ReportGenerateOptionDialogComponent, {
+    generateReportOption: GenerateReportOptionEnum
+  }>;
+
   constructor(
     private authService: AuthService,
+    private bottomSheet: MatBottomSheet,
     private activatedRoute: ActivatedRoute,
-    private dialogService: DialogService,
     private notificationService: NotificationService,
     private reportService: ReportsService,
     private translateService: TranslateService
@@ -86,7 +92,7 @@ export class ReportDetailsComponent
               const show = (!relation.onlyAvailableOnBusinessModel && !relation.onlyAvailableOnBusinessModelForMinimumPrivilege) || (businessModel === getBusinessModelEnum(relation.onlyAvailableOnBusinessModel?.toString())
                 && userPrivileges >= getPermissionLevelEnum(relation.onlyAvailableOnBusinessModelForMinimumPrivilege));
 
-              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show);
+              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show, relation.allowAllOption);
             }
           );
         });
@@ -104,7 +110,8 @@ export class ReportDetailsComponent
     id: number,
     componentName: string,
     controlLabelIdentifier: string,
-    show: boolean
+    show: boolean,
+    allowAllOption: boolean
   ) {
     // Attach the component to the ViewContainerRef
     const componentRef = this.container.createComponent(
@@ -113,6 +120,7 @@ export class ReportDetailsComponent
     const componentRefInstance = componentRef.instance as BaseControlComponent;
     componentRefInstance.setControlLabelIdentifier(controlLabelIdentifier);
     componentRefInstance.setControlVisibility(show);
+    componentRefInstance.setAllowAllOption(allowAllOption);
 
     this.controlComponents.push({
       id: id,
@@ -147,46 +155,82 @@ export class ReportDetailsComponent
         return controlValue;
       });
 
-      this.dialogService
-        .openConfirmation(
-          this.translateService.instant(
-            'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.TITLE'
-          ),
-          this.translateService.instant(
-            'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.CONFIRM'
-          )
-        )
-        .subscribe({
-          next: (result: ButtonOptions) => {
-            if (result === ButtonOptions.YES) {
-              this._isLoading = true;
-              this._loadingLabel = this.translateService.instant('REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.LOADING_MESSAGE');
-              this.reportService
-                .generateReport(this._reportId, selectedValues)
-                .subscribe({
-                  next: () => {
-                    this._isLoading = false;
+      this._dialogGenerateReportRef = this.bottomSheet.open(ReportGenerateOptionDialogComponent);
+
+      this._dialogGenerateReportRef
+        .afterDismissed()
+        .subscribe(
+          (data: {
+            generateReportOption: GenerateReportOptionEnum
+          }) => {
+            if (!data) return;
+
+            this._isLoading = true;
+            this._loadingLabel = this.translateService.instant('REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.LOADING_MESSAGE');
+            this.reportService
+              .generateReport(this._reportId, data.generateReportOption, selectedValues)
+              .subscribe({
+                next: (data: IGenerateReportResultQueryPayload) => {
+                  this._isLoading = false;
+
+                  if (data.generateReportOption === GenerateReportOptionEnum.DOWNLOAD) {
+                    this.downloadReport(data);
                     this.notificationService.openSuccessNotification(this.translateService.instant(
-                      'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.SUCCESS_MESSAGE'
+                      'REPORT_DETAILS_PAGE.DOWNLOAD_REPORT_DIALOG.SUCCESS_MESSAGE'
                     ));
-                  },
-                  error: () => {
-                    this._isLoading = false;
-                    this.notificationService.openErrorNotification(this.translateService.instant(
-                      'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
+                  }
+
+                  if (data.generateReportOption === GenerateReportOptionEnum.SEND_EMAIL) {
+                    this.notificationService.openSuccessNotification(this.translateService.instant(
+                      'REPORT_DETAILS_PAGE.SEND_EMAIL_REPORT_DIALOG.SUCCESS_MESSAGE'
                     ));
-                  },
-                });
-            }
-          },
-          error: () => {
-            this._isLoading = false;
-            this.notificationService.openErrorNotification(this.translateService.instant(
-              'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
-            ));
-          },
-        });
+                  }
+                },
+                error: () => {
+                  this._isLoading = false;
+                  this.notificationService.openErrorNotification(this.translateService.instant(
+                    'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
+                  ));
+                },
+              });
+          }
+        );
     }
+  }
+
+  convertBase64toBlob(base64String: string, contentType: string) {
+    var byteCharacters = atob(base64String);
+    var byteArrays = [];
+
+    for (var i = 0; i < byteCharacters.length; i++) {
+      byteArrays.push(byteCharacters.charCodeAt(i));
+    }
+
+    var byteArray = new Uint8Array(byteArrays);
+
+    return new Blob([byteArray], { type: contentType, });
+  };
+
+  downloadReport(data: IGenerateReportResultQueryPayload) {
+
+    const blob = this.convertBase64toBlob(data.reportData.base64String, data.reportData.contentType);
+    const url = URL.createObjectURL(blob);
+
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = data.reportData.fileName; // Set the desired filename here
+
+    // Append the anchor to the body (required for Firefox)
+    document.body.appendChild(a);
+
+    // Programmatically click the anchor to trigger the download
+    a.click();
+
+    // Remove the anchor from the document
+    document.body.removeChild(a);
+
+    // Revoke the object URL to free up memory
+    URL.revokeObjectURL(url);
   }
 
   get reportName(): string {

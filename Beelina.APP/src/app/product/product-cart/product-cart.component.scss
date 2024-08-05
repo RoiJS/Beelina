@@ -19,6 +19,7 @@
       border-bottom-color: var(--mat-divider-color);
       border-bottom-width: var(--mat-divider-width);
       padding: 10px 0;
+      min-width: 600px;
 
       .list-item {
         display: flex;

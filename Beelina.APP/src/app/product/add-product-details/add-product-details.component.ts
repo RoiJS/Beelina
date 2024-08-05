@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
@@ -25,6 +25,7 @@ import { Product } from 'src/app/_models/product';
 import { ProductUnit } from 'src/app/_models/product-unit';
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
+import { SupplierStore } from 'src/app/suppliers/suppliers.store';
 
 @Component({
   selector: 'app-add-product-details',
@@ -50,17 +51,18 @@ export class AddProductDetailsComponent implements OnInit {
   private _updateProductSubscription: Subscription;
   $isLoading: Observable<boolean>;
 
-  constructor(
-    private bottomSheet: MatBottomSheet,
-    private store: Store<AppStateInterface>,
-    private dialogService: DialogService,
-    private productService: ProductService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private notificationService: NotificationService,
-    private translateService: TranslateService,
-    private uniqueProductCodeValidator: UniqueProductCodeValidator
-  ) {
+  bottomSheet = inject(MatBottomSheet);
+  store = inject(Store<AppStateInterface>);
+  dialogService = inject(DialogService);
+  productService = inject(ProductService);
+  formBuilder = inject(FormBuilder);
+  router = inject(Router);
+  notificationService = inject(NotificationService);
+  uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
+  supplierStore = inject(SupplierStore);
+  translateService = inject(TranslateService);
+
+  constructor() {
     const state = <any>this.router.getCurrentNavigation().extras.state;
     this._productSource = <ProductSourceEnum>state.productSource;
 
@@ -83,7 +85,8 @@ export class AddProductDetailsComponent implements OnInit {
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
         isTransferable: [false],
-        numberOfUnits: [0]
+        numberOfUnits: [0],
+        supplierId: [null, Validators.required]
       },
       {
         updateOn: 'blur',
@@ -91,6 +94,7 @@ export class AddProductDetailsComponent implements OnInit {
     );
 
     this.$isLoading = this.store.pipe(select(isUpdateLoadingSelector));
+    this.supplierStore.getAllSuppliers();
   }
 
   ngOnInit() {
@@ -131,6 +135,7 @@ export class AddProductDetailsComponent implements OnInit {
     product.name = this._productForm.get('name').value;
     product.code = this._productForm.get('code').value;
     product.description = this._productForm.get('description').value;
+    product.supplierId = this._productForm.get('supplierId').value;
     product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
     product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
     product.isTransferable = this._productForm.get('isTransferable').value;

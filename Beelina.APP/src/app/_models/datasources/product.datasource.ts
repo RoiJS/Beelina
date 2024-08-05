@@ -9,8 +9,8 @@ import { productsSelector } from 'src/app/product/store/selectors';
 import { BaseDataSource } from './base.datasource';
 
 export class ProductDataSource extends BaseDataSource<Product> {
-  constructor(override store: Store<AppStateInterface>) {
-    super(store);
+  constructor(protected store: Store<AppStateInterface>) {
+    super();
     this._pageSize = 50;
     this.store.dispatch(ProductActions.getProductsAction());
 

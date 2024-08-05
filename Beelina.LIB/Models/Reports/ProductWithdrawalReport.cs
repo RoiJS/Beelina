@@ -72,6 +72,9 @@ namespace Beelina.LIB.Models.Reports
                     cellNumber++;
                 }
 
+                // Lock the worksheet
+                LockReport(package, worksheet);
+
                 // Save the Excel file
                 ExcelByteArray = package.GetAsByteArray();
             }

@@ -1,10 +1,13 @@
 import { PaymenStatusEnum } from '../_enum/payment-status.enum';
+import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 import { IModelNode } from '../_interfaces/imodel-node';
+import { Barangay } from './barangay';
 import { CustomerStore } from './customer-store';
 import { Entity } from './entity.model';
 import { Product } from './product';
+import { User } from './user.model';
 
 export class Transaction extends Entity implements IModelNode {
   public storeId: number;
@@ -12,16 +15,28 @@ export class Transaction extends Entity implements IModelNode {
   public discount: number;
   public transactionDate: Date;
   public dueDate: Date;
+  public createdById: number;
+  public createdBy: string | User;
+  public detailsUpdatedBy: string;
+  public detailsDateUpdated: Date;
+  public orderItemsDateUpdated: Date;
+  public finalDateUpdated: Date;
   public store: CustomerStore;
+  public barangay: Barangay;
   public modeOfPayment: number;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
   public balance: number;
   public total: number;
-  public badOrderAmount: number;
+  public badOrderAmount: number = 0;
+  public status: TransactionStatusEnum;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
+  }
+
+  get finalDateUpdatedFormatted(): string {
+    return DateFormatter.format(this.finalDateUpdated, 'MMM DD, YYYY hh:mm A');
   }
 
   get dueDateFormatted(): string {
@@ -36,20 +51,37 @@ export class Transaction extends Entity implements IModelNode {
     return NumberFormatter.formatCurrency(this.badOrderAmount);
   }
 
-  get netTotalFormatted(): string {
+  get netTotal(): number {
     const calculatedNetTotalAmount =
       (this.total - (this.discount / 100) * this.total) - this.badOrderAmount;
-    return NumberFormatter.formatCurrency(calculatedNetTotalAmount);
+    return calculatedNetTotalAmount;
+  }
+
+  get netTotalFormatted(): string {
+    return NumberFormatter.formatCurrency(this.netTotal);
   }
 
   get balanceFormatted(): string {
     return NumberFormatter.formatCurrency(this.balance);
   }
 
+  get vatableAmount(): number {
+    return NumberFormatter.roundToDecimalPlaces(this.netTotal / (1 + (this.vatPercentage / 100)), 2);
+  }
+
+  get valueAddedTax(): number {
+    return this.netTotal - this.vatableAmount;
+  }
+
+  get vatPercentage(): number {
+    return 12; // Default fix value for now
+  }
+
   constructor() {
     super();
     this.productTransactions = new Array<ProductTransaction>();
     this.store = new CustomerStore();
+    this.barangay = new Barangay();
   }
 }
 

@@ -20,6 +20,7 @@ export const initialState: IProductState = {
   filterKeyword: '',
   hasNextPage: false,
   error: null,
+  supplierId: 0,
 };
 
 export const reducers = createReducer(
@@ -81,10 +82,15 @@ export const reducers = createReducer(
     ...state,
     filterKeyword: action.keyword,
   })),
+  on(ProductActions.setFilterProductAction, (state, action) => ({
+    ...state,
+    supplierId: action.productsFilter.supplierId,
+  })),
   on(ProductActions.resetProductState, (state, action) =>
   (<IProductState>{
     ...initialState,
-    filterKeyword: state.filterKeyword
+    filterKeyword: state.filterKeyword,
+    supplierId: state.supplierId,
   })),
   on(ProductActions.resetTextInventoriesState, (state, action) => ({
     ...state,

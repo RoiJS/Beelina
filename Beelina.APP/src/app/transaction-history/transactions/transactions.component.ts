@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 import { Transaction } from 'src/app/_models/transaction';
+import { TransactionOptionsService } from 'src/app/_services/transaction-options.service';
 import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
@@ -21,12 +23,21 @@ export class TransactionsComponent
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
 
+  transactionOptionsService = inject(TransactionOptionsService);
+  bottomSheet = inject(MatBottomSheet);
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private transactionService: TransactionService
   ) {
     super();
+    this.transactionOptionsService.setBottomSheet(this.bottomSheet);
+    this.transactionOptionsService.optionDismissedSub.subscribe((data: boolean) => {
+      if (data) {
+        this.ngOnInit();
+      }
+    });
   }
 
   ngOnInit() {
@@ -47,6 +58,10 @@ export class TransactionsComponent
     this.router.navigate([
       `transaction-history/transactions/${this._transactionDate}/${transactionId}`,
     ]);
+  }
+
+  openMenu(transaction: Transaction) {
+    this.transactionOptionsService.openMenu(transaction);
   }
 
   get transationDate(): string {

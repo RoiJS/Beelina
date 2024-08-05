@@ -1,4 +1,8 @@
-<app-tool-bar [title]="transaction?.store?.name"> </app-tool-bar>
+<app-tool-bar [title]="transaction?.store?.name">
+  <button mat-icon-button class="toolbar-option" (click)="goToPaymentHistory()">
+    <mat-icon>payment</mat-icon>
+  </button>
+</app-tool-bar>
 
 <app-loader-layout [busy]="isLoading">
   <div class="page-container">
@@ -118,6 +122,23 @@
           </div>
         </div>
         <div class="panel__footer-section transaction-details-panel__footer-section">
+
+          @if (transaction?.balance > 0) {
+          <button mat-raised-button color="default" (click)="registerPayment()">
+            {{"PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.REGISTER_PAYMENT"
+            | translate}}
+          </button>
+          <br>
+          }
+
+          @if(transaction?.hasUnpaidProductTransaction && transaction?.balance === 0 &&
+          transactionForm.get('paymentMethod').value !== 3) {
+          <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
+            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+          </button>
+          <br>
+          }
+
           <button mat-raised-button color="primary" (click)="saveTransaction()">
             {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
           </button>

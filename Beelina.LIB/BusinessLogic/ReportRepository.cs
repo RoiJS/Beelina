@@ -2,6 +2,7 @@
 using Beelina.LIB.Enums;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Reports;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ReserbizAPP.LIB.Helpers.Class;
@@ -69,7 +70,7 @@ namespace Beelina.LIB.BusinessLogic
 
                                          where
                                            (!r.Custom || (r.Custom && rc.ClientId == tenantId && rc != null))
-                                           &&  ((r.OnlyAvailableOnBusinessModel == null) || (r.OnlyAvailableOnBusinessModel != null && r.OnlyAvailableOnBusinessModel == generalSetting.BusinessModel))
+                                           && ((r.OnlyAvailableOnBusinessModel == null) || (r.OnlyAvailableOnBusinessModel != null && r.OnlyAvailableOnBusinessModel == generalSetting.BusinessModel))
                                            && r.ModuleId == ModulesEnum.Distribution
                                            && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
                                            && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel
@@ -85,9 +86,14 @@ namespace Beelina.LIB.BusinessLogic
             return _beelinaRepository.ClientDbContext;
         }
 
-        public async Task<Report> GenerateReport(int reportId, List<ControlValues> controlValues)
+        public async Task<GenerateReportResult> GenerateReport(int reportId, GenerateReportOptionEnum generateReportOption, List<ControlValues> controlValues)
         {
             var reportFromRepo = await GetReportInformation(reportId);
+            var generateReportResult = new GenerateReportResult
+            {
+                GenerateReportOption = generateReportOption
+            };
+
             var reportNotificationEmailAddress = await GetReportNotificationEmailAddress(_currentUserService.CurrentUserId);
             var userFullName = _currentUserService.CurrrentName;
 
@@ -105,22 +111,32 @@ namespace Beelina.LIB.BusinessLogic
             try
             {
                 // Create an instance of the class
-                var instance = (IBaseReport<BaseReportOutput>)Activator.CreateInstance(constructedType, parameters);
-                instance
-                .GenerateAsExcel()
-                .SendViaEmail(
-                    _emailServerSettings.Value.SmtpAddress,
-                    reportNotificationEmailAddress.EmailAddress,
-                    _currentUserService.CurrrentUserEmailAddress,
-                    _emailServerSettings.Value.SmtpAddress
-                );
+                var reportInstance = (IBaseReport<BaseReportOutput>)Activator.CreateInstance(constructedType, parameters);
+                reportInstance
+                .GenerateAsExcel();
+
+                if (generateReportOption == GenerateReportOptionEnum.SendEmail)
+                {
+                    reportInstance.SendViaEmail(
+                        _emailServerSettings.Value.SmtpAddress,
+                        reportNotificationEmailAddress.EmailAddress,
+                        _currentUserService.CurrrentUserEmailAddress,
+                        _emailServerSettings.Value.SmtpAddress
+                    );
+                }
+
+                if (generateReportOption == GenerateReportOptionEnum.Download)
+                {
+                    generateReportResult.ReportData = reportInstance.Download();
+                }
+
             }
             catch (Exception e)
             {
                 throw;
             }
 
-            return reportFromRepo;
+            return generateReportResult;
         }
 
         public async Task<ReportNotificationEmailAddress> GetReportNotificationEmailAddress(int userAccountId)

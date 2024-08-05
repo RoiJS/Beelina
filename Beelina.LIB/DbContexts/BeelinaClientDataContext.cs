@@ -26,10 +26,12 @@ namespace Beelina.LIB.DbContexts
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<ProductTransaction> ProductTransactions { get; set; }
         public DbSet<ProductTransactionQuantityHistory> ProductTransactionQuantityHistory { get; set; }
         public DbSet<ReportNotificationEmailAddress> ReportNotificationEmailAddresses { get; set; }
         public DbSet<Barangay> Barangays { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<ProductStockPerWarehouse> ProductStockPerWarehouse { get; set; }

@@ -7,8 +7,8 @@ import { Barangay } from '../barangay';
 import { BaseDataSource } from './base.datasource';
 
 export class BarangaysDataSource extends BaseDataSource<Barangay> {
-  constructor(override store: Store<AppStateInterface>) {
-    super(store);
+  constructor(protected store: Store<AppStateInterface>) {
+    super();
 
     this.store.dispatch(BarangayActions.getBarangaysAction());
 

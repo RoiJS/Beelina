@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, inject, input, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,7 +27,7 @@ import * as ProductActions from './store/actions';
 
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
-import { errorSelector, filterKeywordSelector, isLoadingSelector, totalCountSelector } from './store/selectors';
+import { errorSelector, filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
 
 import { BusinessModelEnum } from '../_enum/business-model.enum';
 import { ButtonOptions } from '../_enum/button-options.enum';
@@ -44,6 +44,8 @@ import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { User } from '../_models/user.model';
 
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
+import { ProductsFilter } from '../_models/filters/products.filter';
+import { ProductFilterComponent } from './product-filter/product-filter.component';
 
 @Component({
   selector: 'app-product',
@@ -53,13 +55,14 @@ import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper'
 export class ProductComponent
   extends SharedComponent
   implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(SearchFieldComponent) searchFieldComponent: SearchFieldComponent;
+  searchFieldComponent = viewChild(SearchFieldComponent);
 
   businessModel = signal<BusinessModelEnum>(BusinessModelEnum.WarehousePanelMonitoring);
   currentSalesAgentId: number = 0;
   dataSource = signal<ProductDataSource>(null);
   filterKeyword = signal<string>('');
   itemCounter = signal(0);
+  productsFilter = signal<ProductsFilter>(new ProductsFilter());
   productTransactions = signal<Array<ProductTransaction>>([]);
   salesAgents = signal<Array<User>>([]);
   selectedProduct = signal<Product>(null);
@@ -68,13 +71,22 @@ export class ProductComponent
   transactionId = signal<number>(0);
   warehouseId = signal<number>(1);
 
-  _dialogRef: MatBottomSheetRef<
+  _dialogAddQuantityRef: MatBottomSheetRef<
     AddProductStockQuantityDialogComponent,
     {
       additionalStockQuantity: number;
       transactionNo: string;
+      productSource: ProductSourceEnum;
     }
   >;
+
+  _dialogOpenFilterRef: MatBottomSheetRef<
+    ProductFilterComponent,
+    {
+      supplierId: number;
+    }
+  >;
+
   _subscription: Subscription = new Subscription();
   _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
 
@@ -163,6 +175,8 @@ export class ProductComponent
     this._subscription.unsubscribe();
     this.store.dispatch(ProductActions.getProductsCancelAction());
     this._transferInventoryDialogRef = null;
+    this._dialogOpenFilterRef = null;
+    this._dialogAddQuantityRef = null;
     super.ngOnDestroy();
   }
 
@@ -171,7 +185,16 @@ export class ProductComponent
       this.store.pipe(select(filterKeywordSelector))
         .subscribe((filterKeyword: string) => {
           this.filterKeyword.set(filterKeyword);
-          this.searchFieldComponent.value(filterKeyword)
+          this.searchFieldComponent().value(filterKeyword);
+        })
+    );
+
+    this._subscription.add(
+      this.store.pipe(select(supplierIdSelector))
+        .subscribe((supplierId: number) => {
+          const productsFilter = new ProductsFilter();
+          productsFilter.supplierId = supplierId;
+          this.productsFilter.set(productsFilter);
         })
     );
 
@@ -270,6 +293,31 @@ export class ProductComponent
     this.onSearch('');
   }
 
+  openFilter() {
+    this._dialogOpenFilterRef = this.bottomSheet.open(ProductFilterComponent, {
+      data: this.productsFilter()
+    });
+
+    this._dialogOpenFilterRef
+      .afterDismissed()
+      .subscribe(
+        (data: {
+          supplierId: number
+        }) => {
+          if (!data) return;
+
+          const productsFilter = new ProductsFilter();
+          productsFilter.supplierId = data.supplierId;
+          this.productsFilter.set(productsFilter);
+
+          this.store.dispatch(ProductActions.resetProductState());
+          this.store.dispatch(ProductActions.setFilterProductAction({
+            productsFilter: this.productsFilter()
+          }));
+          this.store.dispatch(ProductActions.getProductsAction());
+        });
+  }
+
   calculateTotalInventoryValue() {
     this._subscription.add(this.productService.getPanelInventoryTotalValue().subscribe({
       next: (data: number) => {
@@ -301,7 +349,7 @@ export class ProductComponent
     this._transferInventoryDialogRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.store.dispatch(ProductActions.resetProductState());
-        this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
+        this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent().value() }));
         this.store.dispatch(ProductActions.getProductsAction());
       }
     })
@@ -309,7 +357,7 @@ export class ProductComponent
 
   addProductStockQuantity(product: Product) {
     this.selectedProduct.set(product);
-    this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
+    this._dialogAddQuantityRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
       data: {
         additionalStockQuantity: 0,
         transactionNo: '',
@@ -317,7 +365,7 @@ export class ProductComponent
       },
     });
 
-    this._dialogRef
+    this._dialogAddQuantityRef
       .afterDismissed()
       .subscribe(
         (data: {
@@ -387,7 +435,7 @@ export class ProductComponent
                     );
 
                     this.store.dispatch(ProductActions.resetProductState());
-                    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent.value() }));
+                    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent().value() }));
                     this.store.dispatch(ProductActions.getProductsAction());
                   },
 

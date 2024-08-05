@@ -6,5 +6,18 @@
     <button type="submit" mat-fab color="primary">
       <mat-icon>search</mat-icon>
     </button>
+
+    @if(filter()) {
+    <div class="search-field-container__filter-command-section">
+      <button type="button" (click)="openFilter()" mat-fab color="primary">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+
+      @if(filterActive()){
+      <mat-icon class="filter-active">check_circle_outline</mat-icon>
+      }
+    </div>
+    }
+
   </div>
 </form>

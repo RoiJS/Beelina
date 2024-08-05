@@ -95,6 +95,6 @@ export class ToolBarComponent
   }
 
   get formattedTitle(): string {
-    return `${this.company} ${this.title}`;
+    return `${this.title}`;
   }
 }

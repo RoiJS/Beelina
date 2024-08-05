@@ -1,0 +1,48 @@
+<app-tool-bar [showBackButton]="false" [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
+<app-loader-layout [busy]="supplierStore.isLoading()">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "SUPPLIERS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "SUPPLIERS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-search-field (onSearch)="onSearch($event)" (onClear)="onClear()" [placeHolderTextIdentifier]="
+        'SUPPLIERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "></app-search-field>
+
+    <app-list-container [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="dataSource.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container suppliers-list">
+        <div *cdkVirtualFor="let item of dataSource">
+          <div class="list-container__item-section" matRipple (click)="updateSupplier(item)">
+            <div class="list-container__icon-section list-container__icon-section--right-space">
+              <div class="list-container__icon-section--icon-container">
+                <mat-icon>local_mall</mat-icon>
+              </div>
+            </div>
+            <div class="list-container__details-section">
+              <label class="main-label">{{ item.name }}</label>
+              <label class="sub-label">{{ item.code }}</label>
+            </div>
+            <div class="list-container__options-section">
+              <mat-icon matRipple class="option" [matMenuTriggerFor]="menu">more_vert</mat-icon>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item matRipple (click)="updateSupplier(item)">
+                  <mat-icon matRipple class="option">border_color</mat-icon>
+                  {{ "GENERAL_TEXTS.EDIT" | translate }}
+                </button>
+
+                <button mat-menu-item matRipple *ngIf="item.isDeletable" (click)="deleteSupplier(item.id)">
+                  <mat-icon>delete</mat-icon>
+                  {{ "GENERAL_TEXTS.REMOVE" | translate }}
+                </button>
+              </mat-menu>
+            </div>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </app-list-container>
+  </div>
+
+  <app-floating-button (tapButton)="addSupplier()" [icon]="'add'"></app-floating-button>
+</app-loader-layout>

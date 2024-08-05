@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
@@ -22,44 +23,73 @@ namespace Beelina.API.Types.Mutations
             transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
             transactionFromRepo.ModeOfPayment = modeOfPayment;
-            transactionFromRepo.ProductTransactions.ForEach(t =>
-           {
-               t.Status = (modeOfPayment == (int)ModeOfPaymentEnum.AccountReceivable) ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
-           });
-
             await transactionRepository.SaveChanges();
-
             return transactionFromRepo;
         }
 
         [Authorize]
-        public async Task<Transaction> DeleteTransaction(
-                [Service] ITransactionRepository<Transaction> transactionRepository,
-                [Service] ICurrentUserService currentUserService,
-                int transactionId)
+        public async Task<List<Transaction>> MarkTransactionsAsPaid(
+            [Service] ITransactionRepository<Transaction> transactionRepository,
+            List<int> transactionIds,
+            bool paid)
         {
-            var transactionFromRepo = await transactionRepository.GetEntity(transactionId).ToObjectAsync();
-
-            transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-            transactionRepository.DeleteEntity(transactionFromRepo);
-            await transactionRepository.SaveChanges();
-
-            return transactionFromRepo;
+            var transactionsFromRepo = await transactionRepository.MarkTransactionsAsPaid(transactionIds, paid);
+            return transactionsFromRepo;
         }
 
         [Authorize]
-        public async Task<List<TransactionInformation>> DeleteTransactionsByDate(
+        public async Task<bool> DeleteTransactions(
                 [Service] ITransactionRepository<Transaction> transactionRepository,
                 [Service] ICurrentUserService currentUserService,
+                [Service] IHttpContextAccessor httpContextAccessor,
+                List<int> transactionIds)
+        {
+            var result = true;
+
+            try
+            {
+                transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+                await transactionRepository.DeleteOrderTransactions(transactionIds);
+
+                await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Console.Write($"Error deleting order transaction(s): {ex.Message}");
+            }
+
+            return result;
+        }
+
+        [Authorize]
+        public async Task<bool> DeleteTransactionsByDate(
+                [Service] ITransactionRepository<Transaction> transactionRepository,
+                [Service] ICurrentUserService currentUserService,
+                [Service] IHttpContextAccessor httpContextAccessor,
                 TransactionStatusEnum transactionStatus,
-                string transactionDate)
+                List<string> transactionDates)
         {
-            var transactionsByDateFromRepo = await transactionRepository.GetTransactionsByDate(transactionStatus, transactionDate);
-            transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-            await transactionRepository.DeleteOrderTransactions(transactionsByDateFromRepo.Select(t => t.Id).ToList());
-            await transactionRepository.SaveChanges();
+            var result = true;
+            try
+            {
+                transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
-            return transactionsByDateFromRepo;
+                foreach (var transactionDate in transactionDates)
+                {
+                    var transactionsByDateFromRepo = await transactionRepository.GetTransactionsByDate(transactionStatus, transactionDate);
+                    await transactionRepository.DeleteOrderTransactions(transactionsByDateFromRepo.Select(t => t.Id).ToList());
+                }
+
+                await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Console.Write($"Error deleting order transaction(s): {ex.Message}");
+            }
+
+            return result;
         }
     }
 }

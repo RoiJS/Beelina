@@ -1,7 +1,9 @@
 using Beelina.LIB.BusinessLogic;
 using Beelina.LIB.Helpers.Extensions;
+using Beelina.LIB.Models.Reports;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using ReserbizAPP.LIB.Helpers.Services;
 using System.Data;
 using System.Data.Common;
@@ -117,6 +119,34 @@ namespace Beelina.LIB.Models
                     cc,
                     bcc
                 );
+        }
+
+        public ReportDataResult Download()
+        {
+            var fileName = $"{Report.ReportClass}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx";
+            var reportDataResult = new ReportDataResult
+            {
+                FileName = fileName,
+                Base64String = Convert.ToBase64String(ExcelByteArray),
+
+                // For now, we specify it as an xlsx file. We will revisit this later on.
+                ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            };
+            return reportDataResult;
+        }
+
+        protected void LockReport(ExcelPackage excelPackage, ExcelWorksheet excelWorksheet)
+        {
+            if (Report.Lock)
+            {
+                // Protect the worksheet
+                excelWorksheet.Protection.IsProtected = true;
+                excelWorksheet.Protection.AllowSelectLockedCells = true;
+                excelWorksheet.Protection.AllowFormatColumns = true;
+
+                // Protect the workbook
+                excelPackage.Workbook.Protection.LockStructure = true;
+            }
         }
 
         protected string GenerateReportEmailContent()

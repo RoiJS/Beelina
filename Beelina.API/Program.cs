@@ -36,6 +36,7 @@ services.AddScoped(typeof(IClientRepository<Client>), typeof(ClientRepository));
 services.AddScoped(typeof(IClientDbManagerRepository<IEntity>), typeof(ClientDbManagerRepository));
 services.AddScoped(typeof(IDataSeedRepository<IEntity>), typeof(DataSeedRepository));
 services.AddScoped(typeof(ICurrentUserService), typeof(CurrentUserService));
+services.AddScoped(typeof(IExtractProductFileService), typeof(ExtractProductFileService));
 services.AddScoped(typeof(IProductUnitRepository<ProductUnit>), typeof(ProductUnitRepository));
 services.AddScoped(typeof(IProductRepository<Product>), typeof(ProductRepository));
 services.AddScoped(typeof(IProductStockPerPanelRepository<ProductStockPerPanel>), typeof(ProductStockPerPanelRepository));
@@ -47,6 +48,8 @@ services.AddScoped(typeof(IStoreRepository<Store>), typeof(StoreRepository));
 services.AddScoped(typeof(ITransactionRepository<Transaction>), typeof(TransactionRepository));
 services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), typeof(ProductTransactionRepository));
 services.AddScoped(typeof(IBarangayRepository<Barangay>), typeof(BarangayRepository));
+services.AddScoped(typeof(ISupplierRepository<Supplier>), typeof(SupplierRepository));
+services.AddScoped(typeof(IPaymentRepository<Payment>), typeof(PaymentRepository));
 services.AddScoped(typeof(IReportRepository<Report>), typeof(ReportRepository));
 services.AddScoped(typeof(IGeneralInformationRepository<GeneralInformation>), typeof(GeneralInformationRepository));
 services.AddScoped(typeof(IGeneralSettingRepository<GeneralSetting>), typeof(GeneralSettingRepository));
@@ -71,9 +74,14 @@ services.AddGraphQLServer()
         .AddType<BarangayQuery>()
         .AddType<PaymentMethodQuery>()
         .AddType<TransactionQuery>()
+        .AddType<SupplierQuery>()
+        .AddType<PaymentQuery>()
         .AddType<GeneralInformationQuery>()
+        .AddType<GeneralSettingsQuery>()
         .AddType<UserAccountMutation>()
         .AddType<BarangayMutation>()
+        .AddType<SupplierMutation>()
+        .AddType<PaymentMutation>()
         .AddType<ProductMutation>()
         .AddType<StoreMutation>()
         .AddType<TransactionMutation>()
@@ -95,6 +103,7 @@ services.AddGraphQLServer()
         .AddType<UserAccountNotExistsError>()
         .AddType<SystemUpdateActiveError>()
         .AddType<CheckProductCodeInformationResult>()
+        .AddType<CheckSupplierCodeInformationResult>()
         .AddType<UploadType>()
         .AddType<ClientNotExistsError>();
 
@@ -164,7 +173,7 @@ else
 
             options.UseSqlServer(clientConnectionString);
         }
-    });
+    }, ServiceLifetime.Transient);
 }
 #endregion
 

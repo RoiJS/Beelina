@@ -5,6 +5,7 @@ using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
+using Beelina.LIB.Models.Filters;
 
 namespace Beelina.API.Types.Query
 {
@@ -62,7 +63,7 @@ namespace Beelina.API.Types.Query
           }
         }
 
-        t.Status = (transactionInput.ModeOfPayment == (int)ModeOfPaymentEnum.AccountReceivable) ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+        t.Status = !transactionInput.Paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
 
         if (productQuantityHistories.Count > 0)
         {
@@ -76,9 +77,34 @@ namespace Beelina.API.Types.Query
 
       transactionFromRepo.ProductTransactions = updatedProductTransactions;
 
+      // Register Payment
+      if (transactionInput.Paid &&
+        transactionInput.Status == TransactionStatusEnum.Confirmed &&
+        transactionFromRepo.Payments.Count == 0)
+      {
+        var newPayment = new Payment();
+        newPayment.Amount = transactionFromRepo.NetTotal;
+        newPayment.PaymentDate = transactionFromRepo.TransactionDate
+                    .AddHours(DateTime.Now.Hour)
+                    .AddMinutes(DateTime.Now.Minute)
+                    .AddSeconds(DateTime.Now.Second);
+        newPayment.Notes = "Automatic Payment Registration";
+        transactionFromRepo.Payments.Add(newPayment);
+      }
+
       await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
 
       return transactionFromRepo;
+    }
+
+    [Authorize]
+    [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "", TransactionsFilter transactionsFilter = null)
+    {
+      return await transactionRepository.GetTransactions(0, filterKeyword, transactionsFilter);
     }
 
     [Authorize]
@@ -171,7 +197,7 @@ namespace Beelina.API.Types.Query
             int userAccountId)
     {
       var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", httpContextAccessor.HttpContext.RequestAborted);
+      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
 
       foreach (Product product in productsFromRepo)
       {
