@@ -79,6 +79,7 @@ const GET_PRODUCTS_QUERY = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         isLinkedToSalesAgent
         productUnit {
           id
@@ -114,6 +115,7 @@ const GET_WAREHOUSE_PRODUCTS_QUERY = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         productUnit {
           id
           name
@@ -551,6 +553,7 @@ export class ProductService {
             product.description = productDto.description;
             product.stockQuantity = productDto.stockQuantity;
             product.pricePerUnit = productDto.pricePerUnit;
+            product.supplierId = productDto.supplierId;
             product.price = productDto.price;
             product.isTransferable = productDto.isTransferable;
             product.numberOfUnits = productDto.numberOfUnits;
@@ -640,6 +643,7 @@ export class ProductService {
             product.isTransferable = productDto.isTransferable;
             product.numberOfUnits = productDto.numberOfUnits;
             product.productUnit = productDto.productUnit;
+            product.supplierId = productDto.supplierId;
             product.isLinkedToSalesAgent = false;
             return product;
           });
@@ -731,6 +735,9 @@ export class ProductService {
         cursor: null,
         filterKeyword: productName,
         warehouseId: 1,
+        productsFilter: {
+          supplierId: 0
+        }
       };
 
       return this.apollo
