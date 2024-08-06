@@ -421,6 +421,7 @@ export class ProductComponent
                 product.isTransferable = this.selectedProduct().isTransferable;
                 product.numberOfUnits = this.selectedProduct().numberOfUnits;
                 product.pricePerUnit = this.selectedProduct().pricePerUnit;
+                product.supplierId = this.selectedProduct().supplierId;
                 product.productUnit.name = this.selectedProduct().productUnit.name;
 
                 this.productService.updateProductInformation([product]).subscribe({
