@@ -51,7 +51,7 @@
     "SUPPLIERS": "Suppliers",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
-    "WAREHOUSE_PRODUCTS": "Warehouse Products",
+    "WAREHOUSE_PRODUCTS": "Warehouse",
     "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Draft Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
@@ -374,6 +374,16 @@
           "LABEL_3": "Note that the transaction details cannot be changed once it is confirmed."
         }
       }
+    },
+    "PRINT_OPTION_DIALOG": {
+      "TITLE": "Print option",
+      "CONFIRM": "Choose to which entity you want to print this invoice for.",
+      "BUTTON_OPTIONS": {
+        "FOR_SALES_AGENT": "Sales Agent",
+        "FOR_CUSTOMER": "Customer"
+      },
+      "ERROR_MESSAGE": "Failed to generate report file. Please try again later.",
+      "LOADING_MESSAGE": "Generating report. This will take a while. Please wait..."
     },
     "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
       "TITLE": "Save new order",
