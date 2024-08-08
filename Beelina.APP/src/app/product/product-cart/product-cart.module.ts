@@ -21,6 +21,7 @@ import { PaymentMethodsEffects } from 'src/app/payment-methods/store/effects';
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { AgreementConfirmationComponent } from './agreement-confirmation/agreement-confirmation.component';
 import { ProductCartComponent } from './product-cart.component';
+import { PrintOptionDialogComponent } from './print-option-dialog/print-option-dialog.component';
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
 import * as CustomerStoresReducers from '../../customer/store/reducers';
@@ -67,6 +68,11 @@ import * as ProductTransactionReducers from '../add-to-cart-product/store/reduce
     ]),
     TranslateModule.forChild(),
   ],
-  declarations: [ProductCartComponent, SelectNewProductComponent, AgreementConfirmationComponent],
+  declarations: [
+    ProductCartComponent,
+    SelectNewProductComponent,
+    AgreementConfirmationComponent,
+    PrintOptionDialogComponent
+  ],
 })
 export class ProductCartModule { }
