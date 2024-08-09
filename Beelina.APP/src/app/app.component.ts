@@ -26,6 +26,7 @@ import { GeneralInformationService } from './_services/general-information.servi
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { StorageService } from './_services/storage.service';
 import { UIService } from './_services/ui.service';
+import { UserAccountService } from './_services/user-account.service';
 
 import { IMenu } from './_interfaces/imenu';
 import { GeneralInformation } from './_models/general-information.model';
@@ -53,12 +54,13 @@ export class AppComponent
   authService = inject(AuthService);
   appVersionService = inject(AppVersionService);
   dialogService = inject(DialogService);
+  generalInformationService = inject(GeneralInformationService);
   router = inject(Router);
   sideDrawerService = inject(SidedrawerService);
   storageService = inject(StorageService);
-  translateService = inject(TranslateService);
-  generalInformationService = inject(GeneralInformationService);
   swUpdate = inject(SwUpdate);
+  translateService = inject(TranslateService);
+  userAccountService = inject(UserAccountService);
 
   constructor(
     protected override uiService: UIService
@@ -76,6 +78,10 @@ export class AppComponent
       this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));
       this.menuDataSource.data = this.sideDrawerService.getMenus();
       this.isAuthenticated.set((user !== null));
+
+      if (user) {
+        this.userAccountService.getUserSetting(user.id).subscribe();
+      }
 
       if (
         this.modulePrivilege(ModuleEnum.Distribution) ===

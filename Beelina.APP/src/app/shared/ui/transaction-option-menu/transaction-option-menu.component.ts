@@ -1,13 +1,15 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Inject, OnInit, signal } from '@angular/core';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
-import { TransactionService } from 'src/app/_services/transaction.service';
 import { DialogService } from '../dialog/dialog.service';
 import { NotificationService } from '../notification/notification.service';
+import { TransactionService } from 'src/app/_services/transaction.service';
+import { UserAccountService } from 'src/app/_services/user-account.service';
+
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
 import * as TransactionDateActions from '../../../transaction-history/store/actions';
@@ -23,6 +25,7 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 export class TransactionOptionMenuComponent extends BaseComponent implements OnInit {
 
   transaction = signal<Transaction>(new Transaction());
+  userService = inject(UserAccountService);
 
   constructor(
     private _bottomSheetRef: MatBottomSheetRef<TransactionOptionMenuComponent>,

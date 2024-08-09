@@ -12,6 +12,7 @@ namespace Beelina.LIB.Models
 
         public List<RefreshToken> RefreshTokens { get; set; }
         public List<UserPermission> UserPermissions { get; set; }
+        public UserSetting UserSetting { get; set; }
 
         #region User Accounts Tracker
         public List<UserAccount> DeletedAccounts { get; set; }

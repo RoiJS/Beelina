@@ -1,9 +1,11 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
 
   @if (isAdmin()) {
+  @if(userService.userSetting().allowOrderPayments) {
   <button mat-icon-button class="toolbar-option" (click)="goToPaymentHistory()">
     <mat-icon>payment</mat-icon>
   </button>
+  }
   }
 
 </app-tool-bar>
@@ -221,6 +223,7 @@
             {{ "GENERAL_TEXTS.PRINT" | translate }}
           </button>
 
+          @if(userService.userSetting().allowOrderPayments) {
           @if (transaction().balance > 0) {
           <button mat-raised-button color="default" (click)="registerPayment()">
             <mat-icon>payment</mat-icon>
@@ -228,13 +231,16 @@
             | translate}}
           </button>
           }
+          }
 
+          @if(userService.userSetting().allowOrderConfirmation) {
           @if(transaction().balance === 0 && transaction().hasUnpaidProductTransaction &&
           orderForm.get('paymentMethod').value !== 3) {
           <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
             <mat-icon>check_circle_outline</mat-icon>
             {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
           </button>
+          }
           }
 
           <button mat-raised-button color="primary" (click)="saveNewUpdate()">

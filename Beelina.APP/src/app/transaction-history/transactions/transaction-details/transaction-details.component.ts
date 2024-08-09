@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, viewChild, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, viewChild, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -19,6 +19,7 @@ import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-la
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import * as PaymentMethodActions from '../../../payment-methods/store/actions';
 import { Transaction } from 'src/app/_models/transaction';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 
 @Component({
   selector: 'app-transaction-details',
@@ -36,6 +37,8 @@ export class TransactionDetailsComponent
   private _paymentMethodOptions: PaymentMethod[];
   private _subscription: Subscription = new Subscription();
   private _transactionForm: FormGroup;
+
+  userService = inject(UserAccountService);
 
   constructor(
     private activatedRoute: ActivatedRoute,

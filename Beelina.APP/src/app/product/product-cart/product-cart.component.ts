@@ -23,6 +23,7 @@ import { InvoicePrintService } from 'src/app/_services/print/invoice-print.servi
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { StorageService } from 'src/app/_services/storage.service';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 
 import { AddToCartProductComponent } from '../add-to-cart-product/add-to-cart-product.component';
 import { AgreementConfirmationComponent } from './agreement-confirmation/agreement-confirmation.component';
@@ -109,6 +110,7 @@ export class ProductCartComponent
   storageService = inject(StorageService);
   transactionService = inject(TransactionService);
   translateService = inject(TranslateService);
+  userService = inject(UserAccountService);
 
   isAdmin = signal<boolean>(false);
 
