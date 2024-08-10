@@ -115,6 +115,7 @@ const GET_WAREHOUSE_PRODUCTS_QUERY = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         productUnit {
           id
           name
@@ -642,6 +643,7 @@ export class ProductService {
             product.isTransferable = productDto.isTransferable;
             product.numberOfUnits = productDto.numberOfUnits;
             product.productUnit = productDto.productUnit;
+            product.supplierId = productDto.supplierId;
             product.isLinkedToSalesAgent = false;
             return product;
           });
@@ -733,6 +735,9 @@ export class ProductService {
         cursor: null,
         filterKeyword: productName,
         warehouseId: 1,
+        productsFilter: {
+          supplierId: 0
+        }
       };
 
       return this.apollo

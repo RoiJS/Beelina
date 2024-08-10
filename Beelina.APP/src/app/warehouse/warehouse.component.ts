@@ -223,6 +223,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
               product.withdrawalSlipNo = data.transactionNo;
               product.isTransferable = this.selectedProduct().isTransferable;
               product.numberOfUnits = this.selectedProduct().numberOfUnits;
+              product.supplierId = this.selectedProduct().supplierId;
               product.pricePerUnit = this.selectedProduct().pricePerUnit;
               product.productUnit.name = this.selectedProduct().productUnit.name;
 
