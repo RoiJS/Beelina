@@ -810,7 +810,9 @@
     "SALES_PANEL": {
       "LABEL": "Sales Amount",
       "CASH_ON_HAND_LABEL": "Cash Payment",
-      "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
+      "CHEQUE_ON_HAND_LABEL": "Cheque Payment",
+      "ACCOUNT_RECEIVABLES_LABEL": "Account Receivables",
+      "BAD_ORDERS_LABEL": "Bad Orders"
     }
   },
   "SIDE_DRAWER_SECTION": {
@@ -1244,7 +1246,9 @@
         "TITLE": "Sales Date Distribution Chart",
         "SALES_LABEL": "Sales",
         "CASH_ON_HAND_LABEL": "Cash Payment",
-        "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
+        "CHEQUE_ON_HAND_LABEL": "Cheque Payment",
+        "BAD_ORDERS_LABEL": "Bad Order",
+        "ACCOUNT_RECEIVABLES_LABEL": "Account Receivables"
       },
       "CHART_FILTER_SECTION": {
         "LABEL": "Total Sales Amount"

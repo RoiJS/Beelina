@@ -61,6 +61,8 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
         this._sales = transactionSales.totalSalesAmount;
         this._cashOnHand = transactionSales.cashAmountOnHand;
         this._chequeOnHand = transactionSales.chequeAmountOnHand;
+        this._badOrders = transactionSales.badOrderAmount;
+        this._accountReceivables = transactionSales.accountReceivables;
       });
   }
 

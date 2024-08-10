@@ -191,8 +191,10 @@ namespace Beelina.LIB.BusinessLogic
                 var dateRangeSales = new TotalSalesPerDateRange
                 {
                     TotalSales = salesAgentSales.TotalSalesAmount,
+                    BadOrderAmount = salesAgentSales.BadOrderAmount,
                     ChequeAmountOnHand = salesAgentSales.ChequeAmountOnHand,
                     CashAmountOnHand = salesAgentSales.CashAmountOnHand,
+                    AccountReceivables = salesAgentSales.AccountReceivables,
                     FromDate = dateRange.FromDate,
                     ToDate = dateRange.ToDate,
                     Label = dateRange.Label
@@ -206,15 +208,19 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<TransactionSales> GetSales(int userId, string fromDate, string toDate)
         {
+            var badOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.BadOrder, userId, fromDate, toDate);
+            var paymentsAmount = await GetOrderPayments(userId, fromDate, toDate);
             var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, userId, fromDate, toDate);
-            var chequeOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, userId, fromDate, toDate);
-            var cashOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, userId, fromDate, toDate);
+            var chequeOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, userId, fromDate, toDate);
+            var cashOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, userId, fromDate, toDate);
 
             return new TransactionSales
             {
                 TotalSalesAmount = confirmedOrdersAmount.TotalSalesAmount,
                 ChequeAmountOnHand = chequeOnHandAmount.TotalSalesAmount,
-                CashAmountOnHand = cashOnHandAmount.TotalSalesAmount
+                CashAmountOnHand = cashOnHandAmount.TotalSalesAmount,
+                BadOrderAmount = badOrdersAmount.TotalSalesAmount,
+                AccountReceivables = confirmedOrdersAmount.TotalSalesAmount - paymentsAmount
             };
         }
 
@@ -226,8 +232,8 @@ namespace Beelina.LIB.BusinessLogic
             {
                 var sales = new TransactionSalesPerSalesAgent();
                 var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, salesAgent.Id, fromDate, toDate);
-                var chequeOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, salesAgent.Id, fromDate, toDate);
-                var cashOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, salesAgent.Id, fromDate, toDate);
+                var chequeOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, salesAgent.Id, fromDate, toDate);
+                var cashOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, salesAgent.Id, fromDate, toDate);
 
                 sales.Id = salesAgent.Id;
                 sales.SalesAgentName = salesAgent.PersonFullName;
@@ -497,7 +503,7 @@ namespace Beelina.LIB.BusinessLogic
             return discountedSalesPerBadOrders;
         }
 
-        private async Task<TransactionSales> GetOrderPayments(TransactionStatusEnum status, ModeOfPaymentEnum paymentMethod, int userId, string fromDate, string toDate)
+        private async Task<TransactionSales> GetOrderExpectedPaymentsAmount(TransactionStatusEnum status, ModeOfPaymentEnum paymentMethod, int userId, string fromDate, string toDate)
         {
             var discountedSalesPerTransactions = 0.0;
             var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
@@ -785,6 +791,48 @@ namespace Beelina.LIB.BusinessLogic
             discountedSalesPerTransactions = await salesPerTransactions.SumAsync(t => t.TotalAmountPerTransaction - (t.TotalAmountPerTransaction * t.Discount / 100));
 
             return new TransactionSales { TotalSalesAmount = discountedSalesPerTransactions };
+        }
+
+        private async Task<double> GetOrderPayments(int userId, string fromDate, string toDate)
+        {
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
+
+            var transactionWithPayments = (from t in _beelinaRepository.ClientDbContext.Transactions
+                                           join pt in _beelinaRepository.ClientDbContext.Payments
+                                           on t.Id equals pt.TransactionId
+
+                                           where
+                                               t.Status == TransactionStatusEnum.Confirmed
+                                               // Get all orders if current user is Manager or Admininistrator
+                                               && (
+                                                   userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                                   (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                               )
+                                               && t.IsDelete == false
+                                               && t.IsActive
+                                               && pt.IsDelete == false
+                                               && pt.IsActive
+                                           select new
+                                           {
+                                               Transaction = t,
+                                               Payments = pt
+                                           });
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+                transactionWithPayments = transactionWithPayments.Where(t =>
+                        t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate)
+                        && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate)
+                );
+            }
+
+            // Extract Sales per Transaction
+            var transactionPayments = transactionWithPayments.Sum(p => p.Payments.Amount);
+
+            return transactionPayments;
         }
 
         public async Task DeleteOrderTransactions(List<int> transactionIds)
