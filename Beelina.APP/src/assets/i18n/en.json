@@ -460,6 +460,10 @@
         "LABEL": "Additional Stock Quantity",
         "HINT": "Please specify stock"
       },
+      "SENDER_PLATE_NUMBER_CONTROL": {
+        "LABEL": "Plate No",
+        "HINT": "Please plate no."
+      },
       "PRICE_PER_UNIT_CONTROL": {
         "LABEL": "Price",
         "HINT": "Please specify price"
@@ -1206,7 +1210,8 @@
       "MODIFIED_BY_LABEL": "Modified By",
       "WITHDRAWAL_SLIP_NO_LABEL": "Withdrawal Slip No.",
       "INVOICE_NO_LABEL": "Invoice No.",
-      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No."
+      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No.",
+      "PLATE_NO_LABEL": "Plate No."
     }
   },
   "REPORT_SETTINGS_DIALOG": {

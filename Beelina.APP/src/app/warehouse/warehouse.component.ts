@@ -195,6 +195,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
         (data: {
           additionalStockQuantity: number;
           transactionNo: string;
+          plateNo: string;
         }) => {
           if (!data || data.additionalStockQuantity === 0) return;
 
@@ -221,6 +222,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
               product.description = this.selectedProduct().description;
               product.stockQuantity = data.additionalStockQuantity;
               product.withdrawalSlipNo = data.transactionNo;
+              product.plateNo = data.plateNo;
               product.isTransferable = this.selectedProduct().isTransferable;
               product.numberOfUnits = this.selectedProduct().numberOfUnits;
               product.supplierId = this.selectedProduct().supplierId;

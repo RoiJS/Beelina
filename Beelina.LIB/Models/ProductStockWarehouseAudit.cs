@@ -9,6 +9,7 @@ namespace Beelina.LIB.Models
         public int ProductStockPerWarehouseId { get; set; }
         public int Quantity { get; set; }
         public string PurchaseOrderNumber { get; set; }
+        public string SenderPlateNumber { get; set; }
         public StockAuditSourceEnum StockAuditSource { get; set; }
         public ProductStockPerWarehouse ProductStockPerWarehouse { get; set; }
         public int SourceProductStockPerWarehouseId { get; set; }

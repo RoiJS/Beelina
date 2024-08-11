@@ -373,6 +373,7 @@ const GET_WAREHOUSE_PRODUCT_STOCK_AUDITS_LIST = gql`
         id
         quantity
         transactionNumber
+        plateNo
         stockAuditSource
         modifiedBy
         modifiedDate
@@ -884,6 +885,7 @@ export class ProductService {
         isTransferable: product.isTransferable,
         numberOfUnits: product.numberOfUnits,
         withdrawalSlipNo: product.withdrawalSlipNo,
+        plateNo: product.plateNo,
         productUnitInput: {
           id: product.productUnit.id,
           name: product.productUnit.name,
@@ -1342,6 +1344,7 @@ export class ProductService {
             newStockAuditItem.quantity = stockAudit.quantity;
             newStockAuditItem.stockAuditSource = stockAudit.stockAuditSource;
             newStockAuditItem.transactionNumber = stockAudit.transactionNumber;
+            newStockAuditItem.plateNo = stockAudit.plateNo;
             newStockAuditItem.modifiedDate = stockAudit.modifiedDate;
             newStockAuditItem.modifiedBy = stockAudit.modifiedBy;
             return newStockAuditItem;
