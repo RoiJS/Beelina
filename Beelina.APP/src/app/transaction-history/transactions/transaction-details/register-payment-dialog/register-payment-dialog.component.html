@@ -34,6 +34,7 @@
         [placeholder]="notesControlHintText"></textarea>
     </mat-form-field>
 
+    @if(userService.userSetting().allowOrderConfirmation) {
     @if(registerPaymentForm.get('amount').value === maxAmount()) {
     <div>
       <mat-slide-toggle formControlName="paid">{{
@@ -41,6 +42,7 @@
         | translate
         }}</mat-slide-toggle>
     </div>
+    }
     }
 
   </div>

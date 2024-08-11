@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
+
+import { UserAccountService } from 'src/app/_services/user-account.service';
 
 @Component({
   selector: 'app-agreement-confirmation',
@@ -8,11 +10,13 @@ import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
   styleUrls: ['./agreement-confirmation.component.scss']
 })
 export class AgreementConfirmationComponent implements OnInit {
+  userService = inject(UserAccountService)
+  bottomSheetRef = inject(MatBottomSheetRef<AgreementConfirmationComponent>);
+  formBuilder = inject(FormBuilder);
+
   private _agreementConfirmationForm: FormGroup;
-  constructor(
-    public _bottomSheetRef: MatBottomSheetRef<AgreementConfirmationComponent>,
-    private formBuilder: FormBuilder
-  ) {
+
+  constructor() {
     this._agreementConfirmationForm = this.formBuilder.group({
       confirm: [false],
       paid: [false]
@@ -23,13 +27,13 @@ export class AgreementConfirmationComponent implements OnInit {
   }
 
   onCancel() {
-    this._bottomSheetRef.dismiss();
+    this.bottomSheetRef.dismiss();
   }
 
   onConfirm() {
     const confirm = this._agreementConfirmationForm.get('confirm').value;
     const paid = this._agreementConfirmationForm.get('paid').value;
-    this._bottomSheetRef.dismiss({ confirm, paid });
+    this.bottomSheetRef.dismiss({ confirm, paid });
   }
 
   get agreementConfirmationForm(): FormGroup {

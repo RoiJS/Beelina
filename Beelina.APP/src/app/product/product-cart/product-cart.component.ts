@@ -19,22 +19,23 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { InvoicePrintService } from 'src/app/_services/print/invoice-print.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { StorageService } from 'src/app/_services/storage.service';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 
 import { AddToCartProductComponent } from '../add-to-cart-product/add-to-cart-product.component';
 import { AgreementConfirmationComponent } from './agreement-confirmation/agreement-confirmation.component';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
+import { PrintOptionDialogComponent } from './print-option-dialog/print-option-dialog.component';
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
-import * as html2pdf from 'html2pdf.js';
 
 import {
-  InvoiceData,
   TransactionDto,
-  TransactionService,
+  TransactionService
 } from 'src/app/_services/transaction.service';
 
 import * as BarangayActions from '../../barangays/store/actions';
@@ -51,13 +52,13 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
 import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
+import { PrintForSettingsEnum } from 'src/app/_enum/print-for-settings.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { Barangay } from 'src/app/_models/barangay';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { PaymentMethod } from 'src/app/_models/payment-method';
-import { User } from 'src/app/_models/user.model';
 
 @Component({
   selector: 'app-product-cart',
@@ -85,6 +86,7 @@ export class ProductCartComponent
   private _saveDraftSuccessMessage = signal<string>('');
   private _saveDraftErrorMessage = signal<string>('');
   private _dialogRef: MatBottomSheetRef<AgreementConfirmationComponent>;
+  private _dialogPrintOptionRef: MatBottomSheetRef<PrintOptionDialogComponent>;
 
   barangayOptions = signal<Array<Barangay>>([]);
   dateUpdated = signal<string>('');
@@ -100,6 +102,7 @@ export class ProductCartComponent
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);
   formBuilder = inject(FormBuilder);
+  invoicePrintService = inject(InvoicePrintService);
   notificationService = inject(NotificationService);
   productService = inject(ProductService);
   router = inject(Router);
@@ -107,6 +110,7 @@ export class ProductCartComponent
   storageService = inject(StorageService);
   transactionService = inject(TransactionService);
   translateService = inject(TranslateService);
+  userService = inject(UserAccountService);
 
   isAdmin = signal<boolean>(false);
 
@@ -713,347 +717,20 @@ export class ProductCartComponent
   }
 
   printReceipt() {
-    this._isLoading = true;
-    this.transactionService
-      .getInvoiceData(this._transactionId())
-      .subscribe((data: InvoiceData) => {
-        this._isLoading = false;
-        const invoiceReceiptTemplate = this.constructReceiptTemplate(data);
+    this._dialogPrintOptionRef = this.bottomSheet.open(PrintOptionDialogComponent);
 
-        const options = {
-          margin: 0.8,
-          filename: 'Invoice.pdf',
-          image: { type: 'jpeg', quality: 1 },
-          html2canvas: { scale: 1 },
-          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf()
-          .from(invoiceReceiptTemplate)
-          .set(options)
-          .toPdf()
-          .output('blob')
-          .then((blob: Blob) => {
-            const url = URL.createObjectURL(blob);
-            const printWindow = window.open(url);
-            printWindow.focus();
-            printWindow.print();
-          });
-      });
-  }
-
-  constructReceiptTemplate(data: InvoiceData) {
-
-    const generalSettings = data.generalSettings;
-    const transaction = data.transaction.transaction;
-
-    const companyName = generalSettings.companyName;
-    const ownerName = generalSettings.ownerName;
-    const address = generalSettings.address;
-    const telephone = generalSettings.telephone;
-    const faxTelephone = generalSettings.faxTelephone;
-    const tin = generalSettings.tin;
-    const saleAgentName = (<User>transaction.createdBy).fullname;
-
-    const badOrderTemplate = transaction.badOrderAmount > 0 ? `
-      <div class="invoice-summary-amount-section__details">
-          <span class="property">Bad Order: </span>
-          <span class="value">${NumberFormatter.formatCurrency(data.transaction.badOrderAmount, false)}</span>
-      </div>
-    ` : '';
-
-    const discountTemplate = transaction.discount > 0 ? `
-      <div class="invoice-summary-amount-section__details">
-          <span class="property">Discount: </span>
-          <span class="value">${transaction.discount}%</span>
-      </div>
-    ` : '';
-
-    const telephoneNumberTemplate = telephone.length > 0 ? `Telephone: ${telephone};` : '';
-    const faxTelephoneNumberTemplate = faxTelephone.length > 0 ? `Fax tel: ${faxTelephone}` : '';
-    const tinTemplate = tin.length > 0 ? `TIN: ${tin}` : '';
-
-    const element = `
-            <!DOCTYPE html>
-            <html>
-              <body>
-                <div class="receipt-template">
-                    <div class="invoice-company-details-section">
-                        <div class="invoice-company-details-section__company-name">
-                            <span>${companyName}</span>
-                        </div>
-                        <div class="invoice-company-details-section__company-details">
-                            <span>${ownerName}</span>
-                            <span>${address}</span>
-                            <span>${telephoneNumberTemplate} ${faxTelephoneNumberTemplate}</span>
-                            <span>${tinTemplate}</span>
-                        </div>
-                        <div class="invoice-company-details-section__delivery-details">
-                            <div class="deliver-shipment-section">
-                                Deliver/Ship to: ${saleAgentName}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="invoice-tracking-section">
-                        <div class="invoice-tracking-section__content">
-                            <div class="invoice-tracking-property-transaction-no">
-                                Transaction No.
-                            </div>
-                            <div class="invoice-tracking-value-transaction-no">
-                                ${transaction.invoiceNo}
-                            </div>
-                            <div class="invoice-tracking-property-date">
-                                Date
-                            </div>
-                            <div class="invoice-tracking-value-date">
-                                ${DateFormatter.format(transaction.transactionDate, 'MM/DD/YYYY')}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="invoice-product-list-section">
-                        <table class="invoice-product-list-section__product-list-table">
-                            <thead>
-                                <tr>
-                                    <th class="product-description-column">Product Description</th>
-                                    <th class="product-quantity-column">Quantity</th>
-                                    <th class="product-unit-column">Unit</th>
-                                    <th class="product-unit-price-column">Unit Price</th>
-                                    <th class="product-amount-column">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              ${this.generateProductTransactionList(transaction.productTransactions)}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td class="footer-product-list-count">${transaction.productTransactions.length}</td>
-                                    <td class="footer-product-quantity-count">${transaction.productTransactions.reduce((acc, transaction) => acc + transaction.quantity, 0)}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="product-total-amount-column">${NumberFormatter.formatCurrency(transaction.total, false)}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div class="invoice-received-info-section">
-                        <div class="invoice-received-info-section__footer-text">
-                            ${generalSettings.invoiceFooterText}
-                        </div>
-                        <div class="invoice-received-info-section__footer-text-2">
-                            ${generalSettings.invoiceFooterText1}
-                        </div>
-                    </div>
-                    <div class="invoice-summary-amount-section">
-                        <div class="invoice-summary-amount-section__details">
-                            <span class="property">Vatable Amount: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.vatableAmount, false)}</span>
-                        </div>
-                        <div class="invoice-summary-amount-section__details">
-                            <span class="property">Value Added Tax: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.valueAddedTax, false)}</span>
-                        </div>
-                        <div class="invoice-summary-amount-section__details">
-                            <span class="property">Amount Sales: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.netTotal, false)}</span>
-                        </div>
-                        ${badOrderTemplate}
-                        ${discountTemplate}
-                        <div class="invoice-summary-amount-section__details invoice-summary-amount-section__total-payable-amount">
-                            <span class="property">Total Payable: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.netTotal, false)}</span>
-                        </div>
-                    </div>
-                </div>
-              </body>
-            </html>
-
-            <style>
-              .receipt-template {
-                  display: grid;
-                  grid-template-columns: 1.8fr 1fr;
-                  grid-template-rows: 180px minmax(100px, auto) 200px;
-                  grid-template-areas: "invoice-company-details-section invoice-tracking-section" "invoice-product-list-section invoice-product-list-section" "invoice-received-info-section invoice-summary-amount-section";
-              }
-
-              .invoice-company-details-section {
-                  grid-area: invoice-company-details-section;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 1em;
-              }
-
-              .invoice-tracking-section {
-                  grid-area: invoice-tracking-section;
-              }
-
-              .invoice-tracking-section__content {
-                  display: grid;
-                  grid-template-columns: repeat(2, 1fr);
-                  grid-template-rows: repeat(2, 25px);
-                  grid-template-areas: "invoice-tracking-property-transaction-no invoice-tracking-value-transaction-no" "invoice-tracking-property-date invoice-tracking-value-date";
-                  font-size: 15px;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-property-transaction-no {
-                  grid-area: invoice-tracking-property-transaction-no;
-                  font-weight: bold;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-value-transaction-no {
-                  grid-area: invoice-tracking-value-transaction-no;
-                  text-align: right;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-property-date {
-                  grid-area: invoice-tracking-property-date;
-                  font-weight: bold;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-value-date {
-                  grid-area: invoice-tracking-value-date;
-                  text-align: right;
-              }
-
-              .invoice-product-list-section {
-                  grid-area: invoice-product-list-section;
-                  width: 100%;
-                  margin-bottom: 2em;
-              }
-
-              .invoice-company-details-section__company-name {
-                  font-size: 25px;
-                  font-weight: bold;
-              }
-
-              .invoice-company-details-section__company-details {
-                  display: flex;
-                  flex-direction: column;
-                  font-style: italic;
-              }
-
-              .invoice-company-details-section__delivery-details {
-                  flex: 1;
-                  width: 70%
-              }
-
-              .invoice-received-info-section {
-                  grid-area: invoice-received-info-section;
-                  width: 90%;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 1em;
-                  font-style: italic;
-                  font-weight: bold;
-              }
-
-              .invoice-received-info-section__footer-text {
-                  border: 1px solid;
-                  padding: 10px;
-              }
-
-              .invoice-received-info-section__footer-text-2 {
-                  border: 1px solid;
-                  padding: 10px;
-                  flex: 1;
-              }
-
-              .invoice-summary-amount-section {
-                  grid-area: invoice-summary-amount-section;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 0.8em;
-                  justify-content: end;
-                  font-size: 15px;
-              }
-
-              .invoice-summary-amount-section__details {
-                  display: flex;
-              }
-
-              .invoice-summary-amount-section__total-payable-amount {
-                  font-weight: bold;
-              }
-
-              .invoice-summary-amount-section__total-payable-amount .value {
-                  border: 1px solid;
-              }
-
-              .invoice-summary-amount-section__details .property {
-                  width: 150px;
-              }
-
-              .invoice-summary-amount-section__details .value {
-                  flex: 1;
-                  text-align: right;
-              }
-
-              .invoice-product-list-section__product-list-table {
-                  border-collapse: collapse;
-                  width: 100%;
-              }
-
-              .invoice-product-list-section__product-list-table .product-unit-column {
-                padding-left: 5px;
-              }
-
-              .invoice-product-list-section__product-list-table thead th {
-                  border-bottom: 2px solid black;
-                  border-top: 2px solid black;
-                  text-align: left;
-              }
-
-              .invoice-product-list-section__product-list-table tfoot {
-                  border-bottom: 2px solid black;
-                  border-top: 2px solid black;
-                  text-align: left;
-              }
-
-              .invoice-product-list-section__product-list-table td {
-                  padding: 0.3em 0 0.3em;
-              }
-
-              .invoice-product-list-section__product-list-table .product-quantity-column,
-              .invoice-product-list-section__product-list-table .product-unit-price-column,
-              .invoice-product-list-section__product-list-table .product-amount-column {
-                  text-align: right;
-              }
-
-              .invoice-product-list-section__product-list-table .footer-product-quantity-count {
-                  text-align: right;
-                  font-weight: bold;
-              }
-
-              .invoice-product-list-section__product-list-table .footer-product-list-count {
-                  text-align: center;
-                  font-weight: bold;
-              }
-
-              .invoice-product-list-section__product-list-table .product-total-amount-column {
-                  text-align: right;
-                  font-weight: bold;
-              }
-            </style>
-    `;
-
-    return element;
-  }
-
-  generateProductTransactionList(productTransaction: Array<ProductTransaction>) {
-    let template = ``;
-
-    for (let i = 0; i < productTransaction.length; i++) {
-      template += `
-        <tr>
-          <td class="product-description-column">${productTransaction[i].product.name}</td>
-          <td class="product-quantity-column">${productTransaction[i].quantity}</td>
-          <td class="product-unit-column">${productTransaction[i].product.productUnit.name}</td>
-          <td class="product-unit-price-column">${NumberFormatter.formatCurrency(productTransaction[i].price, false)}</td>
-          <td class="product-amount-column">${NumberFormatter.formatCurrency(productTransaction[i].price * productTransaction[i].quantity, false)}</td>
-        </tr>
-      `;
-    }
-
-    return template;
+    this._dialogPrintOptionRef
+      .afterDismissed()
+      .subscribe(
+        async (data: {
+          printForSettingsEnum: PrintForSettingsEnum;
+        }) => {
+          if (!data) return;
+          this._isLoading = true;
+          await this.invoicePrintService.printInvoice(this._transactionId(), data.printForSettingsEnum);
+          this._isLoading = false;
+        }
+      );
   }
 
   ngOnDestroy() {

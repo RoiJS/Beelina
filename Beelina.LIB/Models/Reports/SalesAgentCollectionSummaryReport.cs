@@ -2,6 +2,7 @@ using Beelina.LIB.BusinessLogic;
 using Beelina.LIB.Enums;
 using Beelina.LIB.Interfaces;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using ReserbizAPP.LIB.Helpers.Services;
 using System.Data;
 
@@ -27,14 +28,24 @@ namespace Beelina.LIB.Models.Reports
 
             var reportOutput = new SalesAgentCollectionSummaryReportOutput
             {
-                HeaderOutput = [.. reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new SalesAgentCollectionSummaryReportOutputHeader
+                InvoiceHeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new SalesAgentCollectionSummaryReportOutputInvoiceHeader
+                {
+                    CompanyName = row.Field<string>("CompanyName"),
+                    OwnerName = row.Field<string>("OwnerName"),
+                    Address = row.Field<string>("Address"),
+                    Telephone = row.Field<string>("Telephone"),
+                    FaxTelephone = row.Field<string>("FaxTelephone"),
+                    Tin = row.Field<string>("Tin"),
+                }).FirstOrDefault(),
+
+                HeaderOutput = [.. reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new SalesAgentCollectionSummaryReportOutputHeader
                 {
                     Id = row.Field<int>("Id"),
                     FirstName = row.Field<string>("FirstName"),
                     LastName = row.Field<string>("LastName"),
                 })],
 
-                ListOutput = [.. reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new SalesAgentCollectionSummaryReportOutputList
+                ListOutput = [.. reportOutputDataSet.Tables[2].AsEnumerable().Select(row => new SalesAgentCollectionSummaryReportOutputList
                 {
                     Id = row.Field<int>("Id"),
                     InvoiceNo = row.Field<string>("InvoiceNo"),
@@ -57,7 +68,26 @@ namespace Beelina.LIB.Models.Reports
             {
                 var worksheet = package.Workbook.Worksheets["Sheet1"];
 
-                var mainRowLevel = 2;
+                var mainRowLevel = 10;
+
+                // Report Header
+                worksheet.Cells[$"A1"].Value = reportOutput.InvoiceHeaderOutput.CompanyName;
+                worksheet.Cells[$"A2"].Value = reportOutput.InvoiceHeaderOutput.OwnerName;
+                worksheet.Cells[$"A3"].Value = reportOutput.InvoiceHeaderOutput.Address;
+                var telephone = String.IsNullOrEmpty(reportOutput.InvoiceHeaderOutput.Telephone) ? "" : $"Telephone: {reportOutput.InvoiceHeaderOutput.Telephone};";
+                var faxTelephone = String.IsNullOrEmpty(reportOutput.InvoiceHeaderOutput.FaxTelephone) ? "" : $"Fax Tel: {reportOutput.InvoiceHeaderOutput.FaxTelephone}";
+                worksheet.Cells[$"A4"].Value = $"{telephone} {faxTelephone}";
+
+                var tin = String.IsNullOrEmpty(reportOutput.InvoiceHeaderOutput.Tin) ? "" : $"Tin: {reportOutput.InvoiceHeaderOutput.Tin}";
+                worksheet.Cells[$"A5"].Value = tin;
+
+                worksheet.Cells[$"A{mainRowLevel}"].Value = "SATURATION";
+                worksheet.Cells[$"A{mainRowLevel}:G{mainRowLevel}"].Merge = true;
+                worksheet.Cells[$"A{mainRowLevel}"].Style.Font.Bold = true;
+                worksheet.Cells[$"A{mainRowLevel}"].Style.Font.Italic = true;
+                worksheet.Cells[$"A{mainRowLevel}"].Style.Font.UnderLine = true;
+                mainRowLevel++;
+
                 foreach (var mainLevel in reportOutput.HeaderOutput)
                 {
                     var rowData = reportOutput.ListOutput.Where(l => l.CreatedById == mainLevel.Id).ToList();
@@ -75,6 +105,8 @@ namespace Beelina.LIB.Models.Reports
                         worksheet.Cells[$"F{cellNumber}"].Value = row.Balance == 0 ? string.Empty : row.Balance;
                         worksheet.Cells[$"G{cellNumber}"].Value = row.BadOrder == 0 ? string.Empty : row.BadOrder;
 
+                        worksheet.Cells[$"B{cellNumber}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[$"C{cellNumber}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                         worksheet.Cells[$"D{cellNumber}"].Style.Numberformat.Format = "#,##0.00";
                         worksheet.Cells[$"E{cellNumber}"].Style.Numberformat.Format = "#,##0.00";
                         worksheet.Cells[$"F{cellNumber}"].Style.Numberformat.Format = "#,##0.00";
@@ -91,10 +123,14 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Cells[$"C{cellNumber}"].Style.Font.Bold = true;
                     worksheet.Cells[$"F{cellNumber}"].Style.Font.Bold = true;
 
-                    cellNumber += 2;
-                    mainRowLevel += 2;
+                    var cellRange = worksheet.Cells[$"B{cellNumber}:G{cellNumber}"];
+                    cellRange.Style.Border.Top.Style = ExcelBorderStyle.Medium;
+                    cellRange.Style.Border.Bottom.Style = ExcelBorderStyle.Medium;
 
-                    var startMerge = mainRowLevel - rowData.Count - 2;
+                    cellNumber += 3;
+                    mainRowLevel += 3;
+
+                    var startMerge = mainRowLevel - rowData.Count - 3;
                     var endMerge = mainRowLevel - 1;
                     worksheet.Cells[$"A{startMerge}:A{endMerge}"].Merge = true;
                     worksheet.Cells[$"A{startMerge}:A{endMerge}"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
@@ -104,6 +140,8 @@ namespace Beelina.LIB.Models.Reports
                     worksheet.Column(5).Width = 15;
                     worksheet.Column(6).Width = 15;
                 }
+
+                worksheet.View.FreezePanes(11, 7);
 
                 // Lock the worksheet
                 LockReport(package, worksheet);
@@ -118,6 +156,7 @@ namespace Beelina.LIB.Models.Reports
 
     public class SalesAgentCollectionSummaryReportOutput : BaseReportOutput
     {
+        public SalesAgentCollectionSummaryReportOutputInvoiceHeader InvoiceHeaderOutput { get; set; }
         public List<SalesAgentCollectionSummaryReportOutputHeader> HeaderOutput { get; set; }
         public List<SalesAgentCollectionSummaryReportOutputList> ListOutput { get; set; }
 
@@ -125,6 +164,21 @@ namespace Beelina.LIB.Models.Reports
         {
             HeaderOutput = [];
             ListOutput = [];
+        }
+    }
+
+    public class SalesAgentCollectionSummaryReportOutputInvoiceHeader
+    {
+        public string CompanyName { get; set; }
+        public string OwnerName { get; set; }
+        public string Address { get; set; }
+        public string Telephone { get; set; }
+        public string FaxTelephone { get; set; }
+        public string Tin { get; set; }
+
+        public SalesAgentCollectionSummaryReportOutputInvoiceHeader()
+        {
+
         }
     }
 

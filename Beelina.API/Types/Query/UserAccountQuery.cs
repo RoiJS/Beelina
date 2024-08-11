@@ -42,6 +42,15 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
+        public async Task<UserSetting> GetUserSetting(
+            [Service] IUserSettingsRepository<UserSetting> userSettingRepository,
+            int userId)
+        {
+            var userSettingFromRepo = await userSettingRepository.GetUserSettings(userId);
+            return userSettingFromRepo;
+        }
+
+        [Authorize]
         public async Task<IUserAccountPayload> VerifyUserAccount([Service] IUserAccountRepository<UserAccount> userAccountRepository, [Service] IMapper mapper, LoginInput loginInput)
         {
             var userAccountFromRepo = await userAccountRepository.Login(loginInput.Username.ToLower(), loginInput.Password);

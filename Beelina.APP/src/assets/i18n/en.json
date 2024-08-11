@@ -51,7 +51,7 @@
     "SUPPLIERS": "Suppliers",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
-    "WAREHOUSE_PRODUCTS": "Warehouse Products",
+    "WAREHOUSE_PRODUCTS": "Warehouse",
     "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Draft Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
@@ -375,6 +375,16 @@
         }
       }
     },
+    "PRINT_OPTION_DIALOG": {
+      "TITLE": "Print option",
+      "CONFIRM": "Choose to which entity you want to print this invoice for.",
+      "BUTTON_OPTIONS": {
+        "FOR_SALES_AGENT": "Sales Agent",
+        "FOR_CUSTOMER": "Customer"
+      },
+      "ERROR_MESSAGE": "Failed to generate report file. Please try again later.",
+      "LOADING_MESSAGE": "Generating report. This will take a while. Please wait..."
+    },
     "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
       "TITLE": "Save new order",
       "CONFIRM": "Are you sure to save new order?",
@@ -449,6 +459,10 @@
       "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
         "LABEL": "Additional Stock Quantity",
         "HINT": "Please specify stock"
+      },
+      "SENDER_PLATE_NUMBER_CONTROL": {
+        "LABEL": "Plate No",
+        "HINT": "Please plate no."
       },
       "PRICE_PER_UNIT_CONTROL": {
         "LABEL": "Price",
@@ -800,7 +814,9 @@
     "SALES_PANEL": {
       "LABEL": "Sales Amount",
       "CASH_ON_HAND_LABEL": "Cash Payment",
-      "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
+      "CHEQUE_ON_HAND_LABEL": "Cheque Payment",
+      "ACCOUNT_RECEIVABLES_LABEL": "Account Receivables",
+      "BAD_ORDERS_LABEL": "Bad Orders"
     }
   },
   "SIDE_DRAWER_SECTION": {
@@ -1194,7 +1210,8 @@
       "MODIFIED_BY_LABEL": "Modified By",
       "WITHDRAWAL_SLIP_NO_LABEL": "Withdrawal Slip No.",
       "INVOICE_NO_LABEL": "Invoice No.",
-      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No."
+      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No.",
+      "PLATE_NO_LABEL": "Plate No."
     }
   },
   "REPORT_SETTINGS_DIALOG": {
@@ -1234,7 +1251,9 @@
         "TITLE": "Sales Date Distribution Chart",
         "SALES_LABEL": "Sales",
         "CASH_ON_HAND_LABEL": "Cash Payment",
-        "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
+        "CHEQUE_ON_HAND_LABEL": "Cheque Payment",
+        "BAD_ORDERS_LABEL": "Bad Order",
+        "ACCOUNT_RECEIVABLES_LABEL": "Account Receivables"
       },
       "CHART_FILTER_SECTION": {
         "LABEL": "Total Sales Amount"
