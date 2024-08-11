@@ -32,6 +32,7 @@ builder.Services.AddSwaggerGen();
 services.AddScoped<IDataContextHelper, DataContextHelper>();
 services.AddScoped(typeof(IBeelinaRepository<>), typeof(BeelinaRepository<>));
 services.AddScoped(typeof(IUserAccountRepository<UserAccount>), typeof(UserAccountRepository));
+services.AddScoped(typeof(IUserSettingsRepository<UserSetting>), typeof(UserSettingsRepository));
 services.AddScoped(typeof(IClientRepository<Client>), typeof(ClientRepository));
 services.AddScoped(typeof(IClientDbManagerRepository<IEntity>), typeof(ClientDbManagerRepository));
 services.AddScoped(typeof(IDataSeedRepository<IEntity>), typeof(DataSeedRepository));

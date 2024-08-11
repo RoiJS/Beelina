@@ -5,6 +5,7 @@ import { Entity } from './entity.model';
 
 export class ProductStockAuditItem extends Entity implements IModelNode {
   public transactionNumber: number
+  public plateNo: string;
   public quantity: number;
   public stockAuditSource: StockAuditSourceEnum;
   public modifiedDate: Date;

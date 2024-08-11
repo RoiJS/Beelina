@@ -271,6 +271,8 @@ const GET_TRANSACTION_SALES = gql`
       cashAmountOnHand
       chequeAmountOnHand
       totalAmountOnHand
+      badOrderAmount
+      accountReceivables
     }
   }
 `;
@@ -285,6 +287,8 @@ const GET_TRANSACTION_SALES_PER_DATE_RANGE_QUERY = gql`
       cashAmountOnHand
       chequeAmountOnHand
       totalAmountOnHand
+      badOrderAmount
+      accountReceivables
     }
   }
 `;
@@ -446,6 +450,8 @@ export class TransactionSales {
   public cashAmountOnHand: number;
   public chequeAmountOnHand: number;
   public totalAmountOnHand: number;
+  public badOrderAmount: number;
+  public accountReceivables: number;
 }
 
 export class TransactionDto {

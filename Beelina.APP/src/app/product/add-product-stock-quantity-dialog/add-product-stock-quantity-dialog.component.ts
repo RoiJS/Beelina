@@ -28,6 +28,7 @@ export class AddProductStockQuantityDialogComponent implements OnInit {
     this._productWithDrawalForm = this.formBuilder.group({
       transactionNo: [data.transactionNo],
       additionalStockQuantity: [data.additionalStockQuantity],
+      senderPlateNo: [],
     });
   }
 
@@ -40,7 +41,9 @@ export class AddProductStockQuantityDialogComponent implements OnInit {
   onConfirm() {
     const additionalStockQuantity = this._productWithDrawalForm.get('additionalStockQuantity').value;
     const transactionNo = this._productWithDrawalForm.get('transactionNo').value;
-    this._bottomSheetRef.dismiss({ additionalStockQuantity, transactionNo: transactionNo });
+    const plateNo = this._productWithDrawalForm.get('senderPlateNo').value;
+
+    this._bottomSheetRef.dismiss({ additionalStockQuantity, transactionNo, plateNo });
   }
 
   get productWithdrawalForm(): FormGroup {

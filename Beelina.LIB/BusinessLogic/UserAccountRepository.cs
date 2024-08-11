@@ -28,7 +28,10 @@ namespace Beelina.LIB.BusinessLogic
                                                 !u.IsDelete
                                                 && (userId == 0 || (userId > 0 && u.Id == userId))
                                             )
-                                            .Includes(a => a.UserPermissions)
+                                            .Includes(
+                                                a => a.UserPermissions,
+                                                a => a.UserSetting
+                                            )
                                             .ToListAsync(cancellationToken);
 
             var finalUserAccountsFromRepo = (from u in usersFromRepo

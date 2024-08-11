@@ -5,4 +5,6 @@ export class SalesPerDateRange extends DateRange {
   public cashAmountOnHand: number;
   public chequeAmountOnHand: number;
   public totalAmountOnHand: number;
+  public badOrderAmount: number;
+  public accountReceivables: number;
 }
