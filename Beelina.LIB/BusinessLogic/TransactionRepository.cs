@@ -22,6 +22,8 @@ namespace Beelina.LIB.BusinessLogic
         private readonly IOptions<AppHostInfo> _appHostInfo;
         private readonly IOptions<ApplicationSettings> _appSettings;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUserSettingsRepository<UserSetting> _userSettingRepository;
+        private readonly IGeneralSettingRepository<GeneralSetting> _generalSettingsRepository;
 
         public TransactionRepository(
             IBeelinaRepository<Transaction> beelinaRepository,
@@ -30,16 +32,20 @@ namespace Beelina.LIB.BusinessLogic
             IOptions<EmailServerSettings> emailServerSettings,
             IOptions<AppHostInfo> appHostInfo,
             IOptions<ApplicationSettings> appSettings,
-            ICurrentUserService currentUserService
+            ICurrentUserService currentUserService,
+            IUserSettingsRepository<UserSetting> userSettingRepository,
+            IGeneralSettingRepository<GeneralSetting> generalSettingsRepository
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
             _appHostInfo = appHostInfo;
             _appSettings = appSettings;
             _currentUserService = currentUserService;
+            _userSettingRepository = userSettingRepository;
             _emailServerSettings = emailServerSettings;
             _productTransactionRepository = productTransactionRepository;
             _userAccountRepository = userAccountRepository;
+            _generalSettingsRepository = generalSettingsRepository;
         }
 
         public async Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate)
@@ -851,13 +857,9 @@ namespace Beelina.LIB.BusinessLogic
                                 .Includes(t => t.ProductTransactions)
                                 .ToListAsync();
 
-            // var transactionFromRepo = await transactionRepository.GetEntity(transactionId).Includes(t => t.ProductTransactions).ToObjectAsync();
-
             SetCurrentUserId(_currentUserService.CurrentUserId);
 
             transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));
-
-            // transactionFromRepo.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid);
 
             await SaveChanges();
 
@@ -968,6 +970,58 @@ namespace Beelina.LIB.BusinessLogic
             template = template.Replace("#transactionDetails", productTransactionsTemplate.ToString());
             template = template.Replace("#badOrder", transactionDetails.BadOrderAmount.FormatCurrency());
             template = template.Replace("#bannerLogo", $"{_appHostInfo.Value.AppDomain}/assets/logo/bannerlogo-alt.jpg");
+
+            return template;
+        }
+
+        public async Task<bool> SendInvoiceTransaction(int userId, int transactionId, IFile file)
+        {
+            try
+            {
+                var generalSetting = await _generalSettingsRepository.GetGeneralSettings();
+                var userSettingsFromRepo = await _userSettingRepository.GetUserSettings(userId);
+                var userAccount = await _userAccountRepository.GetEntity(userId).ToObjectAsync();
+                var transactionFromRepo = await GetEntity(transactionId).ToObjectAsync();
+
+                var emailService = new EmailService(_emailServerSettings.Value.SmtpServer,
+                               _emailServerSettings.Value.SmtpAddress,
+                               _emailServerSettings.Value.SmtpPassword,
+                               _emailServerSettings.Value.SmtpPort);
+                var emailAddress = userSettingsFromRepo.SendReceiptEmailAddress;
+                var subject = String.Format("Invoice Receipt - {0}", transactionFromRepo.InvoiceNo);
+                var emailContent = GenerateInvoiceReceiptEmailContent(transactionFromRepo.InvoiceNo, generalSetting.CompanyName, userAccount.PersonFullName);
+                var fileName = String.Format("Invoice Receipt - {0}.pdf", transactionFromRepo.InvoiceNo);
+
+                await using Stream stream = file.OpenReadStream();
+                emailService.SetFileAttachment(stream.ToByteArray(), fileName);
+                emailService.Send(
+                        _emailServerSettings.Value.SmtpAddress,
+                        emailAddress,
+                        subject,
+                        emailContent,
+                        "",
+                        _emailServerSettings.Value.SmtpAddress
+                    );
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        private string GenerateInvoiceReceiptEmailContent(string transactionNo, string company, string salesAgent)
+        {
+            var template = "";
+
+            using (var rdFile = new StreamReader(String.Format("{0}/Templates/EmailTemplates/EmailNotificationSendInvoiceTransaction.html", AppDomain.CurrentDomain.BaseDirectory)))
+            {
+                template = rdFile.ReadToEnd();
+            }
+
+            template = template.Replace("#transactionNo", transactionNo);
+            template = template.Replace("#company", company);
+            template = template.Replace("#salesAgent", salesAgent);
 
             return template;
         }

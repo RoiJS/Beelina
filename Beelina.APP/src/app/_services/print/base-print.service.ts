@@ -7,12 +7,21 @@ import * as html2pdf from 'html2pdf.js';
 })
 export class BasePrintService {
 
-constructor() { }
+  constructor() { }
 
-  protected print(template: string) {
+  protected print(fileName: string, template: string) {
+    this.generateAsBlob(fileName, template, (blob: Blob) => {
+      const url = URL.createObjectURL(blob);
+      const printWindow = window.open(url);
+      printWindow.focus();
+      printWindow.print();
+    });
+  }
+
+  protected generateAsBlob(fileName: string, template: string, callback: Function) {
     const options = {
       margin: 0.8,
-      filename: 'Invoice.pdf',
+      filename: fileName,
       image: { type: 'jpeg', quality: 1 },
       html2canvas: { scale: 1 },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -24,10 +33,7 @@ constructor() { }
       .toPdf()
       .output('blob')
       .then((blob: Blob) => {
-        const url = URL.createObjectURL(blob);
-        const printWindow = window.open(url);
-        printWindow.focus();
-        printWindow.print();
+        callback(blob);
       });
   }
 }

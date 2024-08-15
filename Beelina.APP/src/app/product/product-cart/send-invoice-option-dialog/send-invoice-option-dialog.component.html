@@ -1,0 +1,23 @@
+<div class="print-option-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "PRODUCT_CART_PAGE.SEND_VIA_EMAIL_OPTION_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+
+  <div class="dialog-form-container__body">
+    {{ "PRODUCT_CART_PAGE.SEND_VIA_EMAIL_OPTION_DIALOG.CONFIRM" | translate}}
+  </div>
+
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="forSalesAgent()">
+        <mat-icon>person_pin</mat-icon>
+        {{ "PRODUCT_CART_PAGE.SEND_VIA_EMAIL_OPTION_DIALOG.BUTTON_OPTIONS.FOR_SALES_AGENT" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="forCustomer()">
+        <mat-icon>place</mat-icon>
+        {{ "PRODUCT_CART_PAGE.SEND_VIA_EMAIL_OPTION_DIALOG.BUTTON_OPTIONS.FOR_CUSTOMER" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

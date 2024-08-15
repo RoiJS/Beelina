@@ -41,7 +41,8 @@
     "VIEW": "View",
     "LAST_SAVED": "Last saved",
     "ALL": "All",
-    "PRINT": "Print"
+    "PRINT": "Print",
+    "SEND_VIA_EMAIL": "Send via Email"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -384,6 +385,17 @@
       },
       "ERROR_MESSAGE": "Failed to generate report file. Please try again later.",
       "LOADING_MESSAGE": "Generating report. This will take a while. Please wait..."
+    },
+    "SEND_VIA_EMAIL_OPTION_DIALOG": {
+      "TITLE": "Send option",
+      "CONFIRM": "Choose to which entity you want to send a copy of this invoice for.",
+      "BUTTON_OPTIONS": {
+        "FOR_SALES_AGENT": "Sales Agent",
+        "FOR_CUSTOMER": "Customer"
+      },
+      "ERROR_MESSAGE": "Failed to send invoice. Please try again later.",
+      "SUCCESS_MESSAGE": "Invoice has been successfully sent!",
+      "LOADING_MESSAGE": "Sending invoice. This will take a while. Please wait..."
     },
     "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
       "TITLE": "Save new order",
