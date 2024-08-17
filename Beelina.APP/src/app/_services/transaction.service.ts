@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { TranslateService } from '@ngx-translate/core';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { catchError, map, take, throwError } from 'rxjs';
+import { catchError, map, take } from 'rxjs';
 
 import { Product } from '../_models/product';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
@@ -1291,7 +1291,7 @@ export class TransactionService {
           return data;
         }),
         catchError((error) => {
-          return throwError(error);
+          throw new Error(error);
         })
       );
   }

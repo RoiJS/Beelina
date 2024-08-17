@@ -123,6 +123,13 @@ export class SidedrawerService {
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
       },
+      {
+        name: 'MAIN_MENU.SETTINGS',
+        url: '/settings',
+        icon: 'settings',
+        minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: userPermissionLevel,
+      },
       // {
       //   name: 'MAIN_MENU.MANUAL',
       //   url: 'https://bizual-assets.s3.ap-southeast-1.amazonaws.com/files/Bizual-User-Manual.pdf',
