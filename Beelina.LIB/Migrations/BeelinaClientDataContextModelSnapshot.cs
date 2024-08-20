@@ -1162,10 +1162,16 @@ namespace Beelina.LIB.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AllowAutoSendReceipt")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("AllowOrderConfirmation")
                         .HasColumnType("bit");
 
                     b.Property<bool>("AllowOrderPayments")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AllowSendReceipt")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("DateCreated")
@@ -1185,6 +1191,9 @@ namespace Beelina.LIB.Migrations
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
+
+                    b.Property<string>("SendReceiptEmailAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserAccountId")
                         .HasColumnType("int");

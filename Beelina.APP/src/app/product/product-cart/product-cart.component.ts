@@ -779,6 +779,7 @@ export class ProductCartComponent
           );
 
           this.sendOrderReceiptEmailNotification(id);
+          this.sendInvoiceEmailNotification(id);
 
           if (this._transactionId() === 0) {
             this.router.navigate(['/product-catalogue']);
@@ -805,6 +806,19 @@ export class ProductCartComponent
   private sendOrderReceiptEmailNotification(transactionId: number) {
     this.transactionService
       .sendOrderReceiptEmailNotification(transactionId).subscribe();
+  }
+
+  private sendInvoiceEmailNotification(transactionId: number) {
+    if (this.userService.userSetting().allowSendReceipt && this.userService.userSetting().allowAutoSendReceipt) {
+      this.invoicePrintService
+        .sendInvoice(transactionId, PrintForSettingsEnum.CUSTOMER, (file: File) => {
+          this.transactionService.sendInvoiceTransaction(
+            transactionId,
+            this.authService.userId,
+            file
+          ).subscribe();
+        });
+    }
   }
 
   get orderForm(): FormGroup {

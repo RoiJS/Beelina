@@ -148,6 +148,8 @@ const GET_USER_SETTINGS_QUERY = gql`
     userSetting(userId: $userId) {
       allowOrderConfirmation
       allowOrderPayments
+      allowSendReceipt
+      allowAutoSendReceipt
     }
   }
 `;
@@ -306,6 +308,8 @@ export class UserAccountService {
             const userSetting = new UserSetting();
             userSetting.allowOrderConfirmation = data.allowOrderConfirmation;
             userSetting.allowOrderPayments = data.allowOrderPayments;
+            userSetting.allowSendReceipt = data.allowSendReceipt;
+            userSetting.allowAutoSendReceipt = data.allowAutoSendReceipt;
             this.userSetting.set(userSetting);
             return userSetting;
           }

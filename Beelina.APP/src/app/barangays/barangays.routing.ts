@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     component: BarangaysComponent,
-    title: 'BARANGAYS_PAGE.TITLE',
+    title: 'CUSTOMER_ACCOUNTS_PAGE.TITLE',
   },
   {
     path: ':barangay',

@@ -41,6 +41,9 @@
     <None Update="Templates\EmailTemplates\EmailNotificationOrderTransactionReceipt.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\EmailTemplates\EmailNotificationSendInvoiceTransaction.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\ReportsTemplates\DailySummarizeTransactionsReport_Template.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

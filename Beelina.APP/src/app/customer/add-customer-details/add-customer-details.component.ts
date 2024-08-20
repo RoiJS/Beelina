@@ -126,7 +126,7 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
                       state: false,
                     })
                   );
-                  this.router.navigate([`/barangays/${this._barangay}`]);
+                  this.router.navigate([`/customer-accounts/${this._barangay}`]);
                 },
 
                 error: () => {

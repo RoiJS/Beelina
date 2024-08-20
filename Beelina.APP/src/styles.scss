@@ -191,6 +191,17 @@ body {
       mat-form-field {
         width: 100%;
       }
+
+      .mat-form-slide-toggle-container {
+        display: flex;
+        flex-direction: column;
+
+        &__hint {
+          font-size: 0.8em;
+          margin-left: 3.3em;
+          color: $alt-text-color;
+        }
+      }
     }
 
     &__footer-section {

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+import { TranslateService } from '@ngx-translate/core';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { catchError, map, take } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
 
 import { Product } from '../_models/product';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
@@ -34,13 +35,15 @@ import {
   toDateSelector as toDateSelectorTopSellingProducts,
 } from '../product/top-products/store/selectors';
 
-import { DateRange } from '../_models/date-range';
-import { SalesPerDateRange } from '../_models/sales-per-date-range';
-import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
+import { environment } from 'src/environments/environment';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
+import { ISendInvoiceTransactionOutput } from '../_interfaces/outputs/isend-invoice-transaction.output';
 import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
+import { DateRange } from '../_models/date-range';
 import { TransactionsFilter } from '../_models/filters/transactions.filter';
 import { GeneralSettings } from '../_models/general-settings.model';
+import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
+import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { User } from '../_models/user.model';
 
 const REGISTER_TRANSACTION_QUERY = gql`
@@ -218,7 +221,6 @@ const UPDATE_MODE_OF_PAYMENT = gql`
     }
   }
 `;
-
 
 const MARK_TRANSACTIONS_AS_PAID = gql`
   mutation($transactionIds: [Int!]!, $paid: Boolean!) {
@@ -413,6 +415,17 @@ const SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION = gql`
   }
 `;
 
+const SEND_INVOICE_TRANSACTION_QUERY = `
+  mutation(
+    $userId: Int!,
+    $transactionId: Int!,
+    $file: Upload!) {
+      sendInvoiceTransaction(input: { userId: $userId, transactionId: $transactionId, file: $file }) {
+        boolean
+      }
+  }
+`;
+
 export class TransactionInformation {
   public id: number;
   public invoiceNo: string;
@@ -523,6 +536,7 @@ export class InvoiceData {
 export class TransactionService {
   constructor(
     private apollo: Apollo,
+    private http: HttpClient,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
   ) { }
@@ -1244,6 +1258,41 @@ export class TransactionService {
             return null;
           }
         )
+      );
+  }
+
+  sendInvoiceTransaction(
+    transactionId: number,
+    userId: number,
+    file: File) {
+
+    var fd = new FormData();
+    var operations = {
+      query: SEND_INVOICE_TRANSACTION_QUERY,
+      variables: {
+        file: null,
+        userId,
+        transactionId
+      }
+    }
+    var _map = {
+      file: ["variables.file"]
+    }
+    fd.append('operations', JSON.stringify(operations))
+    fd.append('map', JSON.stringify(_map))
+    fd.append('file', file, file.name)
+
+    const headers = new HttpHeaders().set('GraphQL-preflight', '1');
+
+    return this.http.post<ISendInvoiceTransactionOutput>(environment.beelinaAPIEndPoint, fd, { headers })
+      .pipe(
+        map((result: ISendInvoiceTransactionOutput) => {
+          const data = result.data.sendInvoiceTransaction.boolean;
+          return data;
+        }),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 }

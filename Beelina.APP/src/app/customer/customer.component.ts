@@ -54,7 +54,7 @@ export class CustomerComponent
   }
 
   openDetails(id: number) {
-    this.router.navigate([`barangays/${this._barangay}/${id}`]);
+    this.router.navigate([`customer-accounts/${this._barangay}/${id}`]);
   }
 
   deleteStore(storeId: number) {
@@ -90,7 +90,7 @@ export class CustomerComponent
   }
 
   addCustomer() {
-    this.router.navigate([`/barangays/${this._barangay}/add-customer`]);
+    this.router.navigate([`/customer-accounts/${this._barangay}/add-customer`]);
   }
 
   onSearch(filterKeyword: string) {
@@ -110,7 +110,7 @@ export class CustomerComponent
   }
 
   onGoBack() {
-    this.router.navigate([`/barangays`]);
+    this.router.navigate([`/customer-accounts`]);
   }
 
   get dataSource(): CustomerStoreDataSource {

@@ -7,5 +7,8 @@ namespace Beelina.LIB.Models
         public UserAccount UserAccount { get; set; }
         public bool AllowOrderPayments { get; set; } = true;
         public bool AllowOrderConfirmation { get; set; } = true;
+        public bool AllowSendReceipt { get; set; } = false;
+        public bool AllowAutoSendReceipt { get; set; } = false;
+        public string SendReceiptEmailAddress { get; set; }
     }
 }
