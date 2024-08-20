@@ -88,7 +88,7 @@
     "DESCRIPTION": "This application is only supported in mobile view at the moment.",
     "NEW_APP_VERSION_DIALOG": {
       "TITLE": "New app version",
-      "DESCRIPTION": "New app version {0} is now available. Get the new version by reloading the app. Click Ok to reload."
+      "DESCRIPTION": "New app version is now available. Get the new version by reloading the app. Click Ok to reload."
     }
   },
   "AUTH_PAGE": {
