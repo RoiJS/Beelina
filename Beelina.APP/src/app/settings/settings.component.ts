@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-settings',
@@ -8,23 +9,25 @@ import { Router } from '@angular/router';
 })
 export class SettingsComponent implements OnInit {
 
+  translateService = inject(TranslateService);
+
   settingsModule: ISettingsModules[] = [
     {
       icon: 'assignment',
-      label: 'Order Transactions',
-      description: 'Manage settings related with Order Transactions',
+      label: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.ORDER_TRANSACTION.LABEL'),
+      description: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.ORDER_TRANSACTION.DESCRIPTION'),
       url: '/settings/order-transactions'
     },
     {
       icon: 'bar_chart',
-      label: 'Reports',
-      description: 'Manage report settings',
+      label: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.REPORTS.LABEL'),
+      description: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.REPORTS.DESCRIPTION'),
       url: '/settings/reports'
     },
     {
       icon: 'person_pin',
-      label: 'Profile',
-      description: 'Manage your profile account',
+      label: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.PROFILE.LABEL'),
+      description: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.PROFILE.DESCRIPTION'),
       url: '/profile'
     },
   ];

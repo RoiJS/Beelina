@@ -1251,6 +1251,20 @@
   "SETTINGS_PAGE": {
     "TITLE": "Settings",
     "DESCRIPTION": "Manage general settings for the application. Here you can change report notification email address, user account details, and more.",
+    "MODULE_LIST": {
+      "ORDER_TRANSACTION": {
+        "LABEL": "Order Transactions",
+        "DESCRIPTION": "Manage settings related with Order Transactions"
+      },
+      "REPORTS": {
+        "LABEL": "Reports",
+        "DESCRIPTION": "Manage report settings"
+      },
+      "PROFILE": {
+        "LABEL": "Profile",
+        "DESCRIPTION": "Manage your profile account"
+      }
+    },
     "ORDER_TRANSACTION_SETTINGS_SUBPAGE": {
       "TITLE": "Order Transaction Settings",
       "DESCRIPTION": "Manage settings related with order transaction module. Here you can configure sending of receipt for each order transaction, and more.",
