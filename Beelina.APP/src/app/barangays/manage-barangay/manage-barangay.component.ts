@@ -80,29 +80,29 @@ export class ManageBarangayComponent implements OnInit {
   private setUpLanguageTexts(forNewBarangay: boolean) {
     if (forNewBarangay) {
       this._dialogTitle = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.TITLE'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.TITLE'
       );
       this._dialogConfirmationMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.CONFIRM'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.CONFIRM'
       );
       this._dialogSuccessMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.SUCCESS_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.SUCCESS_MESSAGE'
       );
       this._dialogErrorMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.ERROR_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.ERROR_MESSAGE'
       );
     } else {
       this._dialogTitle = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.TITLE'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.TITLE'
       );
       this._dialogConfirmationMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.CONFIRM'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.CONFIRM'
       );
       this._dialogSuccessMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.SUCCESS_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.SUCCESS_MESSAGE'
       );
       this._dialogErrorMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.ERROR_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.ERROR_MESSAGE'
       );
     }
   }

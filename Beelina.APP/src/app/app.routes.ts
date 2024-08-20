@@ -36,7 +36,7 @@ export const routes: Routes = [
     canActivate: [AccessGuard]
   },
   {
-    path: 'barangays',
+    path: 'customer-accounts',
     loadChildren: () =>
       import('./barangays/barangays.module').then((m) => m.BarangaysModule),
     canLoad: [AuthGuard],

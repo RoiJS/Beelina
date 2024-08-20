@@ -47,6 +47,7 @@
   "MAIN_MENU": {
     "SALES": "Sales",
     "CUSTOMERS": "Customers",
+    "CUSTOMER_ACCOUNTS": "Customer Accounts",
     "BARANGAYS": "Barangays",
     "ORDER_TRANSACTIONS": "Order Transactions",
     "SUPPLIERS": "Suppliers",
@@ -128,42 +129,42 @@
       "ERROR_MESSAGE": "Removing customer failed. Please again later."
     }
   },
-  "BARANGAYS_PAGE": {
-    "TITLE": "Barangays",
-    "DESCRIPTION": "This is where barangays information can be managed.",
+  "CUSTOMER_ACCOUNTS_PAGE": {
+    "TITLE": "Customer Accounts",
+    "DESCRIPTION": "This is where customer accounts information can be managed.",
     "SEARCH_TEXT_FIELD": {
-      "PLACEHOLDER": "Search barangay name..."
+      "PLACEHOLDER": "Search customer account name..."
     },
-    "DELETE_BARANGAY_DIALOG": {
-      "TITLE": "Delete barangay",
-      "CONFIRM": "Are you sure to delete selected barangay?",
-      "SUCCESS_MESSAGE": "Selected barangay has been successfully removed.",
-      "ERROR_MESSAGE": "Removing barangay failed. Please again later."
+    "DELETE_CUSTOMER_ACCOUNT_DIALOG": {
+      "TITLE": "Delete customer account",
+      "CONFIRM": "Are you sure to delete selected customer account?",
+      "SUCCESS_MESSAGE": "Selected customer account has been successfully removed.",
+      "ERROR_MESSAGE": "Removing customer account failed. Please again later."
     },
-    "ADD_BARANGAY_DIALOG": {
+    "ADD_CUSTOMER_ACCOUNT_DIALOG": {
       "FORM_CONTROL_SECTION": {
-        "HEADER_TITLE": "Add New Barangay",
+        "HEADER_TITLE": "Add New Customer Account",
         "NAME_CONTROL": {
           "LABEL": "Name",
-          "HINT": "Please enter barangay name"
+          "HINT": "Please enter customer account name"
         }
       },
-      "TITLE": "Add Barangay",
-      "CONFIRM": "Are you sure to add new barangay?",
-      "SUCCESS_MESSAGE": "New barangay has been successfully added!",
-      "ERROR_MESSAGE": "Adding new barangay failed. Please again later."
+      "TITLE": "Add Customer Account",
+      "CONFIRM": "Are you sure to add new customer account?",
+      "SUCCESS_MESSAGE": "New customer account has been successfully added!",
+      "ERROR_MESSAGE": "Adding new customer account failed. Please again later."
     },
-    "UPDATE_BARANGAY_DIALOG": {
+    "UPDATE_CUSTOMER_ACCOUNT_DIALOG": {
       "FORM_CONTROL_SECTION": {
         "NAME_CONTROL": {
           "LABEL": "Name",
-          "HINT": "Please enter barangay name"
+          "HINT": "Please enter customer account name"
         }
       },
-      "TITLE": "Update Barangay",
-      "CONFIRM": "Are you sure to update barangay?",
-      "SUCCESS_MESSAGE": "Selected barangay has been successfully updated!",
-      "ERROR_MESSAGE": "Updating barangay failed. Please again later."
+      "TITLE": "Update Customer Account",
+      "CONFIRM": "Are you sure to update customer account?",
+      "SUCCESS_MESSAGE": "Selected customer account has been successfully updated!",
+      "ERROR_MESSAGE": "Updating customer account failed. Please again later."
     }
   },
   "SUPPLIERS_PAGE": {
@@ -269,9 +270,9 @@
         "LABEL": "Mode of Payment",
         "HINT": "Please specify mode of payment"
       },
-      "BARANGAY_CONTROL": {
-        "LABEL": "Barangay/Branch",
-        "HINT": "Please specify from which barangay/branch"
+      "CUSTOMER_ACCOUNT_CONTROL": {
+        "LABEL": "Customer Account",
+        "HINT": "Please specify from which customer account"
       }
     },
     "EDIT_CUSTOMER_DIALOG": {
@@ -308,9 +309,9 @@
           "GEN_TRADE": "Gen Trade"
         }
       },
-      "BARANGAY_CONTROL": {
-        "LABEL": "Barangay/Branch",
-        "HINT": "Please specify from which barangay/branch"
+      "CUSTOMER_ACCOUNT_CONTROL": {
+        "LABEL": "Customer Account",
+        "HINT": "Please specify from which customer account"
       }
     },
     "SAVE_NEW_CUSTOMER_DIALOG": {
@@ -337,9 +338,9 @@
         "LABEL": "Transaction No",
         "HINT": "Please enter a unique invoice number"
       },
-      "BARANGAY_CONTROL": {
-        "LABEL": "Barangay/Branch",
-        "HINT": "Please select barangay/branch"
+      "CUSTOMER_ACCOUNT_CONTROL": {
+        "LABEL": "Customer Account",
+        "HINT": "Please select customer account"
       },
       "NAME_CONTROL": {
         "LABEL": "Name",

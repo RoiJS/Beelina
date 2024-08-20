@@ -37,10 +37,8 @@ export class SettingsComponent implements OnInit {
   }
 
   goToUrl(url: string) {
-    console.log(url);
     this.router.navigate([url]);
   }
-
 }
 
 interface ISettingsModules {
