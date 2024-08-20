@@ -61,6 +61,7 @@
     "PROFILE": "Profile",
     "MANUAL": "User Manual",
     "DASHBOARD": "Dashboard",
+    "SETTINGS": "Settings",
     "LOGOUT": "Logout"
   },
   "ORDER_TYPE": {
@@ -1232,7 +1233,8 @@
     "TITLE": "Report Settings",
     "FORM_CONTROL_SECTION": {
       "REPORT_NOTIFICATION_EMAIL_ADDRESS_CONTROL": {
-        "LABEL": "Report Notification Email Address"
+        "LABEL": "Report Notification Email Address",
+        "HINT": "Specify email address to send report to."
       }
     },
     "CONFIRMATION_REPORT_SETTINGS_DIALOG": {
@@ -1244,6 +1246,38 @@
   },
   "LOADER_LAYOUT": {
     "LOADING_TEXT": "Loading. Please wait..."
+  },
+  "SETTINGS_PAGE": {
+    "TITLE": "Settings",
+    "DESCRIPTION": "Manage general settings for the application. Here you can change report notification email address, user account details, and more.",
+    "ORDER_TRANSACTION_SETTINGS_SUBPAGE": {
+      "TITLE": "Order Transaction Settings",
+      "DESCRIPTION": "Manage settings related with order transaction module. Here you can configure sending of receipt for each order transaction, and more.",
+      "FORM_CONTROL_SECTION": {
+        "ALLOW_SEND_RECEIPT_CONTROL": {
+          "LABEL": "Send Invoice Receipt",
+          "HINT": "Activate if you want to send invoice receipt."
+        },
+        "ALLOW_AUTO_SEND_RECEIPT_CONTROL": {
+          "LABEL": "Auto Send Invoice Receipt",
+          "HINT": "Activate if you want to automatically send invoice receipt when confirming order transaction."
+        },
+        "SEND_RECEIPT_EMAIL_ADDRESS_CONTROL": {
+          "LABEL": "Invoice Receipt Email Address",
+          "HINT": "Specify email address to send invoice receipt."
+        }
+      }
+    },
+    "REPORTS_SETTINGS_SUBPAGE": {
+      "TITLE": "Report Settings",
+      "DESCRIPTION": "Manage settings related with report module. Here you can configure generating of reports."
+    },
+    "SAVE_SETTINGS_DIALOG": {
+      "TITLE": "Save changes",
+      "CONFIRM": "Are you sure to save new changes?",
+      "SUCCESS_MESSAGE": "New updates have been sucessfully saved!",
+      "ERROR_MESSAGE": "Failed to save settings. Please try again later!"
+    }
   },
   "DASHBOARD_ADMIN": {
     "TITLE": "Dashboard",

@@ -1,0 +1,37 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
+  <button mat-icon-button class="toolbar-option" (click)="save()">
+    <mat-icon>save</mat-icon>
+  </button>
+</app-tool-bar>
+<app-loader-layout [busy]="isLoading">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "SETTINGS_PAGE.REPORTS_SETTINGS_SUBPAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "SETTINGS_PAGE.REPORTS_SETTINGS_SUBPAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+
+    <div class="order-transaction-settings-panel panel">
+
+      <div class="panel__body-section">
+
+        <div [formGroup]="reportSettingsForm" class="panel__details-group-panel">
+          <mat-form-field appearance="fill">
+            <mat-label>{{
+              "REPORT_SETTINGS_DIALOG.FORM_CONTROL_SECTION.REPORT_NOTIFICATION_EMAIL_ADDRESS_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input matInput type="email" formControlName="emailAddress" />
+
+            <mat-hint>{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.SEND_RECEIPT_EMAIL_ADDRESS_CONTROL.HINT"
+              | translate
+              }}</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</app-loader-layout>

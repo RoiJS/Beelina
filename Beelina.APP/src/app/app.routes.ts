@@ -95,6 +95,12 @@ export const routes: Routes = [
     canActivate: [AccessGuard]
   },
   {
+    path: 'settings',
+    loadChildren: () =>
+      import('./settings/settings.module').then((m) => m.SettingsModule),
+    canLoad: [AuthGuard],
+  },
+  {
     path: 'profile',
     loadChildren: () =>
       import('./profile/profile.module').then((m) => m.ProfileModule),

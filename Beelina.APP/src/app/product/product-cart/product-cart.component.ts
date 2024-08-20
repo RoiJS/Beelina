@@ -809,7 +809,7 @@ export class ProductCartComponent
   }
 
   private sendInvoiceEmailNotification(transactionId: number) {
-    if (this.userService.userSetting().allowAutoSendReceipt) {
+    if (this.userService.userSetting().allowSendReceipt && this.userService.userSetting().allowAutoSendReceipt) {
       this.invoicePrintService
         .sendInvoice(transactionId, PrintForSettingsEnum.CUSTOMER, (file: File) => {
           this.transactionService.sendInvoiceTransaction(

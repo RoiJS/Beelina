@@ -4,6 +4,7 @@ import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { catchError, map } from 'rxjs';
 
 import { IUserAgentOrderTransactionSettingsInput } from 'src/app/_interfaces/inputs/iuser-agent-order-transaction-settings.input';
+import { ISaveUserAgentOrderTransactionSettingsOutput } from 'src/app/_interfaces/outputs/isave-user-agent-order-transation-settings-.output';
 import { IUserAgentOrderTransactionQueryPayload } from 'src/app/_interfaces/payloads/iuser-agent-order-transaction-settings.payload';
 import { UserAgentOrderTransactionSettings } from 'src/app/_models/user-agent-order-transaction-settings.model';
 
@@ -64,7 +65,8 @@ export class UserAgentSettingsService {
   }
 
   saveUserAgentOrderTransactionSettings(userAgentOrderTransactionSettings: UserAgentOrderTransactionSettings) {
-    const userAccountInput: IUserAgentOrderTransactionSettingsInput = {
+    const userAgentOrderTransactionSettingInput: IUserAgentOrderTransactionSettingsInput = {
+      userId: userAgentOrderTransactionSettings.userId,
       allowSendReceipt: userAgentOrderTransactionSettings.allowSendReceipt,
       allowAutoSendReceipt: userAgentOrderTransactionSettings.allowAutoSendReceipt,
       sendReceiptEmailAddress: userAgentOrderTransactionSettings.sendReceiptEmailAddress
@@ -74,15 +76,15 @@ export class UserAgentSettingsService {
       .mutate({
         mutation: SAVE_USER_AGENT_ORDER_TRANSACTION_SETTINGS,
         variables: {
-          userAccountInput,
+          userAgentOrderTransactionSettingInput,
         },
       })
       .pipe(
         map(
           (
-            result: MutationResult<{ boolean: boolean }>
+            result: MutationResult<{ saveUserAgentOrderTransactionSettings: ISaveUserAgentOrderTransactionSettingsOutput }>
           ) => {
-            const output = result.data.boolean;
+            const output = result.data.saveUserAgentOrderTransactionSettings.boolean;
             return output;
           }
         ),

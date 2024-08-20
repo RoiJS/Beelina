@@ -1,0 +1,59 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
+  <button mat-icon-button class="toolbar-option" (click)="save()">
+    <mat-icon>save</mat-icon>
+  </button>
+</app-tool-bar>
+<app-loader-layout [busy]="isLoading">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+
+    <div class="order-transaction-settings-panel panel">
+      <div [formGroup]="orderTransactionSettingsForm" class="panel__details-group-panel">
+        <div class="panel__body-section">
+          <div class="order-transaction-settings-panel__allowSendReceipt mat-form-slide-toggle-container">
+            <mat-slide-toggle formControlName="allowSendReceipt">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_SEND_RECEIPT_CONTROL.LABEL"
+              | translate
+              }}</mat-slide-toggle>
+            <span class="mat-form-slide-toggle-container__hint">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_SEND_RECEIPT_CONTROL.HINT"
+              | translate
+              }}</span>
+          </div>
+
+          @if(orderTransactionSettingsForm.value.allowSendReceipt) {
+          <br>
+          <div class="order-transaction-settings-panel__allowAutoSendReceipt mat-form-slide-toggle-container">
+            <mat-slide-toggle formControlName="allowAutoSendReceipt">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_AUTO_SEND_RECEIPT_CONTROL.LABEL"
+              | translate
+              }}</mat-slide-toggle>
+            <span class="mat-form-slide-toggle-container__hint">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_AUTO_SEND_RECEIPT_CONTROL.HINT"
+              | translate
+              }}</span>
+          </div>
+          <br>
+          <mat-form-field appearance="fill">
+            <mat-label>{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.SEND_RECEIPT_EMAIL_ADDRESS_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <input matInput type="email" formControlName="sendReceiptEmailAddress" />
+            <mat-hint>{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.SEND_RECEIPT_EMAIL_ADDRESS_CONTROL.HINT"
+              | translate
+              }}</mat-hint>
+          </mat-form-field>
+          }
+
+        </div>
+      </div>
+    </div>
+  </div>
+</app-loader-layout>
