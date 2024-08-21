@@ -370,6 +370,20 @@ namespace Beelina.LIB.BusinessLogic
             return transactionsWithPaymentStatus;
         }
 
+        public async Task<List<Transaction>> GetTransactions(List<int> transactionIds)
+        {
+            var transactions = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t =>
+                                    transactionIds.Contains(t.Id) &&
+                                    t.IsActive &&
+                                    !t.IsDelete
+                                )
+                                .Include(t => t.ProductTransactions)
+                                .ToListAsync();
+
+            return transactions;
+        }
+
         public async Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate)
         {
             var transactions = await (
@@ -856,10 +870,26 @@ namespace Beelina.LIB.BusinessLogic
                                 .Where(t => transactionIds.Contains(t.Id))
                                 .Includes(t => t.ProductTransactions)
                                 .ToListAsync();
-
+                                
             SetCurrentUserId(_currentUserService.CurrentUserId);
 
             transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));
+
+            await SaveChanges();
+
+            return transactionsFromRepo;
+        }
+
+        public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status)
+        {
+            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t => transactionIds.Contains(t.Id))
+                                .Includes(t => t.ProductTransactions)
+                                .ToListAsync();
+
+            SetCurrentUserId(_currentUserService.CurrentUserId);
+
+            transactionsFromRepo.ForEach(t => t.Status = status);
 
             await SaveChanges();
 

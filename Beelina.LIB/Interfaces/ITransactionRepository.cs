@@ -11,6 +11,7 @@ namespace Beelina.LIB.Interfaces
         Task<List<CustomerSaleProduct>> GetTopCustomerSaleProducts(int storeId);
         Task<Transaction> RegisterTransaction(Transaction transaction, List<ProductTransaction> deletedProductTransactions, CancellationToken cancellationToken = default);
         Task<TransactionDetails> GetTransaction(int transactionId);
+        Task<List<Transaction>> GetTransactions(List<int> transactionIds);
         Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null);
         Task<bool> SendTransactionEmailReceipt(int transactionId);
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);
@@ -21,6 +22,7 @@ namespace Beelina.LIB.Interfaces
         Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate);
         Task DeleteOrderTransactions(List<int> transactionIds);
         Task<List<Transaction>> MarkTransactionsAsPaid(List<int> transactionIds, bool paid);
+        Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status);
         Task<bool> SendInvoiceTransaction(int userId, int transactionId, IFile file);
     }
 }

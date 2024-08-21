@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,6 +21,9 @@ import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { ProductService } from 'src/app/_services/product.service';
+import { InvalidProductTransactionOverallQuantitiesTransactions } from 'src/app/_models/insufficient-product-quantity';
+import { ConfirmOrdersDialogComponent } from '../confirm-orders-dialog/confirm-orders-dialog.component';
 
 @Component({
   selector: 'app-draft-transaction',
@@ -32,12 +35,14 @@ export class DraftTransactionComponent
   implements OnInit, OnDestroy {
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
+  private _dialogConfirmOrdersRef: MatBottomSheetRef<ConfirmOrdersDialogComponent>;
 
   activatedRoute = inject(ActivatedRoute);
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);
   multipleItemsService = inject(MultipleItemsService);
   notificationService = inject(NotificationService);
+  productService = inject(ProductService);
   router = inject(Router);
   store = inject(Store<AppStateInterface>);
   transactionService = inject(TransactionService);
@@ -113,6 +118,50 @@ export class DraftTransactionComponent
               },
             });
         }
+      });
+  }
+
+  confirmOrders() {
+    let selectedItems = this.multipleItemsService.selectedItems().map(Number);
+    this.productService
+      .validateMultipleTransactionsProductQuantities(selectedItems)
+      .subscribe((productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
+
+        this._dialogConfirmOrdersRef = this.bottomSheet.open(ConfirmOrdersDialogComponent, {
+          data: {
+            selectedItems,
+            productsWithInsufficientQuantities
+          }
+        });
+
+        this._dialogConfirmOrdersRef
+          .afterDismissed()
+          .subscribe((result: {
+            selectedItems: Array<number>,
+            confirm: boolean
+          }) => {
+            if (result && result.confirm) {
+              this._isLoading = true;
+              this.transactionService
+                .setTransactionsStatus(result.selectedItems, TransactionStatusEnum.CONFIRMED).subscribe({
+                  next: () => {
+                    this.notificationService.openSuccessNotification(
+                      this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE")
+                    );
+                    this._isLoading = false;
+                    this.multipleItemsService.reset();
+                    this.ngOnInit();
+                  },
+
+
+                  error: () => {
+                    this.notificationService.openErrorNotification(
+                      this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE")
+                    );
+                  },
+                });
+            }
+          });
       });
   }
 
