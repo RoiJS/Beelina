@@ -556,7 +556,7 @@ export class ProductCartComponent
     this._isLoading = true;
     this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
     this.productService
-      .validateProductionTransactionsQuantities_NEW([transaction])
+      .validateProductionTransactionsQuantities([transaction])
       .subscribe(
         (productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
           console.log(productsWithInsufficientQuantities);

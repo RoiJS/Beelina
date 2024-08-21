@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { DraftTransactionComponent } from './draft-transaction.component';
+import { ConfirmOrdersDialogComponent } from '../confirm-orders-dialog/confirm-orders-dialog.component';
 
 @NgModule({
   imports: [
@@ -30,6 +31,9 @@ import { DraftTransactionComponent } from './draft-transaction.component';
     ]),
     TranslateModule.forChild(),
   ],
-  declarations: [DraftTransactionComponent],
+  declarations: [
+    DraftTransactionComponent,
+    ConfirmOrdersDialogComponent
+  ],
 })
 export class DraftTransactionModule { }

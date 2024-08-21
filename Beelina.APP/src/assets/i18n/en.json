@@ -726,7 +726,15 @@
   },
   "DRAFT_TRANSACTIONS_PAGE": {
     "TITLE": "Draft Orders",
-    "DESCRIPTION": "This shows available dates that have draft orders."
+    "DESCRIPTION": "This shows available dates that have draft orders.",
+    "CONFIRM_ORDERS_DIALOG": {
+      "TITLE": "Confirm Selected Order(s)",
+      "ALL_INVALID_MESSAGE": "All selected order(s) are invalid and with insufficient product quantities. Kindly check the prodcut quantities and try again.",
+      "ALL_VALID_MESSAGE": "All selected order(s) have are valid and with sufficient product quantities. Note: This action cannot be undone. Would you like to continue?",
+      "SOME_INVALID_MESSAGE": "There are {0} selected order(s) which have product(s) that have insufficient quantity. Would you like to continue for the other valid order(s)? Note: This action cannot be undone.",
+      "SUCCESS_MESSAGE": "Selected order(s) have been successfully confirmed!",
+      "ERROR_MESSAGE": "Failed to confirm selected order(s). Please try again later."
+    }
   },
   "BAD_ORDERS_PAGE": {
     "TITLE": "Bad Orders",

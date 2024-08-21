@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -23,6 +23,7 @@ import {
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { ProductService } from 'src/app/_services/product.service';
 import { InvalidProductTransactionOverallQuantitiesTransactions } from 'src/app/_models/insufficient-product-quantity';
+import { ConfirmOrdersDialogComponent } from '../confirm-orders-dialog/confirm-orders-dialog.component';
 
 @Component({
   selector: 'app-draft-transaction',
@@ -34,6 +35,7 @@ export class DraftTransactionComponent
   implements OnInit, OnDestroy {
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
+  private _dialogConfirmOrdersRef: MatBottomSheetRef<ConfirmOrdersDialogComponent>;
 
   activatedRoute = inject(ActivatedRoute);
   bottomSheet = inject(MatBottomSheet);
@@ -120,50 +122,47 @@ export class DraftTransactionComponent
   }
 
   confirmOrders() {
-    console.log(this.multipleItemsService.selectedItems());
-    const selectedItems = this.multipleItemsService.selectedItems().map(Number);
+    let selectedItems = this.multipleItemsService.selectedItems().map(Number);
     this.productService
-      .validateMutlipleTransactionsProductQuantities(selectedItems)
+      .validateMultipleTransactionsProductQuantities(selectedItems)
       .subscribe((productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
-        if (productsWithInsufficientQuantities.length > 0) {
-          console.log(productsWithInsufficientQuantities);
-        }
+
+        this._dialogConfirmOrdersRef = this.bottomSheet.open(ConfirmOrdersDialogComponent, {
+          data: {
+            selectedItems,
+            productsWithInsufficientQuantities
+          }
+        });
+
+        this._dialogConfirmOrdersRef
+          .afterDismissed()
+          .subscribe((result: {
+            selectedItems: Array<number>,
+            confirm: boolean
+          }) => {
+            if (result && result.confirm) {
+              this._isLoading = true;
+              this.transactionService
+                .setTransactionsStatus(result.selectedItems, TransactionStatusEnum.CONFIRMED).subscribe({
+                  next: () => {
+                    this.notificationService.openSuccessNotification(
+                      this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE")
+                    );
+                    this._isLoading = false;
+                    this.multipleItemsService.reset();
+                    this.ngOnInit();
+                  },
+
+
+                  error: () => {
+                    this.notificationService.openErrorNotification(
+                      this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE")
+                    );
+                  },
+                });
+            }
+          });
       });
-
-    // this.dialogService
-    //   .openConfirmation(
-    //     this.translateService.instant(
-    //       'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.TITLE'
-    //     ),
-    //     this.translateService.instant(
-    //       'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.CONFIRM'
-    //     )
-    //   )
-    //   .subscribe((result: ButtonOptions) => {
-    //     if (result == ButtonOptions.YES) {
-    //       const orders = this.multipleItemsService.selectedItems().map((id) => +id);
-    //       this._isLoading = true;
-    //       this.transactionService
-    //         .deleteTransactions(orders)
-    //         .subscribe({
-    //           next: () => {
-    //             this.notificationService.openSuccessNotification(this.translateService.instant(
-    //               'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
-    //             ));
-    //             this._isLoading = false;
-    //             this.multipleItemsService.reset();
-    //             this.ngOnInit();
-    //           },
-
-    //           error: () => {
-    //             this.notificationService.openErrorNotification(this.translateService.instant(
-    //               'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
-    //             ));
-    //             this.multipleItemsService.reset();
-    //           },
-    //         });
-    //     }
-    //   });
   }
 
   selectAllItems(checked: boolean) {

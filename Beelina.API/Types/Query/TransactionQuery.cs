@@ -191,39 +191,6 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
-    public async Task<List<InsufficientProductQuantity>> ValidateProductionTransactionsQuantities(
-            [Service] IProductRepository<Product> productRepository,
-            [Service] IHttpContextAccessor httpContextAccessor,
-            List<ProductTransactionInput> productTransactionsInputs,
-            int userAccountId)
-    {
-      var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-      var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
-
-      foreach (Product product in productsFromRepo)
-      {
-        foreach (ProductTransactionInput productTransaction in productTransactionsInputs)
-        {
-          if (product.Id == productTransaction.ProductId && productTransaction.Quantity > product.StockQuantity)
-          {
-            var insufficientProductQuantity = new InsufficientProductQuantity
-            {
-              ProductId = product.Id,
-              ProductName = product.Name,
-              ProductCode = product.Code,
-              SelectedQuantity = productTransaction.Quantity,
-              CurrentQuantity = product.StockQuantity
-            };
-
-            insufficientProductQuantities.Add(insufficientProductQuantity);
-          }
-        }
-      }
-
-      return insufficientProductQuantities;
-    }
-
-    [Authorize]
     public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateMutlipleTransactionsProductQuantities(
       [Service] IProductRepository<Product> productRepository,
       [Service] ITransactionRepository<Transaction> transactionRepository,
@@ -244,7 +211,7 @@ namespace Beelina.API.Types.Query
         }
       });
 
-      var invalidProductTransactionOverallQuantities = await ValidateProductionTransactionsQuantities_NEW(
+      var invalidProductTransactionOverallQuantities = await ValidateProductionTransactionsQuantities(
                                                         productRepository,
                                                         httpContextAccessor,
                                                         transactionInputs,
@@ -255,7 +222,7 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
-    public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductionTransactionsQuantities_NEW(
+    public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductionTransactionsQuantities(
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             List<TransactionInput> transactionInputs,
