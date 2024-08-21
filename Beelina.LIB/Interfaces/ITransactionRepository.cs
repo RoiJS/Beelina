@@ -23,5 +23,6 @@ namespace Beelina.LIB.Interfaces
         Task DeleteOrderTransactions(List<int> transactionIds);
         Task<List<Transaction>> MarkTransactionsAsPaid(List<int> transactionIds, bool paid);
         Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status);
+        Task<bool> SendInvoiceTransaction(int userId, int transactionId, IFile file);
     }
 }

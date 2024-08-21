@@ -56,6 +56,10 @@
                 <span *ngIf="item.stockAuditSource === 'ORDER_FROM_SUPPLIER'"><b>{{
                     'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.PURCHASED_ORDER_NO_LABEL' | translate }}:</b></span>
                 {{ item.transactionNumber }}
+
+                <span *ngIf="item.stockAuditSource === 'ORDER_FROM_SUPPLIER'"><br><b>{{
+                  'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.PLATE_NO_LABEL' | translate }}:</b></span>
+              {{ item.plateNo }}
               </div>
               <div class="product-stock-audit-list__info-section"><b>{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.QUANTITY_LABEL' | translate }}:</b> {{ item.quantity

@@ -360,7 +360,7 @@ namespace Beelina.API.Types.Query
           [Service] IProductRepository<Product> productRepository,
           [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
           [Service] ICurrentUserService currentUserService,
-            string textOrders)
+          string textOrders)
     {
 
       var textOrdersArray = textOrders.Split('\n');

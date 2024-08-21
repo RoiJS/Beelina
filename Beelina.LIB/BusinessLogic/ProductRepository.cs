@@ -738,7 +738,7 @@ namespace Beelina.LIB.BusinessLogic
           Name = unitName
         };
 
-        _beelinaRepository.ClientDbContext.ProductUnits.Add(productUnitFromRepo);
+        await _beelinaRepository.ClientDbContext.ProductUnits.AddAsync(productUnitFromRepo);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
       }
 
@@ -764,8 +764,14 @@ namespace Beelina.LIB.BusinessLogic
       }
 
       if (productStockPerPanelFromRepo.Id == 0)
+      {
         await _beelinaRepository.ClientDbContext.ProductStockPerPanels.AddAsync(productStockPerPanelFromRepo);
-      await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+      }
+      else
+      {
+        await _productStockPerPanelRepository.SaveChanges(cancellationToken);
+      }
 
       return productStockPerPanelFromRepo;
     }
@@ -789,8 +795,14 @@ namespace Beelina.LIB.BusinessLogic
       }
 
       if (productStockPerWarehouseFromRepo.Id == 0)
+      {
         await _beelinaRepository.ClientDbContext.ProductStockPerWarehouse.AddAsync(productStockPerWarehouseFromRepo);
-      await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+      }
+      else
+      {
+        await _productStockPerWarehouseRepository.SaveChanges(cancellationToken);
+      }
 
       return productStockPerWarehouseFromRepo;
     }
@@ -823,7 +835,8 @@ namespace Beelina.LIB.BusinessLogic
           ProductStockPerWarehouseId = productStockPerWarehouse.Id,
           Quantity = productInput.StockQuantity,
           StockAuditSource = StockAuditSourceEnum.OrderFromSupplier,
-          PurchaseOrderNumber = productInput.WithdrawalSlipNo
+          PurchaseOrderNumber = productInput.WithdrawalSlipNo,
+          SenderPlateNumber = productInput.PlateNo
         };
 
         if (productWarehouseStockAudit.Id == 0)
@@ -882,6 +895,7 @@ namespace Beelina.LIB.BusinessLogic
                                                     Quantity = pa.Quantity,
                                                     StockAuditSource = pa.StockAuditSource,
                                                     TransactionNumber = (pa.PurchaseOrderNumber ?? ""),
+                                                    PlateNo = pa.SenderPlateNumber,
                                                     ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
                                                     ModifiedDate = pa.DateCreated
                                                   }).ToListAsync();
@@ -913,6 +927,7 @@ namespace Beelina.LIB.BusinessLogic
                                                         Quantity = (pa == null ? 0 : -pa.Quantity),
                                                         StockAuditSource = pa.StockAuditSource,
                                                         TransactionNumber = (pa.WithdrawalSlipNo ?? ""),
+                                                        PlateNo = String.Empty,
                                                         ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
                                                         ModifiedDate = pa.DateCreated
                                                       }).ToListAsync();
@@ -944,6 +959,7 @@ namespace Beelina.LIB.BusinessLogic
                                                      Quantity = -tj.Quantity,
                                                      StockAuditSource = StockAuditSourceEnum.OrderTransaction,
                                                      TransactionNumber = t.InvoiceNo,
+                                                     PlateNo = String.Empty,
                                                      ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
                                                      ModifiedDate = t.DateCreated
                                                    }).ToListAsync();

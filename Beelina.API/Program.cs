@@ -32,6 +32,8 @@ builder.Services.AddSwaggerGen();
 services.AddScoped<IDataContextHelper, DataContextHelper>();
 services.AddScoped(typeof(IBeelinaRepository<>), typeof(BeelinaRepository<>));
 services.AddScoped(typeof(IUserAccountRepository<UserAccount>), typeof(UserAccountRepository));
+services.AddScoped(typeof(IUserSettingsRepository<UserSetting>), typeof(UserSettingsRepository));
+services.AddScoped(typeof(IUserAgentOrderTransactionSettingsRepository<UserSetting>), typeof(UserAgentOrderTransactionSettingsRepository));
 services.AddScoped(typeof(IClientRepository<Client>), typeof(ClientRepository));
 services.AddScoped(typeof(IClientDbManagerRepository<IEntity>), typeof(ClientDbManagerRepository));
 services.AddScoped(typeof(IDataSeedRepository<IEntity>), typeof(DataSeedRepository));
@@ -79,6 +81,7 @@ services.AddGraphQLServer()
         .AddType<GeneralInformationQuery>()
         .AddType<GeneralSettingsQuery>()
         .AddType<UserAccountMutation>()
+        .AddType<UserAgentSettingsQuery>()
         .AddType<BarangayMutation>()
         .AddType<SupplierMutation>()
         .AddType<PaymentMutation>()
@@ -87,6 +90,7 @@ services.AddGraphQLServer()
         .AddType<TransactionMutation>()
         .AddType<ClientMutation>()
         .AddType<ReportMutation>()
+        .AddType<UserAgentSettingsMutation>()
         .AddType<ClientInformationResult>()
         .AddType<StoreInformationResult>()
         .AddType<ProductInformationResult>()

@@ -40,13 +40,21 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
           data: []
         },
         {
+          name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.ACCOUNT_RECEIVABLES_LABEL'),
+          data: []
+        },
+        {
           name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.CASH_ON_HAND_LABEL'),
           data: []
         },
         {
           name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.CHEQUE_ON_HAND_LABEL'),
           data: []
-        }
+        },
+        {
+          name: this.translateService.instant('DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.BAD_ORDERS_LABEL'),
+          data: []
+        },
       ],
       chart: {
         height: 200,
@@ -135,8 +143,10 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
       .subscribe((transactionSalesPerDateRange: Array<SalesPerDateRange>) => {
         this.chartOptions.xaxis.categories = transactionSalesPerDateRange.map(x => x.label);
         this.chartOptions.series[0].data = transactionSalesPerDateRange.map(x => x.totalSales);
-        this.chartOptions.series[1].data = transactionSalesPerDateRange.map(x => x.cashAmountOnHand);
-        this.chartOptions.series[2].data = transactionSalesPerDateRange.map(x => x.chequeAmountOnHand);
+        this.chartOptions.series[1].data = transactionSalesPerDateRange.map(x => x.accountReceivables);
+        this.chartOptions.series[2].data = transactionSalesPerDateRange.map(x => x.cashAmountOnHand);
+        this.chartOptions.series[3].data = transactionSalesPerDateRange.map(x => x.chequeAmountOnHand);
+        this.chartOptions.series[4].data = transactionSalesPerDateRange.map(x => x.badOrderAmount);
 
         this.chartOptions = {
           ...this.chartOptions, // Preserve other options

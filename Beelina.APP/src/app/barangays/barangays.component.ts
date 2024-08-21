@@ -92,10 +92,10 @@ export class BarangaysComponent
     this.dialogService
       .openConfirmation(
         this.translateService.instant(
-          'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.TITLE'
+          'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.TITLE'
         ),
         this.translateService.instant(
-          'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.CONFIRM'
+          'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.CONFIRM'
         )
       )
       .subscribe((result) => {
@@ -103,14 +103,14 @@ export class BarangaysComponent
           this.barangayService.deleteBarangay(id).subscribe({
             complete: () => {
               this.notificationService.openSuccessNotification(this.translateService.instant(
-                'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.SUCCESS_MESSAGE'
+                'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.SUCCESS_MESSAGE'
               ));
               this.store.dispatch(BarangaysStoreActions.resetBarangayList());
               this.store.dispatch(BarangaysStoreActions.getBarangaysAction());
             },
             error: (err) => {
               this.notificationService.openErrorNotification(this.translateService.instant(
-                'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.ERROR_MESSAGE'
+                'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.ERROR_MESSAGE'
               ));
             },
           });
@@ -119,7 +119,7 @@ export class BarangaysComponent
   }
 
   goToCustomers(barangay: string) {
-    this.router.navigate([`barangays/${barangay}`]);
+    this.router.navigate([`customer-accounts/${barangay}`]);
   }
 
   get dataSource(): BarangaysDataSource {

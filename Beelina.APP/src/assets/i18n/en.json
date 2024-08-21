@@ -41,17 +41,19 @@
     "VIEW": "View",
     "LAST_SAVED": "Last saved",
     "ALL": "All",
-    "PRINT": "Print"
+    "PRINT": "Print",
+    "SEND_VIA_EMAIL": "Send via Email"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
     "CUSTOMERS": "Customers",
+    "CUSTOMER_ACCOUNTS": "Customer Accounts",
     "BARANGAYS": "Barangays",
     "ORDER_TRANSACTIONS": "Order Transactions",
     "SUPPLIERS": "Suppliers",
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
-    "WAREHOUSE_PRODUCTS": "Warehouse Products",
+    "WAREHOUSE_PRODUCTS": "Warehouse",
     "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Draft Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
@@ -60,6 +62,7 @@
     "PROFILE": "Profile",
     "MANUAL": "User Manual",
     "DASHBOARD": "Dashboard",
+    "SETTINGS": "Settings",
     "LOGOUT": "Logout"
   },
   "ORDER_TYPE": {
@@ -85,7 +88,7 @@
     "DESCRIPTION": "This application is only supported in mobile view at the moment.",
     "NEW_APP_VERSION_DIALOG": {
       "TITLE": "New app version",
-      "DESCRIPTION": "New app version {0} is now available. Get the new version by reloading the app. Click Ok to reload."
+      "DESCRIPTION": "New app version is now available. Get the new version by reloading the app. Click Ok to reload."
     }
   },
   "AUTH_PAGE": {
@@ -126,42 +129,42 @@
       "ERROR_MESSAGE": "Removing customer failed. Please again later."
     }
   },
-  "BARANGAYS_PAGE": {
-    "TITLE": "Barangays",
-    "DESCRIPTION": "This is where barangays information can be managed.",
+  "CUSTOMER_ACCOUNTS_PAGE": {
+    "TITLE": "Customer Accounts",
+    "DESCRIPTION": "This is where customer accounts information can be managed.",
     "SEARCH_TEXT_FIELD": {
-      "PLACEHOLDER": "Search barangay name..."
+      "PLACEHOLDER": "Search customer account name..."
     },
-    "DELETE_BARANGAY_DIALOG": {
-      "TITLE": "Delete barangay",
-      "CONFIRM": "Are you sure to delete selected barangay?",
-      "SUCCESS_MESSAGE": "Selected barangay has been successfully removed.",
-      "ERROR_MESSAGE": "Removing barangay failed. Please again later."
+    "DELETE_CUSTOMER_ACCOUNT_DIALOG": {
+      "TITLE": "Delete customer account",
+      "CONFIRM": "Are you sure to delete selected customer account?",
+      "SUCCESS_MESSAGE": "Selected customer account has been successfully removed.",
+      "ERROR_MESSAGE": "Removing customer account failed. Please again later."
     },
-    "ADD_BARANGAY_DIALOG": {
+    "ADD_CUSTOMER_ACCOUNT_DIALOG": {
       "FORM_CONTROL_SECTION": {
-        "HEADER_TITLE": "Add New Barangay",
+        "HEADER_TITLE": "Add New Customer Account",
         "NAME_CONTROL": {
           "LABEL": "Name",
-          "HINT": "Please enter barangay name"
+          "HINT": "Please enter customer account name"
         }
       },
-      "TITLE": "Add Barangay",
-      "CONFIRM": "Are you sure to add new barangay?",
-      "SUCCESS_MESSAGE": "New barangay has been successfully added!",
-      "ERROR_MESSAGE": "Adding new barangay failed. Please again later."
+      "TITLE": "Add Customer Account",
+      "CONFIRM": "Are you sure to add new customer account?",
+      "SUCCESS_MESSAGE": "New customer account has been successfully added!",
+      "ERROR_MESSAGE": "Adding new customer account failed. Please again later."
     },
-    "UPDATE_BARANGAY_DIALOG": {
+    "UPDATE_CUSTOMER_ACCOUNT_DIALOG": {
       "FORM_CONTROL_SECTION": {
         "NAME_CONTROL": {
           "LABEL": "Name",
-          "HINT": "Please enter barangay name"
+          "HINT": "Please enter customer account name"
         }
       },
-      "TITLE": "Update Barangay",
-      "CONFIRM": "Are you sure to update barangay?",
-      "SUCCESS_MESSAGE": "Selected barangay has been successfully updated!",
-      "ERROR_MESSAGE": "Updating barangay failed. Please again later."
+      "TITLE": "Update Customer Account",
+      "CONFIRM": "Are you sure to update customer account?",
+      "SUCCESS_MESSAGE": "Selected customer account has been successfully updated!",
+      "ERROR_MESSAGE": "Updating customer account failed. Please again later."
     }
   },
   "SUPPLIERS_PAGE": {
@@ -267,9 +270,9 @@
         "LABEL": "Mode of Payment",
         "HINT": "Please specify mode of payment"
       },
-      "BARANGAY_CONTROL": {
-        "LABEL": "Barangay/Branch",
-        "HINT": "Please specify from which barangay/branch"
+      "CUSTOMER_ACCOUNT_CONTROL": {
+        "LABEL": "Customer Account",
+        "HINT": "Please specify from which customer account"
       }
     },
     "EDIT_CUSTOMER_DIALOG": {
@@ -306,9 +309,9 @@
           "GEN_TRADE": "Gen Trade"
         }
       },
-      "BARANGAY_CONTROL": {
-        "LABEL": "Barangay/Branch",
-        "HINT": "Please specify from which barangay/branch"
+      "CUSTOMER_ACCOUNT_CONTROL": {
+        "LABEL": "Customer Account",
+        "HINT": "Please specify from which customer account"
       }
     },
     "SAVE_NEW_CUSTOMER_DIALOG": {
@@ -335,9 +338,9 @@
         "LABEL": "Transaction No",
         "HINT": "Please enter a unique invoice number"
       },
-      "BARANGAY_CONTROL": {
-        "LABEL": "Barangay/Branch",
-        "HINT": "Please select barangay/branch"
+      "CUSTOMER_ACCOUNT_CONTROL": {
+        "LABEL": "Customer Account",
+        "HINT": "Please select customer account"
       },
       "NAME_CONTROL": {
         "LABEL": "Name",
@@ -374,6 +377,27 @@
           "LABEL_3": "Note that the transaction details cannot be changed once it is confirmed."
         }
       }
+    },
+    "PRINT_OPTION_DIALOG": {
+      "TITLE": "Print option",
+      "CONFIRM": "Choose to which entity you want to print this invoice for.",
+      "BUTTON_OPTIONS": {
+        "FOR_SALES_AGENT": "Sales Agent",
+        "FOR_CUSTOMER": "Customer"
+      },
+      "ERROR_MESSAGE": "Failed to generate report file. Please try again later.",
+      "LOADING_MESSAGE": "Generating report. This will take a while. Please wait..."
+    },
+    "SEND_VIA_EMAIL_OPTION_DIALOG": {
+      "TITLE": "Send option",
+      "CONFIRM": "Choose to which entity you want to send a copy of this invoice for.",
+      "BUTTON_OPTIONS": {
+        "FOR_SALES_AGENT": "Sales Agent",
+        "FOR_CUSTOMER": "Customer"
+      },
+      "ERROR_MESSAGE": "Failed to send invoice. Please try again later.",
+      "SUCCESS_MESSAGE": "Invoice has been successfully sent!",
+      "LOADING_MESSAGE": "Sending invoice. This will take a while. Please wait..."
     },
     "SAVE_NEW_CONFIRMED_ORDER_DIALOG": {
       "TITLE": "Save new order",
@@ -449,6 +473,10 @@
       "ADDITIONAL_STOCK_QUANTITY_CONTROL": {
         "LABEL": "Additional Stock Quantity",
         "HINT": "Please specify stock"
+      },
+      "SENDER_PLATE_NUMBER_CONTROL": {
+        "LABEL": "Plate No",
+        "HINT": "Please plate no."
       },
       "PRICE_PER_UNIT_CONTROL": {
         "LABEL": "Price",
@@ -801,7 +829,9 @@
     "SALES_PANEL": {
       "LABEL": "Sales Amount",
       "CASH_ON_HAND_LABEL": "Cash Payment",
-      "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
+      "CHEQUE_ON_HAND_LABEL": "Cheque Payment",
+      "ACCOUNT_RECEIVABLES_LABEL": "Account Receivables",
+      "BAD_ORDERS_LABEL": "Bad Orders"
     }
   },
   "SIDE_DRAWER_SECTION": {
@@ -860,8 +890,10 @@
       "DAILY_SUMMARIZE_TRANSACTIONS_REPORT_DESC": "Summary and quick insights for daily confirmed transactions",
       "DAILY_DETAILED_TRANSACTIONS_REPORT_NAME": "Daily Detailed Transactions",
       "DAILY_DETAILED_TRANSACTIONS_REPORT_DESC": " Itemized details for confirmed transactions on a specific date, facilitating a focused analysis of each purchase.",
-      "ENDING_INVENTORY_PER_PRODUCT_REPORT_NAME": "Ending Inventory Per Product Report",
-      "ENDING_INVENTORY_PER_PRODUCT_REPORT_DESC": "Displays starting and ending stock for a given date, aiding administrators in analyzing initial load and remaining stock.",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_NAME": "Sales Agent Ending Inventory Report",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_DESC": "Displays starting and ending stock for a given date, aiding administrators in analyzing initial load and remaining stock from sales agents account.",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_ADMIN_NAME": "Warehouse Ending Inventory Report",
+      "ENDING_INVENTORY_PER_PRODUCT_REPORT_ADMIN_DESC": "Displays starting and ending stock for a given date, aiding administrators in analyzing initial load and remaining stock from warehouse.",
       "SALES_PER_CUSTOMER_REPORT_NAME": "Sales Per Customer Report",
       "SALES_PER_CUSTOMER_REPORT_DESC": "Generates sales data per customer for a specified date, aiding administrators in analyzing and gaining insights into individual customer sales.",
       "PRODUCT_WITHDRAWAL_REPORT_NAME": "Product Withdrawal Report",
@@ -1195,14 +1227,16 @@
       "MODIFIED_BY_LABEL": "Modified By",
       "WITHDRAWAL_SLIP_NO_LABEL": "Withdrawal Slip No.",
       "INVOICE_NO_LABEL": "Invoice No.",
-      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No."
+      "PURCHASED_ORDER_NO_LABEL": "Purchased Order No.",
+      "PLATE_NO_LABEL": "Plate No."
     }
   },
   "REPORT_SETTINGS_DIALOG": {
     "TITLE": "Report Settings",
     "FORM_CONTROL_SECTION": {
       "REPORT_NOTIFICATION_EMAIL_ADDRESS_CONTROL": {
-        "LABEL": "Report Notification Email Address"
+        "LABEL": "Report Notification Email Address",
+        "HINT": "Specify email address to send report to."
       }
     },
     "CONFIRMATION_REPORT_SETTINGS_DIALOG": {
@@ -1214,6 +1248,52 @@
   },
   "LOADER_LAYOUT": {
     "LOADING_TEXT": "Loading. Please wait..."
+  },
+  "SETTINGS_PAGE": {
+    "TITLE": "Settings",
+    "DESCRIPTION": "Manage general settings for the application. Here you can change report notification email address, user account details, and more.",
+    "MODULE_LIST": {
+      "ORDER_TRANSACTION": {
+        "LABEL": "Order Transactions",
+        "DESCRIPTION": "Manage settings related with Order Transactions"
+      },
+      "REPORTS": {
+        "LABEL": "Reports",
+        "DESCRIPTION": "Manage report settings"
+      },
+      "PROFILE": {
+        "LABEL": "Profile",
+        "DESCRIPTION": "Manage your profile account"
+      }
+    },
+    "ORDER_TRANSACTION_SETTINGS_SUBPAGE": {
+      "TITLE": "Order Transaction Settings",
+      "DESCRIPTION": "Manage settings related with order transaction module. Here you can configure sending of receipt for each order transaction, and more.",
+      "FORM_CONTROL_SECTION": {
+        "ALLOW_SEND_RECEIPT_CONTROL": {
+          "LABEL": "Send Invoice Receipt",
+          "HINT": "Activate if you want to send invoice receipt."
+        },
+        "ALLOW_AUTO_SEND_RECEIPT_CONTROL": {
+          "LABEL": "Auto Send Invoice Receipt",
+          "HINT": "Activate if you want to automatically send invoice receipt when confirming order transaction."
+        },
+        "SEND_RECEIPT_EMAIL_ADDRESS_CONTROL": {
+          "LABEL": "Invoice Receipt Email Address",
+          "HINT": "Specify email address to send invoice receipt."
+        }
+      }
+    },
+    "REPORTS_SETTINGS_SUBPAGE": {
+      "TITLE": "Report Settings",
+      "DESCRIPTION": "Manage settings related with report module. Here you can configure generating of reports."
+    },
+    "SAVE_SETTINGS_DIALOG": {
+      "TITLE": "Save changes",
+      "CONFIRM": "Are you sure to save new changes?",
+      "SUCCESS_MESSAGE": "New updates have been sucessfully saved!",
+      "ERROR_MESSAGE": "Failed to save settings. Please try again later!"
+    }
   },
   "DASHBOARD_ADMIN": {
     "TITLE": "Dashboard",
@@ -1235,7 +1315,9 @@
         "TITLE": "Sales Date Distribution Chart",
         "SALES_LABEL": "Sales",
         "CASH_ON_HAND_LABEL": "Cash Payment",
-        "CHEQUE_ON_HAND_LABEL": "Cheque Payment"
+        "CHEQUE_ON_HAND_LABEL": "Cheque Payment",
+        "BAD_ORDERS_LABEL": "Bad Order",
+        "ACCOUNT_RECEIVABLES_LABEL": "Account Receivables"
       },
       "CHART_FILTER_SECTION": {
         "LABEL": "Total Sales Amount"

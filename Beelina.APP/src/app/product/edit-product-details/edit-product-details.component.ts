@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -62,7 +62,6 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   private _warehouseId: number = 1;
   private _isAdmin = false;
 
-
   activatedRoute = inject(ActivatedRoute);
   authService = inject(AuthService);
   bottomSheet = inject(MatBottomSheet);
@@ -75,6 +74,8 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
   supplierStore = inject(SupplierStore);
   translateService = inject(TranslateService);
+
+  suppliers = computed(() => this.supplierStore.suppliers());
 
   constructor() {
     super();

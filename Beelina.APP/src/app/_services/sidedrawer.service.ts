@@ -75,8 +75,8 @@ export class SidedrawerService {
         maximumPermissionLevel: userPermissionLevel,
       },
       {
-        name: 'MAIN_MENU.CUSTOMERS',
-        url: '/barangays',
+        name: 'MAIN_MENU.CUSTOMER_ACCOUNTS',
+        url: '/customer-accounts',
         icon: 'place',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -122,6 +122,13 @@ export class SidedrawerService {
         icon: 'bar_chart',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
+      },
+      {
+        name: 'MAIN_MENU.SETTINGS',
+        url: '/settings',
+        icon: 'settings',
+        minimumPermissionLevel: userPermissionLevel,
+        maximumPermissionLevel: userPermissionLevel,
       },
       // {
       //   name: 'MAIN_MENU.MANUAL',

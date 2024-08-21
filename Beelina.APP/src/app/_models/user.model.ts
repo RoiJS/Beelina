@@ -8,6 +8,7 @@ import {
 import { Entity } from './entity.model';
 import { UserCredentials } from './user-credentials';
 import { UserModulePermission } from './user-module-permission';
+import { UserSetting } from './user-setting';
 
 export class User extends Entity {
   public firstName: string;
@@ -20,12 +21,14 @@ export class User extends Entity {
   public businessModel: BusinessModelEnum;
   public credentials: UserCredentials;
   public userPermissions: UserModulePermission[];
+  public userSettings: UserSetting;
   public userType: string;
 
   constructor() {
     super();
     this.credentials = new UserCredentials();
     this.userPermissions = new Array<UserModulePermission>();
+    this.userSettings = new UserSetting();
   }
 
   getModulePrivilege(moduleId: ModuleEnum): { key: string; value: number | null } {

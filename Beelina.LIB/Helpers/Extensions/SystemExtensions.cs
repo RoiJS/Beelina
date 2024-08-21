@@ -148,5 +148,25 @@ namespace Beelina.LIB.Helpers.Extensions
         {
             return $"₱ {input.ToString("N2")}";
         }
+
+
+        /// <summary>
+        /// Converts a Stream object to a byte array.
+        /// </summary>
+        /// <param name="stream">The Stream object to convert.</param>
+        /// <returns>A byte array representation of the Stream object.</returns>
+        public static byte[] ToByteArray(this Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
     }
 }

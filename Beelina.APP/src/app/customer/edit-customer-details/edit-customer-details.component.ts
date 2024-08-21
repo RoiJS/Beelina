@@ -140,7 +140,7 @@ export class EditCustomerDetailsComponent implements OnInit {
                       state: false,
                     })
                   );
-                  this.router.navigate([`/barangays/${this._barangay}`]);
+                  this.router.navigate([`/customer-accounts/${this._barangay}`]);
                 },
 
                 error: () => {

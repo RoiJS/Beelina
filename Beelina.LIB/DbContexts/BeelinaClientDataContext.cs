@@ -19,6 +19,7 @@ namespace Beelina.LIB.DbContexts
 
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<UserPermission> UserPermission { get; set; }
+        public DbSet<UserSetting> UserSettings { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductStockPerPanel> ProductStockPerPanels { get; set; }
         public DbSet<ProductStockAudit> ProductStockAudits { get; set; }

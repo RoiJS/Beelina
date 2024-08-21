@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import moment from 'moment';
-import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
@@ -12,9 +11,7 @@ import {
 } from '../_services/transaction.service';
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { AuthService } from '../_services/auth.service';
-import { errorCodes } from '@apollo/client/invariantErrorCodes';
 import { DateRange } from '../_models/date-range';
-import { SalesPerDateRange } from '../_models/sales-per-date-range';
 
 export enum DateFilterEnum {
   Daily = 1,
@@ -31,6 +28,9 @@ export class SalesComponent extends BaseComponent implements OnInit {
   protected _sales: number = 0;
   protected _cashOnHand: number = 0;
   protected _chequeOnHand: number = 0;
+  protected _accountReceivables: number = 0;
+  protected _badOrders: number = 0;
+
   protected _currentFilterOption: DateFilterEnum = DateFilterEnum.Monthly;
   protected _weekOptions: Array<string>;
   protected _monthOptions: Array<string> = [
@@ -89,6 +89,8 @@ export class SalesComponent extends BaseComponent implements OnInit {
         this._sales = transactionSales.totalSalesAmount;
         this._cashOnHand = transactionSales.cashAmountOnHand;
         this._chequeOnHand = transactionSales.chequeAmountOnHand;
+        this._accountReceivables = transactionSales.accountReceivables;
+        this._badOrders = transactionSales.badOrderAmount;
       });
   }
 
@@ -273,6 +275,14 @@ export class SalesComponent extends BaseComponent implements OnInit {
 
   get chequeOnHand(): string {
     return NumberFormatter.formatCurrency(this._chequeOnHand);
+  }
+
+  get accountReceivables(): string {
+    return NumberFormatter.formatCurrency(this._accountReceivables);
+  }
+
+  get badOrders(): string {
+    return NumberFormatter.formatCurrency(this._badOrders);
   }
 
   get filterForm(): FormGroup {
