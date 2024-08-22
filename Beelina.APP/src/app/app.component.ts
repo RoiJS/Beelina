@@ -19,6 +19,7 @@ import { SharedComponent } from './shared/components/shared/shared.component';
 
 import { ModuleEnum } from './_enum/module.enum';
 import { PermissionLevelEnum } from './_enum/permission-level.enum';
+
 import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
 import { DialogService } from './shared/ui/dialog/dialog.service';
@@ -169,10 +170,11 @@ export class AppComponent
   private promptUser(): void {
     this.dialogService.openAlert(
       this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.TITLE'),
-      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.DESCRIPTION').replace("{0}", this.appVersionService.appVersionNumber))
-      .subscribe(() => {
-        window.location.reload();
-      });
+      this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.DESCRIPTION')
+    )
+    .subscribe(() => {
+      window.location.reload();
+    });
   }
 
   get copyRightText(): string {

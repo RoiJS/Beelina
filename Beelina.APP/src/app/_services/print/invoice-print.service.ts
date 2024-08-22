@@ -26,7 +26,18 @@ export class InvoicePrintService extends BasePrintService {
   async printInvoice(transactionId: number, printFor: PrintForSettingsEnum) {
     const data = await firstValueFrom(this.transactionService.getInvoiceData(transactionId));
     const invoiceReceiptTemplate = this.constructReceiptTemplate(data, printFor);
-    this.print(invoiceReceiptTemplate);
+    const fileName = `Invoice-${data.transaction.transaction.invoiceNo}.pdf`;
+    this.print(fileName, invoiceReceiptTemplate);
+  }
+
+  async sendInvoice(transactionId: number, printFor: PrintForSettingsEnum, callback: Function) {
+    const data = await firstValueFrom(this.transactionService.getInvoiceData(transactionId));
+    const invoiceReceiptTemplate = this.constructReceiptTemplate(data, printFor);
+    const fileName = `Invoice-${data.transaction.transaction.invoiceNo}.pdf`;
+    this.generateAsBlob(fileName, invoiceReceiptTemplate, (blob: Blob) => {
+      const file = new File([blob], fileName, { type: 'application/pdf' });
+      if (callback) callback(file);
+    });
   }
 
   private constructReceiptTemplate(data: InvoiceData, printFor: PrintForSettingsEnum) {

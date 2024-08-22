@@ -56,7 +56,7 @@ import { PrintForSettingsEnum } from 'src/app/_enum/print-for-settings.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { Barangay } from 'src/app/_models/barangay';
-import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+import { InvalidProductTransactionOverallQuantitiesTransactions, ProductTransactionOverallQuantities } from 'src/app/_models/insufficient-product-quantity';
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 
@@ -537,20 +537,40 @@ export class ProductCartComponent
     this._orderForm.markAllAsTouched();
     if (!this._orderForm.valid) return;
 
+    const transaction = new TransactionDto();
+    transaction.id = this._transactionId();
+    transaction.storeId = this._selectedCustomer().id;
+    transaction.status = this.transaction().status;
+    transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+    transaction.paid = this._orderForm.get('paid').value;
+    transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+    transaction.discount = this._discountForm.get('discount').value;
+    transaction.transactionDate = DateFormatter.format(
+      this._orderForm.get('transactionDate').value
+    );
+    transaction.dueDate = DateFormatter.format(
+      this._orderForm.get('dueDate').value
+    );
+    transaction.productTransactions = this.productTransactions();
+
     this._isLoading = true;
     this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
     this.productService
-      .validateProductionTransactionsQuantities(this.productTransactions())
+      .validateProductionTransactionsQuantities([transaction])
       .subscribe(
-        (insufficientProductQuantities: Array<InsufficientProductQuantity>) => {
+        (productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
+          console.log(productsWithInsufficientQuantities);
+
           this._isLoading = false;
-          if (insufficientProductQuantities.length > 0) {
+          if (productsWithInsufficientQuantities.length > 0) {
             let errorMessage = this.translateService.instant(
               'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
             );
 
-            insufficientProductQuantities.forEach((i) => {
-              errorMessage += `- <strong>(${i.productCode})</strong> ${i.productName} <br>`;
+            const products = productsWithInsufficientQuantities[0].invalidProductTransactionOverallQuantities;
+
+            products.forEach((i) => {
+              errorMessage += `<strong>(${i.productCode})</strong> ${i.productName} <br>`;
             });
 
             this.dialogService.openAlert(
@@ -779,6 +799,7 @@ export class ProductCartComponent
           );
 
           this.sendOrderReceiptEmailNotification(id);
+          this.sendInvoiceEmailNotification(id);
 
           if (this._transactionId() === 0) {
             this.router.navigate(['/product-catalogue']);
@@ -805,6 +826,19 @@ export class ProductCartComponent
   private sendOrderReceiptEmailNotification(transactionId: number) {
     this.transactionService
       .sendOrderReceiptEmailNotification(transactionId).subscribe();
+  }
+
+  private sendInvoiceEmailNotification(transactionId: number) {
+    if (this.userService.userSetting().allowSendReceipt && this.userService.userSetting().allowAutoSendReceipt) {
+      this.invoicePrintService
+        .sendInvoice(transactionId, PrintForSettingsEnum.CUSTOMER, (file: File) => {
+          this.transactionService.sendInvoiceTransaction(
+            transactionId,
+            this.authService.userId,
+            file
+          ).subscribe();
+        });
+    }
   }
 
   get orderForm(): FormGroup {

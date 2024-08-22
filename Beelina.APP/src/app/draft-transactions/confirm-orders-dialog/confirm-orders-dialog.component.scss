@@ -1,0 +1,16 @@
+@import "../../../app-variables";
+
+::ng-deep mat-bottom-sheet-container.mat-bottom-sheet-container {
+  max-width: 250px;
+}
+
+.confirm-order-dialog-container {
+  background: $background-gradient;
+
+  &__body {
+    .invalid-order-transactions-list {
+      height: 20em;
+      margin-top: 2em;
+    }
+  }
+}

@@ -36,7 +36,7 @@ export const routes: Routes = [
     canActivate: [AccessGuard]
   },
   {
-    path: 'barangays',
+    path: 'customer-accounts',
     loadChildren: () =>
       import('./barangays/barangays.module').then((m) => m.BarangaysModule),
     canLoad: [AuthGuard],
@@ -93,6 +93,12 @@ export const routes: Routes = [
       import('./reports/reports.module').then((m) => m.ReportsModule),
     canLoad: [AuthGuard],
     canActivate: [AccessGuard]
+  },
+  {
+    path: 'settings',
+    loadChildren: () =>
+      import('./settings/settings.module').then((m) => m.SettingsModule),
+    canLoad: [AuthGuard],
   },
   {
     path: 'profile',

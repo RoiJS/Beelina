@@ -5,17 +5,17 @@
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "BARANGAYS_PAGE.TITLE" | translate }}</label
+      <label>{{ "CUSTOMER_ACCOUNTS_PAGE.TITLE" | translate }}</label
       ><br />
       <span class="page-information-description">{{
-        "BARANGAYS_PAGE.DESCRIPTION" | translate
+        "CUSTOMER_ACCOUNTS_PAGE.DESCRIPTION" | translate
       }}</span>
     </div>
     <app-search-field
       (onSearch)="onSearch($event)"
       (onClear)="onClear()"
       [placeHolderTextIdentifier]="
-        'BARANGAYS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+        'CUSTOMER_ACCOUNTS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
       "
     ></app-search-field>
 
