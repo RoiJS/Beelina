@@ -60,6 +60,51 @@ export class BaseComponent {
         name: 'Piattos',
         url: '../../../assets/products/Piattos.jpg',
       },
+
+      {
+        name: 'Fruity Frost Orange',
+        url: '../../../assets/products/AER/Fruity_Frost_Orange-removebg-preview.png',
+      },
+      {
+        name: 'Fruity Frost Grapes',
+        url: '../../../assets/products/AER/Fruity_Frost_Grapes-removebg-preview.png',
+      },
+      {
+        name: 'Yumshots Mixed Nuts',
+        url: '../../../assets/products/AER/Yumshots_Mixed_Snacks_70g-removebg-preview.png',
+      },
+      {
+        name: 'Lumpia Shanghai Corn',
+        url: '../../../assets/products/AER/Lumpia_Shanghai_Corn_65g-removebg-preview.png',
+      },
+      {
+        name: 'Lumpia Shanghai Cheese',
+        url: '../../../assets/products/AER/Lumpia_Shanghai_Cheese_65g-removebg-preview.png',
+      },
+      {
+        name: 'Koolers Orange',
+        url: '../../../assets/products/AER/Koolers_Orange_220ml-removebg-preview.png',
+      },
+      {
+        name: 'Koolers Grapes',
+        url: '../../../assets/products/AER/Koolers_Grapes_220ml-removebg-preview.png',
+      },
+      {
+        name: 'Koolers Apple',
+        url: '../../../assets/products/AER/Koolers_Apple_220ml-removebg-preview.png',
+      },
+      {
+        name: 'Karoke Salted Garlic',
+        url: '../../../assets/products/AER/Karoke_Salted_Garlic_70g-removebg-preview.png',
+      },
+      {
+        name: "Brewster's White Coffee",
+        url: '../../../assets/products/AER/Brewster_s_White_Coffee_30g-removebg-preview.png',
+      },
+      {
+        name: "Brewster's Brown Coffee",
+        url: '../../../assets/products/AER/Brewster_s_Brown_Coffee_25g-removebg-preview.png',
+      },
     ];
 
     const photo =
