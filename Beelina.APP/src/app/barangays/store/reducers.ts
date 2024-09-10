@@ -42,6 +42,7 @@ export const reducers = createReducer(
       <IBarangayState>{
         ...state,
         error: action.error,
+        isLoading: false
       }
   ),
   on(BarangayActions.resetBarangayState, (state, action) => ({

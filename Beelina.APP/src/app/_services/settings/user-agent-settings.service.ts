@@ -7,6 +7,7 @@ import { IUserAgentOrderTransactionSettingsInput } from 'src/app/_interfaces/inp
 import { ISaveUserAgentOrderTransactionSettingsOutput } from 'src/app/_interfaces/outputs/isave-user-agent-order-transation-settings-.output';
 import { IUserAgentOrderTransactionQueryPayload } from 'src/app/_interfaces/payloads/iuser-agent-order-transaction-settings.payload';
 import { UserAgentOrderTransactionSettings } from 'src/app/_models/user-agent-order-transaction-settings.model';
+import { LocalUserSettingsDbService } from '../local-db/local-user-settings-db.service';
 
 const GET_ORDER_TRANSACTION_SETTINGS = gql`
   query($userId: Int!) {
@@ -29,6 +30,7 @@ const SAVE_USER_AGENT_ORDER_TRANSACTION_SETTINGS = gql`
 @Injectable({ providedIn: 'root' })
 export class UserAgentSettingsService {
   apollo = inject(Apollo);
+  localUserSettingsDbService = inject(LocalUserSettingsDbService);
 
   constructor() { }
 
@@ -85,6 +87,9 @@ export class UserAgentSettingsService {
             result: MutationResult<{ saveUserAgentOrderTransactionSettings: ISaveUserAgentOrderTransactionSettingsOutput }>
           ) => {
             const output = result.data.saveUserAgentOrderTransactionSettings.boolean;
+            if (output) {
+              this.localUserSettingsDbService.updateOrderTransactionSettings(userAgentOrderTransactionSettings);
+            }
             return output;
           }
         ),

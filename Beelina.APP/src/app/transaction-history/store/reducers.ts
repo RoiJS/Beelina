@@ -42,6 +42,7 @@ export const reducers = createReducer(
     (state, action) => ({
       ...state,
       error: action.error,
+      isLoading: false,
     })
   ),
   on(

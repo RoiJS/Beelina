@@ -8,7 +8,7 @@
 
       <app-user-card></app-user-card>
 
-      <mat-tree [dataSource]="menuDataSource" [treeControl]="treeControl" class="side-drawer-menu-tree">
+      <mat-tree [dataSource]="menuDataSource()" [treeControl]="treeControl" class="side-drawer-menu-tree">
         <!-- This is the tree node template for leaf nodes -->
         <!-- There is inline padding applied to this node using styles.
         This padding value depends on the mat-icon-button width. -->
@@ -45,20 +45,26 @@
       <div class="sidenav-footer">
         <label>{{ appVersion }}</label>
         <label><mat-icon>copyright</mat-icon> {{ copyRightText }}</label>
+
+        @if(!(this.networkService.isOnline | async)) {
+        <div class="sidenav-footer__offline-banner">
+          <div class="label">
+            <mat-icon>wifi_off</mat-icon>
+            <span>{{ "MAIN_MENU.BIZUAL_OFFLINE" | translate }}</span>
+          </div>
+        </div>
+        }
+
       </div>
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    @if(isOnline() && !isSystemUpdateActive()) {
+    @if(!isSystemUpdateActive()) {
     <router-outlet></router-outlet>
     }
 
-    @if (isOnline() && isSystemUpdateActive()) {
+    @if (isSystemUpdateActive()) {
     <app-system-update></app-system-update>
     }
-
-    <!-- @if (!isOnline()) {
-    <app-offline></app-offline>
-    } -->
   </mat-sidenav-content>
 </mat-sidenav-container>

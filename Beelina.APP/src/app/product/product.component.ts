@@ -17,6 +17,9 @@ import { TransferProductInventoryComponent } from './transfer-product-inventory/
 
 import { AuthService } from '../_services/auth.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { LocalProductsDbService } from '../_services/local-db/local-products-db.service';
+import { LocalSyncDataService } from '../_services/local-db/local-sync-data.service';
+import { NetworkService } from '../_services/network.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 import { ProductService } from '../_services/product.service';
 import { StorageService } from '../_services/storage.service';
@@ -93,6 +96,9 @@ export class ProductComponent
   authService = inject(AuthService);
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);
+  localProductsDbService = inject(LocalProductsDbService);
+  localSyncDataService = inject(LocalSyncDataService);
+  networkService = inject(NetworkService);
   notificationService = inject(NotificationService);
   productService = inject(ProductService);
   router = inject(Router);
@@ -177,6 +183,7 @@ export class ProductComponent
     this._transferInventoryDialogRef = null;
     this._dialogOpenFilterRef = null;
     this._dialogAddQuantityRef = null;
+    this.localProductsDbService.reset();
     super.ngOnDestroy();
   }
 
@@ -203,6 +210,19 @@ export class ProductComponent
         .subscribe((totalCount: number) => {
           this.totalProductCount.set(totalCount);
         })
+    );
+  }
+
+  async syncProducts() {
+    this.notificationService.openSuccessNotification(
+      this.translateService.instant("PRODUCTS_CATALOGUE_PAGE.SYNC_PRODUCTS_DIALOG.SYNCING_NOTIFICATION_MESSAGE")
+    );
+    await this.localProductsDbService.clear();
+    await this.localProductsDbService.getProductUnitsFromServer()
+    await this.localProductsDbService.getProductsFromServer();
+    this.notificationService.openSuccessNotification(
+      this.translateService.instant("PRODUCTS_CATALOGUE_PAGE.SYNC_PRODUCTS_DIALOG.SYNCED_NOTIFICATION_MESSAGE")
+
     );
   }
 
@@ -319,6 +339,7 @@ export class ProductComponent
   }
 
   calculateTotalInventoryValue() {
+    if (!navigator.onLine) return;
     this._subscription.add(this.productService.getPanelInventoryTotalValue().subscribe({
       next: (data: number) => {
         this.totalProductValue.set(NumberFormatter.formatCurrency(data));

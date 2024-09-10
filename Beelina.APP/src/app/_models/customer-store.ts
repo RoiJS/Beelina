@@ -8,6 +8,8 @@ export class CustomerStore extends Entity {
   public address: string;
   public emailAddress: string;
   public outletType: OutletTypeEnum;
+  public paymentMethodId: number;
+  public barangayId: number;
   public paymentMethod: PaymentMethod;
   public barangay: Barangay;
 

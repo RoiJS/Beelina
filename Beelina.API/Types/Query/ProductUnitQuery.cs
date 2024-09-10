@@ -8,7 +8,7 @@ namespace Beelina.API.Types.Query
     public class ProductUnitQuery
     {
         [Authorize]
-        [UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
+        [UsePaging(MaxPageSize = 1000, DefaultPageSize = 100)]
         [UseProjection]
         public async Task<IList<ProductUnit>> GetProductUnits([Service] IProductUnitRepository<ProductUnit> productUnitRepository)
         {

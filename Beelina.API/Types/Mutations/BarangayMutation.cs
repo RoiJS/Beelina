@@ -18,9 +18,9 @@ namespace Beelina.API.Types.Mutations
                 [Service] ICurrentUserService currentUserService,
                 BarangayInput barangayInput)
         {
-            var brangayFromRepo = await barangayRepository.GetEntity(barangayInput.Id).ToObjectAsync();
+            var barangayFromRepo = await barangayRepository.GetEntity(barangayInput.Id).ToObjectAsync();
 
-            if (brangayFromRepo is null)
+            if (barangayFromRepo is null)
             {
                 var newBarangay = new Barangay { Id = barangayInput.Id, Name = barangayInput.Name, UserAccountId = currentUserService.CurrentUserId };
                 await barangayRepository.AddEntity(newBarangay);
@@ -28,9 +28,9 @@ namespace Beelina.API.Types.Mutations
             }
             else
             {
-                mapper.Map(barangayInput, brangayFromRepo);
+                mapper.Map(barangayInput, barangayFromRepo);
                 await barangayRepository.SaveChanges();
-                return brangayFromRepo;
+                return barangayFromRepo;
             }
         }
 

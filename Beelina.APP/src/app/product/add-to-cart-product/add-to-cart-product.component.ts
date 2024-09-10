@@ -9,7 +9,6 @@ import { Store } from '@ngrx/store';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 
-import { ProductService } from 'src/app/_services/product.service';
 
 import * as ProductTransactionActions from './store/actions';
 import * as ProductActions from './../store/actions';
@@ -17,6 +16,7 @@ import * as ProductActions from './../store/actions';
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { ProductDataService } from 'src/app/_services/product-data.service';
 
 @Component({
   selector: 'app-add-to-cart-product',
@@ -39,7 +39,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
     },
     private formBuilder: FormBuilder,
     private store: Store<AppStateInterface>,
-    private productService: ProductService
+    private productDataService: ProductDataService,
   ) {
     super();
     this._productTransactions = data.productTransactions;
@@ -49,7 +49,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
     });
 
     this._isLoading = true;
-    this.productService
+    this.productDataService
       .getProduct(data.productId)
       .subscribe((result: ProductInformationResult) => {
         this._isLoading = false;
@@ -78,7 +78,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onConfirm() {
     let currentValue = this._itemCounterForm.get('itemCounter').value;
