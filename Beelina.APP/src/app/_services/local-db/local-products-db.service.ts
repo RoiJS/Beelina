@@ -101,12 +101,13 @@ export class LocalProductsDbService extends LocalBaseDbService {
       );
 
       result.totalCount = myLocalProducts.length;
-      limit = 0;
+
+      if (this.pageNumber === 1) limit = 0;
     }
 
     if (limit > 0) {
       const startIndex = (this.pageNumber - 1) * limit;
-      const endIndex = startIndex + limit
+      const endIndex = startIndex + limit;
       myLocalProducts = myLocalProducts.slice(startIndex, endIndex);
     }
 

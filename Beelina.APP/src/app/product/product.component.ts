@@ -114,6 +114,7 @@ export class ProductComponent
     this.businessModel.set(this.authService.businessModel);
     this.transactionId.set(+this.activatedRoute.snapshot.paramMap.get('transactionId'));
 
+    this.localProductsDbService.reset();
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
       ProductTransactionActions.initializeProductTransactions()
@@ -183,7 +184,6 @@ export class ProductComponent
     this._transferInventoryDialogRef = null;
     this._dialogOpenFilterRef = null;
     this._dialogAddQuantityRef = null;
-    this.localProductsDbService.reset();
     super.ngOnDestroy();
   }
 
@@ -302,6 +302,7 @@ export class ProductComponent
   }
 
   onSearch(filterKeyword: string) {
+    this.localProductsDbService.reset();
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
       ProductActions.setSearchProductAction({ keyword: filterKeyword })
