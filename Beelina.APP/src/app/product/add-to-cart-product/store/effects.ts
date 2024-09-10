@@ -2,15 +2,17 @@ import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
-import { map, of, switchMap } from 'rxjs';
+import { from, map, of, switchMap } from 'rxjs';
 
 import * as ProductTransactionActions from './actions';
 
-import { StorageService } from 'src/app/_services/storage.service';
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
+import { LocalOrdersDbService } from 'src/app/_services/local-db/local-orders-db.service';
+import { StorageService } from 'src/app/_services/storage.service';
 import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
+import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 @Injectable()
 export class ProductTransactionsEffects {
@@ -44,8 +46,21 @@ export class ProductTransactionsEffects {
 
   productTransactionsFromServer$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(ProductTransactionActions.getProductTransactionsFromServer),
-      switchMap((action: { transactionId: number }) => {
+      ofType(ProductTransactionActions.getProductTransactions),
+      switchMap((action: { transactionId: number, isLocalTransaction: boolean }) => {
+
+        if (action.isLocalTransaction) {
+          return from(this.localOrdersDbService.getMyLocalOrders(TransactionStatusEnum.ALL, [action.transactionId]))
+            .pipe(
+              map((transactions: Array<Transaction>) => {
+                const transaction = transactions[0];
+                return ProductTransactionActions.initializeTransactionDetails({
+                  transaction,
+                });
+              })
+            );
+        }
+
         return this.transactionService
           .getTransaction(action.transactionId)
           .pipe(
@@ -60,6 +75,7 @@ export class ProductTransactionsEffects {
   );
   constructor(
     private actions$: Actions,
+    private localOrdersDbService: LocalOrdersDbService,
     private transactionService: TransactionService,
     private storageService: StorageService
   ) { }

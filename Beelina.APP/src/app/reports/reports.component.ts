@@ -25,9 +25,15 @@ export class ReportsComponent extends BaseComponent implements OnInit {
 
   ngOnInit() {
     this._isLoading = true;
-    this.reportService.getAllReports().subscribe((reports: Array<Report>) => {
-      this._reports = reports;
-      this._isLoading = false;
+    this.reportService.getAllReports().subscribe({
+      next: (reports: Array<Report>) => {
+        this._reports = reports;
+        this._isLoading = false;
+      },
+
+      error: () => {
+        this._isLoading = false;
+      }
     });
   }
 

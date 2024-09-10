@@ -42,11 +42,28 @@
     </div>
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="dataSource.itemCount">
+
+      @if (networkService.isOnline | async) {
+      @if(hasLocalDraftOrders() && !multipleItemsService.selectMultipleActive()) {
+      <app-banner [type]="bannerTypeEnum.WARNING">
+        <div class="offline-order-banner-message">{{ "OFFLINE_ORDERS_MODE.HAS_OFFLINE_ORDERS_LABEL_MESSAGE" | translate
+          }}
+          <button mat-raised-button color="default" (click)="syncAllOfflineDraftOrders()">
+            <mat-icon>cloud_upload</mat-icon>
+            {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.SYNC_ALL_OFFLINE_ORDERS' | translate }}
+          </button>
+        </div>
+      </app-banner>
+      }
+      }
+
+
       @if(multipleItemsService.selectMultipleActive()) {
       <mat-checkbox [checked]="multipleItemsService.isSelectedAll()" (change)="selectAllItems($event.checked)"
         [labelPosition]="'after'">{{
         'GENERAL_TEXTS.SELECT_ALL' | translate }}</mat-checkbox>
       }
+
       <cdk-virtual-scroll-viewport itemSize="10" class="list-container transactions-list">
         <div *cdkVirtualFor="let item of dataSource">
           <div matRipple
@@ -59,7 +76,13 @@
               }
               <span>{{ item.transactionDateFormatted }}</span>
             </div>
-            <mat-icon>keyboard_arrow_right</mat-icon>
+
+            <div>
+              @if (item.isLocal) {
+              <mat-icon class="order-transaction-list__local-icon">wifi_off</mat-icon>
+              }
+              <mat-icon>keyboard_arrow_right</mat-icon>
+            </div>
           </div>
         </div>
       </cdk-virtual-scroll-viewport>

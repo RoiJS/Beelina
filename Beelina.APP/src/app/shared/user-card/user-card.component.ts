@@ -5,6 +5,7 @@ import { ModuleEnum } from 'src/app/_enum/module.enum';
 
 import { User } from 'src/app/_models/user.model';
 import { AuthService } from 'src/app/_services/auth.service';
+import { NetworkService } from 'src/app/_services/network.service';
 import { UIService } from 'src/app/_services/ui.service';
 import { SharedComponent } from '../components/shared/shared.component';
 
@@ -19,6 +20,7 @@ export class UserCardComponent extends SharedComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private networkService: NetworkService,
     private router: Router,
     private translateService: TranslateService,
     override uiService: UIService
@@ -36,6 +38,8 @@ export class UserCardComponent extends SharedComponent implements OnInit {
   override ngOnInit() { }
 
   goToProfile() {
+    if (!this.networkService.isOnline.value) return;
+
     this.router.navigate(['/profile']);
     if (this.isHandset) {
       this.uiService.toggleDrawer();

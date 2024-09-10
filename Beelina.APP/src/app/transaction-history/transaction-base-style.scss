@@ -1,0 +1,14 @@
+@import "../../app-variables";
+
+.offline-order-banner-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.order-transaction-list {
+  &__local-icon {
+    color: $primary;
+  }
+}

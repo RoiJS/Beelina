@@ -10,8 +10,11 @@ import { authCredentialsSelector, errorSelector } from './store/selectors';
 import * as LoginActions from './store/actions';
 import { AppVersionService } from '../_services/app-version.service';
 import { AuthService } from '../_services/auth.service';
+import { NetworkService } from '../_services/network.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 import { StorageService } from '../_services/storage.service';
+import { UserAccountService } from '../_services/user-account.service';
+import { UIService } from '../_services/ui.service';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
@@ -22,7 +25,6 @@ import {
   PermissionLevelEnum,
 } from '../_enum/permission-level.enum';
 import { SharedComponent } from '../shared/components/shared/shared.component';
-import { UIService } from '../_services/ui.service';
 
 @Component({
   selector: 'app-auth-module',
@@ -36,10 +38,12 @@ export class AuthComponent extends SharedComponent implements OnInit {
   appVersionService = inject(AppVersionService);
   formBuilder = inject(FormBuilder);
   router = inject(Router);
+  networkService = inject(NetworkService);
   notificationService = inject(NotificationService);
   storageService = inject(StorageService);
   store = inject(Store<AppStateInterface>);
   translateService = inject(TranslateService);
+  userAccountService = inject(UserAccountService);
 
   constructor(
     protected override uiService: UIService
@@ -53,12 +57,18 @@ export class AuthComponent extends SharedComponent implements OnInit {
   }
 
   onSubmit() {
+    if (!this.networkService.isOnline.value) {
+      this.notificationService.openErrorNotification(
+        this.translateService.instant("AUTH_PAGE.ERROR_MESSAGES.NO_NETWORK")
+      );
+      return;
+    }
+
     const company = this.authForm.get('company').value;
 
     if (this._authForm.valid) {
       this._isLoading = true;
       this.store.dispatch(LoginActions.resetLoginCredentials());
-
       this.authService.checkCompany(company).subscribe({
         next: (client: ClientInformationResult) => {
           this.authService.company.next(client.name);
@@ -72,9 +82,13 @@ export class AuthComponent extends SharedComponent implements OnInit {
 
           this.store.pipe(select(authCredentialsSelector)).subscribe((auth) => {
             if (auth.accessToken) {
-              this.router.navigate([this.getDefaultLandingPage()], {
-                replaceUrl: true,
-              });
+              this.userAccountService
+                .getUserSetting(this.authService.userId)
+                .subscribe(() => {
+                  this.router.navigate([this.getDefaultLandingPage()], {
+                    replaceUrl: true,
+                  });
+                });
             }
           });
 

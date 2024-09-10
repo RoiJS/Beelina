@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { StorageService } from './storage.service';
 
@@ -21,6 +21,8 @@ import {
 import { FilterAndSortComponent } from '../shared/ui/filter-and-sort/filter-and-sort.component';
 import { BaseDataSource } from '../_models/datasources/base.datasource';
 
+import { LocalOrdersDbService } from './local-db/local-orders-db.service';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -42,6 +44,8 @@ export class BaseFilterAndSortService<T> {
   >;
 
   protected _bottomSheet: MatBottomSheet;
+
+  protected localOrdersDbService = inject(LocalOrdersDbService);
 
   constructor(
     protected storageService: StorageService,
@@ -129,6 +133,7 @@ export class BaseFilterAndSortService<T> {
           this.storageService.storeString(this.sortOrderProp, data.sortOrder);
 
           this.resetFilter();
+          this.localOrdersDbService.reset();
           this._dataSource.fetchData();
         }
       );

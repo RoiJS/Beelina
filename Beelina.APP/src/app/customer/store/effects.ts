@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, from, map, of, switchMap } from 'rxjs';
 
 import * as CustomerActions from './actions';
 
-import { CustomerStoreService } from 'src/app/_services/customer-store.service';
 import { CustomerStore } from 'src/app/_models/customer-store';
+import { CustomerStoreService } from 'src/app/_services/customer-store.service';
+import { LocalCustomerStoresDbService } from 'src/app/_services/local-db/local-customer-stores-db.service';
+import { NetworkService } from 'src/app/_services/network.service';
 
 @Injectable()
 export class CustomerEffects {
@@ -76,6 +78,26 @@ export class CustomerEffects {
     this.actions$.pipe(
       ofType(CustomerActions.getAllCustomerStoreAction),
       switchMap(() => {
+
+        if (!this.networkService.isOnline.value) {
+          return from(this.localCustomerStoresDbService.getMyLocalCustomerStores()).pipe(
+            map((customerStores: Array<CustomerStore>) => {
+              return CustomerActions.getCustomerStoreActionSuccess({
+                customers: customerStores,
+                endCursor: null,
+                hasNextPage: false,
+              });
+            }),
+            catchError((error) =>
+              of(
+                CustomerActions.getCustomerStoreActionError({
+                  error: error.message,
+                })
+              )
+            )
+          );
+        }
+
         return this.customerStoreService.getAllCustomerStores().pipe(
           map((customerStores: Array<CustomerStore>) => {
             return CustomerActions.getCustomerStoreActionSuccess({
@@ -97,6 +119,8 @@ export class CustomerEffects {
   );
   constructor(
     private actions$: Actions,
-    private customerStoreService: CustomerStoreService
-  ) {}
+    private customerStoreService: CustomerStoreService,
+    private localCustomerStoresDbService: LocalCustomerStoresDbService,
+    private networkService: NetworkService
+  ) { }
 }

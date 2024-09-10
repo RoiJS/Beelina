@@ -10,9 +10,9 @@ export const initializeProductTransactionsSuccess = createAction(
   props<{ productTransactions: Array<ProductTransaction> }>()
 );
 
-export const getProductTransactionsFromServer = createAction(
-  '[Transaction] Get Product Transactions From Server',
-  props<{ transactionId: number }>()
+export const getProductTransactions = createAction(
+  '[Transaction] Get Product Transactions',
+  props<{ transactionId: number; isLocalTransaction: boolean; }>()
 );
 
 export const initializeTransactionDetails = createAction(

@@ -30,6 +30,7 @@ export class Transaction extends Entity implements IModelNode {
   public total: number;
   public badOrderAmount: number = 0;
   public status: TransactionStatusEnum;
+  public isLocal: boolean;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
@@ -95,6 +96,7 @@ export class ProductTransaction extends Entity implements IModelNode {
   public status: PaymenStatusEnum;
   public product: Product;
   public productTransactionQuantityHistory: Array<ProductTransactionQuantityHistory>;
+
 
   constructor() {
     super();

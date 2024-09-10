@@ -12,11 +12,13 @@ import { ProductTransaction } from 'src/app/_models/transaction';
 import { productTransactionsSelector } from '../add-to-cart-product/store/selectors';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import { StorageService } from 'src/app/_services/storage.service';
 import { AuthService } from 'src/app/_services/auth.service';
-import { ProductService } from 'src/app/_services/product.service';
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { LocalProductsDbService } from 'src/app/_services/local-db/local-products-db.service';
+import { NetworkService } from 'src/app/_services/network.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { ProductService } from 'src/app/_services/product.service';
+import { StorageService } from 'src/app/_services/storage.service';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
@@ -38,6 +40,8 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
     private authService: AuthService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
+    private localProductsDbService: LocalProductsDbService,
+    private networkService: NetworkService,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
     private storageService: StorageService,
@@ -78,11 +82,19 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
         })
     );
 
-    this.productService
-      .getProductDetailList(this.authService.userId)
-      .subscribe((productList: Array<Product>) => {
-        this._productList = productList;
-      });
+    if (this.networkService.isOnline.value) {
+      this.productService
+        .getProductDetailList(this.authService.userId)
+        .subscribe((productList: Array<Product>) => {
+          this._productList = productList;
+        });
+    } else {
+      this.localProductsDbService
+        .getMyLocalProducts('', 0, 0, [])
+        .then((data) => {
+          this._productList = data.products;
+        });
+    }
 
     this._loadingLabel = this.translateService.instant('TEXT_ORDER_DIALOG.CONFIRM_ORDERS_DIALOG.LOADING_MESSAGE');
   }
@@ -94,14 +106,25 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   refreshList() {
-    this.productService
-      .getProductDetailList(this.authService.userId)
-      .subscribe((productList: Array<Product>) => {
-        this.notificationService.openSuccessNotification(this.translateService.instant(
-          'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
-        ));
-        this._productList = productList;
-      });
+    if (this.networkService.isOnline.value) {
+      this.productService
+        .getProductDetailList(this.authService.userId)
+        .subscribe((productList: Array<Product>) => {
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+          ));
+          this._productList = productList;
+        });
+    } else {
+      this.localProductsDbService
+        .getMyLocalProducts('', 0, 0, [])
+        .then((data) => {
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+          ));
+          this._productList = data.products;
+        });
+    }
   }
 
   setOrder() {

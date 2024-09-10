@@ -99,6 +99,104 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
+    public async Task<List<Transaction>> RegisterTransactions(
+            [Service] ITransactionRepository<Transaction> transactionRepository,
+            [Service] ICurrentUserService currentUserService,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IMapper mapper,
+            List<TransactionInput> transactionInputs)
+    {
+
+      List<Transaction> savedTransactions = [];
+      transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+      foreach (var transactionInput in transactionInputs)
+      {
+        try
+        {
+          var transactionFromRepo = (await transactionRepository.GetTransaction(transactionInput.Id)).Transaction;
+
+          if (transactionFromRepo == null)
+          {
+            transactionFromRepo = mapper.Map<Transaction>(transactionInput);
+          }
+          else
+          {
+            mapper.Map(transactionInput, transactionFromRepo);
+          }
+
+          var updatedProductTransactions = mapper.Map<List<ProductTransaction>>(transactionInput.ProductTransactionInputs);
+
+          updatedProductTransactions.ForEach(t =>
+          {
+            var productQuantityHistories = new List<ProductTransactionQuantityHistory>();
+
+            if (t.Id > 0)
+            {
+              productQuantityHistories = transactionFromRepo
+                            .ProductTransactions
+                            .Where(pt => pt.ProductId == t.ProductId)
+                            .Select(pt => pt.ProductTransactionQuantityHistory)
+                            .First();
+
+              var productTransactionFromInput = transactionInput
+                            .ProductTransactionInputs
+                            .Where(pt => pt.ProductId == t.ProductId)
+                            .First();
+
+              if (productTransactionFromInput.CurrentQuantity != productTransactionFromInput.Quantity)
+              {
+                productQuantityHistories.Add(new ProductTransactionQuantityHistory
+                {
+                  ProductTransactionId = t.Id,
+                  Quantity = productTransactionFromInput.CurrentQuantity
+                });
+              }
+            }
+
+            t.Status = !transactionInput.Paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+
+            if (productQuantityHistories.Count > 0)
+            {
+              t.ProductTransactionQuantityHistory = productQuantityHistories;
+            }
+          });
+
+          var deletedProductTransactions = transactionFromRepo.ProductTransactions
+              .Where(ptRepo => !transactionInput.ProductTransactionInputs.Any(ptInput => ptInput.Id == ptRepo.Id))
+              .ToList();
+
+          transactionFromRepo.ProductTransactions = updatedProductTransactions;
+
+          // Register Payment
+          if (transactionInput.Paid &&
+            transactionInput.Status == TransactionStatusEnum.Confirmed &&
+            transactionFromRepo.Payments.Count == 0)
+          {
+            var newPayment = new Payment();
+            newPayment.Amount = transactionFromRepo.NetTotal;
+            newPayment.PaymentDate = transactionFromRepo.TransactionDate
+                        .AddHours(DateTime.Now.Hour)
+                        .AddMinutes(DateTime.Now.Minute)
+                        .AddSeconds(DateTime.Now.Second);
+            newPayment.Notes = "Automatic Payment Registration";
+            transactionFromRepo.Payments.Add(newPayment);
+          }
+
+          await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
+
+          savedTransactions.Add(transactionFromRepo);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"Failed to save order: {ex.Message}");
+        }
+      }
+
+      return savedTransactions;
+    }
+
+    [Authorize]
     [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
     [UseProjection]
     [UseFiltering]
@@ -333,9 +431,9 @@ namespace Beelina.API.Types.Query
       var textOrdersArray = textOrders.Split('\n');
       var productTransactionsDto = new List<ProductTransactionDto>();
 
-      foreach (var texrOrder in textOrdersArray)
+      foreach (var textOrder in textOrdersArray)
       {
-        var textOrderLines = texrOrder.ToLower().Split("*");
+        var textOrderLines = textOrder.ToLower().Split("*");
 
         if (textOrderLines.Length > 1)
         {
