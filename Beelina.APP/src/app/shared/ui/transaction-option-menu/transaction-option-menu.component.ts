@@ -17,7 +17,7 @@ import * as TransactionDateActions from '../../../transaction-history/store/acti
 import { Transaction } from 'src/app/_models/transaction';
 import { BaseComponent } from '../../components/base-component/base.component';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
-import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
+import { NetworkService } from 'src/app/_services/network.service';
 
 @Component({
   selector: 'app-transaction-option-menu',
@@ -38,6 +38,7 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
     private dialogService: DialogService,
     private localOrdersDbService: LocalOrdersDbService,
     private notificationService: NotificationService,
+    private networkService: NetworkService,
     private router: Router,
     private store: Store<AppStateInterface>,
     private transactionService: TransactionService,
@@ -53,7 +54,7 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
         });
     } else {
       this.localOrdersDbService
-        .getMyLocalOrders(TransactionStatusEnum.DRAFT, [this.data.transaction.id])
+        .getMyLocalOrders(this.data.transaction.status, [this.data.transaction.id])
         .then((transaction: Array<Transaction>) => {
           this.transaction.set(transaction[0]);
         });
@@ -121,5 +122,28 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
           }
         }
       });
+  }
+
+  async syncLocalOrder() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.TITLE"),
+        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.CONFIRM_MESSAGE"),
+      )
+      .subscribe(async (result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          await this.localOrdersDbService.saveLocalOrdersToServer(this.data.transaction.status, [this.data.transaction.id]);
+
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            "DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.SUCCESS_MESSAGE"
+          ));
+
+          this._bottomSheetRef.dismiss(true);
+        }
+      });
+  }
+
+  get isOnline() {
+    return this.networkService.isOnline.value;
   }
 }

@@ -814,6 +814,10 @@
       "LABEL": "Register Payment",
       "DESCRIPTIONS": "Register payment for the selected order"
     },
+    "SYNC_ORDER": {
+      "LABEL": "Sync Order",
+      "DESCRIPTIONS": "Sync offline order to server"
+    },
     "DELETE_TRANSACTION_BY_DATE_DIALOG": {
       "TITLE": "Delete Orders",
       "CONFIRM": "This will delete all orders for the selected date(s). Are you really sure to proceed?",
