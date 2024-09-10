@@ -45,7 +45,7 @@ namespace Beelina.API.Types.Mutations
                     throw new UsernameAlreadyExistsException(userAccountInput.Username);
 
                 var userToCreate = mapper.Map<UserAccount>(userAccountInput);
-
+                userToCreate.UserSetting = new UserSetting();
                 userAccountFromRepo = await userAccountRepository.Register(userToCreate, userAccountInput.NewPassword);
             }
             else

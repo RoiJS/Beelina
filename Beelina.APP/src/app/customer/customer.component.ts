@@ -11,6 +11,7 @@ import { isLoadingSelector } from './store/selectors';
 
 import { CustomerStoreService } from '../_services/customer-store.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { LocalCustomerStoresDbService } from '../_services/local-db/local-customer-stores-db.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 
 import { ButtonOptions } from '../_enum/button-options.enum';
@@ -34,9 +35,10 @@ export class CustomerComponent
     private activatedRoute: ActivatedRoute,
     private customerStoreService: CustomerStoreService,
     private dialogService: DialogService,
+    private localCustomerStoresDbService: LocalCustomerStoresDbService,
+    private notificationService: NotificationService,
     private router: Router,
     private store: Store<AppStateInterface>,
-    private notificationService: NotificationService,
     private translateService: TranslateService
   ) {
     super();
@@ -54,7 +56,7 @@ export class CustomerComponent
   }
 
   openDetails(id: number) {
-    this.router.navigate([`barangays/${this._barangay}/${id}`]);
+    this.router.navigate([`customer-accounts/${this._barangay}/${id}`]);
   }
 
   deleteStore(storeId: number) {
@@ -71,12 +73,13 @@ export class CustomerComponent
         if (result === ButtonOptions.YES) {
           this.customerStoreService.deleteCustomer(storeId).subscribe({
             next: () => {
+              this.localCustomerStoresDbService.deleteLocalCustomerStore(storeId);
               this.notificationService.openSuccessNotification(this.translateService.instant(
                 'CUSTOMERS_PAGE.DELETE_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
               ));
               this.store.dispatch(CustomerStoreActions.resetCustomerState());
               this.store.dispatch(
-                CustomerStoreActions.getCustomerStoreAction()
+                CustomerStoreActions.getCustomerStorePerBarangayAction({ barangayName: this._barangay })
               );
             },
             error: () => {
@@ -90,7 +93,7 @@ export class CustomerComponent
   }
 
   addCustomer() {
-    this.router.navigate([`/barangays/${this._barangay}/add-customer`]);
+    this.router.navigate([`/customer-accounts/${this._barangay}/add-customer`]);
   }
 
   onSearch(filterKeyword: string) {
@@ -110,7 +113,7 @@ export class CustomerComponent
   }
 
   onGoBack() {
-    this.router.navigate([`/barangays`]);
+    this.router.navigate([`/customer-accounts`]);
   }
 
   get dataSource(): CustomerStoreDataSource {

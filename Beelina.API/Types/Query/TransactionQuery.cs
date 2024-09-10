@@ -6,6 +6,7 @@ using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
 using Beelina.LIB.Models.Filters;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Beelina.API.Types.Query
 {
@@ -95,6 +96,104 @@ namespace Beelina.API.Types.Query
       await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
 
       return transactionFromRepo;
+    }
+
+    [Authorize]
+    public async Task<List<Transaction>> RegisterTransactions(
+            [Service] ITransactionRepository<Transaction> transactionRepository,
+            [Service] ICurrentUserService currentUserService,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IMapper mapper,
+            List<TransactionInput> transactionInputs)
+    {
+
+      List<Transaction> savedTransactions = [];
+      transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+      foreach (var transactionInput in transactionInputs)
+      {
+        try
+        {
+          var transactionFromRepo = (await transactionRepository.GetTransaction(transactionInput.Id)).Transaction;
+
+          if (transactionFromRepo == null)
+          {
+            transactionFromRepo = mapper.Map<Transaction>(transactionInput);
+          }
+          else
+          {
+            mapper.Map(transactionInput, transactionFromRepo);
+          }
+
+          var updatedProductTransactions = mapper.Map<List<ProductTransaction>>(transactionInput.ProductTransactionInputs);
+
+          updatedProductTransactions.ForEach(t =>
+          {
+            var productQuantityHistories = new List<ProductTransactionQuantityHistory>();
+
+            if (t.Id > 0)
+            {
+              productQuantityHistories = transactionFromRepo
+                            .ProductTransactions
+                            .Where(pt => pt.ProductId == t.ProductId)
+                            .Select(pt => pt.ProductTransactionQuantityHistory)
+                            .First();
+
+              var productTransactionFromInput = transactionInput
+                            .ProductTransactionInputs
+                            .Where(pt => pt.ProductId == t.ProductId)
+                            .First();
+
+              if (productTransactionFromInput.CurrentQuantity != productTransactionFromInput.Quantity)
+              {
+                productQuantityHistories.Add(new ProductTransactionQuantityHistory
+                {
+                  ProductTransactionId = t.Id,
+                  Quantity = productTransactionFromInput.CurrentQuantity
+                });
+              }
+            }
+
+            t.Status = !transactionInput.Paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+
+            if (productQuantityHistories.Count > 0)
+            {
+              t.ProductTransactionQuantityHistory = productQuantityHistories;
+            }
+          });
+
+          var deletedProductTransactions = transactionFromRepo.ProductTransactions
+              .Where(ptRepo => !transactionInput.ProductTransactionInputs.Any(ptInput => ptInput.Id == ptRepo.Id))
+              .ToList();
+
+          transactionFromRepo.ProductTransactions = updatedProductTransactions;
+
+          // Register Payment
+          if (transactionInput.Paid &&
+            transactionInput.Status == TransactionStatusEnum.Confirmed &&
+            transactionFromRepo.Payments.Count == 0)
+          {
+            var newPayment = new Payment();
+            newPayment.Amount = transactionFromRepo.NetTotal;
+            newPayment.PaymentDate = transactionFromRepo.TransactionDate
+                        .AddHours(DateTime.Now.Hour)
+                        .AddMinutes(DateTime.Now.Minute)
+                        .AddSeconds(DateTime.Now.Second);
+            newPayment.Notes = "Automatic Payment Registration";
+            transactionFromRepo.Payments.Add(newPayment);
+          }
+
+          await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
+
+          savedTransactions.Add(transactionFromRepo);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"Failed to save order: {ex.Message}");
+        }
+      }
+
+      return savedTransactions;
     }
 
     [Authorize]
@@ -190,36 +289,135 @@ namespace Beelina.API.Types.Query
     }
 
     [Authorize]
-    public async Task<List<InsufficientProductQuantity>> ValidateProductionTransactionsQuantities(
+    public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateMutlipleTransactionsProductQuantities(
+      [Service] IProductRepository<Product> productRepository,
+      [Service] ITransactionRepository<Transaction> transactionRepository,
+      [Service] IHttpContextAccessor httpContextAccessor,
+      [Service] IMapper mapper,
+      List<int> transactionIds,
+      int userAccountId
+    )
+    {
+      var transactions = await transactionRepository.GetTransactions(transactionIds);
+      var transactionInputs = mapper.Map<List<TransactionInput>>(transactions);
+      transactionInputs.ForEach(transactionInput =>
+      {
+        var transaction = transactions.Where(t => t.Id == transactionInput.Id).FirstOrDefault();
+        if (transaction is not null)
+        {
+          transactionInput.ProductTransactionInputs = mapper.Map<List<ProductTransactionInput>>(transaction.ProductTransactions);
+        }
+      });
+
+      var invalidProductTransactionOverallQuantities = await ValidateProductionTransactionsQuantities(
+                                                        productRepository,
+                                                        httpContextAccessor,
+                                                        transactionInputs,
+                                                        userAccountId
+                                                      );
+
+      return invalidProductTransactionOverallQuantities;
+    }
+
+    [Authorize]
+    public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductionTransactionsQuantities(
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
-            List<ProductTransactionInput> productTransactionsInputs,
+            List<TransactionInput> transactionInputs,
             int userAccountId)
     {
       var insufficientProductQuantities = new List<InsufficientProductQuantity>();
       var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
 
-      foreach (Product product in productsFromRepo)
-      {
-        foreach (ProductTransactionInput productTransaction in productTransactionsInputs)
-        {
-          if (product.Id == productTransaction.ProductId && productTransaction.Quantity > product.StockQuantity)
-          {
-            var insufficientProductQuantity = new InsufficientProductQuantity
-            {
-              ProductId = product.Id,
-              ProductName = product.Name,
-              ProductCode = product.Code,
-              SelectedQuantity = productTransaction.Quantity,
-              CurrentQuantity = product.StockQuantity
-            };
+      List<ProductTransactionOverallQuantities> allProductTransactionOverallQuantities = [];
+      List<ProductTransactionOverallQuantities> invalidProductTransactionOverallQuantities = [];
 
-            insufficientProductQuantities.Add(insufficientProductQuantity);
+      foreach (TransactionInput transactionInput in transactionInputs)
+      {
+        foreach (ProductTransactionInput productTransaction in transactionInput.ProductTransactionInputs)
+        {
+          var productTransactionOverallQuantities = allProductTransactionOverallQuantities.Where(p => p.ProductId == productTransaction.ProductId).FirstOrDefault();
+
+          if (productTransactionOverallQuantities is null)
+          {
+            allProductTransactionOverallQuantities.Add(new ProductTransactionOverallQuantities
+            {
+              ProductId = productTransaction.ProductId,
+              OverallQuantity = productTransaction.Quantity,
+              ProductTransactionOverallQuantitiesTransactions = [new ProductTransactionOverallQuantitiesTransaction { TransactionId = transactionInput.Id, TransactionCode = transactionInput.InvoiceNo }]
+            });
+          }
+          else
+          {
+            productTransactionOverallQuantities.OverallQuantity += productTransaction.Quantity;
+            productTransactionOverallQuantities.ProductTransactionOverallQuantitiesTransactions.Add(new ProductTransactionOverallQuantitiesTransaction
+            {
+              TransactionId = transactionInput.Id,
+              TransactionCode = transactionInput.InvoiceNo
+            });
           }
         }
       }
 
-      return insufficientProductQuantities;
+      foreach (var productTransactionOverallQuantity in allProductTransactionOverallQuantities)
+      {
+        var product = productsFromRepo.Where(p => p.Id == productTransactionOverallQuantity.ProductId).FirstOrDefault();
+
+        if (product is not null)
+        {
+          if (product.Id == productTransactionOverallQuantity.ProductId && product.StockQuantity < productTransactionOverallQuantity.OverallQuantity)
+          {
+            productTransactionOverallQuantity.ProductCode = product.Code;
+            productTransactionOverallQuantity.ProductName = product.Name;
+            productTransactionOverallQuantity.CurrentQuantity = product.StockQuantity;
+            invalidProductTransactionOverallQuantities.Add(productTransactionOverallQuantity);
+          }
+        }
+      }
+
+      List<InvalidProductTransactionOverallQuantitiesTransaction> invalidProductTransactions = [];
+
+      foreach (var invalid in invalidProductTransactionOverallQuantities)
+      {
+        foreach (var transaction in invalid.ProductTransactionOverallQuantitiesTransactions)
+        {
+          var invalidProductTransaction = invalidProductTransactions.Where(i => i.TransactionId == transaction.TransactionId).FirstOrDefault();
+
+          if (invalidProductTransaction is null)
+          {
+            var invalidPT = new InvalidProductTransactionOverallQuantitiesTransaction
+            {
+              TransactionId = transaction.TransactionId,
+              TransactionCode = transaction.TransactionCode
+            };
+            invalidPT.InvalidProductTransactionOverallQuantities.Add(new InvalidProductTransactionOverallQuantities
+            {
+              ProductId = invalid.ProductId,
+              ProductCode = invalid.ProductCode,
+              ProductName = invalid.ProductName,
+              CurrentQuantity = invalid.CurrentQuantity,
+              OverallQuantity = invalid.OverallQuantity,
+            });
+
+            invalidProductTransactions.Add(invalidPT);
+          }
+          else
+          {
+            invalidProductTransaction.InvalidProductTransactionOverallQuantities.Add(
+              new InvalidProductTransactionOverallQuantities
+              {
+                ProductId = invalid.ProductId,
+                ProductCode = invalid.ProductCode,
+                ProductName = invalid.ProductName,
+                CurrentQuantity = invalid.CurrentQuantity,
+                OverallQuantity = invalid.OverallQuantity
+              }
+            );
+          }
+        }
+      }
+
+      return invalidProductTransactions;
     }
 
     [Authorize]
@@ -227,15 +425,15 @@ namespace Beelina.API.Types.Query
           [Service] IProductRepository<Product> productRepository,
           [Service] IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
           [Service] ICurrentUserService currentUserService,
-            string textOrders)
+          string textOrders)
     {
 
       var textOrdersArray = textOrders.Split('\n');
       var productTransactionsDto = new List<ProductTransactionDto>();
 
-      foreach (var texrOrder in textOrdersArray)
+      foreach (var textOrder in textOrdersArray)
       {
-        var textOrderLines = texrOrder.ToLower().Split("*");
+        var textOrderLines = textOrder.ToLower().Split("*");
 
         if (textOrderLines.Length > 1)
         {

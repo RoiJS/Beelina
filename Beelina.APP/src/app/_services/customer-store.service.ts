@@ -25,6 +25,11 @@ const UPDATE_STORE_MUTATION = gql`
       store {
         id
         name
+        address
+        emailAddress
+        outletType
+        paymentMethodId
+        barangayId
       }
     }
   }
@@ -183,7 +188,7 @@ export class CustomerStoreService {
       .pipe(
         map((result: MutationResult<{ updateStore: IStoreOutput }>) => {
           const output = result.data.updateStore;
-          const payload = output.store;
+          const payload = <CustomerStore>output.store;
           const errors = output.errors;
 
           if (payload) {

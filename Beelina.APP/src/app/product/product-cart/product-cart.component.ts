@@ -10,6 +10,7 @@ import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-shee
 import { barangaysSelector } from 'src/app/barangays/store/selectors';
 import { customerStoresSelector } from 'src/app/customer/store/selectors';
 import {
+  isLoadingSelector,
   productTransactionsSelector,
   transactionsSelector,
 } from '../add-to-cart-product/store/selectors';
@@ -19,22 +20,24 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { InvoicePrintService } from 'src/app/_services/print/invoice-print.service';
+import { LocalOrdersDbService } from 'src/app/_services/local-db/local-orders-db.service';
+import { NetworkService } from 'src/app/_services/network.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { StorageService } from 'src/app/_services/storage.service';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 
 import { AddToCartProductComponent } from '../add-to-cart-product/add-to-cart-product.component';
 import { AgreementConfirmationComponent } from './agreement-confirmation/agreement-confirmation.component';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
+import { PrintOptionDialogComponent } from './print-option-dialog/print-option-dialog.component';
 import { SelectNewProductComponent } from './select-new-product/select-new-product.component';
 
-import * as html2pdf from 'html2pdf.js';
-
 import {
-  InvoiceData,
   TransactionDto,
-  TransactionService,
+  TransactionService
 } from 'src/app/_services/transaction.service';
 
 import * as BarangayActions from '../../barangays/store/actions';
@@ -51,13 +54,13 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
 import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
+import { PrintForSettingsEnum } from 'src/app/_enum/print-for-settings.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { Barangay } from 'src/app/_models/barangay';
-import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+import { InvalidProductTransactionOverallQuantitiesTransactions } from 'src/app/_models/insufficient-product-quantity';
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { PaymentMethod } from 'src/app/_models/payment-method';
-import { User } from 'src/app/_models/user.model';
 
 @Component({
   selector: 'app-product-cart',
@@ -85,10 +88,12 @@ export class ProductCartComponent
   private _saveDraftSuccessMessage = signal<string>('');
   private _saveDraftErrorMessage = signal<string>('');
   private _dialogRef: MatBottomSheetRef<AgreementConfirmationComponent>;
+  private _dialogPrintOptionRef: MatBottomSheetRef<PrintOptionDialogComponent>;
 
   barangayOptions = signal<Array<Barangay>>([]);
   dateUpdated = signal<string>('');
   updatedBy = signal<string>('');
+  isLocalTransaction = signal<boolean>(false);
   paymentMethodOptions = signal<Array<PaymentMethod>>([]);
   productTransactions = signal<Array<ProductTransaction>>([]);
   transaction = signal<Transaction>(new Transaction());
@@ -100,13 +105,17 @@ export class ProductCartComponent
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);
   formBuilder = inject(FormBuilder);
+  invoicePrintService = inject(InvoicePrintService);
+  localDraftOrdersDbService = inject(LocalOrdersDbService);
   notificationService = inject(NotificationService);
+  networkService = inject(NetworkService);
   productService = inject(ProductService);
   router = inject(Router);
   store = inject(Store<AppStateInterface>);
   storageService = inject(StorageService);
   transactionService = inject(TransactionService);
   translateService = inject(TranslateService);
+  userService = inject(UserAccountService);
 
   isAdmin = signal<boolean>(false);
 
@@ -118,12 +127,17 @@ export class ProductCartComponent
     return this._transactionId() > 0 && this.transaction().status === TransactionStatusEnum.DRAFT;
   });
 
+  isForLocalTransaction = computed(() => {
+    return (!navigator.onLine) || (this._transactionId() > 0 && this.isLocalTransaction());
+  });
+
   constructor() {
     super();
 
-    const routerData = <{ dateUpdated: string; updatedBy: string }>this.router.getCurrentNavigation()?.extras?.state;
+    const routerData = <{ dateUpdated: string; updatedBy: string; isLocalTransaction: boolean }>this.router.getCurrentNavigation()?.extras?.state;
     this.dateUpdated.set(routerData?.dateUpdated);
     this.updatedBy.set(routerData?.updatedBy);
+    this.isLocalTransaction.set(routerData?.isLocalTransaction);
 
     this._currentLoggedInUser = this.authService.user.value;
     this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));
@@ -142,6 +156,8 @@ export class ProductCartComponent
     this._discountForm = this.formBuilder.group({
       discount: [0],
     });
+
+    this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
   ngOnInit() {
@@ -156,13 +172,12 @@ export class ProductCartComponent
     this._transactionId.set(+this.activatedRoute.snapshot.paramMap.get('id'));
 
     if (this._transactionId() > 0) {
-      this._isLoading = true;
       this.store.dispatch(
-        ProductTransactionActions.getProductTransactionsFromServer({
+        ProductTransactionActions.getProductTransactions({
           transactionId: this._transactionId(),
+          isLocalTransaction: this.isLocalTransaction(),
         })
       );
-      this._isLoading = false;
     } else {
       this.store.dispatch(
         ProductTransactionActions.initializeProductTransactions()
@@ -378,45 +393,80 @@ export class ProductCartComponent
         )
         .subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
-            this._isLoading = true;
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: true,
+              })
+            );
             this.loaderLayoutComponent().label = this._saveDraftLoadingMessage();
-            this._subscription.add(this.transactionService
-              .registerTransaction(transaction)
-              .subscribe({
-                next: () => {
-                  this._isLoading = false;
-                  this.notificationService.openSuccessNotification(this._saveDraftSuccessMessage());
-                  this.store.dispatch(
-                    ProductTransactionActions.setSaveOrderLoadingState({
-                      state: false,
-                    })
-                  );
-                  this.storageService.remove('productTransactions');
-                  this.store.dispatch(
-                    ProductTransactionActions.resetProductTransactionState()
-                  );
 
-                  if (this._transactionId() === 0) {
-                    this.router.navigate(['/product-catalogue']);
-                  } else {
-                    this.router.navigate(['/draft-transactions']);
-                  }
-                },
-
-                error: () => {
-                  this._isLoading = false;
-                  this.notificationService.openErrorNotification(this._saveDraftErrorMessage());
-
-                  this.store.dispatch(
-                    ProductTransactionActions.setSaveOrderLoadingState({
-                      state: false,
-                    })
-                  );
-                },
-              }));
+            if (this.isForLocalTransaction()) {
+              this.saveLocalDraftOrder(transaction);
+            } else {
+              this.saveDraftOrderToServer(transaction);
+            }
           }
         });
     }
+  }
+
+  async syncLocalDraftOrder() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.TITLE"),
+        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.CONFIRM_MESSAGE"),
+      )
+      .subscribe(async (result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: true,
+            })
+          );
+          this.loaderLayoutComponent().label = this._saveDraftLoadingMessage();
+
+          // Make sure to save changes first before syncing.
+          const transaction = new TransactionDto();
+          transaction.id = this._transactionId();
+          transaction.storeId = this._selectedCustomer().id;
+          transaction.status = TransactionStatusEnum.DRAFT;
+          transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+          transaction.paid = this._orderForm.get('paid').value;
+          transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+          transaction.discount = this._discountForm.get('discount').value;
+          transaction.transactionDate = DateFormatter.format(
+            this._orderForm.get('transactionDate').value
+          );
+          transaction.dueDate = DateFormatter.format(
+            this._orderForm.get('dueDate').value
+          );
+          transaction.productTransactions = this.productTransactions();
+
+          await this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
+          await this.localDraftOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.DRAFT, [this._transactionId()]);
+
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            "DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.SUCCESS_MESSAGE"
+          ));
+
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: false,
+            })
+          );
+
+          this.storageService.remove('productTransactions');
+          this.store.dispatch(
+            ProductTransactionActions.resetProductTransactionState()
+          );
+
+          if (this._transactionId() === 0) {
+            this.router.navigate(['/product-catalogue']);
+          } else {
+            this.router.navigate(['/draft-transactions']);
+          }
+        }
+      });
   }
 
   saveAsBadOrder() {
@@ -449,44 +499,18 @@ export class ProductCartComponent
         )
         .subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
-            this._isLoading = true;
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: true,
+              })
+            );
             this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.LOADING_MESSAGE');
-            this._subscription.add(this.transactionService.registerTransaction(transaction).subscribe({
-              next: () => {
-                this._isLoading = false;
-                this.notificationService.openSuccessNotification(this.translateService.instant(
-                  'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
-                ));
-                this.store.dispatch(
-                  ProductTransactionActions.setSaveOrderLoadingState({
-                    state: false,
-                  })
-                );
-                this.storageService.remove('productTransactions');
-                this.store.dispatch(
-                  ProductTransactionActions.resetProductTransactionState()
-                );
 
-                if (this._transactionId() === 0) {
-                  this.router.navigate(['/product-catalogue']);
-                } else {
-                  this.router.navigate(['/draft-transactions']);
-                }
-              },
-
-              error: () => {
-                this._isLoading = false;
-                this.notificationService.openErrorNotification(this.translateService.instant(
-                  'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.ERROR_MESSAGE'
-                ));
-
-                this.store.dispatch(
-                  ProductTransactionActions.setSaveOrderLoadingState({
-                    state: false,
-                  })
-                );
-              },
-            }));
+            if (this.isForLocalTransaction()) {
+              this.saveLocalBadOrder(transaction);
+            } else {
+              this.saveBadOrderToServer(transaction);
+            }
           }
         });
     }
@@ -503,19 +527,31 @@ export class ProductCartComponent
       .openConfirmation(title, confirmationMessage)
       .subscribe((result: ButtonOptions) => {
         if (result == ButtonOptions.YES) {
-          this._isLoading = true;
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: true,
+            })
+          );
           this.loaderLayoutComponent().label = loadingMessage;
           this.transactionService
             .markTransactionsAsPaid([this._transactionId()], paid)
             .subscribe({
               next: () => {
-                this._isLoading = false;
+                this.store.dispatch(
+                  ProductTransactionActions.setSaveOrderLoadingState({
+                    state: false,
+                  })
+                );
                 this.notificationService.openSuccessNotification(successMessage);
                 this.router.navigate(['/order-transactions']);
               },
 
               error: () => {
-                this._isLoading = false;
+                this.store.dispatch(
+                  ProductTransactionActions.setSaveOrderLoadingState({
+                    state: false,
+                  })
+                );
                 this.notificationService.openErrorNotification(errorMessage);
               },
             });
@@ -533,20 +569,48 @@ export class ProductCartComponent
     this._orderForm.markAllAsTouched();
     if (!this._orderForm.valid) return;
 
-    this._isLoading = true;
+    const transaction = new TransactionDto();
+    transaction.id = this._transactionId();
+    transaction.storeId = this._selectedCustomer().id;
+    transaction.status = this.transaction().status;
+    transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+    transaction.paid = this._orderForm.get('paid').value;
+    transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+    transaction.discount = this._discountForm.get('discount').value;
+    transaction.transactionDate = DateFormatter.format(
+      this._orderForm.get('transactionDate').value
+    );
+    transaction.dueDate = DateFormatter.format(
+      this._orderForm.get('dueDate').value
+    );
+    transaction.productTransactions = this.productTransactions();
+
+    this.store.dispatch(
+      ProductTransactionActions.setSaveOrderLoadingState({
+        state: true,
+      })
+    );
     this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
     this.productService
-      .validateProductionTransactionsQuantities(this.productTransactions())
+      .validateProductionTransactionsQuantities([transaction])
       .subscribe(
-        (insufficientProductQuantities: Array<InsufficientProductQuantity>) => {
-          this._isLoading = false;
-          if (insufficientProductQuantities.length > 0) {
+        (productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
+          console.log(productsWithInsufficientQuantities);
+
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: false,
+            })
+          );
+          if (productsWithInsufficientQuantities.length > 0) {
             let errorMessage = this.translateService.instant(
               'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
             );
 
-            insufficientProductQuantities.forEach((i) => {
-              errorMessage += `- <strong>(${i.productCode})</strong> ${i.productName} <br>`;
+            const products = productsWithInsufficientQuantities[0].invalidProductTransactionOverallQuantities;
+
+            products.forEach((i) => {
+              errorMessage += `<strong>(${i.productCode})</strong> ${i.productName} <br>`;
             });
 
             this.dialogService.openAlert(
@@ -609,13 +673,17 @@ export class ProductCartComponent
         )
         .subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
-            this._isLoading = true;
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: true,
+              })
+            );
             this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.LOADING_MESSAGE');
             this._subscription.add(this.transactionService
               .registerTransaction(transaction)
               .subscribe({
+
                 next: () => {
-                  this._isLoading = false;
                   this.notificationService.openSuccessNotification(this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.SUCCESS_MESSAGE'));
                   this.store.dispatch(
                     ProductTransactionActions.setSaveOrderLoadingState({
@@ -631,7 +699,6 @@ export class ProductCartComponent
                 },
 
                 error: () => {
-                  this._isLoading = false;
                   this.notificationService.openErrorNotification(this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.ERROR_MESSAGE'));
 
                   this.store.dispatch(
@@ -713,347 +780,28 @@ export class ProductCartComponent
   }
 
   printReceipt() {
-    this._isLoading = true;
-    this.transactionService
-      .getInvoiceData(this._transactionId())
-      .subscribe((data: InvoiceData) => {
-        this._isLoading = false;
-        const invoiceReceiptTemplate = this.constructReceiptTemplate(data);
+    this._dialogPrintOptionRef = this.bottomSheet.open(PrintOptionDialogComponent);
 
-        const options = {
-          margin: 0.8,
-          filename: 'Invoice.pdf',
-          image: { type: 'jpeg', quality: 1 },
-          html2canvas: { scale: 1 },
-          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf()
-          .from(invoiceReceiptTemplate)
-          .set(options)
-          .toPdf()
-          .output('blob')
-          .then((blob: Blob) => {
-            const url = URL.createObjectURL(blob);
-            const printWindow = window.open(url);
-            printWindow.focus();
-            printWindow.print();
-          });
-      });
-  }
-
-  constructReceiptTemplate(data: InvoiceData) {
-
-    const generalSettings = data.generalSettings;
-    const transaction = data.transaction.transaction;
-
-    const companyName = generalSettings.companyName;
-    const ownerName = generalSettings.ownerName;
-    const address = generalSettings.address;
-    const telephone = generalSettings.telephone;
-    const faxTelephone = generalSettings.faxTelephone;
-    const tin = generalSettings.tin;
-    const saleAgentName = (<User>transaction.createdBy).fullname;
-
-    const badOrderTemplate = transaction.badOrderAmount > 0 ? `
-      <div class="invoice-summary-amount-section__details">
-          <span class="property">Bad Order: </span>
-          <span class="value">${NumberFormatter.formatCurrency(data.transaction.badOrderAmount, false)}</span>
-      </div>
-    ` : '';
-
-    const discountTemplate = transaction.discount > 0 ? `
-      <div class="invoice-summary-amount-section__details">
-          <span class="property">Discount: </span>
-          <span class="value">${transaction.discount}%</span>
-      </div>
-    ` : '';
-
-    const telephoneNumberTemplate = telephone.length > 0 ? `Telephone: ${telephone};` : '';
-    const faxTelephoneNumberTemplate = faxTelephone.length > 0 ? `Fax tel: ${faxTelephone}` : '';
-    const tinTemplate = tin.length > 0 ? `TIN: ${tin}` : '';
-
-    const element = `
-            <!DOCTYPE html>
-            <html>
-              <body>
-                <div class="receipt-template">
-                    <div class="invoice-company-details-section">
-                        <div class="invoice-company-details-section__company-name">
-                            <span>${companyName}</span>
-                        </div>
-                        <div class="invoice-company-details-section__company-details">
-                            <span>${ownerName}</span>
-                            <span>${address}</span>
-                            <span>${telephoneNumberTemplate} ${faxTelephoneNumberTemplate}</span>
-                            <span>${tinTemplate}</span>
-                        </div>
-                        <div class="invoice-company-details-section__delivery-details">
-                            <div class="deliver-shipment-section">
-                                Deliver/Ship to: ${saleAgentName}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="invoice-tracking-section">
-                        <div class="invoice-tracking-section__content">
-                            <div class="invoice-tracking-property-transaction-no">
-                                Transaction No.
-                            </div>
-                            <div class="invoice-tracking-value-transaction-no">
-                                ${transaction.invoiceNo}
-                            </div>
-                            <div class="invoice-tracking-property-date">
-                                Date
-                            </div>
-                            <div class="invoice-tracking-value-date">
-                                ${DateFormatter.format(transaction.transactionDate, 'MM/DD/YYYY')}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="invoice-product-list-section">
-                        <table class="invoice-product-list-section__product-list-table">
-                            <thead>
-                                <tr>
-                                    <th class="product-description-column">Product Description</th>
-                                    <th class="product-quantity-column">Quantity</th>
-                                    <th class="product-unit-column">Unit</th>
-                                    <th class="product-unit-price-column">Unit Price</th>
-                                    <th class="product-amount-column">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              ${this.generateProductTransactionList(transaction.productTransactions)}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td class="footer-product-list-count">${transaction.productTransactions.length}</td>
-                                    <td class="footer-product-quantity-count">${transaction.productTransactions.reduce((acc, transaction) => acc + transaction.quantity, 0)}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="product-total-amount-column">${NumberFormatter.formatCurrency(transaction.total, false)}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div class="invoice-received-info-section">
-                        <div class="invoice-received-info-section__footer-text">
-                            ${generalSettings.invoiceFooterText}
-                        </div>
-                        <div class="invoice-received-info-section__footer-text-2">
-                            ${generalSettings.invoiceFooterText1}
-                        </div>
-                    </div>
-                    <div class="invoice-summary-amount-section">
-                        <div class="invoice-summary-amount-section__details">
-                            <span class="property">Vatable Amount: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.vatableAmount, false)}</span>
-                        </div>
-                        <div class="invoice-summary-amount-section__details">
-                            <span class="property">Value Added Tax: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.valueAddedTax, false)}</span>
-                        </div>
-                        <div class="invoice-summary-amount-section__details">
-                            <span class="property">Amount Sales: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.netTotal, false)}</span>
-                        </div>
-                        ${badOrderTemplate}
-                        ${discountTemplate}
-                        <div class="invoice-summary-amount-section__details invoice-summary-amount-section__total-payable-amount">
-                            <span class="property">Total Payable: </span>
-                            <span class="value">${NumberFormatter.formatCurrency(transaction.netTotal, false)}</span>
-                        </div>
-                    </div>
-                </div>
-              </body>
-            </html>
-
-            <style>
-              .receipt-template {
-                  display: grid;
-                  grid-template-columns: 1.8fr 1fr;
-                  grid-template-rows: 180px minmax(100px, auto) 200px;
-                  grid-template-areas: "invoice-company-details-section invoice-tracking-section" "invoice-product-list-section invoice-product-list-section" "invoice-received-info-section invoice-summary-amount-section";
-              }
-
-              .invoice-company-details-section {
-                  grid-area: invoice-company-details-section;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 1em;
-              }
-
-              .invoice-tracking-section {
-                  grid-area: invoice-tracking-section;
-              }
-
-              .invoice-tracking-section__content {
-                  display: grid;
-                  grid-template-columns: repeat(2, 1fr);
-                  grid-template-rows: repeat(2, 25px);
-                  grid-template-areas: "invoice-tracking-property-transaction-no invoice-tracking-value-transaction-no" "invoice-tracking-property-date invoice-tracking-value-date";
-                  font-size: 15px;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-property-transaction-no {
-                  grid-area: invoice-tracking-property-transaction-no;
-                  font-weight: bold;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-value-transaction-no {
-                  grid-area: invoice-tracking-value-transaction-no;
-                  text-align: right;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-property-date {
-                  grid-area: invoice-tracking-property-date;
-                  font-weight: bold;
-              }
-
-              .invoice-tracking-section__content .invoice-tracking-value-date {
-                  grid-area: invoice-tracking-value-date;
-                  text-align: right;
-              }
-
-              .invoice-product-list-section {
-                  grid-area: invoice-product-list-section;
-                  width: 100%;
-                  margin-bottom: 2em;
-              }
-
-              .invoice-company-details-section__company-name {
-                  font-size: 25px;
-                  font-weight: bold;
-              }
-
-              .invoice-company-details-section__company-details {
-                  display: flex;
-                  flex-direction: column;
-                  font-style: italic;
-              }
-
-              .invoice-company-details-section__delivery-details {
-                  flex: 1;
-                  width: 70%
-              }
-
-              .invoice-received-info-section {
-                  grid-area: invoice-received-info-section;
-                  width: 90%;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 1em;
-                  font-style: italic;
-                  font-weight: bold;
-              }
-
-              .invoice-received-info-section__footer-text {
-                  border: 1px solid;
-                  padding: 10px;
-              }
-
-              .invoice-received-info-section__footer-text-2 {
-                  border: 1px solid;
-                  padding: 10px;
-                  flex: 1;
-              }
-
-              .invoice-summary-amount-section {
-                  grid-area: invoice-summary-amount-section;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 0.8em;
-                  justify-content: end;
-                  font-size: 15px;
-              }
-
-              .invoice-summary-amount-section__details {
-                  display: flex;
-              }
-
-              .invoice-summary-amount-section__total-payable-amount {
-                  font-weight: bold;
-              }
-
-              .invoice-summary-amount-section__total-payable-amount .value {
-                  border: 1px solid;
-              }
-
-              .invoice-summary-amount-section__details .property {
-                  width: 150px;
-              }
-
-              .invoice-summary-amount-section__details .value {
-                  flex: 1;
-                  text-align: right;
-              }
-
-              .invoice-product-list-section__product-list-table {
-                  border-collapse: collapse;
-                  width: 100%;
-              }
-
-              .invoice-product-list-section__product-list-table .product-unit-column {
-                padding-left: 5px;
-              }
-
-              .invoice-product-list-section__product-list-table thead th {
-                  border-bottom: 2px solid black;
-                  border-top: 2px solid black;
-                  text-align: left;
-              }
-
-              .invoice-product-list-section__product-list-table tfoot {
-                  border-bottom: 2px solid black;
-                  border-top: 2px solid black;
-                  text-align: left;
-              }
-
-              .invoice-product-list-section__product-list-table td {
-                  padding: 0.3em 0 0.3em;
-              }
-
-              .invoice-product-list-section__product-list-table .product-quantity-column,
-              .invoice-product-list-section__product-list-table .product-unit-price-column,
-              .invoice-product-list-section__product-list-table .product-amount-column {
-                  text-align: right;
-              }
-
-              .invoice-product-list-section__product-list-table .footer-product-quantity-count {
-                  text-align: right;
-                  font-weight: bold;
-              }
-
-              .invoice-product-list-section__product-list-table .footer-product-list-count {
-                  text-align: center;
-                  font-weight: bold;
-              }
-
-              .invoice-product-list-section__product-list-table .product-total-amount-column {
-                  text-align: right;
-                  font-weight: bold;
-              }
-            </style>
-    `;
-
-    return element;
-  }
-
-  generateProductTransactionList(productTransaction: Array<ProductTransaction>) {
-    let template = ``;
-
-    for (let i = 0; i < productTransaction.length; i++) {
-      template += `
-        <tr>
-          <td class="product-description-column">${productTransaction[i].product.name}</td>
-          <td class="product-quantity-column">${productTransaction[i].quantity}</td>
-          <td class="product-unit-column">${productTransaction[i].product.productUnit.name}</td>
-          <td class="product-unit-price-column">${NumberFormatter.formatCurrency(productTransaction[i].price, false)}</td>
-          <td class="product-amount-column">${NumberFormatter.formatCurrency(productTransaction[i].price * productTransaction[i].quantity, false)}</td>
-        </tr>
-      `;
-    }
-
-    return template;
+    this._dialogPrintOptionRef
+      .afterDismissed()
+      .subscribe(
+        async (data: {
+          printForSettingsEnum: PrintForSettingsEnum;
+        }) => {
+          if (!data) return;
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: true,
+            })
+          );
+          await this.invoicePrintService.printInvoice(this._transactionId(), data.printForSettingsEnum);
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: false,
+            })
+          );
+        }
+      );
   }
 
   ngOnDestroy() {
@@ -1062,6 +810,94 @@ export class ProductCartComponent
     this.store.dispatch(CustomerActions.resetCustomerState());
     this.store.dispatch(BarangayActions.resetBarangayState());
     this.store.dispatch(ProductTransactionActions.resetTransactionState());
+  }
+
+  private saveDraftOrderToServer(transaction: TransactionDto) {
+    this._subscription.add(
+      this.transactionService
+        .registerTransaction(transaction)
+        .subscribe({
+          next: () => {
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+            this.notificationService.openSuccessNotification(this._saveDraftSuccessMessage());
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+            this.resetProductTransactions();
+          },
+
+          error: () => {
+            this.notificationService.openErrorNotification(this._saveDraftErrorMessage());
+
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+          },
+        }));
+  }
+
+  saveBadOrderToServer(transaction: TransactionDto) {
+    this._subscription.add(
+      this.transactionService
+        .registerTransaction(transaction)
+        .subscribe({
+          next: () => {
+            this.notificationService.openSuccessNotification(this.translateService.instant(
+              'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
+            ));
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+            this.resetProductTransactions();
+          },
+
+          error: () => {
+            this.notificationService.openErrorNotification(this.translateService.instant(
+              'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.ERROR_MESSAGE'
+            ));
+
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+          },
+        }));
+  }
+
+  private saveLocalDraftOrder(transaction: TransactionDto) {
+    this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
+    this.notificationService.openSuccessNotification(this._saveDraftSuccessMessage());
+    this.store.dispatch(
+      ProductTransactionActions.setSaveOrderLoadingState({
+        state: false,
+      })
+    );
+
+    this.resetProductTransactions();
+  }
+
+  private saveLocalBadOrder(transaction: TransactionDto) {
+    this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.BAD_ORDER, transaction);
+    this.notificationService.openSuccessNotification(this.translateService.instant(
+      'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
+    ));
+    this.store.dispatch(
+      ProductTransactionActions.setSaveOrderLoadingState({
+        state: false,
+      })
+    );
+    this.resetProductTransactions();
   }
 
   private proceedConfirm() {
@@ -1081,13 +917,16 @@ export class ProductCartComponent
     );
     transaction.productTransactions = this.productTransactions();
 
-    this._isLoading = true;
+    this.store.dispatch(
+      ProductTransactionActions.setSaveOrderLoadingState({
+        state: true,
+      })
+    );
     this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.LOADING_MESSAGE');
     this._subscription.add(this.transactionService
       .registerTransaction(transaction)
       .subscribe({
         next: (id: number) => {
-          this._isLoading = false;
           this.notificationService.openSuccessNotification(this.translateService.instant(
             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.SUCCESS_MESSAGE'
           ));
@@ -1096,22 +935,13 @@ export class ProductCartComponent
               state: false,
             })
           );
-          this.storageService.remove('productTransactions');
-          this.store.dispatch(
-            ProductTransactionActions.resetProductTransactionState()
-          );
-
           this.sendOrderReceiptEmailNotification(id);
+          this.sendInvoiceEmailNotification(id);
 
-          if (this._transactionId() === 0) {
-            this.router.navigate(['/product-catalogue']);
-          } else {
-            this.router.navigate(['/draft-transactions']);
-          }
+          this.resetProductTransactions();
         },
 
         error: () => {
-          this._isLoading = false;
           this.notificationService.openErrorNotification(this.translateService.instant(
             'PRODUCT_CART_PAGE.SAVE_NEW_CONFIRMED_ORDER_DIALOG.ERROR_MESSAGE'
           ));
@@ -1128,6 +958,32 @@ export class ProductCartComponent
   private sendOrderReceiptEmailNotification(transactionId: number) {
     this.transactionService
       .sendOrderReceiptEmailNotification(transactionId).subscribe();
+  }
+
+  private sendInvoiceEmailNotification(transactionId: number) {
+    if (this.userService.userSetting().allowSendReceipt && this.userService.userSetting().allowAutoSendReceipt) {
+      this.invoicePrintService
+        .sendInvoice(transactionId, PrintForSettingsEnum.CUSTOMER, (file: File) => {
+          this.transactionService.sendInvoiceTransaction(
+            transactionId,
+            this.authService.userId,
+            file
+          ).subscribe();
+        });
+    }
+  }
+
+  private resetProductTransactions() {
+    this.storageService.remove('productTransactions');
+    this.store.dispatch(
+      ProductTransactionActions.resetProductTransactionState()
+    );
+
+    if (this._transactionId() === 0) {
+      this.router.navigate(['/product-catalogue']);
+    } else {
+      this.router.navigate(['/draft-transactions']);
+    }
   }
 
   get orderForm(): FormGroup {

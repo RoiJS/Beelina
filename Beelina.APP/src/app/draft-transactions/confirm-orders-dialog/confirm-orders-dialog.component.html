@@ -1,0 +1,44 @@
+<div class="confirm-order-dialog-container">
+  <div class="confirm-order-dialog-container__header dialog-form-container__header">
+    <span>{{ "DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+
+  <div class="confirm-order-dialog-container__body dialog-form-container__body">
+    <div>
+      {{ confirmationMessage() }}
+    </div>
+
+    @if (data.productsWithInsufficientQuantities.length > 0) {
+    <div class="invalid-order-transactions-list-section">
+      <cdk-virtual-scroll-viewport itemSize="60" orientation="vertical"
+        class="list-container invalid-order-transactions-list">
+        <div *cdkVirtualFor="let item of data.productsWithInsufficientQuantities">
+          <div class="list-container__item-section list-container__item-section--align-items-center">
+            <div># {{ item.transactionCode }}</div>
+            <div>
+              <ul>
+                @for (item of item.invalidProductTransactionOverallQuantities; track $index) {
+                <li>{{ item.productCode }} - {{ item.productName }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+    }
+
+  </div>
+
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-button mat-raised-button color="primary" (click)="onConfirm()" [disabled]="isDisabled()">
+        {{ "DIALOG.CONFIRM_DIALOG_BUTTONS.CONFIRM" | translate }}
+      </button>
+      <button mat-button mat-raised-button (click)="onCancel()">
+        {{ "DIALOG.CONFIRM_DIALOG_BUTTONS.CANCEL" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

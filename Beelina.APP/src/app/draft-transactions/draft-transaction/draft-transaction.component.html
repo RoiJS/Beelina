@@ -22,6 +22,15 @@
       <mat-icon>delete</mat-icon>
       {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.DELETE_SELECTED_ORDERS' | translate }}
     </button>
+    <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item (click)="confirmOrders()">
+      <mat-icon>check_circle_outline</mat-icon>
+      {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.CONFIRM_SELECTED_ORDERS' | translate }}
+    </button>
+    <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item
+      (click)="syncSelectedOfflineOrders()">
+      <mat-icon>cloud_upload</mat-icon>
+      {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.SYNC_ALL_OFFLINE_ORDERS' | translate }}
+    </button>
   </mat-menu>
 </app-tool-bar>
 }
@@ -47,15 +56,22 @@
         <div *cdkVirtualFor="let item of transactions">
           <div matRipple
             class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between list-container__item-section--align-items-center"
-            (click)="goToTransaction(item.id)" appLongPress (longPress)="openMenu(item)">
+            (click)="goToTransaction(item)" appLongPress (longPress)="openMenu(item)">
             <div class="list-container__item-section--check-box-item-section">
               @if(multipleItemsService.selectMultipleActive()) {
-              <mat-checkbox [checked]="multipleItemsService.isSelected(item.id.toString())" [id]="item.id.toString()"
+              <mat-checkbox [checked]="multipleItemsService.isSelected(item)" [id]="item.id.toString()"
                 (change)="selectItem($event.checked, $event.source.id)"></mat-checkbox>
               }
               <span># {{ item.invoiceNo }}</span> - <span>{{ item.store.name }}</span>
             </div>
-            <mat-icon>keyboard_arrow_right</mat-icon>
+
+            <div>
+              @if (item.isLocal) {
+              <mat-icon class="order-transaction-list__local-icon">wifi_off</mat-icon>
+              }
+              <mat-icon>keyboard_arrow_right</mat-icon>
+            </div>
+
           </div>
         </div>
       </cdk-virtual-scroll-viewport>

@@ -81,6 +81,16 @@
           <button mat-raised-button color="warn" (click)="deleteTransaction()">
             {{ "GENERAL_TEXTS.DELETE" | translate }}
           </button>
+
+          @if (networkService.isOnline | async) {
+          @if (isLocalTransaction()) {
+          <button mat-raised-button color="primary" (click)="syncLocalBadOrder()">
+            <mat-icon>cloud_upload</mat-icon>
+            {{ "GENERAL_TEXTS.SYNC" | translate }}
+          </button>
+          }
+          }
+
         </div>
       </div>
     </div>

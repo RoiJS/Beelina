@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
@@ -12,11 +12,6 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ProductNotExistsError } from '../_models/errors/product-not-exists.error';
 
 import {
-  endCursorSelector as endCursorProductSelector,
-  filterKeywordSelector as filterKeywordProductSelector,
-  supplierIdSelector as supplierIdProductSelector,
-} from '../product/store/selectors';
-import {
   endCursorSelector as endCursorWarehouseProductSelector,
   filterKeywordSelector as filterKeywordWarehouseProductSelector,
   supplierIdSelector as supplierIdWarehouseProductSelector,
@@ -24,7 +19,6 @@ import {
 import {
   endCursorSelector as endCursorProductStockAuditSelector, fromDateSelector, sortOrderSelector, stockAuditSourceSelector, toDateSelector,
 } from '../product/edit-product-details/manage-product-stock-audit/store/selectors';
-import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
 
 import { CheckProductCodeInformationResult } from '../_models/results/check-product-code-information-result';
 import { ProductInformationResult } from '../_models/results/product-information-result';
@@ -34,15 +28,16 @@ import { IProductInput } from '../_interfaces/inputs/iproduct.input';
 import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
 import { Product } from '../_models/product';
 import { ProductTransaction } from '../_models/transaction';
-import { InsufficientProductQuantity } from '../_models/insufficient-product-quantity';
+import { InsufficientProductQuantity, InvalidProductTransactionOverallQuantitiesTransactions } from '../_models/insufficient-product-quantity';
 
 import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
 import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
 import { IProductTransactionQueryPayload } from '../_interfaces/payloads/iproduct-transaction-query.payload';
 import { ITextProductInventoryQueryPayload } from '../_interfaces/payloads/itext-product-inventory-query.payload';
 
-import { User } from '../_models/user.model';
 import { StorageService } from './storage.service';
+
+import { User } from '../_models/user.model';
 import { ProductStockAudit } from '../_models/product-stock-audit';
 import { IProductStockAuditOutput } from '../_interfaces/outputs/iproduct-stock-update.output';
 import { BusinessModelEnum } from '../_enum/business-model.enum';
@@ -54,6 +49,9 @@ import { getProductSourceEnum, ProductSourceEnum } from '../_enum/product-source
 import { IExtractedProductsFileOutput } from '../_interfaces/outputs/iproduct-import-file.output';
 
 import { environment } from 'src/environments/environment';
+import { TransactionDto } from './transaction.service';
+import { ITransactionInput } from '../_interfaces/inputs/itransaction.input';
+import { IProductTransactionInput } from '../_interfaces/inputs/iproduct-transaction.input';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
 query($userAccountId: Int!) {
@@ -62,12 +60,13 @@ query($userAccountId: Int!) {
 `;
 
 const GET_PRODUCTS_QUERY = gql`
-  query ($userAccountId: Int!, $cursor: String, $filterKeyword: String, $productsFilter: ProductsFilterInput!) {
+  query ($userAccountId: Int!, $cursor: String, $filterKeyword: String, $productsFilter: ProductsFilterInput!, $limit: Int!) {
     products(
       userAccountId: $userAccountId
       after: $cursor
       filterKeyword: $filterKeyword,
-      productsFilter: $productsFilter
+      productsFilter: $productsFilter,
+      first: $limit
     ) {
       nodes {
         id
@@ -79,6 +78,7 @@ const GET_PRODUCTS_QUERY = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         isLinkedToSalesAgent
         productUnit {
           id
@@ -114,6 +114,7 @@ const GET_WAREHOUSE_PRODUCTS_QUERY = gql`
         price
         numberOfUnits
         isTransferable
+        supplierId
         productUnit {
           id
           name
@@ -237,19 +238,33 @@ const CHECK_WAREHOUSE_PRODUCT_QUANTITY = gql`
 `;
 
 const VALIDATE_PRODUCT_QUANTITIES = gql`
-  query (
-    $userAccountId: Int!
-    $productTransactionsInputs: [ProductTransactionInput!]!
-  ) {
-    validateProductionTransactionsQuantities(
-      productTransactionsInputs: $productTransactionsInputs
-      userAccountId: $userAccountId
-    ) {
-      productId
-      productName
-      productCode
-      selectedQuantity
-      currentQuantity
+  query ($userAccountId: Int!, $transactionInputs: [TransactionInput!]!) {
+    validateProductionTransactionsQuantities(transactionInputs: $transactionInputs, userAccountId: $userAccountId) {
+      transactionCode
+      transactionId
+      invalidProductTransactionOverallQuantities {
+        productId
+        productCode
+        productName
+        overallQuantity
+        currentQuantity
+      }
+    }
+  }
+`;
+
+const VALIDATE_MULTIPLE_TRANSACTIONS_PRODUCT_QUANTITIES = gql`
+  query ($userAccountId: Int!, $transactionIds: [Int!]!) {
+    validateMutlipleTransactionsProductQuantities(transactionIds: $transactionIds, userAccountId: $userAccountId) {
+        transactionCode
+        transactionId
+        invalidProductTransactionOverallQuantities {
+          productId
+          productCode
+          productName
+          overallQuantity
+          currentQuantity
+      }
     }
   }
 `;
@@ -371,6 +386,7 @@ const GET_WAREHOUSE_PRODUCT_STOCK_AUDITS_LIST = gql`
         id
         quantity
         transactionNumber
+        plateNo
         stockAuditSource
         modifiedBy
         modifiedDate
@@ -481,44 +497,12 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
 export class ProductService {
   private _warehouseId: number = 1;
 
-  constructor(
-    private apollo: Apollo,
-    private http: HttpClient,
-    private store: Store<AppStateInterface>,
-    private storageService: StorageService
-  ) { }
+  apollo = inject(Apollo);
+  http = inject(HttpClient);
+  store = inject(Store<AppStateInterface>);
+  storageService = inject(StorageService);
 
-  getProducts() {
-    let cursor = null,
-      filterKeyword = '',
-      supplierId = 0,
-      productTransactionItems = Array<ProductTransaction>();
-
-    this.store
-      .select(endCursorProductSelector)
-      .pipe(take(1))
-      .subscribe((currentCursor) => (cursor = currentCursor));
-
-    this.store
-      .select(filterKeywordProductSelector)
-      .pipe(take(1))
-      .subscribe(
-        (currentFilterKeyword) => (filterKeyword = currentFilterKeyword)
-      );
-
-    this.store
-      .select(productTransactionsSelector)
-      .pipe(take(1))
-      .subscribe(
-        (productTransactions) => (productTransactionItems = productTransactions)
-      );
-
-    this.store
-      .select(supplierIdProductSelector)
-      .pipe(take(1))
-      .subscribe(
-        (currentSupplierId) => (supplierId = currentSupplierId)
-      );
+  getProducts(cursor: string, filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>) {
 
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
@@ -531,7 +515,8 @@ export class ProductService {
           userAccountId,
           productsFilter: {
             supplierId
-          }
+          },
+          limit
         },
       })
       .valueChanges.pipe(
@@ -551,6 +536,7 @@ export class ProductService {
             product.description = productDto.description;
             product.stockQuantity = productDto.stockQuantity;
             product.pricePerUnit = productDto.pricePerUnit;
+            product.supplierId = productDto.supplierId;
             product.price = productDto.price;
             product.isTransferable = productDto.isTransferable;
             product.numberOfUnits = productDto.numberOfUnits;
@@ -640,6 +626,7 @@ export class ProductService {
             product.isTransferable = productDto.isTransferable;
             product.numberOfUnits = productDto.numberOfUnits;
             product.productUnit = productDto.productUnit;
+            product.supplierId = productDto.supplierId;
             product.isLinkedToSalesAgent = false;
             return product;
           });
@@ -731,6 +718,9 @@ export class ProductService {
         cursor: null,
         filterKeyword: productName,
         warehouseId: 1,
+        productsFilter: {
+          supplierId: 0
+        }
       };
 
       return this.apollo
@@ -877,6 +867,7 @@ export class ProductService {
         isTransferable: product.isTransferable,
         numberOfUnits: product.numberOfUnits,
         withdrawalSlipNo: product.withdrawalSlipNo,
+        plateNo: product.plateNo,
         productUnitInput: {
           id: product.productUnit.id,
           name: product.productUnit.name,
@@ -1007,17 +998,32 @@ export class ProductService {
       );
   }
 
-  validateProductionTransactionsQuantities(
-    productTransactions: Array<ProductTransaction>
-  ) {
-    const productTransactionsInputs = productTransactions.map((p) => {
-      return {
-        id: p.id,
-        productId: p.productId,
-        quantity: p.quantity,
-        price: p.price,
-        currentQuantity: p.currentQuantity,
+  validateProductionTransactionsQuantities(transactions: Array<TransactionDto>) {
+    const transactionInputs: Array<ITransactionInput> = transactions.map((transaction) => {
+      const transactionInput: ITransactionInput = {
+        id: transaction.id,
+        invoiceNo: transaction.invoiceNo,
+        discount: transaction.discount,
+        storeId: transaction.storeId,
+        modeOfPayment: transaction.modeOfPayment,
+        paid: transaction.paid,
+        status: transaction.status,
+        transactionDate: transaction.transactionDate,
+        dueDate: transaction.dueDate,
+        productTransactionInputs: transaction.productTransactions.map((p) => {
+          const productTransaction: IProductTransactionInput = {
+            id: p.id,
+            productId: p.productId,
+            quantity: p.quantity,
+            price: p.price,
+            currentQuantity: p.currentQuantity,
+          };
+
+          return productTransaction;
+        })
       };
+
+      return transactionInput;
     });
 
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
@@ -1026,7 +1032,7 @@ export class ProductService {
       .watchQuery({
         query: VALIDATE_PRODUCT_QUANTITIES,
         variables: {
-          productTransactionsInputs,
+          transactionInputs,
           userAccountId,
         },
       })
@@ -1034,25 +1040,59 @@ export class ProductService {
         map(
           (
             result: ApolloQueryResult<{
-              validateProductionTransactionsQuantities: Array<IValidateProductQuantitiesQueryPayload>;
+              validateProductionTransactionsQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>;
             }>
           ) => {
-            const data = <Array<InsufficientProductQuantity>>(
+            const data = <Array<InvalidProductTransactionOverallQuantitiesTransactions>>(
               result.data.validateProductionTransactionsQuantities
             );
 
-            const insufficientProductQuantities: Array<InsufficientProductQuantity> =
+            const productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions> =
               data.map((i) => {
-                return <InsufficientProductQuantity>{
-                  productId: i.productId,
-                  productName: i.productName,
-                  productCode: i.productCode,
-                  currentQuantity: i.currentQuantity,
-                  selectedQuantity: i.selectedQuantity,
+                return <InvalidProductTransactionOverallQuantitiesTransactions>{
+                  transactionId: i.transactionId,
+                  transactionCode: i.transactionCode,
+                  invalidProductTransactionOverallQuantities: i.invalidProductTransactionOverallQuantities
                 };
               });
 
-            return insufficientProductQuantities;
+            return productsWithInsufficientQuantities;
+          }
+        )
+      );
+  }
+
+  validateMultipleTransactionsProductQuantities(transactionIds: Array<number>) {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+    return this.apollo
+      .watchQuery({
+        query: VALIDATE_MULTIPLE_TRANSACTIONS_PRODUCT_QUANTITIES,
+        variables: {
+          transactionIds,
+          userAccountId,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              validateMutlipleTransactionsProductQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>;
+            }>
+          ) => {
+            const data = <Array<InvalidProductTransactionOverallQuantitiesTransactions>>(
+              result.data.validateMutlipleTransactionsProductQuantities
+            );
+
+            const productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions> =
+              data.map((i) => {
+                return <InvalidProductTransactionOverallQuantitiesTransactions>{
+                  transactionId: i.transactionId,
+                  transactionCode: i.transactionCode,
+                  invalidProductTransactionOverallQuantities: i.invalidProductTransactionOverallQuantities
+                };
+              });
+
+            return productsWithInsufficientQuantities;
           }
         )
       );
@@ -1335,6 +1375,7 @@ export class ProductService {
             newStockAuditItem.quantity = stockAudit.quantity;
             newStockAuditItem.stockAuditSource = stockAudit.stockAuditSource;
             newStockAuditItem.transactionNumber = stockAudit.transactionNumber;
+            newStockAuditItem.plateNo = stockAudit.plateNo;
             newStockAuditItem.modifiedDate = stockAudit.modifiedDate;
             newStockAuditItem.modifiedBy = stockAudit.modifiedBy;
             return newStockAuditItem;

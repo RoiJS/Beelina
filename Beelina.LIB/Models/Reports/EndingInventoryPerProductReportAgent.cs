@@ -6,16 +6,16 @@ using System.Data;
 
 namespace Beelina.LIB.Models.Reports
 {
-    public class EndingInventoryPerProductReport<TOutput>
+    public class EndingInventoryPerProductReportAgent<TOutput>
         : BaseReport<TOutput>, IBaseReport<TOutput> where TOutput : BaseReportOutput, new()
     {
-        public EndingInventoryPerProductReport(int reportId, int userId, string userFullName, List<ControlValues> controlValues, EmailService emailService, ReportRepository reportRepository)
+        public EndingInventoryPerProductReportAgent(int reportId, int userId, string userFullName, List<ControlValues> controlValues, EmailService emailService, ReportRepository reportRepository)
             : base(reportId, userId, userFullName, controlValues, emailService, reportRepository)
         {
 
         }
 
-        public EndingInventoryPerProductReport() : base()
+        public EndingInventoryPerProductReportAgent() : base()
         {
 
         }
@@ -26,7 +26,7 @@ namespace Beelina.LIB.Models.Reports
 
             if (reportOutputDataSet.Tables.Count == 0) return this;
 
-            var reportOutput = new EndingInventoryPerProductReportOutput
+            var reportOutput = new EndingInventoryPerProductReportAgentOutput
             {
                 HeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new EndingInventoryPerProductReportOutputHeader
                 {
@@ -92,12 +92,12 @@ namespace Beelina.LIB.Models.Reports
         }
     }
 
-    public class EndingInventoryPerProductReportOutput : BaseReportOutput
+    public class EndingInventoryPerProductReportAgentOutput : BaseReportOutput
     {
         public EndingInventoryPerProductReportOutputHeader HeaderOutput { get; set; }
         public List<EndingInventoryPerProductReportOutputList> ListOutput { get; set; }
 
-        public EndingInventoryPerProductReportOutput() : base()
+        public EndingInventoryPerProductReportAgentOutput() : base()
         {
             HeaderOutput = new EndingInventoryPerProductReportOutputHeader();
             ListOutput = new List<EndingInventoryPerProductReportOutputList>();

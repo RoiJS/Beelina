@@ -15,6 +15,7 @@ import { PaymentMethodsEffects } from 'src/app/payment-methods/store/effects';
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import * as PaymentMethodReducers from '../../../payment-methods/store/reducers';
 import { TransactionDetailsComponent } from './transaction-details.component';
+import { SendInvoiceOptionDialogComponent } from 'src/app/product/product-cart/send-invoice-option-dialog/send-invoice-option-dialog.component';
 
 @NgModule({
   imports: [
@@ -41,6 +42,9 @@ import { TransactionDetailsComponent } from './transaction-details.component';
     ]),
     TranslateModule.forChild(),
   ],
-  declarations: [TransactionDetailsComponent],
+  declarations: [
+    TransactionDetailsComponent,
+    SendInvoiceOptionDialogComponent
+  ],
 })
 export class TransactionDetailsModule { }

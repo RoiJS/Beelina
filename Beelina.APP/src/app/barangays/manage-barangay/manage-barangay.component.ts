@@ -10,6 +10,7 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { Barangay } from 'src/app/_models/barangay';
 import { BarangayService } from 'src/app/_services/barangay.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { LocalCustomerAccountsDbService } from 'src/app/_services/local-db/local-customer-accounts-db.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 @Component({
@@ -33,6 +34,7 @@ export class ManageBarangayComponent implements OnInit {
       barangay: Barangay;
     },
     private formBuilder: FormBuilder,
+    private localCustomerAccountsDbService: LocalCustomerAccountsDbService,
     private notificationService: NotificationService,
     private translateService: TranslateService
   ) {
@@ -58,16 +60,19 @@ export class ManageBarangayComponent implements OnInit {
         .openConfirmation(this.dialogTitle, this._dialogConfirmationMessage)
         .subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
-            this.barangayService.updateBarangay(manageBarangay).subscribe({
-              complete: () => {
-                this.notificationService.openSuccessNotification(this._dialogSuccessMessage);
-                this._bottomSheetRef.dismiss(true);
-              },
-              error: (err) => {
-                this.notificationService.openErrorNotification(this._dialogErrorMessage);
-                this._bottomSheetRef.dismiss(false);
-              },
-            });
+            this.barangayService
+              .updateBarangay(manageBarangay)
+              .subscribe({
+                next: (barangay: Barangay) => {
+                  this.localCustomerAccountsDbService.manageLocalCustomerAccount(barangay);
+                  this.notificationService.openSuccessNotification(this._dialogSuccessMessage);
+                  this._bottomSheetRef.dismiss(true);
+                },
+                error: (err) => {
+                  this.notificationService.openErrorNotification(this._dialogErrorMessage);
+                  this._bottomSheetRef.dismiss(false);
+                },
+              });
           }
         });
     }
@@ -80,29 +85,29 @@ export class ManageBarangayComponent implements OnInit {
   private setUpLanguageTexts(forNewBarangay: boolean) {
     if (forNewBarangay) {
       this._dialogTitle = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.TITLE'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.TITLE'
       );
       this._dialogConfirmationMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.CONFIRM'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.CONFIRM'
       );
       this._dialogSuccessMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.SUCCESS_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.SUCCESS_MESSAGE'
       );
       this._dialogErrorMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.ADD_BARANGAY_DIALOG.ERROR_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.ADD_CUSTOMER_ACCOUNT_DIALOG.ERROR_MESSAGE'
       );
     } else {
       this._dialogTitle = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.TITLE'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.TITLE'
       );
       this._dialogConfirmationMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.CONFIRM'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.CONFIRM'
       );
       this._dialogSuccessMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.SUCCESS_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.SUCCESS_MESSAGE'
       );
       this._dialogErrorMessage = this.translateService.instant(
-        'BARANGAYS_PAGE.UPDATE_BARANGAY_DIALOG.ERROR_MESSAGE'
+        'CUSTOMER_ACCOUNTS_PAGE.UPDATE_CUSTOMER_ACCOUNT_DIALOG.ERROR_MESSAGE'
       );
     }
   }

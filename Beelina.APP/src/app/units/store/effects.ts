@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, take } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import * as ProductUnitActions from './actions';
 
-import { ProductUnitService } from 'src/app/_services/product-unit.service';
+import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { ProductUnit } from 'src/app/_models/product-unit';
+import { ProductUnitService } from 'src/app/_services/product-unit.service';
+import { endCursorSelector } from './selectors';
 
 @Injectable()
 export class ProductUnitEffects {
@@ -15,7 +18,14 @@ export class ProductUnitEffects {
     this.actions$.pipe(
       ofType(ProductUnitActions.getProductUnitsAction),
       switchMap(() => {
-        return this.productUnitService.getProductUnits().pipe(
+        let cursor = null;
+
+        this.store
+          .select(endCursorSelector)
+          .pipe(take(1))
+          .subscribe((currentCursor) => (cursor = currentCursor));
+
+        return this.productUnitService.getProductUnits(cursor).pipe(
           map(
             (data: {
               endCursor: string;
@@ -42,6 +52,7 @@ export class ProductUnitEffects {
   );
   constructor(
     private actions$: Actions,
-    private productUnitService: ProductUnitService
-  ) {}
+    private productUnitService: ProductUnitService,
+    private store: Store<AppStateInterface>
+  ) { }
 }

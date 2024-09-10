@@ -1,8 +1,14 @@
 <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
   <div class="search-field-container">
-    <input type="text" class="txt-search-field" formControlName="filterKeyword" [placeholder]="placeHolder" />
-    <mat-icon *ngIf="searchForm?.get('filterKeyword')?.value.length > 0" class="search-field-container__clear-icon"
-      (click)="clear()">clear</mat-icon>
+    <div class="search-field-container__search-field">
+      <input type="text" class="txt-search-field" formControlName="filterKeyword" [placeholder]="placeHolder" />
+
+      @if (searchForm.value.filterKeyword.length > 0) {
+      <mat-icon class="search-field-container__clear-icon" (click)="clear()">clear</mat-icon>
+      }
+    </div>
+
+
     <button type="submit" mat-fab color="primary">
       <mat-icon>search</mat-icon>
     </button>

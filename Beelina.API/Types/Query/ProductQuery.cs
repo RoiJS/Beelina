@@ -35,7 +35,7 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UsePaging(MaxPageSize = 1000, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]
         public async Task<IList<Product>> GetProducts(

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,6 +24,8 @@ import { UserModulePermission } from '../_models/user-module-permission';
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 import { endCursorSelector, filterKeywordSelector } from '../accounts/store/selectors';
 import { ModuleEnum } from '../_enum/module.enum';
+import { UserSetting } from '../_models/user-setting';
+import { LocalUserSettingsDbService } from './local-db/local-user-settings-db.service';
 
 const UPDATE_USER_CREDENTIALS = gql`
   mutation ($userAccountInput: UserAccountInput!) {
@@ -141,6 +143,18 @@ query ($userId: Int!) {
   }
 }
 `;
+
+const GET_USER_SETTINGS_QUERY = gql`
+  query($userId: Int!) {
+    userSetting(userId: $userId) {
+      allowOrderConfirmation
+      allowOrderPayments
+      allowSendReceipt
+      allowAutoSendReceipt
+    }
+  }
+`;
+
 const DELETE_USER_ACCOUNTS_QUERY = gql`
   mutation($userIds: [Int!]!) {
     deleteUserAccounts(input: { userIds: $userIds }) {
@@ -159,11 +173,12 @@ const SET_USER_ACCOUNTS_STATUS_QUERY = gql`
 
 @Injectable({ providedIn: 'root' })
 export class UserAccountService {
-  constructor(
-    private apollo: Apollo,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService
-  ) { }
+  apollo = inject(Apollo);
+  localUserSettingsDbService = inject(LocalUserSettingsDbService);
+  store = inject(Store<AppStateInterface>);
+  translateService = inject(TranslateService);
+
+  userSetting = signal<UserSetting>(new UserSetting());
 
   getUserAccounts() {
     let cursor = null,
@@ -274,6 +289,45 @@ export class UserAccountService {
           }
         )
       );
+  }
+
+  getUserSetting(userId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_USER_SETTINGS_QUERY,
+        variables: {
+          userId,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          async (
+            result: ApolloQueryResult<{
+              userSetting: UserSetting;
+            }>
+          ) => {
+            const data = result.data.userSetting;
+            const userSetting = new UserSetting();
+            userSetting.allowOrderConfirmation = data.allowOrderConfirmation;
+            userSetting.allowOrderPayments = data.allowOrderPayments;
+            userSetting.allowSendReceipt = data.allowSendReceipt;
+            userSetting.allowAutoSendReceipt = data.allowAutoSendReceipt;
+            this.userSetting.set(userSetting);
+            await this.localUserSettingsDbService.saveLocalUserSettings(userSetting);
+            return userSetting;
+          }
+        ),
+        catchError((error) => { throw new Error(error); })
+      );
+  }
+
+  async autoLoadUserSettings() {
+    const localUserSettings = await this.localUserSettingsDbService.getLocalUserSettings()
+    this.userSetting.set(localUserSettings);
+  }
+
+  async clearUserSettings() {
+    await this.localUserSettingsDbService.clearLocalUserSettings();
   }
 
   updateAccountInformation(user: User) {

@@ -1,7 +1,11 @@
 <app-tool-bar [title]="transaction?.store?.name">
+
+  @if(userService.userSetting().allowOrderPayments) {
   <button mat-icon-button class="toolbar-option" (click)="goToPaymentHistory()">
     <mat-icon>payment</mat-icon>
   </button>
+  }
+
 </app-tool-bar>
 
 <app-loader-layout [busy]="isLoading">
@@ -123,23 +127,38 @@
         </div>
         <div class="panel__footer-section transaction-details-panel__footer-section">
 
+          @if(userService.userSetting().allowOrderPayments) {
           @if (transaction?.balance > 0) {
           <button mat-raised-button color="default" (click)="registerPayment()">
+            <mat-icon>payment</mat-icon>
             {{"PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.REGISTER_PAYMENT"
             | translate}}
           </button>
           <br>
           }
+          }
 
+          @if(userService.userSetting().allowOrderConfirmation) {
           @if(transaction?.hasUnpaidProductTransaction && transaction?.balance === 0 &&
           transactionForm.get('paymentMethod').value !== 3) {
           <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
+            <mat-icon>check_circle_outline</mat-icon>
             {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+          </button>
+          <br>
+          }
+          }
+
+          @if(userService.userSetting().allowSendReceipt) {
+          <button mat-raised-button color="default" (click)="sendInvoice()">
+            <mat-icon>email</mat-icon>
+            {{ "GENERAL_TEXTS.SEND_VIA_EMAIL" | translate }}
           </button>
           <br>
           }
 
           <button mat-raised-button color="primary" (click)="saveTransaction()">
+            <mat-icon>save</mat-icon>
             {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
           </button>
         </div>

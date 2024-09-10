@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+import { TranslateService } from '@ngx-translate/core';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { catchError, map, take } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
 
 import { Product } from '../_models/product';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
@@ -20,12 +21,6 @@ import { ITransactionOutput } from '../_interfaces/outputs/itransaction.output';
 import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
-import {
-  endCursorSelector,
-  fromDateSelector,
-  sortOrderSelector,
-  toDateSelector,
-} from '../transaction-history/store/selectors';
 
 import {
   endCursorSelector as endCursorSelectorTopSellingProducts,
@@ -34,13 +29,15 @@ import {
   toDateSelector as toDateSelectorTopSellingProducts,
 } from '../product/top-products/store/selectors';
 
-import { DateRange } from '../_models/date-range';
-import { SalesPerDateRange } from '../_models/sales-per-date-range';
-import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
+import { environment } from 'src/environments/environment';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
+import { ISendInvoiceTransactionOutput } from '../_interfaces/outputs/isend-invoice-transaction.output';
 import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
+import { DateRange } from '../_models/date-range';
 import { TransactionsFilter } from '../_models/filters/transactions.filter';
 import { GeneralSettings } from '../_models/general-settings.model';
+import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
+import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { User } from '../_models/user.model';
 
 const REGISTER_TRANSACTION_QUERY = gql`
@@ -51,9 +48,25 @@ const REGISTER_TRANSACTION_QUERY = gql`
   }
 `;
 
+const REGISTER_TRANSACTIONS_QUERY = gql`
+  query ($transactionInputs: [TransactionInput!]!) {
+    registerTransactions(transactionInputs: $transactionInputs) {
+      id
+    }
+  }
+`;
+
 const DELETE_TRANSACTION = gql`
 mutation($transactionIds: [Int!]!) {
   deleteTransactions(input: { transactionIds: $transactionIds }) {
+    boolean
+  }
+}
+`;
+
+const SET_TRANSACTION_STATUS = gql`
+mutation($transactionIds: [Int!]!, $status: TransactionStatusEnum!) {
+  setTransactionsStatus(input: { transactionIds: $transactionIds, status: $status }) {
     boolean
   }
 }
@@ -73,14 +86,16 @@ const GET_TRANSACTION_DATES = gql`
     $sortOrder: SortEnumType
     $transactionStatus: TransactionStatusEnum!
     $fromDate: String
-    $toDate: String
+    $toDate: String,
+    $limit: Int!
   ) {
     transactionDates(
       after: $cursor
       order: [{ transactionDate: $sortOrder }]
       transactionStatus: $transactionStatus
       fromDate: $fromDate
-      toDate: $toDate
+      toDate: $toDate,
+      first: $limit
     ) {
       edges {
         cursor
@@ -219,7 +234,6 @@ const UPDATE_MODE_OF_PAYMENT = gql`
   }
 `;
 
-
 const MARK_TRANSACTIONS_AS_PAID = gql`
   mutation($transactionIds: [Int!]!, $paid: Boolean!) {
     markTransactionsAsPaid(input: { transactionIds: $transactionIds, paid: $paid }) {
@@ -271,6 +285,8 @@ const GET_TRANSACTION_SALES = gql`
       cashAmountOnHand
       chequeAmountOnHand
       totalAmountOnHand
+      badOrderAmount
+      accountReceivables
     }
   }
 `;
@@ -285,6 +301,8 @@ const GET_TRANSACTION_SALES_PER_DATE_RANGE_QUERY = gql`
       cashAmountOnHand
       chequeAmountOnHand
       totalAmountOnHand
+      badOrderAmount
+      accountReceivables
     }
   }
 `;
@@ -409,6 +427,17 @@ const SEND_ORDER_RECEIPT_EMAIL_NOTIFICATION = gql`
   }
 `;
 
+const SEND_INVOICE_TRANSACTION_QUERY = `
+  mutation(
+    $userId: Int!,
+    $transactionId: Int!,
+    $file: Upload!) {
+      sendInvoiceTransaction(input: { userId: $userId, transactionId: $transactionId, file: $file }) {
+        boolean
+      }
+  }
+`;
+
 export class TransactionInformation {
   public id: number;
   public invoiceNo: string;
@@ -435,6 +464,7 @@ export class TransactionDateInformation {
   public transactionDate: Date;
   public allTransactionsPaid: boolean;
   public numberOfUnPaidTransactions: number;
+  public isLocal: boolean;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
@@ -446,6 +476,8 @@ export class TransactionSales {
   public cashAmountOnHand: number;
   public chequeAmountOnHand: number;
   public totalAmountOnHand: number;
+  public badOrderAmount: number;
+  public accountReceivables: number;
 }
 
 export class TransactionDto {
@@ -517,6 +549,7 @@ export class InvoiceData {
 export class TransactionService {
   constructor(
     private apollo: Apollo,
+    private http: HttpClient,
     private store: Store<AppStateInterface>,
     private translateService: TranslateService,
   ) { }
@@ -572,6 +605,59 @@ export class TransactionService {
       );
   }
 
+  registerTransactions(transactions: Array<TransactionDto>) {
+    const transactionInputs: Array<ITransactionInput> = transactions.map((transaction) => {
+      return {
+        id: transaction.id,
+        invoiceNo: transaction.invoiceNo,
+        discount: transaction.discount,
+        storeId: transaction.storeId,
+        modeOfPayment: transaction.modeOfPayment,
+        paid: transaction.paid,
+        status: transaction.status,
+        transactionDate: transaction.transactionDate,
+        dueDate: transaction.dueDate,
+        productTransactionInputs: transaction.productTransactions.map((p) => {
+          const productTransaction: IProductTransactionInput = {
+            id: p.id,
+            productId: p.productId,
+            quantity: p.quantity,
+            price: p.price,
+            currentQuantity: p.currentQuantity,
+          };
+
+          return productTransaction;
+        }),
+      };
+    });
+
+    return this.apollo
+      .watchQuery({
+        query: REGISTER_TRANSACTIONS_QUERY,
+        variables: {
+          transactionInputs,
+        },
+      }).valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{ registerTransactions: ITransactionPayload }>
+          ) => {
+            const output = result.data.registerTransactions;
+            const payload = output;
+
+            if (payload) {
+              return payload;
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
   deleteTransactions(transactionIds: Array<number>) {
     return this.apollo
       .mutate({
@@ -586,6 +672,36 @@ export class TransactionService {
             result: MutationResult<{ deleteTransactions: { boolean: boolean } }>
           ) => {
             const output = result.data.deleteTransactions;
+            const payload = output.boolean;
+
+            if (payload) {
+              return payload;
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
+  setTransactionsStatus(transactionIds: Array<number>, status: TransactionStatusEnum) {
+    return this.apollo
+      .mutate({
+        mutation: SET_TRANSACTION_STATUS,
+        variables: {
+          transactionIds,
+          status
+        },
+      })
+      .pipe(
+        map(
+          (
+            result: MutationResult<{ setTransactionsStatus: { boolean: boolean } }>
+          ) => {
+            const output = result.data.setTransactionsStatus;
             const payload = output.boolean;
 
             if (payload) {
@@ -658,6 +774,7 @@ export class TransactionService {
               transaction.store.name = t.storeName;
               transaction.hasUnpaidProductTransaction =
                 t.hasUnpaidProductTransaction;
+              transaction.isLocal = false;
               return transaction;
             });
           }
@@ -821,37 +938,14 @@ export class TransactionService {
       );
   }
 
-  getTransactioDates(transactionStatus: TransactionStatusEnum) {
-    let cursor = null,
-      sortOrder = SortOrderOptionsEnum.DESCENDING,
-      fromDate = null,
-      toDate = null;
-
-    this.store
-      .select(endCursorSelector)
-      .pipe(take(1))
-      .subscribe((currentCursor) => (cursor = currentCursor));
-
-    this.store
-      .select(sortOrderSelector)
-      .pipe(take(1))
-      .subscribe((currentSortOrder) => (sortOrder = currentSortOrder));
-
-    this.store
-      .select(fromDateSelector)
-      .pipe(take(1))
-      .subscribe((currentFromDate) => (fromDate = currentFromDate));
-
-    this.store
-      .select(toDateSelector)
-      .pipe(take(1))
-      .subscribe((currentToDate) => (toDate = currentToDate));
+  getTransactioDates(transactionStatus: TransactionStatusEnum, cursor: string, limit: number, sortOrder: SortOrderOptionsEnum, fromDate: string, toDate: string) {
 
     return this.apollo
       .watchQuery({
         query: GET_TRANSACTION_DATES,
         variables: {
           cursor,
+          limit,
           sortOrder,
           transactionStatus,
           fromDate,
@@ -877,6 +971,7 @@ export class TransactionService {
                   t.numberOfUnPaidTransactions;
                 transactionHistoryDate.allTransactionsPaid =
                   t.allTransactionsPaid;
+                transactionHistoryDate.isLocal = false;
                 return transactionHistoryDate;
               })
             );
@@ -1238,6 +1333,41 @@ export class TransactionService {
             return null;
           }
         )
+      );
+  }
+
+  sendInvoiceTransaction(
+    transactionId: number,
+    userId: number,
+    file: File) {
+
+    var fd = new FormData();
+    var operations = {
+      query: SEND_INVOICE_TRANSACTION_QUERY,
+      variables: {
+        file: null,
+        userId,
+        transactionId
+      }
+    }
+    var _map = {
+      file: ["variables.file"]
+    }
+    fd.append('operations', JSON.stringify(operations))
+    fd.append('map', JSON.stringify(_map))
+    fd.append('file', file, file.name)
+
+    const headers = new HttpHeaders().set('GraphQL-preflight', '1');
+
+    return this.http.post<ISendInvoiceTransactionOutput>(environment.beelinaAPIEndPoint, fd, { headers })
+      .pipe(
+        map((result: ISendInvoiceTransactionOutput) => {
+          const data = result.data.sendInvoiceTransaction.boolean;
+          return data;
+        }),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 }

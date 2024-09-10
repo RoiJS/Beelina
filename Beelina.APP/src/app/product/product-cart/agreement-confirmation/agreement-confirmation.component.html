@@ -19,6 +19,7 @@
       }}
     </mat-checkbox>
 
+    @if(userService.userSetting().allowOrderConfirmation) {
     @if(agreementConfirmationForm.get('confirm').value) {
     <div class="agreement-confirmation-dialog-container__mark-as-paid">
       <mat-slide-toggle formControlName="paid">{{
@@ -26,6 +27,7 @@
         | translate
         }}</mat-slide-toggle>
     </div>
+    }
     }
 
   </div>

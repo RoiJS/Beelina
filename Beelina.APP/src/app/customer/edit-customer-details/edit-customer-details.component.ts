@@ -10,6 +10,7 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { CustomerStoreService } from 'src/app/_services/customer-store.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { LocalCustomerStoresDbService } from 'src/app/_services/local-db/local-customer-stores-db.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import * as BarangayActions from '../../barangays/store/actions';
@@ -45,8 +46,9 @@ export class EditCustomerDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private customerStoreService: CustomerStoreService,
     private formBuilder: FormBuilder,
-    private router: Router,
+    private localCustomerStoresDbService: LocalCustomerStoresDbService,
     private notificationService: NotificationService,
+    private router: Router,
     private translateService: TranslateService
   ) {
     this._customerForm = this.formBuilder.group({
@@ -130,7 +132,8 @@ export class EditCustomerDetailsComponent implements OnInit {
             this.customerStoreService
               .updateStoreInformation(customerStore)
               .subscribe({
-                next: () => {
+                next: (customerStore: CustomerStore) => {
+                  this.localCustomerStoresDbService.manageLocalCustomerStore(customerStore);
                   this.notificationService.openSuccessNotification(this.translateService.instant(
                     'EDIT_CUSTOMER_DETAILS_PAGE.EDIT_CUSTOMER_DIALOG.SUCCESS_MESSAGE'
                   ));
@@ -140,7 +143,7 @@ export class EditCustomerDetailsComponent implements OnInit {
                       state: false,
                     })
                   );
-                  this.router.navigate([`/barangays/${this._barangay}`]);
+                  this.router.navigate([`/customer-accounts/${this._barangay}`]);
                 },
 
                 error: () => {

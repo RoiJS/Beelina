@@ -22,6 +22,8 @@ namespace Beelina.LIB.BusinessLogic
         private readonly IOptions<AppHostInfo> _appHostInfo;
         private readonly IOptions<ApplicationSettings> _appSettings;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUserSettingsRepository<UserSetting> _userSettingRepository;
+        private readonly IGeneralSettingRepository<GeneralSetting> _generalSettingsRepository;
 
         public TransactionRepository(
             IBeelinaRepository<Transaction> beelinaRepository,
@@ -30,16 +32,20 @@ namespace Beelina.LIB.BusinessLogic
             IOptions<EmailServerSettings> emailServerSettings,
             IOptions<AppHostInfo> appHostInfo,
             IOptions<ApplicationSettings> appSettings,
-            ICurrentUserService currentUserService
+            ICurrentUserService currentUserService,
+            IUserSettingsRepository<UserSetting> userSettingRepository,
+            IGeneralSettingRepository<GeneralSetting> generalSettingsRepository
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
             _appHostInfo = appHostInfo;
             _appSettings = appSettings;
             _currentUserService = currentUserService;
+            _userSettingRepository = userSettingRepository;
             _emailServerSettings = emailServerSettings;
             _productTransactionRepository = productTransactionRepository;
             _userAccountRepository = userAccountRepository;
+            _generalSettingsRepository = generalSettingsRepository;
         }
 
         public async Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate)
@@ -191,8 +197,10 @@ namespace Beelina.LIB.BusinessLogic
                 var dateRangeSales = new TotalSalesPerDateRange
                 {
                     TotalSales = salesAgentSales.TotalSalesAmount,
+                    BadOrderAmount = salesAgentSales.BadOrderAmount,
                     ChequeAmountOnHand = salesAgentSales.ChequeAmountOnHand,
                     CashAmountOnHand = salesAgentSales.CashAmountOnHand,
+                    AccountReceivables = salesAgentSales.AccountReceivables,
                     FromDate = dateRange.FromDate,
                     ToDate = dateRange.ToDate,
                     Label = dateRange.Label
@@ -206,15 +214,19 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<TransactionSales> GetSales(int userId, string fromDate, string toDate)
         {
+            var badOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.BadOrder, userId, fromDate, toDate);
+            var paymentsAmount = await GetOrderPayments(userId, fromDate, toDate);
             var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, userId, fromDate, toDate);
-            var chequeOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, userId, fromDate, toDate);
-            var cashOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, userId, fromDate, toDate);
+            var chequeOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, userId, fromDate, toDate);
+            var cashOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, userId, fromDate, toDate);
 
             return new TransactionSales
             {
                 TotalSalesAmount = confirmedOrdersAmount.TotalSalesAmount,
                 ChequeAmountOnHand = chequeOnHandAmount.TotalSalesAmount,
-                CashAmountOnHand = cashOnHandAmount.TotalSalesAmount
+                CashAmountOnHand = cashOnHandAmount.TotalSalesAmount,
+                BadOrderAmount = badOrdersAmount.TotalSalesAmount,
+                AccountReceivables = confirmedOrdersAmount.TotalSalesAmount - paymentsAmount
             };
         }
 
@@ -226,8 +238,8 @@ namespace Beelina.LIB.BusinessLogic
             {
                 var sales = new TransactionSalesPerSalesAgent();
                 var confirmedOrdersAmount = await GetOrdersAmount(TransactionStatusEnum.Confirmed, salesAgent.Id, fromDate, toDate);
-                var chequeOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, salesAgent.Id, fromDate, toDate);
-                var cashOnHandAmount = await GetOrderPayments(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, salesAgent.Id, fromDate, toDate);
+                var chequeOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cheque, salesAgent.Id, fromDate, toDate);
+                var cashOnHandAmount = await GetOrderExpectedPaymentsAmount(TransactionStatusEnum.Confirmed, ModeOfPaymentEnum.Cash, salesAgent.Id, fromDate, toDate);
 
                 sales.Id = salesAgent.Id;
                 sales.SalesAgentName = salesAgent.PersonFullName;
@@ -356,6 +368,20 @@ namespace Beelina.LIB.BusinessLogic
                                                 .ToList();
 
             return transactionsWithPaymentStatus;
+        }
+
+        public async Task<List<Transaction>> GetTransactions(List<int> transactionIds)
+        {
+            var transactions = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t =>
+                                    transactionIds.Contains(t.Id) &&
+                                    t.IsActive &&
+                                    !t.IsDelete
+                                )
+                                .Include(t => t.ProductTransactions)
+                                .ToListAsync();
+
+            return transactions;
         }
 
         public async Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate)
@@ -497,7 +523,7 @@ namespace Beelina.LIB.BusinessLogic
             return discountedSalesPerBadOrders;
         }
 
-        private async Task<TransactionSales> GetOrderPayments(TransactionStatusEnum status, ModeOfPaymentEnum paymentMethod, int userId, string fromDate, string toDate)
+        private async Task<TransactionSales> GetOrderExpectedPaymentsAmount(TransactionStatusEnum status, ModeOfPaymentEnum paymentMethod, int userId, string fromDate, string toDate)
         {
             var discountedSalesPerTransactions = 0.0;
             var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
@@ -787,6 +813,48 @@ namespace Beelina.LIB.BusinessLogic
             return new TransactionSales { TotalSalesAmount = discountedSalesPerTransactions };
         }
 
+        private async Task<double> GetOrderPayments(int userId, string fromDate, string toDate)
+        {
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
+
+            var transactionWithPayments = (from t in _beelinaRepository.ClientDbContext.Transactions
+                                           join pt in _beelinaRepository.ClientDbContext.Payments
+                                           on t.Id equals pt.TransactionId
+
+                                           where
+                                               t.Status == TransactionStatusEnum.Confirmed
+                                               // Get all orders if current user is Manager or Admininistrator
+                                               && (
+                                                   userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                                   (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                               )
+                                               && t.IsDelete == false
+                                               && t.IsActive
+                                               && pt.IsDelete == false
+                                               && pt.IsActive
+                                           select new
+                                           {
+                                               Transaction = t,
+                                               Payments = pt
+                                           });
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                fromDate = Convert.ToDateTime(fromDate).Add(new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+                toDate = Convert.ToDateTime(toDate).Add(new TimeSpan(23, 59, 0)).ToString("yyyy-MM-dd HH:mm:ss");
+
+                transactionWithPayments = transactionWithPayments.Where(t =>
+                        t.Transaction.TransactionDate >= Convert.ToDateTime(fromDate)
+                        && t.Transaction.TransactionDate <= Convert.ToDateTime(toDate)
+                );
+            }
+
+            // Extract Sales per Transaction
+            var transactionPayments = transactionWithPayments.Sum(p => p.Payments.Amount);
+
+            return transactionPayments;
+        }
+
         public async Task DeleteOrderTransactions(List<int> transactionIds)
         {
             var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
@@ -802,14 +870,26 @@ namespace Beelina.LIB.BusinessLogic
                                 .Where(t => transactionIds.Contains(t.Id))
                                 .Includes(t => t.ProductTransactions)
                                 .ToListAsync();
-
-            // var transactionFromRepo = await transactionRepository.GetEntity(transactionId).Includes(t => t.ProductTransactions).ToObjectAsync();
-
+                                
             SetCurrentUserId(_currentUserService.CurrentUserId);
 
             transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));
 
-            // transactionFromRepo.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid);
+            await SaveChanges();
+
+            return transactionsFromRepo;
+        }
+
+        public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status)
+        {
+            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t => transactionIds.Contains(t.Id))
+                                .Includes(t => t.ProductTransactions)
+                                .ToListAsync();
+
+            SetCurrentUserId(_currentUserService.CurrentUserId);
+
+            transactionsFromRepo.ForEach(t => t.Status = status);
 
             await SaveChanges();
 
@@ -920,6 +1000,58 @@ namespace Beelina.LIB.BusinessLogic
             template = template.Replace("#transactionDetails", productTransactionsTemplate.ToString());
             template = template.Replace("#badOrder", transactionDetails.BadOrderAmount.FormatCurrency());
             template = template.Replace("#bannerLogo", $"{_appHostInfo.Value.AppDomain}/assets/logo/bannerlogo-alt.jpg");
+
+            return template;
+        }
+
+        public async Task<bool> SendInvoiceTransaction(int userId, int transactionId, IFile file)
+        {
+            try
+            {
+                var generalSetting = await _generalSettingsRepository.GetGeneralSettings();
+                var userSettingsFromRepo = await _userSettingRepository.GetUserSettings(userId);
+                var userAccount = await _userAccountRepository.GetEntity(userId).ToObjectAsync();
+                var transactionFromRepo = await GetEntity(transactionId).ToObjectAsync();
+
+                var emailService = new EmailService(_emailServerSettings.Value.SmtpServer,
+                               _emailServerSettings.Value.SmtpAddress,
+                               _emailServerSettings.Value.SmtpPassword,
+                               _emailServerSettings.Value.SmtpPort);
+                var emailAddress = userSettingsFromRepo.SendReceiptEmailAddress;
+                var subject = String.Format("Invoice Receipt - {0}", transactionFromRepo.InvoiceNo);
+                var emailContent = GenerateInvoiceReceiptEmailContent(transactionFromRepo.InvoiceNo, generalSetting.CompanyName, userAccount.PersonFullName);
+                var fileName = String.Format("Invoice Receipt - {0}.pdf", transactionFromRepo.InvoiceNo);
+
+                await using Stream stream = file.OpenReadStream();
+                emailService.SetFileAttachment(stream.ToByteArray(), fileName);
+                emailService.Send(
+                        _emailServerSettings.Value.SmtpAddress,
+                        emailAddress,
+                        subject,
+                        emailContent,
+                        "",
+                        _emailServerSettings.Value.SmtpAddress
+                    );
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        private string GenerateInvoiceReceiptEmailContent(string transactionNo, string company, string salesAgent)
+        {
+            var template = "";
+
+            using (var rdFile = new StreamReader(String.Format("{0}/Templates/EmailTemplates/EmailNotificationSendInvoiceTransaction.html", AppDomain.CurrentDomain.BaseDirectory)))
+            {
+                template = rdFile.ReadToEnd();
+            }
+
+            template = template.Replace("#transactionNo", transactionNo);
+            template = template.Replace("#company", company);
+            template = template.Replace("#salesAgent", salesAgent);
 
             return template;
         }

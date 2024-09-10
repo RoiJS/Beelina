@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, OnDestroy, viewChild, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, viewChild } from '@angular/core';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -9,16 +10,23 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { PaymentMethod } from 'src/app/_models/payment-method';
+import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
+import { AuthService } from 'src/app/_services/auth.service';
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { InvoicePrintService } from 'src/app/_services/print/invoice-print.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
-import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
+
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
-import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+
 import * as PaymentMethodActions from '../../../payment-methods/store/actions';
 import { Transaction } from 'src/app/_models/transaction';
+import { PrintForSettingsEnum } from 'src/app/_enum/print-for-settings.enum';
+import { SendInvoiceOptionDialogComponent } from 'src/app/product/product-cart/send-invoice-option-dialog/send-invoice-option-dialog.component';
 
 @Component({
   selector: 'app-transaction-details',
@@ -36,9 +44,15 @@ export class TransactionDetailsComponent
   private _paymentMethodOptions: PaymentMethod[];
   private _subscription: Subscription = new Subscription();
   private _transactionForm: FormGroup;
+  private _dialogSendInvoiceOptionRef: MatBottomSheetRef<SendInvoiceOptionDialogComponent>;
+
+  bottomSheet = inject(MatBottomSheet);
+  invoicePrintService = inject(InvoicePrintService);
+  userService = inject(UserAccountService);
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private authService: AuthService,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -162,6 +176,42 @@ export class TransactionDetailsComponent
         openRegisterDialog: false
       }
     });
+  }
+
+  sendInvoice() {
+    this._dialogSendInvoiceOptionRef = this.bottomSheet.open(SendInvoiceOptionDialogComponent);
+
+    this._dialogSendInvoiceOptionRef
+      .afterDismissed()
+      .subscribe(
+        async (data: {
+          printForSettingsEnum: PrintForSettingsEnum;
+        }) => {
+          if (!data) return;
+
+          this._isLoading = true;
+          this.invoicePrintService
+            .sendInvoice(this._transactionId, data.printForSettingsEnum, (file: File) => {
+              this.transactionService.sendInvoiceTransaction(
+                this._transactionId,
+                this.authService.userId,
+                file
+              ).subscribe({
+                next: (result: boolean) => {
+                  this._isLoading = false;
+                  if (result) {
+                    this.notificationService.openSuccessNotification(this.translateService.instant('PRODUCT_CART_PAGE.SEND_VIA_EMAIL_OPTION_DIALOG.SUCCESS_MESSAGE'));
+                  } else {
+                    this.notificationService.openErrorNotification(this.translateService.instant('PRODUCT_CART_PAGE.SEND_VIA_EMAIL_OPTION_DIALOG.ERROR_MESSAGE'));
+                  }
+                },
+                error: () => {
+                  this.notificationService.openErrorNotification(this.translateService.instant('PRODUCT_CART_PAGE.SEND_VIA_EMAIL_OPTION_DIALOG.ERROR_MESSAGE'));
+                }
+              });
+            });
+        }
+      );
   }
 
   get transactionForm(): FormGroup {

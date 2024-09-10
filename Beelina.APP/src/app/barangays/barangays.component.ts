@@ -11,6 +11,7 @@ import { BaseComponent } from '../shared/components/base-component/base.componen
 
 import { BarangayService } from '../_services/barangay.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { LocalCustomerAccountsDbService } from '../_services/local-db/local-customer-accounts-db.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 
 import { Barangay } from '../_models/barangay';
@@ -32,6 +33,7 @@ export class BarangaysComponent
     private barangayService: BarangayService,
     private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
+    private localCustomerAccountsDbService: LocalCustomerAccountsDbService,
     private notificationService: NotificationService,
     private router: Router,
     private store: Store<AppStateInterface>,
@@ -92,10 +94,10 @@ export class BarangaysComponent
     this.dialogService
       .openConfirmation(
         this.translateService.instant(
-          'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.TITLE'
+          'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.TITLE'
         ),
         this.translateService.instant(
-          'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.CONFIRM'
+          'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.CONFIRM'
         )
       )
       .subscribe((result) => {
@@ -103,14 +105,15 @@ export class BarangaysComponent
           this.barangayService.deleteBarangay(id).subscribe({
             complete: () => {
               this.notificationService.openSuccessNotification(this.translateService.instant(
-                'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.SUCCESS_MESSAGE'
+                'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.SUCCESS_MESSAGE'
               ));
+              this.localCustomerAccountsDbService.deleteLocalCustomreAccount(id);
               this.store.dispatch(BarangaysStoreActions.resetBarangayList());
               this.store.dispatch(BarangaysStoreActions.getBarangaysAction());
             },
             error: (err) => {
               this.notificationService.openErrorNotification(this.translateService.instant(
-                'BARANGAYS_PAGE.DELETE_BARANGAY_DIALOG.ERROR_MESSAGE'
+                'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.ERROR_MESSAGE'
               ));
             },
           });
@@ -119,7 +122,7 @@ export class BarangaysComponent
   }
 
   goToCustomers(barangay: string) {
-    this.router.navigate([`barangays/${barangay}`]);
+    this.router.navigate([`customer-accounts/${barangay}`]);
   }
 
   get dataSource(): BarangaysDataSource {

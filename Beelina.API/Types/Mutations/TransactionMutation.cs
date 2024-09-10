@@ -2,9 +2,13 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
+using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
+using Microsoft.Extensions.Options;
+using ReserbizAPP.LIB.Helpers.Class;
+using ReserbizAPP.LIB.Helpers.Services;
 
 namespace Beelina.API.Types.Mutations
 {
@@ -56,7 +60,33 @@ namespace Beelina.API.Types.Mutations
             catch (Exception ex)
             {
                 result = false;
-                Console.Write($"Error deleting order transaction(s): {ex.Message}");
+                Console.WriteLine($"Error deleting order transaction(s): {ex.Message}");
+            }
+
+            return result;
+        }
+
+        [Authorize]
+        public async Task<bool> SetTransactionsStatus(
+                [Service] ITransactionRepository<Transaction> transactionRepository,
+                [Service] ICurrentUserService currentUserService,
+                [Service] IHttpContextAccessor httpContextAccessor,
+                List<int> transactionIds,
+                TransactionStatusEnum status)
+        {
+            var result = true;
+
+            try
+            {
+                transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+                await transactionRepository.SetTransactionsStatus(transactionIds, status);
+
+                await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Console.Write($"Error setting order transaction(s) status: {ex.Message}");
             }
 
             return result;
@@ -86,10 +116,28 @@ namespace Beelina.API.Types.Mutations
             catch (Exception ex)
             {
                 result = false;
-                Console.Write($"Error deleting order transaction(s): {ex.Message}");
+                Console.WriteLine($"Error deleting order transaction(s): {ex.Message}");
             }
 
             return result;
+        }
+
+        [Authorize]
+        public async Task<bool> SendInvoiceTransaction(
+            [Service] ITransactionRepository<Transaction> transactionRepository,
+            int userId,
+            int transactionId,
+            IFile file)
+        {
+            try
+            {
+                return await transactionRepository.SendInvoiceTransaction(userId, transactionId, file);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending invoice receipt: {ex.Message}");
+                return false;
+            }
         }
     }
 }

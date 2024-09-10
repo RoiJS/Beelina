@@ -14,6 +14,7 @@ export class Product extends Entity implements IModelNode {
   public productUnit: ProductUnit;
   public deductedStock: number;
   public withdrawalSlipNo: string;
+  public plateNo: string;
   public isTransferable: boolean;
   public numberOfUnits: number;
   public isLinkedToSalesAgent: boolean;

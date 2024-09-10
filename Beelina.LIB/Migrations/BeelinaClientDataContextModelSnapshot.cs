@@ -587,6 +587,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("SenderPlateNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("SourceProductNumberOfUnits")
                         .HasColumnType("int");
 
@@ -1151,6 +1154,58 @@ namespace Beelina.LIB.Migrations
                     b.ToTable("UserPermission");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.UserSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowAutoSendReceipt")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AllowOrderConfirmation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AllowOrderPayments")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AllowSendReceipt")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SendReceiptEmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserAccountId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserAccountId")
+                        .IsUnique();
+
+                    b.ToTable("UserSettings");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.Warehouse", b =>
                 {
                     b.Property<int>("Id")
@@ -1673,6 +1728,17 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("UserAccount");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.UserSetting", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "UserAccount")
+                        .WithOne("UserSetting")
+                        .HasForeignKey("Beelina.LIB.Models.UserSetting", "UserAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserAccount");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.Barangay", b =>
                 {
                     b.Navigation("Stores");
@@ -1755,6 +1821,8 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("UpdatedTransactions");
 
                     b.Navigation("UserPermissions");
+
+                    b.Navigation("UserSetting");
                 });
 #pragma warning restore 612, 618
         }

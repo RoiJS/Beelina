@@ -15,6 +15,7 @@ import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { GraphQLModule } from './graphql.module';
+import { NgxIndexedDbModule } from './ngx-indexed-db.module';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -58,6 +59,7 @@ import { TemplatePageTitleStrategyService } from './_services/title-strategy.ser
       },
     }),
     GraphQLModule,
+    NgxIndexedDbModule,
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({
