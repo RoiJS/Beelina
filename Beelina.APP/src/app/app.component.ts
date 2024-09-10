@@ -20,6 +20,7 @@ import { SharedComponent } from './shared/components/shared/shared.component';
 
 import { ModuleEnum } from './_enum/module.enum';
 import { PermissionLevelEnum } from './_enum/permission-level.enum';
+import { ButtonOptions } from './_enum/button-options.enum';
 
 import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
@@ -131,9 +132,23 @@ export class AppComponent
     }
 
     if (name === 'MAIN_MENU.LOGOUT') {
-      if (this.isAdmin()) this.uiService.toggleDrawer();
-      this.authService.logout();
-      this.localSyncDataService.clearLocalData();
+      if (this.networkService.isOnline.value) {
+        if (this.isAdmin()) this.uiService.toggleDrawer();
+        this.authService.logout();
+        this.localSyncDataService.clearLocalData();
+      } else {
+        this.dialogService.openConfirmation(
+          this.translateService.instant("LOGOUT_DIALOG.TITLE"),
+          this.translateService.instant("LOGOUT_DIALOG.CONFIRM_MESSAGE"),
+        ).subscribe((result: ButtonOptions) => {
+          if (result === ButtonOptions.YES) {
+            if (this.isAdmin()) this.uiService.toggleDrawer();
+            this.authService.logout();
+            this.localSyncDataService.clearLocalData();
+          }
+        });
+      }
+
     }
   }
 

@@ -159,7 +159,7 @@ export class SidedrawerService {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',
         icon: 'remove_circle_outline',
-        supportOffline: false
+        supportOffline: true
       },
     ];
 

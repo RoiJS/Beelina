@@ -120,6 +120,10 @@
       "NO_NETWORK": "Unable to login. No network connection."
     }
   },
+  "LOGOUT_DIALOG": {
+    "TITLE": "Logout",
+    "CONFIRM_MESSAGE": "Loggging out will clear all offline copies of products and you will not be able to register orders while offline. Would you like to proceed?"
+  },
   "ORDERS_PAGE": {
     "TITLE": "Orders"
   },

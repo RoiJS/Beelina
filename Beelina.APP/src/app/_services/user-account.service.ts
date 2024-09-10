@@ -301,7 +301,7 @@ export class UserAccountService {
       })
       .valueChanges.pipe(
         map(
-          (
+          async (
             result: ApolloQueryResult<{
               userSetting: UserSetting;
             }>
@@ -313,7 +313,7 @@ export class UserAccountService {
             userSetting.allowSendReceipt = data.allowSendReceipt;
             userSetting.allowAutoSendReceipt = data.allowAutoSendReceipt;
             this.userSetting.set(userSetting);
-            this.localUserSettingsDbService.saveLocalUserSettings(userSetting);
+            await this.localUserSettingsDbService.saveLocalUserSettings(userSetting);
             return userSetting;
           }
         ),
