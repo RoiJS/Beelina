@@ -22,7 +22,8 @@
         | translate
         }}:</mat-label>
       <input matInput [readonly]="data.payment.id > 0" type="number" formControlName="amount" />
-      <mat-hint>Max Amount: {{ maxAmountHint() }}</mat-hint>
+      <mat-hint> {{ "PAYMENTS_PAGE.REGISTER_PAYMENT_DIALOG.FORM_CONTROL_SECTION.AMOUNT_CONTROL.HINT" | translate }}: {{
+        maxAmountHint() }}</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -34,28 +35,27 @@
         [placeholder]="notesControlHintText"></textarea>
     </mat-form-field>
 
-    @if(userService.userSetting().allowOrderConfirmation) {
-    @if(registerPaymentForm.get('amount').value === maxAmount()) {
-    <div>
-      <mat-slide-toggle formControlName="paid">{{
-        "PAYMENTS_PAGE.REGISTER_PAYMENT_DIALOG.FORM_CONTROL_SECTION.PAID_CONTROL.LABEL"
-        | translate
-        }}</mat-slide-toggle>
-    </div>
-    }
-    }
-
   </div>
+
   <div class="dialog-form-container__footer">
     <div class="button-container">
 
       @if (data.payment.id === 0) {
-      <button mat-raised-button color="primary" (click)="onConfirm()">
-        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
-      </button>
-      <button mat-raised-button color="default" (click)="onCancel()">
-        {{ "GENERAL_TEXTS.CANCEL" | translate }}
-      </button>
+        <button mat-raised-button color="primary" (click)="onConfirm()">
+          {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+        </button>
+
+        @if(userService.userSetting().allowOrderConfirmation) {
+        <button [disabled]="registerPaymentForm.get('amount').value !== maxAmount()" mat-raised-button color="primary"
+          (click)="onMarkAsPaid()">
+          {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+        </button>
+        } @else {
+        <button mat-raised-button color="default" (click)="onCancel()">
+          {{ "GENERAL_TEXTS.CANCEL" | translate }}
+        </button>
+        }
+
       } @else {
       <button mat-raised-button color="default" class="width-stretch" (click)="onCancel()">
         {{ "GENERAL_TEXTS.CLOSE" | translate }}

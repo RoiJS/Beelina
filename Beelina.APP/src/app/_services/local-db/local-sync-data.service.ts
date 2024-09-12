@@ -8,6 +8,7 @@ import { LocalPaymentMethodsDbService } from './local-payment-methods-db.service
 import { LocalOrdersDbService } from './local-orders-db.service';
 
 import { User } from 'src/app/_models/user.model';
+import { NetworkService } from '../network.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class LocalSyncDataService {
   localCustomerStoresDbService = inject(LocalCustomerStoresDbService);
   localPaymentMethodsDbService = inject(LocalPaymentMethodsDbService);
   localOrdersDbService = inject(LocalOrdersDbService);
+  networkService = inject(NetworkService);
 
   constructor() { }
 
@@ -38,14 +40,17 @@ export class LocalSyncDataService {
     console.info('Product Synced');
 
     setInterval(async () => {
-      console.info('Clearing local copy of products..');
-      await this.localProductsDbService.clear();
 
-      console.info('Syncing local copy of products..');
-      await this.localProductsDbService.getProductUnitsFromServer();
-      await this.localProductsDbService.getProductsFromServer();
-      console.info('Synced local copy of products..');
+      // Sync only if online
+      if (this.networkService.isOnline.value) {
+        console.info('Clearing local copy of products..');
+        await this.localProductsDbService.clear();
 
+        console.info('Syncing local copy of products..');
+        await this.localProductsDbService.getProductUnitsFromServer();
+        await this.localProductsDbService.getProductsFromServer();
+        console.info('Synced local copy of products..');
+      }
     }, 30 * 60 * 1000); // 30 mins
   }
 
