@@ -67,7 +67,7 @@
     "DASHBOARD": "Dashboard",
     "SETTINGS": "Settings",
     "LOGOUT": "Logout",
-    "BIZUAL_OFFLINE": "Bizual Offline"
+    "BIZUAL_OFFLINE": "Offline Mode"
   },
   "ORDER_TYPE": {
     "DRAFT": "Draft",
@@ -235,7 +235,8 @@
           "LABEL": "Payment Date"
         },
         "AMOUNT_CONTROL": {
-          "LABEL": "Amount"
+          "LABEL": "Amount",
+          "HINT": "Amount to Pay"
         },
         "NOTES_CONTROL": {
           "LABEL": "Notes",
@@ -769,7 +770,7 @@
     "DESCRIPTION": "This contains all registered bad orders."
   },
   "OFFLINE_ORDERS_MODE": {
-    "HAS_OFFLINE_ORDERS_LABEL_MESSAGE": "Found offline order(s). Click here to sync offline orders.",
+    "HAS_OFFLINE_ORDERS_LABEL_MESSAGE": "Found offline order(s). Move offline transactions to online.",
     "SYNC_ALL_OFFLINE_ORDERS_DIALOG": {
       "TITLE": "Sync Offline Orders",
       "CONFIRM_MESSAGE": "All offline orders will be synced to server. Do you want to proceed?",
@@ -783,7 +784,7 @@
       "CONFIRM_SELECTED_ORDERS": "Confirm Order(s)",
       "MARK_AS_PAID_SELECTED_ORDERS": "Mark Order(s) as Paid",
       "VIEW_SELECTED_ORDERS": "View Selected Order(s)",
-      "SYNC_ALL_OFFLINE_ORDERS": "Sync Offline Order(s)"
+      "SYNC_ALL_OFFLINE_ORDERS": "Confirm"
     },
     "DEACTIVATE_SELECT_MULTIPLE_DIALOG": {
       "TITLE": "Deactivate Multi-select item(s)",
