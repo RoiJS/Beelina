@@ -784,7 +784,7 @@
       "CONFIRM_SELECTED_ORDERS": "Confirm Order(s)",
       "MARK_AS_PAID_SELECTED_ORDERS": "Mark Order(s) as Paid",
       "VIEW_SELECTED_ORDERS": "View Selected Order(s)",
-      "SYNC_ALL_OFFLINE_ORDERS": "Confirm"
+      "SYNC_ALL_OFFLINE_ORDERS": "Sync Offline Order(s)"
     },
     "DEACTIVATE_SELECT_MULTIPLE_DIALOG": {
       "TITLE": "Deactivate Multi-select item(s)",
