@@ -164,23 +164,16 @@ export class BadOrdersComponent
     this.multipleItemsService.selectItem(checked, id, this.dataSource.itemCount);
   }
 
-  syncAllOfflineBadOrders() {
-    this.dialogService.openConfirmation(
-      this.translateService.instant('OFFLINE_ORDERS_MODE.SYNC_ALL_OFFLINE_ORDERS_DIALOG.TITLE'),
-      this.translateService.instant('OFFLINE_ORDERS_MODE.SYNC_ALL_OFFLINE_ORDERS_DIALOG.CONFIRM_MESSAGE'),
-    ).subscribe(async (result: ButtonOptions) => {
-      if (result === ButtonOptions.YES) {
-        this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: true }));
-        await this.localOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.BAD_ORDER, []);
-        this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
-        this.notificationService.openSuccessNotification(
-          this.translateService.instant('OFFLINE_ORDERS_MODE.SYNC_ALL_OFFLINE_ORDERS_DIALOG.SUCCESS_MESSAGE'),
-        );
-        this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
-        this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: TransactionStatusEnum.BAD_ORDER }));
-        this.checkLocalOrders();
-      }
-    })
+  async syncAllOfflineBadOrders() {
+    this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: true }));
+    await this.localOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.BAD_ORDER, []);
+    this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
+    this.notificationService.openSuccessNotification(
+      this.translateService.instant('OFFLINE_ORDERS_MODE.SYNC_ALL_OFFLINE_ORDERS_DIALOG.SUCCESS_MESSAGE'),
+    );
+    this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
+    this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: TransactionStatusEnum.BAD_ORDER }));
+    this.checkLocalOrders();
   }
 
   checkLocalOrders() {

@@ -22,11 +22,14 @@
       <mat-icon>delete</mat-icon>
       {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.DELETE_SELECTED_ORDERS' | translate }}
     </button>
-    <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item
-      (click)="syncSelectedOfflineOrders()">
-      <mat-icon>cloud_upload</mat-icon>
-      {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.SYNC_ALL_OFFLINE_ORDERS' | translate }}
-    </button>
+
+    @if (networkService.isOnline.value) {
+      <button [disabled]="multipleItemsService.selectedItems().length === 0" mat-menu-item
+        (click)="syncSelectedOfflineOrders()">
+        <mat-icon>cloud_upload</mat-icon>
+        {{ 'TRANSACTION_SELECT_MULTIPLE_MODE.OPTIONS.SYNC_ALL_OFFLINE_ORDERS' | translate }}
+      </button>
+    }
   </mat-menu>
 </app-tool-bar>
 }
