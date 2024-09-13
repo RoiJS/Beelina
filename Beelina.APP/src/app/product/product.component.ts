@@ -340,7 +340,7 @@ export class ProductComponent
   }
 
   calculateTotalInventoryValue() {
-    if (!navigator.onLine) return;
+    if (!this.networkService.isOnline.value) return;
     this._subscription.add(this.productService.getPanelInventoryTotalValue().subscribe({
       next: (data: number) => {
         this.totalProductValue.set(NumberFormatter.formatCurrency(data));
