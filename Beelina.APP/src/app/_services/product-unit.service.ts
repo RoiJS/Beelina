@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
-import { Store } from '@ngrx/store';
 import { Apollo, gql } from 'apollo-angular';
-import { map, take } from 'rxjs';
+import { map } from 'rxjs';
 
-import { endCursorSelector } from '../units/store/selectors';
-import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 import { ProductUnit } from '../_models/product-unit';
 
-const GET_PAYMENT_METHODS = gql`
-  query ($cursor: String) {
-    productUnits(after: $cursor) {
+const GET_PRODUCT_UNITS = gql`
+  query ($cursor: String, $limit: Int!) {
+    productUnits(after: $cursor, first: $limit) {
       edges {
         cursor
         node {
@@ -36,22 +33,15 @@ const GET_PAYMENT_METHODS = gql`
 export class ProductUnitService {
   constructor(
     private apollo: Apollo,
-    private store: Store<AppStateInterface>
-  ) {}
+  ) { }
 
-  getProductUnits() {
-    let cursor = null;
-
-    this.store
-      .select(endCursorSelector)
-      .pipe(take(1))
-      .subscribe((currentCursor) => (cursor = currentCursor));
-
+  getProductUnits(cursor: string, limit: number = 100) {
     return this.apollo
       .watchQuery({
-        query: GET_PAYMENT_METHODS,
+        query: GET_PRODUCT_UNITS,
         variables: {
           cursor,
+          limit
         },
       })
       .valueChanges.pipe(

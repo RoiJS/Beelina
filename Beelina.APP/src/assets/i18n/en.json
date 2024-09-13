@@ -42,7 +42,10 @@
     "LAST_SAVED": "Last saved",
     "ALL": "All",
     "PRINT": "Print",
-    "SEND_VIA_EMAIL": "Send via Email"
+    "SEND_VIA_EMAIL": "Send via Email",
+    "SYNC": "Sync",
+    "ONLINE_MESSAGE": "You are back online. You are now using bizual online mode.",
+    "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode."
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -63,7 +66,8 @@
     "MANUAL": "User Manual",
     "DASHBOARD": "Dashboard",
     "SETTINGS": "Settings",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "BIZUAL_OFFLINE": "Offline Mode"
   },
   "ORDER_TYPE": {
     "DRAFT": "Draft",
@@ -111,7 +115,14 @@
       "LOGIN_BUTTON": {
         "LABEL": "Login"
       }
+    },
+    "ERROR_MESSAGES": {
+      "NO_NETWORK": "Unable to login. No network connection."
     }
+  },
+  "LOGOUT_DIALOG": {
+    "TITLE": "Logout",
+    "CONFIRM_MESSAGE": "Loggging out will clear all offline copies of products and you will not be able to register orders while offline. Would you like to proceed?"
   },
   "ORDERS_PAGE": {
     "TITLE": "Orders"
@@ -224,7 +235,8 @@
           "LABEL": "Payment Date"
         },
         "AMOUNT_CONTROL": {
-          "LABEL": "Amount"
+          "LABEL": "Amount",
+          "HINT": "Amount to Pay"
         },
         "NOTES_CONTROL": {
           "LABEL": "Notes",
@@ -600,6 +612,10 @@
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
       "REFRESH_PRODUCT_LIST_ERROR_MESSAGE": "Product List has been refreshed."
     },
+    "SYNC_PRODUCTS_DIALOG": {
+      "SYNCING_NOTIFICATION_MESSAGE": "Syncing products..",
+      "SYNCED_NOTIFICATION_MESSAGE": "Products have been synced."
+    },
     "NO_SELECTED_SALES_AGENT_DIALOG": {
       "TITLE": "No selected sales agent",
       "DESCRIPTION": "Please select sales agent first."
@@ -734,11 +750,32 @@
       "SOME_INVALID_MESSAGE": "There are {0} selected order(s) which have product(s) that have insufficient quantity. Would you like to continue for the other valid order(s)? Note: This action cannot be undone.",
       "SUCCESS_MESSAGE": "Selected order(s) have been successfully confirmed!",
       "ERROR_MESSAGE": "Failed to confirm selected order(s). Please try again later."
+    },
+    "CONFIRM_MULTIPLE_ORDERS_DIALOG": {
+      "ERROR_MESSAGE": "There are offline orders selected. Please select online orders only to proceed."
+    },
+    "SYNC_OFFLINE_ORDER_DIALOG": {
+      "TITLE": "Sync offline draft order",
+      "CONFIRM_MESSAGE": "Are you sure to sync offline draft order?",
+      "SUCCESS_MESSAGE": "Offline draft order has been successfully synced.",
+      "ERROR_MESSAGE": "Failed to sync offline draft order. Please try again later."
+    },
+    "SYNC_MULTIPLE_OFFLINE_ORDERS_DIALOG": {
+      "TITLE": "Sync offline draft order(s)",
+      "CONFIRM_MESSAGE": "Are you sure to sync selected offline draft order(s)?"
     }
   },
   "BAD_ORDERS_PAGE": {
     "TITLE": "Bad Orders",
     "DESCRIPTION": "This contains all registered bad orders."
+  },
+  "OFFLINE_ORDERS_MODE": {
+    "HAS_OFFLINE_ORDERS_LABEL_MESSAGE": "Found offline order(s). Move offline transactions to online.",
+    "SYNC_ALL_OFFLINE_ORDERS_DIALOG": {
+      "TITLE": "Sync Offline Orders",
+      "CONFIRM_MESSAGE": "All offline orders will be synced to server. Do you want to proceed?",
+      "SUCCESS_MESSAGE": "Offline orders have been successfully synced."
+    }
   },
   "TRANSACTION_SELECT_MULTIPLE_MODE": {
     "LABEL": "Selected Order(s)",
@@ -746,11 +783,19 @@
       "DELETE_SELECTED_ORDERS": "Delete Selected Order(s)",
       "CONFIRM_SELECTED_ORDERS": "Confirm Order(s)",
       "MARK_AS_PAID_SELECTED_ORDERS": "Mark Order(s) as Paid",
-      "VIEW_SELECTED_ORDERS": "View Selected Order(s)"
+      "VIEW_SELECTED_ORDERS": "View Selected Order(s)",
+      "SYNC_ALL_OFFLINE_ORDERS": "Sync Offline Order(s)"
     },
     "DEACTIVATE_SELECT_MULTIPLE_DIALOG": {
       "TITLE": "Deactivate Multi-select item(s)",
       "CONFIRM_MESSAGE": "Deactivating multi-select will clear the selected item(s). Are you really sure to proceed?"
+    },
+    "SYNC_OFFLINE_ORDERS_DIALOG": {
+      "TITLE": "Sync Offline Orders",
+      "CONFIRM_MESSAGE": "All offline orders will be synced to server. Do you want to proceed?",
+      "SUCCESS_MESSAGE": "Offline orders have been successfully synced.",
+      "ERROR_MESSAGE": "Failed to sync offline order(s). Please try again later.",
+      "WARNING_MESSAGE": "There are no selected offline order(s). Please select offline order(s) only to proceed."
     }
   },
   "TRANSACTION_OPTION_MENU": {
@@ -769,6 +814,10 @@
     "REGISTER_PAYMENT": {
       "LABEL": "Register Payment",
       "DESCRIPTIONS": "Register payment for the selected order"
+    },
+    "SYNC_ORDER": {
+      "LABEL": "Sync Order",
+      "DESCRIPTIONS": "Sync offline order to server"
     },
     "DELETE_TRANSACTION_BY_DATE_DIALOG": {
       "TITLE": "Delete Orders",
@@ -820,6 +869,12 @@
       "SUCCESS_MESSAGE": "Bad order has been deleted.",
       "ERROR_MESSAGE": "Deleting bad order failed. Please try again later.",
       "LOADING_MESSAGE": "Deleting bad order. Please wait..."
+    },
+    "SYNC_OFFLINE_ORDER_DIALOG": {
+      "TITLE": "Sync offline bad order",
+      "CONFIRM_MESSAGE": "Are you sure to sync offline bad order?",
+      "SUCCESS_MESSAGE": "Offline bad order has been successfully synced.",
+      "ERROR_MESSAGE": "Failed to sync offline bad order. Please try again later."
     }
   },
   "TOP_PRODUCTS_PAGE": {

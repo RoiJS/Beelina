@@ -67,6 +67,24 @@ mat-tree-node:hover {
     mat-icon {
       font-size: 18px;
     }
+
+    &__offline-banner {
+      display: flex;
+      align-items: center;
+      align-self: center;
+      width: 100%;
+      justify-content: space-around;
+      background: $primary-gradient;
+      height: 4em;
+
+      .label {
+        display: flex;
+        align-self: center;
+        align-items: center;
+        color: $white;
+        font-size: 12px;
+      }
+    }
   }
 }
 

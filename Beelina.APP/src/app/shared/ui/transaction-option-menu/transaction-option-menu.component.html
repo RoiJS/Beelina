@@ -12,10 +12,20 @@
   @if (transaction().status === _transactionStatusType.CONFIRMED) {
   <a mat-list-item (click)="registerOrder()">
     <span matListItemTitle>{{ "TRANSACTION_OPTION_MENU.REGISTER_PAYMENT.LABEL" | translate }}</span>
-    <span matLine>{{ "TRANSACTION_OPTION_MENU.REGISTER_PAYMENT.LABEL" | translate }}</span>
+    <span matLine>{{ "TRANSACTION_OPTION_MENU.REGISTER_PAYMENT.DESCRIPTIONS" | translate }}</span>
+  </a>
+  }
+  }
+
+  @if (isOnline) {
+  @if (data.transaction.isLocal) {
+  <a mat-list-item (click)="syncLocalOrder()">
+    <span matListItemTitle>{{ "TRANSACTION_OPTION_MENU.SYNC_ORDER.LABEL" | translate }}</span>
+    <span matLine>{{ "TRANSACTION_OPTION_MENU.SYNC_ORDER.DESCRIPTIONS" | translate }}</span>
   </a>
   }
   }
   }
+
 
 </mat-nav-list>

@@ -1,20 +1,27 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
 
-  @if ((currentUserPermission === getPermissionLevel(permissionLevelEnum.Manager) &&
-  businessModel() === businessModelEnum.WarehousePanelMonitoring) || currentUserPermission ===
-  getPermissionLevel(permissionLevelEnum.User)) { <button mat-icon-button class="toolbar-option"
-    (click)="openTextParserDialog()">
-    <mat-icon matBadgeColor="warn">add_comment</mat-icon>
-  </button>
-  }
-
+  @if (this.networkService.isOnline | async) {
   @if(currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)) { <button mat-icon-button
-    [disabled]="itemCounter() === 0" class="toolbar-option" (click)="goToCart()">
-    <mat-icon [matBadge]=" itemCounter()" [matBadgeHidden]="itemCounter() === 0" matBadgeColor="warn"
-      aria-hidden="false">shopping_cart</mat-icon>
+    class="toolbar-option" (click)="syncProducts()">
+    <mat-icon>sync</mat-icon>
+    </button>
+    }
+    }
+
+    @if ((currentUserPermission === getPermissionLevel(permissionLevelEnum.Manager) &&
+    businessModel() === businessModelEnum.WarehousePanelMonitoring) || currentUserPermission ===
+    getPermissionLevel(permissionLevelEnum.User)) { <button mat-icon-button class="toolbar-option"
+      (click)="openTextParserDialog()">
+      <mat-icon matBadgeColor="warn">add_comment</mat-icon>
     </button>
     }
 
+    @if(currentUserPermission < getPermissionLevel(permissionLevelEnum.Manager)) { <button mat-icon-button
+      [disabled]="itemCounter() === 0" class="toolbar-option" (click)="goToCart()">
+      <mat-icon [matBadge]=" itemCounter()" [matBadgeHidden]="itemCounter() === 0" matBadgeColor="warn"
+        aria-hidden="false">shopping_cart</mat-icon>
+      </button>
+      }
 </app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
@@ -78,7 +85,8 @@
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource()?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource()">
-          <app-product-card-item [productItem]="item" [filterKeyword]="filterKeyword()" [hideDeductionCounterIcon]="currentUserPermission >
+          <app-product-card-item [hideHeaderOptions]="!networkService.isOnline.value" [productItem]="item"
+            [filterKeyword]="filterKeyword()" [hideDeductionCounterIcon]="currentUserPermission >
             getPermissionLevel(permissionLevelEnum.User)" [allowManageItem]="
               currentUserPermission >
                 getPermissionLevel(permissionLevelEnum.User)

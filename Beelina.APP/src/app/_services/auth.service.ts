@@ -7,6 +7,7 @@ import { ApolloQueryResult } from '@apollo/client/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 
+import { UserAccountService } from './user-account.service';
 import { RoutingService } from './routing.service';
 import { StorageService } from './storage.service';
 
@@ -99,7 +100,8 @@ export class AuthService {
     private apollo: Apollo,
     private routingService: RoutingService,
     private storageService: StorageService,
-    private store: Store<AppStateInterface>
+    private store: Store<AppStateInterface>,
+    private userAccountService: UserAccountService
   ) {
     this._company.next(this.storageService.getString('company'));
   }
@@ -263,6 +265,7 @@ export class AuthService {
     this.storageService.remove("textOrder");
     this.storageService.remove("textInventories");
     this.storageService.remove("textInventoriesList");
+    this.userAccountService.clearUserSettings();
 
     this.store.dispatch(LoginActions.resetLoginCredentials());
     this.store.dispatch(ProductTransactionActions.resetProductTransactionState());
@@ -325,6 +328,7 @@ export class AuthService {
       this._currentUserFullname.next(loadedUser.fullname);
       this._currentUsername.next(loadedUser.username);
 
+      this.userAccountService.autoLoadUserSettings();
       this.autoLogout(tokenInfo.timeToExpiry);
       return of(true);
     }

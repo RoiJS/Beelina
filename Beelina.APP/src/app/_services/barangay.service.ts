@@ -182,7 +182,7 @@ export class BarangayService {
       .pipe(
         map((result: MutationResult<{ updateBarangay: IBarangayOutput }>) => {
           const output = result.data.updateBarangay;
-          const payload = output.barangay;
+          const payload = <Barangay>output.barangay;
           const errors = output.errors;
 
           if (payload) {

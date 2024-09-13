@@ -13,3 +13,8 @@ export const transactionsSelector = createSelector(
   selectFeature,
   (state) => state.transaction
 );
+
+export const isLoadingSelector = createSelector(
+  selectFeature,
+  (state) => state.isLoading
+);

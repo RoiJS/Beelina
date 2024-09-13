@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -19,11 +20,15 @@ import { SharedComponent } from './shared/components/shared/shared.component';
 
 import { ModuleEnum } from './_enum/module.enum';
 import { PermissionLevelEnum } from './_enum/permission-level.enum';
+import { ButtonOptions } from './_enum/button-options.enum';
 
 import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
 import { DialogService } from './shared/ui/dialog/dialog.service';
 import { GeneralInformationService } from './_services/general-information.service';
+import { LocalSyncDataService } from './_services/local-db/local-sync-data.service';
+import { NotificationService } from './shared/ui/notification/notification.service';
+import { NetworkService } from './_services/network.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { StorageService } from './_services/storage.service';
 import { UIService } from './_services/ui.service';
@@ -43,19 +48,22 @@ export class AppComponent
   @ViewChild(MatSidenav) sideNav: MatSidenav | undefined;
 
   treeControl = new NestedTreeControl<IMenu>((node) => node.children);
-  menuDataSource = new MatTreeNestedDataSource<IMenu>();
+  menuDataSource = signal(new MatTreeNestedDataSource<IMenu>());
 
   activatedUrl = signal('');
   currentAppVersion = signal<string>('');
   isSystemUpdateActive = signal<boolean>(false);
-  isOnline = signal<boolean>(true);
   isAuthenticated = signal<boolean>(false);
   isAdmin = signal<boolean>(true);
+  pageLoaded = signal<boolean>(false);
 
   authService = inject(AuthService);
   appVersionService = inject(AppVersionService);
   dialogService = inject(DialogService);
   generalInformationService = inject(GeneralInformationService);
+  localSyncDataService = inject(LocalSyncDataService);
+  networkService = inject(NetworkService);
+  notificationService = inject(NotificationService);
   router = inject(Router);
   sideDrawerService = inject(SidedrawerService);
   storageService = inject(StorageService);
@@ -77,13 +85,11 @@ export class AppComponent
       );
       this._currentLoggedInUser = user;
       this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));
-      this.menuDataSource.data = this.sideDrawerService.getMenus();
       this.isAuthenticated.set((user !== null));
 
-      if (user) {
-        this.userAccountService.getUserSetting(user.id).subscribe();
-      }
+      this.setMainMenu();
 
+      // Set current sales agent id
       if (
         this.modulePrivilege(ModuleEnum.Distribution) ===
         this.getPermissionLevel(PermissionLevelEnum.User)
@@ -99,6 +105,7 @@ export class AppComponent
     this.updateOnlineStatus();
     this.monitorConnectionStatus();
     this.checkNewAppVersion();
+    this.pageLoaded.set(true);
   }
 
   override ngOnDestroy(): void {
@@ -107,6 +114,10 @@ export class AppComponent
 
   ngAfterViewInit(): void {
     this.uiService.setDrawerRef(this.sideNav);
+
+    (async () => {
+      await this.localSyncDataService.initSyncData();
+    })();
   }
 
   onNavItemTap(name: string, url: string, fragment: string, isExternalUrl: boolean): void {
@@ -121,8 +132,23 @@ export class AppComponent
     }
 
     if (name === 'MAIN_MENU.LOGOUT') {
-      if (this.isAdmin()) this.uiService.toggleDrawer();
-      this.authService.logout();
+      if (this.networkService.isOnline.value) {
+        if (this.isAdmin()) this.uiService.toggleDrawer();
+        this.authService.logout();
+        this.localSyncDataService.clearLocalData();
+      } else {
+        this.dialogService.openConfirmation(
+          this.translateService.instant("LOGOUT_DIALOG.TITLE"),
+          this.translateService.instant("LOGOUT_DIALOG.CONFIRM_MESSAGE"),
+        ).subscribe((result: ButtonOptions) => {
+          if (result === ButtonOptions.YES) {
+            if (this.isAdmin()) this.uiService.toggleDrawer();
+            this.authService.logout();
+            this.localSyncDataService.clearLocalData();
+          }
+        });
+      }
+
     }
   }
 
@@ -132,8 +158,30 @@ export class AppComponent
   }
 
   private updateOnlineStatus(): void {
-    this.isOnline.set(window.navigator.onLine);
-    console.info(`isOnline=[${this.isOnline}]`);
+    this.networkService.isOnline.next(window.navigator.onLine);
+    const isOnline = this.networkService.isOnline.value;
+    console.info(`isOnline=[${isOnline}]`);
+
+    if (isOnline) {
+
+      (async () => {
+        await this.localSyncDataService.initSyncData();
+      })();
+
+      if (this.pageLoaded()) {
+        this.notificationService.openSuccessNotification(
+          this.translateService.instant("GENERAL_TEXTS.ONLINE_MESSAGE")
+        );
+      }
+    } else {
+      if (this.pageLoaded()) {
+        this.notificationService.openWarningNotification(
+          this.translateService.instant("GENERAL_TEXTS.OFFLINE_MESSAGE")
+        );
+      }
+    }
+
+    this.setMainMenu();
   }
 
   private monitorConnectionStatus(): void {
@@ -141,11 +189,22 @@ export class AppComponent
     window.addEventListener('offline', this.updateOnlineStatus.bind(this));
   }
 
+  private setMainMenu() {
+    this.menuDataSource.update((c) => {
+      const menu = new MatTreeNestedDataSource<IMenu>()
+      menu.data = this.sideDrawerService.getMenus();
+      return menu;
+    });
+  }
+
   private initRouterEvents(): void {
     this.router.events
       .pipe(filter((event: any) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.activatedUrl.set(event.urlAfterRedirects);
+
+        if (!this.networkService.isOnline.value) return;
+
         this.generalInformationService
           .getGeneralInformation()
           .subscribe((info: GeneralInformation) => {
@@ -172,9 +231,9 @@ export class AppComponent
       this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.TITLE'),
       this.translateService.instant('MAIN_PAGE.NEW_APP_VERSION_DIALOG.DESCRIPTION')
     )
-    .subscribe(() => {
-      window.location.reload();
-    });
+      .subscribe(() => {
+        window.location.reload();
+      });
   }
 
   get copyRightText(): string {

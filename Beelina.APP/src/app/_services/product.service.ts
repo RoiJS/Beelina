@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
@@ -12,11 +12,6 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ProductNotExistsError } from '../_models/errors/product-not-exists.error';
 
 import {
-  endCursorSelector as endCursorProductSelector,
-  filterKeywordSelector as filterKeywordProductSelector,
-  supplierIdSelector as supplierIdProductSelector,
-} from '../product/store/selectors';
-import {
   endCursorSelector as endCursorWarehouseProductSelector,
   filterKeywordSelector as filterKeywordWarehouseProductSelector,
   supplierIdSelector as supplierIdWarehouseProductSelector,
@@ -24,7 +19,6 @@ import {
 import {
   endCursorSelector as endCursorProductStockAuditSelector, fromDateSelector, sortOrderSelector, stockAuditSourceSelector, toDateSelector,
 } from '../product/edit-product-details/manage-product-stock-audit/store/selectors';
-import { productTransactionsSelector } from '../product/add-to-cart-product/store/selectors';
 
 import { CheckProductCodeInformationResult } from '../_models/results/check-product-code-information-result';
 import { ProductInformationResult } from '../_models/results/product-information-result';
@@ -34,15 +28,16 @@ import { IProductInput } from '../_interfaces/inputs/iproduct.input';
 import { IProductOutput } from '../_interfaces/outputs/iproduct.output';
 import { Product } from '../_models/product';
 import { ProductTransaction } from '../_models/transaction';
-import { InsufficientProductQuantity, InvalidProductTransactionOverallQuantitiesTransactions, ProductTransactionOverallQuantities } from '../_models/insufficient-product-quantity';
+import { InsufficientProductQuantity, InvalidProductTransactionOverallQuantitiesTransactions } from '../_models/insufficient-product-quantity';
 
 import { IValidateProductQuantitiesQueryPayload } from '../_interfaces/payloads/ivalidate-product-quantities-query.payload';
 import { IProductInformationQueryPayload } from '../_interfaces/payloads/iproduct-information-query.payload';
 import { IProductTransactionQueryPayload } from '../_interfaces/payloads/iproduct-transaction-query.payload';
 import { ITextProductInventoryQueryPayload } from '../_interfaces/payloads/itext-product-inventory-query.payload';
 
-import { User } from '../_models/user.model';
 import { StorageService } from './storage.service';
+
+import { User } from '../_models/user.model';
 import { ProductStockAudit } from '../_models/product-stock-audit';
 import { IProductStockAuditOutput } from '../_interfaces/outputs/iproduct-stock-update.output';
 import { BusinessModelEnum } from '../_enum/business-model.enum';
@@ -65,12 +60,13 @@ query($userAccountId: Int!) {
 `;
 
 const GET_PRODUCTS_QUERY = gql`
-  query ($userAccountId: Int!, $cursor: String, $filterKeyword: String, $productsFilter: ProductsFilterInput!) {
+  query ($userAccountId: Int!, $cursor: String, $filterKeyword: String, $productsFilter: ProductsFilterInput!, $limit: Int!) {
     products(
       userAccountId: $userAccountId
       after: $cursor
       filterKeyword: $filterKeyword,
-      productsFilter: $productsFilter
+      productsFilter: $productsFilter,
+      first: $limit
     ) {
       nodes {
         id
@@ -501,44 +497,12 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
 export class ProductService {
   private _warehouseId: number = 1;
 
-  constructor(
-    private apollo: Apollo,
-    private http: HttpClient,
-    private store: Store<AppStateInterface>,
-    private storageService: StorageService
-  ) { }
+  apollo = inject(Apollo);
+  http = inject(HttpClient);
+  store = inject(Store<AppStateInterface>);
+  storageService = inject(StorageService);
 
-  getProducts() {
-    let cursor = null,
-      filterKeyword = '',
-      supplierId = 0,
-      productTransactionItems = Array<ProductTransaction>();
-
-    this.store
-      .select(endCursorProductSelector)
-      .pipe(take(1))
-      .subscribe((currentCursor) => (cursor = currentCursor));
-
-    this.store
-      .select(filterKeywordProductSelector)
-      .pipe(take(1))
-      .subscribe(
-        (currentFilterKeyword) => (filterKeyword = currentFilterKeyword)
-      );
-
-    this.store
-      .select(productTransactionsSelector)
-      .pipe(take(1))
-      .subscribe(
-        (productTransactions) => (productTransactionItems = productTransactions)
-      );
-
-    this.store
-      .select(supplierIdProductSelector)
-      .pipe(take(1))
-      .subscribe(
-        (currentSupplierId) => (supplierId = currentSupplierId)
-      );
+  getProducts(cursor: string, filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>) {
 
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
@@ -551,7 +515,8 @@ export class ProductService {
           userAccountId,
           productsFilter: {
             supplierId
-          }
+          },
+          limit
         },
       })
       .valueChanges.pipe(

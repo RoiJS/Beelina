@@ -22,6 +22,12 @@ export const reducers = createReducer(
       state.productTransactions = action.productTransactions;
     }
   ),
+  mutableOn(
+    ProductTransactionActions.getProductTransactions,
+    (state, action) => {
+      state.isLoading = true;
+    }
+  ),
   mutableOn(ProductTransactionActions.selectProduct, (state, action) => {
     const productIdx = state.productTransactions.findIndex(
       (p) => p.productId === action.productId
@@ -83,6 +89,7 @@ export const reducers = createReducer(
   mutableOn(
     ProductTransactionActions.initializeTransactionDetails,
     (state, action) => {
+      state.isLoading = false;
       state.transaction = action.transaction;
       state.productTransactions = action.transaction.productTransactions;
     }

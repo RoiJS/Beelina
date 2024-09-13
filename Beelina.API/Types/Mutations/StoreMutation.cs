@@ -21,7 +21,10 @@ namespace Beelina.API.Types.Mutations
             [Service] ICurrentUserService currentUserService,
             StoreInput storeInput)
         {
-            var storeFromRepo = await storeRepository.GetEntity(storeInput.Id).ToObjectAsync();
+            var storeFromRepo = await storeRepository
+                        .GetEntity(storeInput.Id)
+                        .ToObjectAsync();
+
             var paymentMethodFromRepo = await paymentMethodRepository.GetPaymentMethodByName(storeInput.PaymentMethodInput.Name);
             var barangayFromRepo = await barangayRepository.GetBarangayByName(storeInput.BarangayInput.Name, currentUserService.CurrentUserId);
 
@@ -73,7 +76,7 @@ namespace Beelina.API.Types.Mutations
             var storeFromRepo = await storeRepository.GetEntity(storeId).ToObjectAsync();
 
             storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-            
+
             if (storeFromRepo == null)
                 throw new StoreNotExistsException(storeId);
 

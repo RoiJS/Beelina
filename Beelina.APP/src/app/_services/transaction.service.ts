@@ -21,12 +21,6 @@ import { ITransactionOutput } from '../_interfaces/outputs/itransaction.output';
 import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
-import {
-  endCursorSelector,
-  fromDateSelector,
-  sortOrderSelector,
-  toDateSelector,
-} from '../transaction-history/store/selectors';
 
 import {
   endCursorSelector as endCursorSelectorTopSellingProducts,
@@ -49,6 +43,14 @@ import { User } from '../_models/user.model';
 const REGISTER_TRANSACTION_QUERY = gql`
   query ($transactionInput: TransactionInput!) {
     registerTransaction(transactionInput: $transactionInput) {
+      id
+    }
+  }
+`;
+
+const REGISTER_TRANSACTIONS_QUERY = gql`
+  query ($transactionInputs: [TransactionInput!]!) {
+    registerTransactions(transactionInputs: $transactionInputs) {
       id
     }
   }
@@ -84,14 +86,16 @@ const GET_TRANSACTION_DATES = gql`
     $sortOrder: SortEnumType
     $transactionStatus: TransactionStatusEnum!
     $fromDate: String
-    $toDate: String
+    $toDate: String,
+    $limit: Int!
   ) {
     transactionDates(
       after: $cursor
       order: [{ transactionDate: $sortOrder }]
       transactionStatus: $transactionStatus
       fromDate: $fromDate
-      toDate: $toDate
+      toDate: $toDate,
+      first: $limit
     ) {
       edges {
         cursor
@@ -460,6 +464,7 @@ export class TransactionDateInformation {
   public transactionDate: Date;
   public allTransactionsPaid: boolean;
   public numberOfUnPaidTransactions: number;
+  public isLocal: boolean;
 
   get transactionDateFormatted(): string {
     return DateFormatter.format(this.transactionDate, 'MMM DD, YYYY');
@@ -600,6 +605,59 @@ export class TransactionService {
       );
   }
 
+  registerTransactions(transactions: Array<TransactionDto>) {
+    const transactionInputs: Array<ITransactionInput> = transactions.map((transaction) => {
+      return {
+        id: transaction.id,
+        invoiceNo: transaction.invoiceNo,
+        discount: transaction.discount,
+        storeId: transaction.storeId,
+        modeOfPayment: transaction.modeOfPayment,
+        paid: transaction.paid,
+        status: transaction.status,
+        transactionDate: transaction.transactionDate,
+        dueDate: transaction.dueDate,
+        productTransactionInputs: transaction.productTransactions.map((p) => {
+          const productTransaction: IProductTransactionInput = {
+            id: p.id,
+            productId: p.productId,
+            quantity: p.quantity,
+            price: p.price,
+            currentQuantity: p.currentQuantity,
+          };
+
+          return productTransaction;
+        }),
+      };
+    });
+
+    return this.apollo
+      .watchQuery({
+        query: REGISTER_TRANSACTIONS_QUERY,
+        variables: {
+          transactionInputs,
+        },
+      }).valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{ registerTransactions: ITransactionPayload }>
+          ) => {
+            const output = result.data.registerTransactions;
+            const payload = output;
+
+            if (payload) {
+              return payload;
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
   deleteTransactions(transactionIds: Array<number>) {
     return this.apollo
       .mutate({
@@ -716,6 +774,7 @@ export class TransactionService {
               transaction.store.name = t.storeName;
               transaction.hasUnpaidProductTransaction =
                 t.hasUnpaidProductTransaction;
+              transaction.isLocal = false;
               return transaction;
             });
           }
@@ -879,37 +938,14 @@ export class TransactionService {
       );
   }
 
-  getTransactioDates(transactionStatus: TransactionStatusEnum) {
-    let cursor = null,
-      sortOrder = SortOrderOptionsEnum.DESCENDING,
-      fromDate = null,
-      toDate = null;
-
-    this.store
-      .select(endCursorSelector)
-      .pipe(take(1))
-      .subscribe((currentCursor) => (cursor = currentCursor));
-
-    this.store
-      .select(sortOrderSelector)
-      .pipe(take(1))
-      .subscribe((currentSortOrder) => (sortOrder = currentSortOrder));
-
-    this.store
-      .select(fromDateSelector)
-      .pipe(take(1))
-      .subscribe((currentFromDate) => (fromDate = currentFromDate));
-
-    this.store
-      .select(toDateSelector)
-      .pipe(take(1))
-      .subscribe((currentToDate) => (toDate = currentToDate));
+  getTransactioDates(transactionStatus: TransactionStatusEnum, cursor: string, limit: number, sortOrder: SortOrderOptionsEnum, fromDate: string, toDate: string) {
 
     return this.apollo
       .watchQuery({
         query: GET_TRANSACTION_DATES,
         variables: {
           cursor,
+          limit,
           sortOrder,
           transactionStatus,
           fromDate,
@@ -935,6 +971,7 @@ export class TransactionService {
                   t.numberOfUnPaidTransactions;
                 transactionHistoryDate.allTransactionsPaid =
                   t.allTransactionsPaid;
+                transactionHistoryDate.isLocal = false;
                 return transactionHistoryDate;
               })
             );

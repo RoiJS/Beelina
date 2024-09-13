@@ -11,6 +11,7 @@ import { BaseComponent } from '../shared/components/base-component/base.componen
 
 import { BarangayService } from '../_services/barangay.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { LocalCustomerAccountsDbService } from '../_services/local-db/local-customer-accounts-db.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 
 import { Barangay } from '../_models/barangay';
@@ -32,6 +33,7 @@ export class BarangaysComponent
     private barangayService: BarangayService,
     private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
+    private localCustomerAccountsDbService: LocalCustomerAccountsDbService,
     private notificationService: NotificationService,
     private router: Router,
     private store: Store<AppStateInterface>,
@@ -105,6 +107,7 @@ export class BarangaysComponent
               this.notificationService.openSuccessNotification(this.translateService.instant(
                 'CUSTOMER_ACCOUNTS_PAGE.DELETE_CUSTOMER_ACCOUNT_DIALOG.SUCCESS_MESSAGE'
               ));
+              this.localCustomerAccountsDbService.deleteLocalCustomreAccount(id);
               this.store.dispatch(BarangaysStoreActions.resetBarangayList());
               this.store.dispatch(BarangaysStoreActions.getBarangaysAction());
             },

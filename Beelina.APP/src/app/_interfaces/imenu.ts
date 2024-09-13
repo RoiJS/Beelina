@@ -9,4 +9,5 @@ export interface IMenu {
   isExternalUrl?: boolean;
   minimumPermissionLevel?: number;
   maximumPermissionLevel?: number;
+  supportOffline?: boolean;
 }

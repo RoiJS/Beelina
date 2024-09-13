@@ -9,7 +9,7 @@
   }
 
 </app-tool-bar>
-<app-loader-layout [busy]="isLoading">
+<app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
     <div class="panel product-cart-container">
       <div class="panel__details-group-panel">
@@ -189,64 +189,110 @@
         <div class="panel__footer-section product-transaction-information-container__button-options-section">
 
           @if (!isAdmin()) {
-          <button mat-raised-button color="primary" (click)="confirm()">
-            <mat-icon>check_circle_outline</mat-icon>
-            {{ "GENERAL_TEXTS.CONFIRM" | translate }}
-          </button>
-          <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
-            <mat-icon>remove_shopping_cart</mat-icon>
-            {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
-          </button>
 
-          @if (isDraftTransaction()) {
-          <button mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
-            <mat-icon>save</mat-icon>
-            {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
-          </button>
+            @if (networkService.isOnline | async) {
+
+                @if(!isLocalTransaction()) {
+                  <button mat-raised-button color="primary" (click)="confirm()">
+                    <mat-icon>check_circle_outline</mat-icon>
+                    {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+                  </button>
+
+                  <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
+                    <mat-icon>remove_shopping_cart</mat-icon>
+                    {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
+                  </button>
+
+                  @if (isDraftTransaction()) {
+
+                  <button mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
+                    <mat-icon>save</mat-icon>
+                    {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
+                  </button>
+
+                  } @else {
+
+                  <button mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
+                    <mat-icon>archive</mat-icon>
+                    {{
+                    "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
+                    | translate
+                    }}
+                  </button>
+
+                  <button mat-raised-button color="default" (click)="clear()">
+                    <mat-icon>clear_all</mat-icon>
+                    {{ "GENERAL_TEXTS.CLEAR" | translate }}
+                  </button>
+                }
+              }
+
+              @if(isLocalTransaction()) {
+                <button mat-raised-button color="primary" (click)="syncLocalDraftOrder()">
+                  <mat-icon>cloud_upload</mat-icon>
+                  {{ "GENERAL_TEXTS.SYNC" | translate }}
+                </button>
+              }
+            }
+
+            @if (!(networkService.isOnline | async)) {
+              <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
+                <mat-icon>remove_shopping_cart</mat-icon>
+                {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
+              </button>
+
+              @if (isDraftTransaction()) {
+                <button mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
+                  <mat-icon>save</mat-icon>
+                  {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
+                </button>
+              } @else {
+                <button mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
+                  <mat-icon>archive</mat-icon>
+                  {{
+                  "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
+                  | translate
+                  }}
+                </button>
+
+                <button mat-raised-button color="default" (click)="clear()">
+                  <mat-icon>clear_all</mat-icon>
+                  {{ "GENERAL_TEXTS.CLEAR" | translate }}
+                </button>
+              }
+            }
+
           } @else {
-          <button mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
-            <mat-icon>archive</mat-icon>
-            {{
-            "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.DRAFT"
-            | translate
-            }}
-          </button>
-          <button mat-raised-button color="default" (click)="clear()">
-            <mat-icon>clear_all</mat-icon>
-            {{ "GENERAL_TEXTS.CLEAR" | translate }}
-          </button>
-          }
-          } @else {
 
-          <button mat-raised-button color="default" (click)="printReceipt()">
-            <mat-icon>print</mat-icon>
-            {{ "GENERAL_TEXTS.PRINT" | translate }}
-          </button>
+            <button mat-raised-button color="default" (click)="printReceipt()">
+              <mat-icon>print</mat-icon>
+              {{ "GENERAL_TEXTS.PRINT" | translate }}
+            </button>
 
-          @if(userService.userSetting().allowOrderPayments) {
-          @if (transaction().balance > 0) {
-          <button mat-raised-button color="default" (click)="registerPayment()">
-            <mat-icon>payment</mat-icon>
-            {{"PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.REGISTER_PAYMENT"
-            | translate}}
-          </button>
-          }
-          }
+            @if(userService.userSetting().allowOrderPayments) {
+              @if (transaction().balance > 0) {
+              <button mat-raised-button color="default" (click)="registerPayment()">
+                <mat-icon>payment</mat-icon>
+                {{"PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.REGISTER_PAYMENT"
+                | translate}}
+              </button>
+              }
+            }
 
-          @if(userService.userSetting().allowOrderConfirmation) {
-          @if(transaction().balance === 0 && transaction().hasUnpaidProductTransaction &&
-          orderForm.get('paymentMethod').value !== 3) {
-          <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
-            <mat-icon>check_circle_outline</mat-icon>
-            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
-          </button>
-          }
-          }
+            @if(userService.userSetting().allowOrderConfirmation) {
+              @if(transaction().balance === 0 && transaction().hasUnpaidProductTransaction &&
+              orderForm.get('paymentMethod').value !== 3) {
+              <button mat-raised-button color="primary" (click)="markTransactionAsPaid(true)">
+                <mat-icon>check_circle_outline</mat-icon>
+                {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+              </button>
+              }
+            }
 
-          <button mat-raised-button color="primary" (click)="saveNewUpdate()">
-            <mat-icon>save</mat-icon>
-            {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
-          </button>
+            <button mat-raised-button color="primary" (click)="saveNewUpdate()">
+              <mat-icon>save</mat-icon>
+              {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
+            </button>
           }
 
         </div>

@@ -32,7 +32,6 @@
 </app-tool-bar>
 }
 
-
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container">
     <div class="page-container__page-divider">
@@ -43,6 +42,22 @@
     </div>
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="dataSource.itemCount">
+
+      @if (networkService.isOnline | async) {
+      @if(hasLocalBadOrders() && !multipleItemsService.selectMultipleActive()) {
+      <app-banner [type]="bannerTypeEnum.WARNING">
+        <div class="offline-order-banner-message">{{ "OFFLINE_ORDERS_MODE.HAS_OFFLINE_ORDERS_LABEL_MESSAGE" | translate
+          }}
+          <button mat-raised-button color="default" (click)="syncAllOfflineBadOrders()">
+            <mat-icon>cloud_upload</mat-icon>
+            {{ 'GENERAL_TEXTS.CONFIRM' | translate }}
+          </button>
+        </div>
+      </app-banner>
+      }
+      }
+
+
       @if(multipleItemsService.selectMultipleActive()) {
       <mat-checkbox [checked]="multipleItemsService.isSelectedAll()" (change)="selectAllItems($event.checked)"
         [labelPosition]="'after'">{{
@@ -59,6 +74,13 @@
                 [id]="item.transactionDate" (change)="selectItem($event.checked, $event.source.id)"></mat-checkbox>
               }
               <span>{{ item.transactionDateFormatted }}</span>
+            </div>
+
+            <div>
+              @if (item.isLocal) {
+              <mat-icon class="order-transaction-list__local-icon">wifi_off</mat-icon>
+              }
+              <mat-icon>keyboard_arrow_right</mat-icon>
             </div>
           </div>
         </div>

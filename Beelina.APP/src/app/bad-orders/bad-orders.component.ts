@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 
@@ -18,18 +18,24 @@ import { isLoadingSelector } from '../transaction-history/store/selectors';
 
 import { BaseFilterAndSortService } from '../_services/base-filter-and-sort.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
+import { LocalOrdersDbService } from '../_services/local-db/local-orders-db.service';
 import { MultipleItemsService } from '../_services/multiple-items.service';
+import { NetworkService } from '../_services/network.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 import { TransactionByDateOptionsService } from '../_services/transaction-by-date-options.service';
 import { TransactionDateInformation, TransactionService } from '../_services/transaction.service';
 
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { ButtonOptions } from '../_enum/button-options.enum';
+import { from, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-bad-orders',
   templateUrl: './bad-orders.component.html',
-  styleUrls: ['./bad-orders.component.scss'],
+  styleUrls: [
+    './bad-orders.component.scss',
+    '../transaction-history/transaction-base-style.scss'
+  ],
 })
 export class BadOrdersComponent
   extends BaseComponent
@@ -38,13 +44,17 @@ export class BadOrdersComponent
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);
   filterAndSortTransactionsService = inject(BaseFilterAndSortService<TransactionDateInformation>);
+  localOrdersDbService = inject(LocalOrdersDbService);
   multipleItemsService = inject(MultipleItemsService);
   notificationService = inject(NotificationService);
+  networkService = inject(NetworkService)
   router = inject(Router);
   store = inject(Store<AppStateInterface>);
   translateService = inject(TranslateService);
   transactionService = inject(TransactionService);
   transactionByDateOptionsService = inject(TransactionByDateOptionsService);
+
+  hasLocalBadOrders = signal<boolean>(false);
 
   constructor() {
     super();
@@ -64,6 +74,8 @@ export class BadOrdersComponent
       .setBottomSheet(this.bottomSheet);
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
+
+    this.checkLocalOrders();
   }
 
   ngOnInit() { }
@@ -74,6 +86,7 @@ export class BadOrdersComponent
     );
     this.filterAndSortTransactionsService.destroy();
     this.multipleItemsService.reset();
+    this.localOrdersDbService.reset();
   }
 
   goToTransactionDate(transactionDate: Date) {
@@ -102,11 +115,24 @@ export class BadOrdersComponent
       if (result === ButtonOptions.YES) {
         const orderDates = this.multipleItemsService.selectedItems().map((item) => DateFormatter.format(new Date(item)));
         this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: true }));
-        this.transactionService
-          .deleteTransactionsByDate(
-            TransactionStatusEnum.BAD_ORDER,
-            orderDates)
-          .subscribe({
+
+        if (!this.networkService.isOnline.value) {
+          this.localOrdersDbService
+            .deleteLocalOrdersByDate(TransactionStatusEnum.BAD_ORDER, orderDates)
+            .then(() => {
+              this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
+              this.notificationService.openSuccessNotification(this.translateService.instant(
+                'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_BY_DATE_DIALOG.SUCCESS_MESSAGE'
+              ));
+              this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
+              this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: TransactionStatusEnum.BAD_ORDER }));
+              this.multipleItemsService.reset();
+              this.checkLocalOrders();
+            });
+        } else {
+          from(this.localOrdersDbService.deleteLocalOrdersByDate(TransactionStatusEnum.BAD_ORDER, orderDates)).pipe(
+            switchMap(() => this.transactionService.deleteTransactionsByDate(TransactionStatusEnum.BAD_ORDER, orderDates))
+          ).subscribe({
             next: () => {
               this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
               this.notificationService.openSuccessNotification(this.translateService.instant(
@@ -115,8 +141,8 @@ export class BadOrdersComponent
               this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
               this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: TransactionStatusEnum.BAD_ORDER }));
               this.multipleItemsService.reset();
+              this.checkLocalOrders();
             },
-
             error: () => {
               this.notificationService.openErrorNotification(this.translateService.instant(
                 'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_BY_DATE_DIALOG.ERROR_MESSAGE'
@@ -124,6 +150,7 @@ export class BadOrdersComponent
               this.multipleItemsService.reset();
             },
           });
+        }
       }
     })
   }
@@ -135,6 +162,26 @@ export class BadOrdersComponent
 
   selectItem(checked: boolean, id: string) {
     this.multipleItemsService.selectItem(checked, id, this.dataSource.itemCount);
+  }
+
+  async syncAllOfflineBadOrders() {
+    this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: true }));
+    await this.localOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.BAD_ORDER, []);
+    this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
+    this.notificationService.openSuccessNotification(
+      this.translateService.instant('OFFLINE_ORDERS_MODE.SYNC_ALL_OFFLINE_ORDERS_DIALOG.SUCCESS_MESSAGE'),
+    );
+    this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
+    this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: TransactionStatusEnum.BAD_ORDER }));
+    this.checkLocalOrders();
+  }
+
+  checkLocalOrders() {
+    this.localOrdersDbService
+      .hasLocalOrders(TransactionStatusEnum.BAD_ORDER)
+      .then((hasLocalOrders) => {
+        this.hasLocalBadOrders.update(() => hasLocalOrders);
+      });
   }
 
   get dataSource(): TransactionDatesDataSource {

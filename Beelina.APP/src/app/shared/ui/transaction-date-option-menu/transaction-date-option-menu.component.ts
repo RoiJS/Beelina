@@ -1,20 +1,22 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
-
+import { from, switchMap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
+import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 import { TransactionDateInformation, TransactionService } from 'src/app/_services/transaction.service';
 import { DialogService } from '../dialog/dialog.service';
 import { NotificationService } from '../notification/notification.service';
-import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 
+import { LocalOrdersDbService } from 'src/app/_services/local-db/local-orders-db.service';
+import { NetworkService } from 'src/app/_services/network.service';
 import * as TransactionDateActions from '../../../transaction-history/store/actions';
 
 @Component({
@@ -32,6 +34,8 @@ export class TransactionDateOptionMenuComponent implements OnInit {
       transactionStatus: TransactionStatusEnum
     },
     private dialogService: DialogService,
+    private localOrdersDbService: LocalOrdersDbService,
+    private networkService: NetworkService,
     private notificationService: NotificationService,
     private router: Router,
     private transactionService: TransactionService,
@@ -80,11 +84,23 @@ export class TransactionDateOptionMenuComponent implements OnInit {
         if (result == ButtonOptions.YES) {
           this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: true }));
           const formattedDate = DateFormatter.format(this.data.transactionDateInformation.transactionDate);
-          this.transactionService
-            .deleteTransactionsByDate(
-              this.data.transactionStatus,
-              [formattedDate])
-            .subscribe({
+
+          if (!this.networkService.isOnline.value) {
+            this.localOrdersDbService
+              .deleteLocalOrdersByDate(this.data.transactionStatus, [formattedDate])
+              .then(() => {
+                this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
+                this.notificationService.openSuccessNotification(this.translateService.instant(
+                  'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_BY_DATE_DIALOG.SUCCESS_MESSAGE'
+                ));
+                this._bottomSheetRef.dismiss();
+                this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
+                this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: this.data.transactionStatus }));
+              });
+          } else {
+            from(this.localOrdersDbService.deleteLocalOrdersByDate(this.data.transactionStatus, [formattedDate])).pipe(
+              switchMap(() => this.transactionService.deleteTransactionsByDate(this.data.transactionStatus, [formattedDate]))
+            ).subscribe({
               next: () => {
                 this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: false }));
                 this.notificationService.openSuccessNotification(this.translateService.instant(
@@ -94,13 +110,14 @@ export class TransactionDateOptionMenuComponent implements OnInit {
                 this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
                 this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: this.data.transactionStatus }));
               },
-
               error: () => {
                 this.notificationService.openErrorNotification(this.translateService.instant(
                   'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_BY_DATE_DIALOG.ERROR_MESSAGE'
                 ));
               },
             });
+          }
+
         }
       });
   }

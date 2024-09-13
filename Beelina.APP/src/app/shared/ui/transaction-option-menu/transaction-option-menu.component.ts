@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { DialogService } from '../dialog/dialog.service';
+import { LocalOrdersDbService } from 'src/app/_services/local-db/local-orders-db.service';
 import { NotificationService } from '../notification/notification.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
 import { UserAccountService } from 'src/app/_services/user-account.service';
@@ -16,6 +17,7 @@ import * as TransactionDateActions from '../../../transaction-history/store/acti
 import { Transaction } from 'src/app/_models/transaction';
 import { BaseComponent } from '../../components/base-component/base.component';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+import { NetworkService } from 'src/app/_services/network.service';
 
 @Component({
   selector: 'app-transaction-option-menu',
@@ -34,7 +36,9 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
       transaction: Transaction
     },
     private dialogService: DialogService,
+    private localOrdersDbService: LocalOrdersDbService,
     private notificationService: NotificationService,
+    private networkService: NetworkService,
     private router: Router,
     private store: Store<AppStateInterface>,
     private transactionService: TransactionService,
@@ -42,11 +46,19 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
   ) {
     super();
 
-    this.transactionService
-      .getTransaction(this.data.transaction.id)
-      .subscribe((transaction: Transaction) => {
-        this.transaction.set(transaction);
-      });
+    if (!this.data.transaction.isLocal) {
+      this.transactionService
+        .getTransaction(this.data.transaction.id)
+        .subscribe((transaction: Transaction) => {
+          this.transaction.set(transaction);
+        });
+    } else {
+      this.localOrdersDbService
+        .getMyLocalOrders(this.data.transaction.status, [this.data.transaction.id])
+        .then((transaction: Array<Transaction>) => {
+          this.transaction.set(transaction[0]);
+        });
+    }
   }
 
   ngOnInit() {
@@ -75,24 +87,63 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
       .subscribe((result: ButtonOptions) => {
         if (result == ButtonOptions.YES) {
           this.store.dispatch(TransactionDateActions.setTransactionDatesLoadingState({ state: true }));
-          this.transactionService
-            .deleteTransactions([this.data.transaction.id])
-            .subscribe({
-              next: () => {
+
+          if (!this.data.transaction.isLocal) {
+            this.transactionService
+              .deleteTransactions([this.data.transaction.id])
+              .subscribe({
+                next: () => {
+                  this.notificationService.openSuccessNotification(this.translateService.instant(
+                    'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
+                  ));
+
+                  this._bottomSheetRef.dismiss(true);
+                },
+
+                error: () => {
+                  this.notificationService.openErrorNotification(this.translateService.instant(
+                    'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
+                  ));
+                },
+              });
+          } else {
+            this.localOrdersDbService
+              .deleteLocalOrders([this.data.transaction.id]).then(() => {
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                 ));
 
                 this._bottomSheetRef.dismiss(true);
-              },
-
-              error: () => {
+              }).catch(() => {
                 this.notificationService.openErrorNotification(this.translateService.instant(
                   'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
                 ));
-              },
-            });
+              });
+          }
         }
       });
+  }
+
+  async syncLocalOrder() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.TITLE"),
+        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.CONFIRM_MESSAGE"),
+      )
+      .subscribe(async (result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          await this.localOrdersDbService.saveLocalOrdersToServer(this.data.transaction.status, [this.data.transaction.id]);
+
+          this.notificationService.openSuccessNotification(this.translateService.instant(
+            "DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.SUCCESS_MESSAGE"
+          ));
+
+          this._bottomSheetRef.dismiss(true);
+        }
+      });
+  }
+
+  get isOnline() {
+    return this.networkService.isOnline.value;
   }
 }

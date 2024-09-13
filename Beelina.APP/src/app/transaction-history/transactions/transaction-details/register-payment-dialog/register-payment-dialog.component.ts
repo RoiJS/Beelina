@@ -38,7 +38,6 @@ export class RegisterPaymentDialogComponent implements OnInit {
       amount: [data.payment.amount, [Validators.required, Validators.min(0), Validators.max(this.maxAmount())]],
       paymentDate: [data.payment.paymentDate, Validators.required],
       notes: [data.payment.notes],
-      paid: [false]
     });
   }
 
@@ -52,10 +51,22 @@ export class RegisterPaymentDialogComponent implements OnInit {
   onConfirm() {
     if (!this._registerPaymentForm.valid) return;
 
+    const payment = this.getPayment();
+    this._bottomSheetRef.dismiss({ payment, paid: false });
+  }
+
+  onMarkAsPaid() {
+    if (!this._registerPaymentForm.valid) return;
+
+    const payment = this.getPayment();
+    this._bottomSheetRef.dismiss({ payment, paid: true });
+  }
+
+  private getPayment() {
+
     const amount = this._registerPaymentForm.get('amount').value;
     const paymentDate = this._registerPaymentForm.get('paymentDate').value;
     const notes = this._registerPaymentForm.get('notes').value;
-    const paid = this._registerPaymentForm.get('paid').value;
 
     const payment = new Payment();
     payment.id = this.data.payment.id;
@@ -63,8 +74,8 @@ export class RegisterPaymentDialogComponent implements OnInit {
     payment.amount = amount;
     payment.paymentDate = paymentDate;
     payment.notes = notes;
-    console.log(payment);
-    this._bottomSheetRef.dismiss({ payment, paid });
+
+    return payment;
   }
 
   get registerPaymentForm(): FormGroup {
