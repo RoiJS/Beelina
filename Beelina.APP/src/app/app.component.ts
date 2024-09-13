@@ -116,7 +116,7 @@ export class AppComponent
     this.uiService.setDrawerRef(this.sideNav);
 
     (async () => {
-      this.localSyncDataService.initSyncData();
+      await this.localSyncDataService.initSyncData();
     })();
   }
 
@@ -165,7 +165,7 @@ export class AppComponent
     if (isOnline) {
 
       (async () => {
-        this.localSyncDataService.initSyncData();
+        await this.localSyncDataService.initSyncData();
       })();
 
       if (this.pageLoaded()) {
