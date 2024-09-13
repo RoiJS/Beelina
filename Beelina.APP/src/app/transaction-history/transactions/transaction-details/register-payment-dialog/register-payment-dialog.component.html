@@ -41,19 +41,23 @@
     <div class="button-container">
 
       @if (data.payment.id === 0) {
-        <button mat-raised-button color="primary" (click)="onConfirm()">
-          {{ "GENERAL_TEXTS.CONFIRM" | translate }}
-        </button>
 
         @if(userService.userSetting().allowOrderConfirmation) {
-        <button [disabled]="registerPaymentForm.get('amount').value !== maxAmount()" mat-raised-button color="primary"
-          (click)="onMarkAsPaid()">
-          {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
-        </button>
+
+          @if (registerPaymentForm.get('amount').value === maxAmount()) {
+            <button mat-raised-button class="width-stretch" color="primary"
+              (click)="onMarkAsPaid()">
+              {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+            </button>
+          } @else {
+            <button mat-raised-button class="width-stretch" color="primary" (click)="onConfirm()">
+              {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+            </button>
+          }
         } @else {
-        <button mat-raised-button color="default" (click)="onCancel()">
-          {{ "GENERAL_TEXTS.CANCEL" | translate }}
-        </button>
+          <button mat-raised-button class="width-stretch" color="primary" (click)="onConfirm()">
+            {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+          </button>
         }
 
       } @else {

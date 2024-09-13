@@ -74,7 +74,6 @@ export class RegisterPaymentDialogComponent implements OnInit {
     payment.amount = amount;
     payment.paymentDate = paymentDate;
     payment.notes = notes;
-    console.log(payment);
 
     return payment;
   }
