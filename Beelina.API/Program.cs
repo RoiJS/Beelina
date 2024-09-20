@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NLog;
+using NLog.Extensions.Logging;
 using ReserbizAPP.LIB.Helpers.Class;
 using System.Security.Claims;
 using System.Text;
@@ -27,6 +29,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+#region "Register Logger"
+builder.Services.AddLogging(loggingOptions =>
+{
+    loggingOptions.ClearProviders();
+    loggingOptions.AddNLog();
+});
+#endregion
 
 #region "Register Services"
 services.AddScoped<IDataContextHelper, DataContextHelper>();
@@ -155,12 +165,15 @@ else
         // Get the encrypted App-Secret-Token header
         var appSecretToken = httpContext?.Request.Headers["App-Secret-Token"].ToString();
 
+        GlobalDiagnosticsContext.Set("appSecretToken", appSecretToken);
+
         // If app secret token is not provided, it is always 
         // assume that the request is going to ReserbizDataContext
         if (appSecretToken != "")
         {
             // Get the client information based on the app secret token
             var clientInfo = systemDataContext?.Clients.FirstOrDefault(c => c.DBHashName == appSecretToken);
+
 
             if (clientInfo == null)
                 throw new Exception("Invalid App secret token. Please make sure that the app secret token you have provided is valid.");
@@ -232,6 +245,6 @@ app.MapControllers();
 
 app.MapGraphQL("/graphql");
 
-app.MapGet("/", async ([Service] IClientRepository<Client> clientRepository) => await clientRepository.GetCompanyInfoByName("BeelinaDeveloper"));
+// app.MapGet("/", async ([Service] IClientRepository<Client> clientRepository) => await clientRepository.GetCompanyInfoByName("BeelinaDeveloper"));
 
 app.Run();
