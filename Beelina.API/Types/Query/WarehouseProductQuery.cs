@@ -16,22 +16,26 @@ namespace Beelina.API.Types.Query
     {
         [Authorize]
         public async Task<List<Product>> UpdateWarehouseProducts(
-                    [Service] IProductRepository<Product> productRepository,
-                    [Service] IHttpContextAccessor httpContextAccessor,
-                    int warehouseId,
-                    List<ProductInput> productInputs)
+            [Service] ILogger<ProductQuery> logger,
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int warehouseId,
+            List<ProductInput> productInputs)
         {
-            var savedProducts = new List<Product>();
             try
             {
-                savedProducts = await productRepository.CreateOrUpdateWarehouseProducts(warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
+                var savedProducts = await productRepository.CreateOrUpdateWarehouseProducts(warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
+
+                logger.LogInformation("Products Updated. Params: savedProducts = {@savedProducts}", savedProducts);
+
+                return savedProducts;
             }
             catch (Exception ex)
             {
-                throw new Exception("$Failed to register product: {ex.Message}");
-            }
+                logger.LogError(ex, "Failed to register product. Params: userAccountId = {userAccountId}; warehouseId = {@productInputs}", warehouseId, productInputs);
 
-            return savedProducts;
+                throw new Exception($"Failed to register product: {ex.Message}");
+            }
         }
 
         [Authorize]

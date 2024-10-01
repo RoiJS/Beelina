@@ -9,13 +9,33 @@ namespace Beelina.API.Types.Mutations
     {
         [Authorize]
         public async Task<bool> SaveUserAgentOrderTransactionSettings(
+            [Service] ILogger<UserAgentSettingsMutation> logger,
             [Service] IUserAgentOrderTransactionSettingsRepository<UserSetting> userAgentOrderTransactionSettingsRepository,
             [Service] ICurrentUserService currentUserService,
             UserAgentOrderTransactionSettingInput userAgentOrderTransactionSettingInput
         )
         {
-            userAgentOrderTransactionSettingsRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-            return await userAgentOrderTransactionSettingsRepository.SaveOrderTransactionSettings(userAgentOrderTransactionSettingInput);
+            try
+            {
+                userAgentOrderTransactionSettingsRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+                var result = await userAgentOrderTransactionSettingsRepository.SaveOrderTransactionSettings(userAgentOrderTransactionSettingInput);
+
+                logger.LogInformation("Successfully save user agent order transaction settings. Params: {@params}", new
+                {
+                    userAgentOrderTransactionSettingInput
+                });
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to save user agent order transaction settings. Params: {@params}", new
+                {
+                    userAgentOrderTransactionSettingInput
+                });
+
+                throw new Exception($"Failed to save user agent order transaction settings. {ex.Message}");
+            }
         }
     }
 }

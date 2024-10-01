@@ -4,7 +4,7 @@ namespace Beelina.LIB.Models
 {
     public abstract class Entity : IEntity
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = 0;
         public bool IsActive { get; set; } = true;
         public bool IsDelete { get; set; } = false;
         public DateTime DateCreated { get; set; }

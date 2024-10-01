@@ -9,29 +9,47 @@ namespace Beelina.API.Types.Mutations
     {
         [Authorize]
         public async Task<ReportNotificationEmailAddress> UpdateReportNotificationEmailAddress(
+            [Service] ILogger<ReportMutation> logger,
             [Service] IReportRepository<Report> reportRepository,
             [Service] ICurrentUserService currentUserService,
             string emailAddress
         )
         {
-            var reportFromRepo = await reportRepository.GetReportNotificationEmailAddress(currentUserService.CurrentUserId);
+            try
+            {
+                var reportFromRepo = await reportRepository.GetReportNotificationEmailAddress(currentUserService.CurrentUserId);
 
-            if (reportFromRepo != null)
-            {
-                reportFromRepo.EmailAddress = emailAddress;
-            }
-            else
-            {
-                reportFromRepo = new ReportNotificationEmailAddress
+                if (reportFromRepo != null)
                 {
-                    UserAccountId = currentUserService.CurrentUserId,
-                    EmailAddress = emailAddress
-                };
+                    reportFromRepo.EmailAddress = emailAddress;
+                }
+                else
+                {
+                    reportFromRepo = new ReportNotificationEmailAddress
+                    {
+                        UserAccountId = currentUserService.CurrentUserId,
+                        EmailAddress = emailAddress
+                    };
+                }
+
+                await reportRepository.RegisterNotificationEmailAddress(reportFromRepo);
+
+                logger.LogInformation("Successfully updated report notification email address. Params: {@params}", new
+                {
+                    emailAddress
+                });
+
+                return reportFromRepo;
             }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to update report notification email address. Params: {@params}", new
+                {
+                    emailAddress
+                });
 
-            await reportRepository.RegisterNotificationEmailAddress(reportFromRepo);
-
-            return reportFromRepo;
+                throw new Exception($"Failed to update report notification email address. {ex.Message}");
+            }
         }
     }
 }

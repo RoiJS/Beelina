@@ -10,17 +10,33 @@ namespace Beelina.API.Controllers
     public class SystemDbManagerController : BeelinaBaseController
     {
         private readonly BeelinaDataContext _context;
+        private readonly ILogger<SystemDbManagerController> _logger;
 
-        public SystemDbManagerController(BeelinaDataContext context)
+        public SystemDbManagerController(
+            BeelinaDataContext context, 
+            ILogger<SystemDbManagerController> logger
+        )
         {
+            _logger = logger;
             _context = context;
         }
 
         [HttpPost(ApiRoutes.SystemDbManagerControllerRoutes.SyncDatabaseURL)]
         public async Task<IActionResult> SyncDatabase()
         {
-            await _context.Database.MigrateAsync();
-            return Ok();
+            try
+            {
+                _logger.LogInformation("Syncing System Database...");
+                await _context.Database.MigrateAsync();
+                _logger.LogInformation("System Database has been successfully synced!");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error syncing system database.");
+                throw new Exception($"Error syncing system database. Error Message: {ex.Message}");
+            }
         }
     }
 }

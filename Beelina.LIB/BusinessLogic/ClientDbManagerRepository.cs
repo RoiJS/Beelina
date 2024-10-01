@@ -4,6 +4,7 @@ using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
 
@@ -12,17 +13,20 @@ namespace Beelina.LIB.BusinessLogic
     public class ClientDbManagerRepository
         : BaseRepository<IEntity>, IClientDbManagerRepository<IEntity>
     {
+        private readonly ILogger<ClientDbManagerRepository> _logger;
         private readonly IOptions<AppHostInfo> _appHostInfo;
         private readonly IOptions<ApplicationSettings> _applicationSettings;
 
         public ClientDbManagerRepository(
             IBeelinaRepository<IEntity> beelinaRepository,
+            ILogger<ClientDbManagerRepository> logger,
             IOptions<AppHostInfo> appHostInfo,
             IOptions<ApplicationSettings> applicationSettings)
             : base(beelinaRepository, beelinaRepository.SystemDbContext)
         {
             _appHostInfo = appHostInfo;
             _applicationSettings = applicationSettings;
+            _logger = logger;
         }
 
         public async Task SyncAllClientDatabases()
@@ -33,7 +37,9 @@ namespace Beelina.LIB.BusinessLogic
 
             foreach (var db in activeDatabases)
             {
+                _logger.LogInformation("Syncing database: {@databaseName}", db.DBName);
                 await SendRequestToSyncDatabase(db);
+                _logger.LogInformation("Database has been successfully synced!");
             }
         }
 
@@ -52,9 +58,10 @@ namespace Beelina.LIB.BusinessLogic
                 httpRequest.AddHeader("Content-Type", "application/json");
                 await httpClient.ExecuteAsync(httpRequest);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                throw new Exception(exception.Message);
+                _logger.LogError(ex, "Failed response to sync database!");
+                throw new Exception(ex.Message);
             }
         }
     }
