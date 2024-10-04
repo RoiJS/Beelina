@@ -42,6 +42,7 @@ namespace Beelina.API.Helpers.Extensions
                     .AddType<TransactionMutation>()
                     .AddType<ClientMutation>()
                     .AddType<ReportMutation>()
+                    .AddType<LoggerMutation>()
                     .AddType<UserAgentSettingsMutation>()
                     .AddType<ClientInformationResult>()
                     .AddType<StoreInformationResult>()

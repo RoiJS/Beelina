@@ -10,6 +10,7 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { ProductService } from 'src/app/_services/product.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { LogMessageService } from 'src/app/_services/log-message.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import * as ProductUnitActions from '../../units/store/actions';
@@ -19,6 +20,7 @@ import { productUnitsSelector } from 'src/app/units/store/selectors';
 import { isUpdateLoadingSelector } from '../store/selectors';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
 
 import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { Product } from 'src/app/_models/product';
@@ -57,6 +59,7 @@ export class AddProductDetailsComponent implements OnInit {
   productService = inject(ProductService);
   formBuilder = inject(FormBuilder);
   router = inject(Router);
+  loggerService = inject(LogMessageService);
   notificationService = inject(NotificationService);
   uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
   supplierStore = inject(SupplierStore);
@@ -133,92 +136,106 @@ export class AddProductDetailsComponent implements OnInit {
   }
 
   saveProduct() {
-    const product = new Product();
-    product.name = this._productForm.get('name').value;
-    product.code = this._productForm.get('code').value;
-    product.description = this._productForm.get('description').value;
-    product.supplierId = this._productForm.get('supplierId').value;
-    product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
-    product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
-    product.isTransferable = this._productForm.get('isTransferable').value;
-    product.numberOfUnits = this._productForm.get('numberOfUnits').value;
-    product.pricePerUnit = this._productForm.get('pricePerUnit').value;
-    product.productUnit.name = this._productForm.get('productUnit').value;
 
-    this._productForm.markAllAsTouched();
+    try {
+      const product = new Product();
+      product.name = this._productForm.get('name').value;
+      product.code = this._productForm.get('code').value;
+      product.description = this._productForm.get('description').value;
+      product.supplierId = this._productForm.get('supplierId').value;
+      product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
+      product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
+      product.isTransferable = this._productForm.get('isTransferable').value;
+      product.numberOfUnits = this._productForm.get('numberOfUnits').value;
+      product.pricePerUnit = this._productForm.get('pricePerUnit').value;
+      product.productUnit.name = this._productForm.get('productUnit').value;
 
-    if (this._productForm.valid) {
-      this.dialogService
-        .openConfirmation(
-          this.translateService.instant(
-            'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.TITLE'
-          ),
-          this.translateService.instant(
-            'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.CONFIRM'
+      this._productForm.markAllAsTouched();
+
+      if (this._productForm.valid) {
+        this.dialogService
+          .openConfirmation(
+            this.translateService.instant(
+              'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.TITLE'
+            ),
+            this.translateService.instant(
+              'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.CONFIRM'
+            )
           )
-        )
-        .subscribe((result: ButtonOptions) => {
-          if (result === ButtonOptions.YES) {
-            this.store.dispatch(
-              ProductActions.setUpdateProductLoadingState({
-                state: true,
-              })
-            );
-            this._updateProductSubscription = this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
-              next: () => {
-                this.notificationService.openSuccessNotification(this.translateService.instant(
-                  'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.SUCCESS_MESSAGE'
-                ));
-                this.store.dispatch(
-                  ProductActions.setUpdateProductLoadingState({
-                    state: false,
-                  })
-                );
-                this.router.navigate([this._productSourceRedirectUrl[this._productSource]]);
-              },
+          .subscribe((result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
+              this.store.dispatch(
+                ProductActions.setUpdateProductLoadingState({
+                  state: true,
+                })
+              );
+              this._updateProductSubscription = this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
+                next: () => {
+                  this.notificationService.openSuccessNotification(this.translateService.instant(
+                    'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+                  ));
+                  this.store.dispatch(
+                    ProductActions.setUpdateProductLoadingState({
+                      state: false,
+                    })
+                  );
+                  this.router.navigate([this._productSourceRedirectUrl[this._productSource]]);
+                },
 
-              error: () => {
-                this.notificationService.openErrorNotification(this.translateService.instant(
-                  'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.ERROR_MESSAGE'
-                ));
+                error: () => {
+                  this.notificationService.openErrorNotification(this.translateService.instant(
+                    'ADD_PRODUCT_DETAILS_PAGE.SAVE_NEW_PRODUCT_DIALOG.ERROR_MESSAGE'
+                  ));
 
-                this.store.dispatch(
-                  ProductActions.setUpdateProductLoadingState({
-                    state: false,
-                  })
-                );
-              },
-            });
-          }
-        });
+                  this.store.dispatch(
+                    ProductActions.setUpdateProductLoadingState({
+                      state: false,
+                    })
+                  );
+                },
+              });
+            }
+          });
+      }
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
+
   }
 
   editStockQuantity() {
-    this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
-      data: {
-        additionalStockQuantity: this._productForm.get('additionalStockQuantity').value,
-        transactionNo: this._productForm.get('transactionNo').value,
-        productSource: this._productSource,
-      },
-    });
 
-    this._dialogRef
-      .afterDismissed()
-      .subscribe(
-        (data: {
-          additionalStockQuantity: number;
-          transactionNo: string;
-        }) => {
-          if (!data) return;
-          this._productForm
-            .get('additionalStockQuantity')
-            .setValue(data.additionalStockQuantity);
-          this._productForm
-            .get('transactionNo')
-            .setValue(data.transactionNo);
-        }
-      );
+    try {
+      this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
+        data: {
+          additionalStockQuantity: this._productForm.get('additionalStockQuantity').value,
+          transactionNo: this._productForm.get('transactionNo').value,
+          productSource: this._productSource,
+        },
+      });
+
+      this._dialogRef
+        .afterDismissed()
+        .subscribe(
+          (data: {
+            additionalStockQuantity: number;
+            transactionNo: string;
+          }) => {
+            if (!data) return;
+            this._productForm
+              .get('additionalStockQuantity')
+              .setValue(data.additionalStockQuantity);
+            this._productForm
+              .get('transactionNo')
+              .setValue(data.transactionNo);
+          }
+        );
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
+
   }
 
   private _filter(value: string): Array<ProductUnit> {

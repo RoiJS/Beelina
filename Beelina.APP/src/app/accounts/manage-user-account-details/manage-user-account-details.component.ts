@@ -8,13 +8,17 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { UniqueUsernameValidator } from 'src/app/_validators/unique-username.validator';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { isLoadingSelector } from '../store/selectors';
-import { UserAccountService } from 'src/app/_services/user-account.service';
 import { User } from 'src/app/_models/user.model';
 import { UserAccountInformationResult } from 'src/app/_models/results/user-account-information-result';
-import { ModuleEnum } from 'src/app/_enum/module.enum';
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { UserModulePermission } from 'src/app/_models/user-module-permission';
+
+import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
+
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { LogMessageService } from 'src/app/_services/log-message.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 
 @Component({
   selector: 'app-manage-user-account-details',
@@ -33,6 +37,7 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
     private formBuilder: FormBuilder,
+    private loggerService: LogMessageService,
     private notificationService: NotificationService,
     private router: Router,
     private store: Store<AppStateInterface>,
@@ -126,72 +131,79 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
   }
 
   saveInfo() {
-    this._profileForm.markAllAsTouched();
+    try {
 
-    if (this._profileForm.valid) {
-      const user = new User();
-      user.id = this._accountId;
-      user.firstName = this._profileForm.get('firstName').value;
-      user.middleName = this._profileForm.get('middleName').value;
-      user.lastName = this._profileForm.get('lastName').value;
-      user.emailAddress = this._profileForm.get('emailAddress').value;
-      user.username = this._profileForm.get('username').value;
-      user.password = this._profileForm.get('newPassword').value;
+      this._profileForm.markAllAsTouched();
 
-      if (this._accountId > 0)
-        user.userPermissions = this._userDetails.userPermissions.map((p) => {
-          if (p.moduleId === ModuleEnum.Distribution)
-            p.permissionLevel = this._profileForm.get('permission').value;
-          return <UserModulePermission>{
-            id: p.id,
-            moduleId: p.moduleId,
-            permissionLevel: p.permissionLevel,
-          };
-        });
-      else
-        user.userPermissions.push(
-          <UserModulePermission>{
-            id: 0,
-            moduleId: ModuleEnum.Distribution,
-            permissionLevel: this._profileForm.get('permission').value
-          }
-        );
+      if (this._profileForm.valid) {
+        const user = new User();
+        user.id = this._accountId;
+        user.firstName = this._profileForm.get('firstName').value;
+        user.middleName = this._profileForm.get('middleName').value;
+        user.lastName = this._profileForm.get('lastName').value;
+        user.emailAddress = this._profileForm.get('emailAddress').value;
+        user.username = this._profileForm.get('username').value;
+        user.password = this._profileForm.get('newPassword').value;
 
-      let title = "", message = "", successMessage = "", errorMessage = "";
-      if (this._accountId > 0) {
-        title = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.TITLE');
-        message = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.CONFIRM');
-        successMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.SUCCESS_MESSAGE');
-        errorMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.ERROR_MESSAGE');
+        if (this._accountId > 0)
+          user.userPermissions = this._userDetails.userPermissions.map((p) => {
+            if (p.moduleId === ModuleEnum.Distribution)
+              p.permissionLevel = this._profileForm.get('permission').value;
+            return <UserModulePermission>{
+              id: p.id,
+              moduleId: p.moduleId,
+              permissionLevel: p.permissionLevel,
+            };
+          });
+        else
+          user.userPermissions.push(
+            <UserModulePermission>{
+              id: 0,
+              moduleId: ModuleEnum.Distribution,
+              permissionLevel: this._profileForm.get('permission').value
+            }
+          );
+
+        let title = "", message = "", successMessage = "", errorMessage = "";
+        if (this._accountId > 0) {
+          title = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.TITLE');
+          message = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.CONFIRM');
+          successMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.SUCCESS_MESSAGE');
+          errorMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.EDIT_ACCOUNT_DIALOG.ERROR_MESSAGE');
+        } else {
+          title = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.TITLE');
+          message = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.CONFIRM');
+          successMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.SUCCESS_MESSAGE');
+          errorMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.ERROR_MESSAGE');
+        }
+
+        this.dialogService
+          .openConfirmation(title, message)
+          .subscribe((result: boolean) => {
+            if (result) {
+              this._isLoading = true;
+              this.userAccountService.updateAccountInformation(user).subscribe({
+                next: () => {
+                  this._isLoading = false;
+                  this._userDetails = user;
+                  this.notificationService.openSuccessNotification(this.translateService.instant(successMessage));
+                  this.router.navigate(['/accounts']);
+                },
+                error: (error) => {
+                  this._isLoading = false;
+                  this.notificationService.openErrorNotification(this.translateService.instant(errorMessage));
+                },
+              });
+            }
+          });
       } else {
-        title = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.TITLE');
-        message = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.CONFIRM');
-        successMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.SUCCESS_MESSAGE');
-        errorMessage = this.translateService.instant('MANAGE_ACCOUNT_PAGE.NEW_ACCOUNT_DIALOG.ERROR_MESSAGE');
+        this.notificationService.openErrorNotification(this.translateService.instant('MANAGE_ACCOUNT_PAGE.INVALID_FORM_DIALOG.TITLE'));
       }
-
-      this.dialogService
-        .openConfirmation(title, message)
-        .subscribe((result: boolean) => {
-          if (result) {
-            this._isLoading = true;
-            this.userAccountService.updateAccountInformation(user).subscribe({
-              next: () => {
-                this._isLoading = false;
-                this._userDetails = user;
-                this.notificationService.openSuccessNotification(this.translateService.instant(successMessage));
-                this.router.navigate(['/accounts']);
-              },
-              error: (error) => {
-                this._isLoading = false;
-                this.notificationService.openErrorNotification(this.translateService.instant(errorMessage));
-              },
-            });
-          }
-        });
-    } else {
-      this.notificationService.openErrorNotification(this.translateService.instant('MANAGE_ACCOUNT_PAGE.INVALID_FORM_DIALOG.TITLE'));
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
+
   }
 
   get profileForm(): FormGroup {
