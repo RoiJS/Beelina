@@ -14,40 +14,66 @@ namespace Beelina.API.Types.Mutations
     public class ClientMutation
     {
         public async Task<Client> RegisterClient(
+            [Service] ILogger<ClientMutation> logger,
             [Service] IClientRepository<Client> clientRepository,
             [Service] IOptions<DbUserAccountDefaultsSettings> dbUserAccountDefaultSettings,
             ClientInput client)
         {
-            var clientToCreate = new Client
+            try
             {
-                Name = client.Name,
-                Type = ClientTypeEnum.Regular,
-                Description = client.Description,
-                ContactNumber = client.ContactNumber,
-                DateJoined = DateTime.Now,
-                DBServer = dbUserAccountDefaultSettings.Value.DbServer,
-                DBusername = dbUserAccountDefaultSettings.Value.DbUsername,
-                DBPassword = dbUserAccountDefaultSettings.Value.DbPassword,
-            };
+                var clientToCreate = new Client
+                {
+                    Name = client.Name,
+                    Type = ClientTypeEnum.Regular,
+                    Description = client.Description,
+                    ContactNumber = client.ContactNumber,
+                    DateJoined = DateTime.Now,
+                    DBServer = dbUserAccountDefaultSettings.Value.DbServer,
+                    DBusername = dbUserAccountDefaultSettings.Value.DbUsername,
+                    DBPassword = dbUserAccountDefaultSettings.Value.DbPassword,
+                };
 
-            var userAccount = new UserAccount
+                var userAccount = new UserAccount
+                {
+                    FirstName = client.FirstName,
+                    MiddleName = client.MiddleName,
+                    LastName = client.LastName,
+                    EmailAddress = client.EmailAddress
+                };
+
+                // Save client information
+                var createdClient = await clientRepository.RegisterClient(clientToCreate);
+
+                logger.LogInformation("Successfully created new client information. Params: {@params}", createdClient);
+                return createdClient;
+            }
+            catch (Exception ex)
             {
-                FirstName = client.FirstName,
-                MiddleName = client.MiddleName,
-                LastName = client.LastName,
-                EmailAddress = client.EmailAddress
-            };
+                logger.LogError(ex, "Failed to create client information. Params: {@params}", client);
 
-            // Save client information
-            var createdClient = await clientRepository.RegisterClient(clientToCreate);
+                throw new Exception($"Failed to create client information. {ex.Message}");
+            }
 
-            return createdClient;
         }
 
-        public async Task<ISyncDatabasePayload> SyncDatabase([Service] BeelinaClientDataContext _context)
+        public async Task<ISyncDatabasePayload> SyncDatabase(
+            [Service] ILogger<ClientMutation> logger,
+            [Service] BeelinaClientDataContext _context
+        )
         {
-            await _context.Database.MigrateAsync();
-            return new SyncDatabaseResult() { DatabaseSynced = true };
+            try
+            {
+                await _context.Database.MigrateAsync();
+                logger.LogInformation("Successfully sync database.");
+                return new SyncDatabaseResult() { DatabaseSynced = true };
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to sync database.");
+
+                throw new Exception($"Failed to sync database. {ex.Message}");
+            }
+
         }
     }
 }

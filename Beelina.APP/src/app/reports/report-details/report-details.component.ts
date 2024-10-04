@@ -5,24 +5,26 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
+import { getBusinessModelEnum } from 'src/app/_enum/business-model.enum';
+import { GenerateReportOptionEnum } from 'src/app/_enum/generate-report-option.enum';
+import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
+import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { getPermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
+import { IGenerateReportResultQueryPayload } from 'src/app/_interfaces/payloads/ireport-generate-result-query.payload';
 import { ReportControlsRelation } from 'src/app/_models/report-control-relation';
 import { ReportInformationResult } from 'src/app/_models/results/report-information-result';
-import { BaseControlComponent } from '../report-controls/base-control/base-control.component';
-import { ReportGenerateOptionDialogComponent } from './report-generate-option-dialog/report-generate-option-dialog.component';
+import { AuthService } from 'src/app/_services/auth.service';
+import { LogMessageService } from 'src/app/_services/log-message.service';
 import { ReportsService } from 'src/app/_services/reports.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { componentsRegistry } from '../report-controls/components-registry';
-import { AuthService } from 'src/app/_services/auth.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
-import { getBusinessModelEnum } from 'src/app/_enum/business-model.enum';
-import { getPermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
-import { GenerateReportOptionEnum } from 'src/app/_enum/generate-report-option.enum';
-import { ModuleEnum } from 'src/app/_enum/module.enum';
-import { IGenerateReportResultQueryPayload } from 'src/app/_interfaces/payloads/ireport-generate-result-query.payload';
+import { BaseControlComponent } from '../report-controls/base-control/base-control.component';
+import { componentsRegistry } from '../report-controls/components-registry';
+import { ReportGenerateOptionDialogComponent } from './report-generate-option-dialog/report-generate-option-dialog.component';
 
 @Component({
   selector: 'app-report-details',
@@ -51,8 +53,9 @@ export class ReportDetailsComponent
 
   constructor(
     private authService: AuthService,
-    private bottomSheet: MatBottomSheet,
     private activatedRoute: ActivatedRoute,
+    private bottomSheet: MatBottomSheet,
+    private loggerService: LogMessageService,
     private notificationService: NotificationService,
     private reportService: ReportsService,
     private translateService: TranslateService
@@ -147,54 +150,60 @@ export class ReportDetailsComponent
    * @return {void}
    */
   generateReport() {
-    if (this.validate()) {
-      const selectedValues = this.controlComponents.map((c) => {
-        const controlValue = new ControlValue();
-        controlValue.controlId = c.id;
-        controlValue.currentValue = c.componentInstance.value();
-        return controlValue;
-      });
 
-      this._dialogGenerateReportRef = this.bottomSheet.open(ReportGenerateOptionDialogComponent);
+    try {
+      if (this.validate()) {
+        const selectedValues = this.controlComponents.map((c) => {
+          const controlValue = new ControlValue();
+          controlValue.controlId = c.id;
+          controlValue.currentValue = c.componentInstance.value();
+          return controlValue;
+        });
 
-      this._dialogGenerateReportRef
-        .afterDismissed()
-        .subscribe(
-          (data: {
-            generateReportOption: GenerateReportOptionEnum
-          }) => {
-            if (!data) return;
+        this._dialogGenerateReportRef = this.bottomSheet.open(ReportGenerateOptionDialogComponent);
 
-            this._isLoading = true;
-            this._loadingLabel = this.translateService.instant('REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.LOADING_MESSAGE');
-            this.reportService
-              .generateReport(this._reportId, data.generateReportOption, selectedValues)
-              .subscribe({
-                next: (data: IGenerateReportResultQueryPayload) => {
-                  this._isLoading = false;
+        this._dialogGenerateReportRef
+          .afterDismissed()
+          .subscribe(
+            (data: {
+              generateReportOption: GenerateReportOptionEnum
+            }) => {
+              if (!data) return;
 
-                  if (data.generateReportOption === GenerateReportOptionEnum.DOWNLOAD) {
-                    this.downloadReport(data);
-                    this.notificationService.openSuccessNotification(this.translateService.instant(
-                      'REPORT_DETAILS_PAGE.DOWNLOAD_REPORT_DIALOG.SUCCESS_MESSAGE'
+              this._isLoading = true;
+              this._loadingLabel = this.translateService.instant('REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.LOADING_MESSAGE');
+              this.reportService
+                .generateReport(this._reportId, data.generateReportOption, selectedValues)
+                .subscribe({
+                  next: (data: IGenerateReportResultQueryPayload) => {
+                    this._isLoading = false;
+
+                    if (data.generateReportOption === GenerateReportOptionEnum.DOWNLOAD) {
+                      this.downloadReport(data);
+                      this.notificationService.openSuccessNotification(this.translateService.instant(
+                        'REPORT_DETAILS_PAGE.DOWNLOAD_REPORT_DIALOG.SUCCESS_MESSAGE'
+                      ));
+                    }
+
+                    if (data.generateReportOption === GenerateReportOptionEnum.SEND_EMAIL) {
+                      this.notificationService.openSuccessNotification(this.translateService.instant(
+                        'REPORT_DETAILS_PAGE.SEND_EMAIL_REPORT_DIALOG.SUCCESS_MESSAGE'
+                      ));
+                    }
+                  },
+                  error: () => {
+                    this._isLoading = false;
+                    this.notificationService.openErrorNotification(this.translateService.instant(
+                      'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
                     ));
-                  }
-
-                  if (data.generateReportOption === GenerateReportOptionEnum.SEND_EMAIL) {
-                    this.notificationService.openSuccessNotification(this.translateService.instant(
-                      'REPORT_DETAILS_PAGE.SEND_EMAIL_REPORT_DIALOG.SUCCESS_MESSAGE'
-                    ));
-                  }
-                },
-                error: () => {
-                  this._isLoading = false;
-                  this.notificationService.openErrorNotification(this.translateService.instant(
-                    'REPORT_DETAILS_PAGE.GENERATE_REPORT_DIALOG.ERROR_MESSAGE'
-                  ));
-                },
-              });
-          }
-        );
+                  },
+                });
+            }
+          );
+      }
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
   }
 

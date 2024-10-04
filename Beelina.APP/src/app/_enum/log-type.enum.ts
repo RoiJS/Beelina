@@ -1,0 +1,9 @@
+export enum LogLevelEnum {
+  CRITICAL = 'CRITICAL',
+  DEBUG = 'DEBUG',
+  ERROR = 'ERROR',
+  INFORMATION = 'INFORMATION',
+  NONE = 'NONE',
+  TRACE = 'TRACE',
+  WARNING = 'WARNING',
+}

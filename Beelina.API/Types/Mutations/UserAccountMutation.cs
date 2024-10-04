@@ -11,6 +11,7 @@ using Beelina.LIB.Models;
 using HotChocolate.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NLog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -94,6 +95,7 @@ namespace Beelina.API.Types.Mutations
 
         [Error(typeof(UserAccountErrorFactory))]
         public async Task<AuthenticationPayLoad> Login(
+            [Service] ILogger<UserAccountMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IUserAccountRepository<UserAccount> userAccountRepository,
             [Service] IGeneralInformationRepository<GeneralInformation> generalInformationRepository,
@@ -101,12 +103,14 @@ namespace Beelina.API.Types.Mutations
             [Service] IOptions<ApplicationSettings> appSettings,
             LoginInput loginInput)
         {
+            logger.LogInformation("Authenticating user... {@loginInput}", loginInput);
             var generalSetting = await generalSettingRepository.GetGeneralSettings();
             var userFromRepo = await userAccountRepository.Login(loginInput.Username.ToLower(), loginInput.Password, generalSetting.ByPassAuthentication);
 
             if (userFromRepo == null)
                 throw new InvalidCredentialsException();
 
+            logger.LogInformation("User authenticated successfully.");
 
             var generalInformation = await generalInformationRepository.GetGeneralInformation();
             if (generalInformation.SystemUpdateStatus)

@@ -15,23 +15,27 @@ namespace Beelina.API.Types.Query
     {
         [Authorize]
         public async Task<List<Product>> UpdateProducts(
+            [Service] ILogger<ProductQuery> logger,
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             int userAccountId,
             List<ProductInput> productInputs)
         {
             var warehouseId = 1;
-            var savedProducts = new List<Product>();
             try
             {
-                savedProducts = await productRepository.CreateOrUpdatePanelProducts(userAccountId, warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
+                var savedProducts = await productRepository.CreateOrUpdatePanelProducts(userAccountId, warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
+                
+                logger.LogInformation("Products Updated. Params: savedProducts = {@savedProducts}", savedProducts);
+
+                return savedProducts;
             }
             catch (Exception ex)
             {
-                throw new Exception("$Failed to register product: {ex.Message}");
+                logger.LogError(ex, "Failed to register product. Params: userAccountId = {userAccountId}; productInputs = {@productInputs}", userAccountId, productInputs);
+                
+                throw new Exception($"Failed to register product: {ex.Message}");
             }
-
-            return savedProducts;
         }
 
         [Authorize]
@@ -119,8 +123,8 @@ namespace Beelina.API.Types.Query
 
         [Authorize]
         public async Task<double> GetInventoryPanelTotalValue(
-            [Service] IProductRepository<Product> productRepository, 
-            [Service] IHttpContextAccessor httpContextAccessor, 
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
             int userAccountId)
         {
             var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
