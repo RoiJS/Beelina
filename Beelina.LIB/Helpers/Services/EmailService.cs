@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 
-namespace ReserbizAPP.LIB.Helpers.Services
+namespace Beelina.LIB.Helpers.Services
 {
     public class EmailService
     {

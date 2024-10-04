@@ -8,8 +8,6 @@ using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using HotChocolate.Authorization;
 using Microsoft.Extensions.Options;
-using ReserbizAPP.LIB.Helpers.Class;
-using ReserbizAPP.LIB.Helpers.Services;
 
 namespace Beelina.API.Types.Mutations
 {
