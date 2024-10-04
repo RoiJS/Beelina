@@ -19,11 +19,13 @@ import { importResultSelector, isImportLoadingSelector, isLoadingSelector } from
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
+import { LogMessageService } from 'src/app/_services/log-message.service';
 
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { ProductService } from 'src/app/_services/product.service';
 
 import { WarehouseFilePickerAdapter } from '../warehouse-file-picker.adapter';
+import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
 
 @Component({
   selector: 'app-product-import',
@@ -35,6 +37,7 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
   stepper = viewChild(MatStepper);
   filePicker = viewChild(FilePickerComponent);
   loader = viewChild(LoaderLayoutComponent);
+  loggerService = inject(LogMessageService);
   successProductImportPaginator = viewChild<MatPaginator>('successProductImportPaginator');
   failedProductImportPaginator = viewChild<MatPaginator>('failedProductImportPaginator');
 
@@ -94,44 +97,54 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
   }
 
   extractFile() {
-    this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: true }));
-    const item = this.filePicker().files;
-    this.loader().label = this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.EXTRACT_PROCESS_TEXT');
-    this.filePicker().adapter.uploadFile(item[0]).subscribe({
-      next: (result: UploadResponse) => {
-        this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: false }));
-        const data = result.body;
-        this.successProductsImportsDatasource.data = data.successExtractedProducts;
-        this.failedProductsImportsDatasource.data = data.failedExtractedProducts;
-        this.stepper().next();
-      },
-      error: (e) => {
-        this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: false }));
-        this.dialogService.openAlert(this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.UPLOAD_FILE_VALIDATION_DIALOG.EXTRACT_FILE_ERROR_DIALOG.TITLE'), e.message);
-        this.filePicker().removeFileFromList(item[0]);
-      }
-    });
+    try {
+      this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: true }));
+      const item = this.filePicker().files;
+      this.loader().label = this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.FIRST_STEP_SECTION.EXTRACT_PROCESS_TEXT');
+      this.filePicker().adapter.uploadFile(item[0]).subscribe({
+        next: (result: UploadResponse) => {
+          this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: false }));
+          const data = result.body;
+          this.successProductsImportsDatasource.data = data.successExtractedProducts;
+          this.failedProductsImportsDatasource.data = data.failedExtractedProducts;
+          this.stepper().next();
+        },
+        error: (e) => {
+          this.store.dispatch(ProductActions.setUpdateWarehouseProductLoadingState({ state: false }));
+          this.dialogService.openAlert(this.translateService.instant('WAREHOUSE_PRODUCT_IMPORT_PAGE.UPLOAD_FILE_VALIDATION_DIALOG.EXTRACT_FILE_ERROR_DIALOG.TITLE'), e.message);
+          this.filePicker().removeFileFromList(item[0]);
+        }
+      });
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
   }
 
   importProducts() {
-    const products = this.successProductsImportsDatasource.data.map((extractedProduct: IMapExtractedProductPayload) => {
-      const product = new Product();
-      product.id = extractedProduct.id;
-      product.name = extractedProduct.name;
-      product.code = extractedProduct.code;
-      product.supplierId = extractedProduct.supplierId;
-      product.description = extractedProduct.description;
-      product.stockQuantity = extractedProduct.quantity;
-      product.isTransferable = extractedProduct.isTransferable;
-      product.numberOfUnits = extractedProduct.numberOfUnits || extractedProduct.originalNumberOfUnits;
-      product.pricePerUnit = extractedProduct.price || extractedProduct.originalPrice;
-      product.productUnit.name = extractedProduct.unit || extractedProduct.originalUnit;
-      return product;
-    });
+    try {
+      const products = this.successProductsImportsDatasource.data.map((extractedProduct: IMapExtractedProductPayload) => {
+        const product = new Product();
+        product.id = extractedProduct.id;
+        product.name = extractedProduct.name;
+        product.code = extractedProduct.code;
+        product.supplierId = extractedProduct.supplierId;
+        product.description = extractedProduct.description;
+        product.stockQuantity = extractedProduct.quantity;
+        product.isTransferable = extractedProduct.isTransferable;
+        product.numberOfUnits = extractedProduct.numberOfUnits || extractedProduct.originalNumberOfUnits;
+        product.pricePerUnit = extractedProduct.price || extractedProduct.originalPrice;
+        product.productUnit.name = extractedProduct.unit || extractedProduct.originalUnit;
+        return product;
+      });
 
-    if (products.length === 0) return;
+      if (products.length === 0) return;
 
-    this.store.dispatch(ProductActions.importWarehouseProductsAction({ products }));
+      this.store.dispatch(ProductActions.importWarehouseProductsAction({ products }));
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
   }
 
   abortImport() {

@@ -13,6 +13,7 @@ import { productUnitsSelector } from 'src/app/units/store/selectors';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { LogMessageService } from 'src/app/_services/log-message.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import { isUpdateLoadingSelector } from '../store/selectors';
@@ -23,15 +24,18 @@ import { ProductInformationResult } from 'src/app/_models/results/product-inform
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 
 import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
-import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
 import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
+
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
+import { SupplierStore } from 'src/app/suppliers/suppliers.store';
+import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
+
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
-import { SupplierStore } from 'src/app/suppliers/suppliers.store';
 
 @Component({
   selector: 'app-edit-product-details',
@@ -69,6 +73,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   dialogService = inject(DialogService);
   productService = inject(ProductService);
   formBuilder = inject(FormBuilder);
+  loggerService = inject(LogMessageService);
   router = inject(Router);
   notificationService = inject(NotificationService);
   uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
@@ -183,120 +188,136 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   }
 
   saveProduct() {
-    const product = new Product();
-    product.id = this._productId;
-    product.name = this._productForm.get('name').value;
-    product.code = this._productForm.get('code').value;
-    product.description = this._productForm.get('description').value;
-    product.supplierId = this._productForm.get('supplierId').value;
-    product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
-    product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
-    product.isTransferable = this._productForm.get('isTransferable').value;
-    product.numberOfUnits = this._productForm.get('numberOfUnits').value;
-    product.pricePerUnit = this._productForm.get('pricePerUnit').value;
-    product.productUnit.name = this._productForm.get('productUnit').value;
 
-    this._productForm.markAllAsTouched();
+    try {
+      const product = new Product();
+      product.id = this._productId;
+      product.name = this._productForm.get('name').value;
+      product.code = this._productForm.get('code').value;
+      product.description = this._productForm.get('description').value;
+      product.supplierId = this._productForm.get('supplierId').value;
+      product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
+      product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
+      product.isTransferable = this._productForm.get('isTransferable').value;
+      product.numberOfUnits = this._productForm.get('numberOfUnits').value;
+      product.pricePerUnit = this._productForm.get('pricePerUnit').value;
+      product.productUnit.name = this._productForm.get('productUnit').value;
 
-    if (this._productForm.valid) {
-      this.dialogService
-        .openConfirmation(
-          this.translateService.instant(
-            'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.TITLE'
-          ),
-          this.translateService.instant(
-            'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.CONFIRM'
+      this._productForm.markAllAsTouched();
+
+      if (this._productForm.valid) {
+        this.dialogService
+          .openConfirmation(
+            this.translateService.instant(
+              'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.TITLE'
+            ),
+            this.translateService.instant(
+              'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.CONFIRM'
+            )
           )
-        )
-        .subscribe((result: ButtonOptions) => {
-          if (result === ButtonOptions.YES) {
-            this.store.dispatch(
-              ProductActions.setUpdateProductLoadingState({
-                state: true,
-              })
-            );
-            this._updateProductSubscription = this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
-              next: () => {
-                this.notificationService.openSuccessNotification(this.translateService.instant(
-                  'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.SUCCESS_MESSAGE'
-                ));
-                this.store.dispatch(
-                  ProductActions.setUpdateProductLoadingState({
-                    state: false,
-                  })
-                );
-                this.router.navigate([this._productSourceRedirectUrl[this._productSource]]);
-              },
+          .subscribe((result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
+              this.store.dispatch(
+                ProductActions.setUpdateProductLoadingState({
+                  state: true,
+                })
+              );
+              this._updateProductSubscription = this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
+                next: () => {
+                  this.notificationService.openSuccessNotification(this.translateService.instant(
+                    'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+                  ));
+                  this.store.dispatch(
+                    ProductActions.setUpdateProductLoadingState({
+                      state: false,
+                    })
+                  );
+                  this.router.navigate([this._productSourceRedirectUrl[this._productSource]]);
+                },
 
-              error: () => {
-                this.notificationService.openErrorNotification(this.translateService.instant(
-                  'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.ERROR_MESSAGE'
-                ));
+                error: () => {
+                  this.notificationService.openErrorNotification(this.translateService.instant(
+                    'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.ERROR_MESSAGE'
+                  ));
 
-                this.store.dispatch(
-                  ProductActions.setUpdateProductLoadingState({
-                    state: false,
-                  })
-                );
-              },
-            });
-          }
-        });
+                  this.store.dispatch(
+                    ProductActions.setUpdateProductLoadingState({
+                      state: false,
+                    })
+                  );
+                },
+              });
+            }
+          });
+      }
+
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
+
   }
 
   editStockQuantity() {
-    this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
-      data: {
-        additionalStockQuantity: this._productForm.get('additionalStockQuantity').value,
-        transactionNo: this._productForm.get('transactionNo').value,
-        productSource: this._productSource,
-      },
-    });
 
-    this._dialogRef
-      .afterDismissed()
-      .subscribe(
-        (data: {
-          additionalStockQuantity: number;
-          transactionNo: string;
-        }) => {
-          if (!data) return;
+    try {
+      this._dialogRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
+        data: {
+          additionalStockQuantity: this._productForm.get('additionalStockQuantity').value,
+          transactionNo: this._productForm.get('transactionNo').value,
+          productSource: this._productSource,
+        },
+      });
 
-          const updateAdditionalStockValue = () => {
-            this._productForm
-              .get('additionalStockQuantity')
-              .setValue(data.additionalStockQuantity);
+      this._dialogRef
+        .afterDismissed()
+        .subscribe(
+          (data: {
+            additionalStockQuantity: number;
+            transactionNo: string;
+          }) => {
+            if (!data) return;
 
-            this._productForm
-              .get('transactionNo')
-              .setValue(data.transactionNo);
+            const updateAdditionalStockValue = () => {
+              this._productForm
+                .get('additionalStockQuantity')
+                .setValue(data.additionalStockQuantity);
+
+              this._productForm
+                .get('transactionNo')
+                .setValue(data.transactionNo);
+            }
+
+            if (this._productSource == ProductSourceEnum.Panel) {
+              this.productService
+                .checkWarehouseProductStockQuantity(this._productId, this._warehouseId, data.additionalStockQuantity)
+                .subscribe((insufficientStocks: Array<InsufficientProductQuantity>) => {
+                  if (insufficientStocks.length > 0) {
+                    this.dialogService
+                      .openAlert(
+                        this.translateService.instant(
+                          'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.TITLE'
+                        ),
+                        this.translateService.instant(
+                          'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.ERROR_MESSAGE'
+                        ).replace("{0}", insufficientStocks[0].currentQuantity.toString())
+                      )
+                    return;
+                  } else {
+                    updateAdditionalStockValue();
+                  }
+                });
+            } else {
+              updateAdditionalStockValue();
+            }
           }
+        );
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
 
-          if (this._productSource == ProductSourceEnum.Panel) {
-            this.productService
-              .checkWarehouseProductStockQuantity(this._productId, this._warehouseId, data.additionalStockQuantity)
-              .subscribe((insufficientStocks: Array<InsufficientProductQuantity>) => {
-                if (insufficientStocks.length > 0) {
-                  this.dialogService
-                    .openAlert(
-                      this.translateService.instant(
-                        'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.TITLE'
-                      ),
-                      this.translateService.instant(
-                        'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.ERROR_MESSAGE'
-                      ).replace("{0}", insufficientStocks[0].currentQuantity.toString())
-                    )
-                  return;
-                } else {
-                  updateAdditionalStockValue();
-                }
-              });
-          } else {
-            updateAdditionalStockValue();
-          }
-        }
-      );
+
   }
 
   private _filter(value: string): Array<ProductUnit> {

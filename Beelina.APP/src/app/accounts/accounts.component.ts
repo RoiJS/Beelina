@@ -124,23 +124,25 @@ export class AccountsComponent extends BaseComponent implements OnInit {
       errorMessage = this.translateService.instant('ACCOUNTS_PAGE.DEACTIVATE_ACCOUNT_DIALOG.ERROR_MESSAGE');
     }
 
-    this.dialogService.openConfirmation(title, message).subscribe((result: ButtonOptions) => {
-      if (result === ButtonOptions.YES) {
-        this.userAccountService
-          .setUserAccountsStatus([user.id], status)
-          .subscribe({
-            next: () => {
-              this.notificationService.openSuccessNotification(successMessage);
-              this.store.dispatch(UserAccountActions.resetUserAccountsState());
-              this.store.dispatch(UserAccountActions.getUserAccountsAction());
-            },
-            error: () => {
-              this.notificationService.openErrorNotification(errorMessage);
-              this.store.dispatch(UserAccountActions.resetUserAccountsState());
-            }
-          });
-      }
-    });
+    this.dialogService
+      .openConfirmation(title, message)
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.userAccountService
+            .setUserAccountsStatus([user.id], status)
+            .subscribe({
+              next: () => {
+                this.notificationService.openSuccessNotification(successMessage);
+                this.store.dispatch(UserAccountActions.resetUserAccountsState());
+                this.store.dispatch(UserAccountActions.getUserAccountsAction());
+              },
+              error: () => {
+                this.notificationService.openErrorNotification(errorMessage);
+                this.store.dispatch(UserAccountActions.resetUserAccountsState());
+              }
+            });
+        }
+      });
   }
 
   get filterKeyword(): string {

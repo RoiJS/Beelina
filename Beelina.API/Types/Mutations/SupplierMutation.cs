@@ -12,31 +12,58 @@ namespace Beelina.API.Types.Mutations
     {
         [Authorize]
         public async Task<Supplier> UpdateSupplier(
-                [Service] ISupplierRepository<Supplier> supplierRepository,
-                [Service] IMapper mapper,
-                [Service] ICurrentUserService currentUserService,
-                SupplierInput supplierInput)
+            [Service] ILogger<SupplierMutation> logger,
+            [Service] ISupplierRepository<Supplier> supplierRepository,
+            [Service] IMapper mapper,
+            [Service] ICurrentUserService currentUserService,
+            SupplierInput supplierInput)
         {
-            supplierRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-            var supplierFromRepo = await supplierRepository.GetEntity(supplierInput.Id).ToObjectAsync();
+            try
+            {
+                supplierRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+                var supplierFromRepo = await supplierRepository.GetEntity(supplierInput.Id).ToObjectAsync();
 
-            if (supplierFromRepo is null)
-            {
-                var newSupplier = new Supplier { Id = supplierInput.Id, Name = supplierInput.Name, Code = supplierInput.Code };
-                await supplierRepository.AddEntity(newSupplier);
-                return newSupplier;
+                if (supplierFromRepo is null)
+                {
+                    var newSupplier = new Supplier { Id = supplierInput.Id, Name = supplierInput.Name, Code = supplierInput.Code };
+                    await supplierRepository.AddEntity(newSupplier);
+
+                    logger.LogInformation("Successfully added new supplier. Params: {@params}", new
+                    {
+                        supplierInput
+                    });
+
+                    return newSupplier;
+                }
+                else
+                {
+                    mapper.Map(supplierInput, supplierFromRepo);
+                    await supplierRepository.SaveChanges();
+
+                    logger.LogInformation("Successfully updated supplier. Params: {@params}", new
+                    {
+                        supplierInput
+                    });
+
+                    return supplierFromRepo;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                mapper.Map(supplierInput, supplierFromRepo);
-                await supplierRepository.SaveChanges();
-                return supplierFromRepo;
+                logger.LogError(ex, "Failed to update supplier information. Params: {@params}", new
+                {
+                    supplierInput
+                });
+
+                throw new Exception($"Failed to update supplier information. {ex.Message}");
             }
+
         }
 
         [Authorize]
         [Error(typeof(SupplierErrorFactory))]
         public async Task<bool> DeleteSuppliers(
+            [Service] ILogger<SupplierMutation> logger,
             [Service] ISupplierRepository<Supplier> supplierRepository,
             [Service] ICurrentUserService currentUserService,
             [Service] IHttpContextAccessor httpContextAccessor,
@@ -50,11 +77,20 @@ namespace Beelina.API.Types.Mutations
                 await supplierRepository.DeleteSuppliers(supplierIds);
 
                 await supplierRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+
+                logger.LogInformation("Successfully deleted suppliers. Params: {@params}", new
+                {
+                    supplierIds
+                });
             }
             catch (Exception ex)
             {
                 result = false;
-                Console.Write($"Error deleting supplier(s): {ex.Message}");
+
+                logger.LogError(ex, "Failed to delete suppliers. Params: {@params}", new
+                {
+                    supplierIds
+                });
             }
 
             return result;

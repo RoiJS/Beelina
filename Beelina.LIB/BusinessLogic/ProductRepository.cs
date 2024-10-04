@@ -7,12 +7,14 @@ using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Beelina.LIB.Models.Filters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Beelina.LIB.BusinessLogic
 {
   public class ProductRepository
       : BaseRepository<Product>, IProductRepository<Product>
   {
+    private readonly ILogger<ProductRepository> _logger;
     private readonly IProductStockPerPanelRepository<ProductStockPerPanel> _productStockPerPanelRepository;
     private IProductStockPerWarehouseRepository<ProductStockPerWarehouse> _productStockPerWarehouseRepository;
     private readonly IProductStockAuditRepository<ProductStockAudit> _productStockAuditRepository;
@@ -22,6 +24,7 @@ namespace Beelina.LIB.BusinessLogic
     private readonly ICurrentUserService _currentUserService;
 
     public ProductRepository(IBeelinaRepository<Product> beelinaRepository,
+        ILogger<ProductRepository> logger,
         IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
         IProductStockPerWarehouseRepository<ProductStockPerWarehouse> productStockPerWarehouseRepository,
         IProductStockAuditRepository<ProductStockAudit> productStockAuditRepository,
@@ -30,6 +33,7 @@ namespace Beelina.LIB.BusinessLogic
         ICurrentUserService currentUserService)
         : base(beelinaRepository, beelinaRepository.ClientDbContext)
     {
+      _logger = logger;
       _productStockPerPanelRepository = productStockPerPanelRepository;
       _productStockPerWarehouseRepository = productStockPerWarehouseRepository;
       _productStockAuditRepository = productStockAuditRepository;
@@ -283,6 +287,8 @@ namespace Beelina.LIB.BusinessLogic
       }
       catch (TaskCanceledException ex)
       {
+        _logger.LogError(ex, "Executing GetProducts has been cancelled.");
+        
         throw new Exception($"Executing GetProducts has been cancelled. {ex.Message}");
       }
 
@@ -552,6 +558,8 @@ namespace Beelina.LIB.BusinessLogic
       }
       catch (TaskCanceledException ex)
       {
+        _logger.LogError(ex, "Executing GetWarehouseProducts has been cancelled.");
+
         throw new Exception($"Executing GetWarehouseProducts has been cancelled. {ex.Message}");
       }
 
@@ -601,8 +609,13 @@ namespace Beelina.LIB.BusinessLogic
       {
         SetCurrentUserId(_currentUserService.CurrentUserId);
 
+        _logger.LogInformation("Start of Transaction - Save Product Panels");
+
         foreach (var productInput in productInputs)
         {
+
+          _logger.LogInformation("==================================================================================================");
+
           var productFromRepo = await GetEntity(productInput.Id).ToObjectAsync();
 
           if (productFromRepo == null)
@@ -617,6 +630,9 @@ namespace Beelina.LIB.BusinessLogic
               NumberOfUnits = productInput.NumberOfUnits,
               SupplierId = productInput.SupplierId
             };
+
+            _logger.LogInformation("Part 1 - ({@counter}): Registering new product. Product: {@product}", counter, productFromRepo);
+
           }
           else
           {
@@ -627,32 +643,48 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
             productFromRepo.SupplierId = productInput.SupplierId;
+
+            _logger.LogInformation("Part 1 - ({@counter}): Updating existing product. Product: {@product}", counter, productFromRepo);
           }
 
           // Create new product unit if not exists.
           //===========================================================================================================
+          _logger.LogInformation("Part 2 -  Product Unit Information saving...");
           var productUnitFromRepo = await ManageProductUnit(productInput.ProductUnitInput.Name, cancellationToken);
           productFromRepo.ProductUnitId = productUnitFromRepo.Id;
 
           await UpdateProduct(productFromRepo);
+          _logger.LogInformation("Part 3 -  Product Information saved!");
 
           // Create new product stock per panel if not exists.
+          _logger.LogInformation("Part 4 -  Product Stock Per Panel Information saving...");
           var productStockPerPanelFromRepo = await ManageProductStockPerPanel(productFromRepo, productInput, userAccountId, cancellationToken);
 
           // Insert new stock audit for the product
           //===========================================================================================================
-          await ManageProductStockAudit(productStockPerPanelFromRepo, productInput, warehouseId);
+          _logger.LogInformation("Part 5 - Product Stock Audit saving...");
+          await ManageProductStockAudit(productStockPerPanelFromRepo, productInput, warehouseId, cancellationToken);
           productsFromRepo.Add(productFromRepo);
 
-          // Commit transaction if all operations succeed
-          if (counter == (productInputs.Count - 1)) await transaction.CommitAsync(cancellationToken);
+          // Commit transaction if all operations succeeded
+          if (counter == (productInputs.Count - 1))
+          {
+            await transaction.CommitAsync(cancellationToken);
+
+            _logger.LogInformation("End of Transaction: Products updated successfully. Transaction committed!");
+            _logger.LogInformation("==================================================================================================");
+          }
           counter++;
         }
       }
-      catch
+      catch (Exception ex)
       {
         // Rollback the transaction if any operation fails
         await transaction.RollbackAsync(cancellationToken);
+
+        _logger.LogError(ex, "End of Transaction: Error during product updates. Transaction rollback!");
+        _logger.LogInformation("==================================================================================================");
+
         throw;
       }
 
@@ -667,10 +699,15 @@ namespace Beelina.LIB.BusinessLogic
       using var transaction = _beelinaRepository.ClientDbContext.Database.BeginTransaction();
       try
       {
+        _logger.LogInformation("Start of Transaction - Save Warehouse Products");
+
         SetCurrentUserId(_currentUserService.CurrentUserId);
 
         foreach (var productInput in productInputs)
         {
+
+          _logger.LogInformation("==================================================================================================");
+
           var productFromRepo = await GetEntity(productInput.Id).ToObjectAsync();
 
           if (productFromRepo == null)
@@ -685,6 +722,9 @@ namespace Beelina.LIB.BusinessLogic
               NumberOfUnits = productInput.NumberOfUnits,
               SupplierId = productInput.SupplierId,
             };
+
+            _logger.LogInformation("Part 1 - ({@counter}): Registering new warehouse product. Product: {@product}", counter, productFromRepo);
+
           }
           else
           {
@@ -695,32 +735,53 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
             productFromRepo.SupplierId = productInput.SupplierId;
+
+            _logger.LogInformation("Part 1 - ({@counter}): Updating existing warehouse product. Product: {@product}", counter, productFromRepo);
+
           }
 
           // Create new product unit if not exists.
           //===========================================================================================================
+          _logger.LogInformation("Part 2 - Warehouse Product Unit Information saving...");
+
           var productUnitFromRepo = await ManageProductUnit(productInput.ProductUnitInput.Name, cancellationToken);
           productFromRepo.ProductUnitId = productUnitFromRepo.Id;
 
           await UpdateProduct(productFromRepo);
+          _logger.LogInformation("Part 3 - Warehouse Product Information saved!");
 
           // Create new product stock per panel if not exists.
+          _logger.LogInformation("Part 4 - Product Warehouse Stock Per Panel Information saving...");
+
           var productStockPerWarehouseFromRepo = await ManageProductStockPerWarehouse(productFromRepo, productInput, warehouseId, cancellationToken);
 
           // Insert new stock audit for the product
           //===========================================================================================================
-          await ManageWarehouseProductStockAudit(productStockPerWarehouseFromRepo, productInput);
+          _logger.LogInformation("Part 5 - Warehouse Product Stock Audit saving...");
+
+          await ManageWarehouseProductStockAudit(productStockPerWarehouseFromRepo, productInput, cancellationToken);
+
           productsFromRepo.Add(productFromRepo);
 
           // Commit transaction if all operations succeed
-          if (counter == (productInputs.Count - 1)) await transaction.CommitAsync(cancellationToken);
+          if (counter == (productInputs.Count - 1))
+          {
+
+            await transaction.CommitAsync(cancellationToken);
+
+            _logger.LogInformation("End of Transaction: Warehouse Products updated successfully. Transaction committed!");
+            _logger.LogInformation("==================================================================================================");
+          }
           counter++;
         }
       }
-      catch
+      catch (Exception ex)
       {
         // Rollback the transaction if any operation fails
         await transaction.RollbackAsync(cancellationToken);
+
+        _logger.LogError(ex, "End of Transaction: Error during warehouse product updates. Transaction rollback!");
+        _logger.LogInformation("==================================================================================================");
         throw;
       }
 
@@ -740,6 +801,8 @@ namespace Beelina.LIB.BusinessLogic
 
         await _beelinaRepository.ClientDbContext.ProductUnits.AddAsync(productUnitFromRepo);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("** Saved new product unit: {@productUnitFromRepo}", productUnitFromRepo);
       }
 
       return productUnitFromRepo;
@@ -765,12 +828,18 @@ namespace Beelina.LIB.BusinessLogic
 
       if (productStockPerPanelFromRepo.Id == 0)
       {
-        await _beelinaRepository.ClientDbContext.ProductStockPerPanels.AddAsync(productStockPerPanelFromRepo);
+        await _beelinaRepository.ClientDbContext.ProductStockPerPanels.AddAsync(productStockPerPanelFromRepo, cancellationToken);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("** Saved new product stock per panel: {@productStockPerPanelFromRepo}", productStockPerPanelFromRepo);
+
       }
       else
       {
         await _productStockPerPanelRepository.SaveChanges(cancellationToken);
+
+        _logger.LogInformation("** Updated existing product stock per panel: {@productStockPerPanelFromRepo}", productStockPerPanelFromRepo);
+
       }
 
       return productStockPerPanelFromRepo;
@@ -798,16 +867,20 @@ namespace Beelina.LIB.BusinessLogic
       {
         await _beelinaRepository.ClientDbContext.ProductStockPerWarehouse.AddAsync(productStockPerWarehouseFromRepo);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("** Saved new warehouse product stock per panel: {@productStockPerWarehouseFromRepo}", productStockPerWarehouseFromRepo);
       }
       else
       {
         await _productStockPerWarehouseRepository.SaveChanges(cancellationToken);
+
+        _logger.LogInformation("** Updated existing warehouse product stock per panel: {@productStockPerWarehouseFromRepo}", productStockPerWarehouseFromRepo);
       }
 
       return productStockPerWarehouseFromRepo;
     }
 
-    private async Task ManageProductStockAudit(ProductStockPerPanel productStockPerPanel, ProductInput productInput, int warehouseId)
+    private async Task ManageProductStockAudit(ProductStockPerPanel productStockPerPanel, ProductInput productInput, int warehouseId, CancellationToken cancellationToken)
     {
       if (productInput.StockQuantity != 0)
       {
@@ -821,12 +894,22 @@ namespace Beelina.LIB.BusinessLogic
         };
 
         if (productStockAudit.Id == 0)
-          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(productStockAudit);
-        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        {
+          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(productStockAudit, cancellationToken);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("** Saved new product stock audit: {@productStockAudit}", productStockAudit);
+        }
+        else
+        {
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("** Updated existing product stock audit: {@productStockAudit}", productStockAudit);
+        }
       }
     }
 
-    private async Task ManageWarehouseProductStockAudit(ProductStockPerWarehouse productStockPerWarehouse, ProductInput productInput)
+    private async Task ManageWarehouseProductStockAudit(ProductStockPerWarehouse productStockPerWarehouse, ProductInput productInput, CancellationToken cancellationToken)
     {
       if (productInput.StockQuantity != 0)
       {
@@ -840,8 +923,19 @@ namespace Beelina.LIB.BusinessLogic
         };
 
         if (productWarehouseStockAudit.Id == 0)
-          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(productWarehouseStockAudit);
-        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        {
+          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(productWarehouseStockAudit, cancellationToken);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("** Saved new warehouse product stock audit: {@productWarehouseStockAudit}", productWarehouseStockAudit);
+
+        }
+        else
+        {
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("** Updated existing warehouse product stock audit: {@productWarehouseStockAudit}", productWarehouseStockAudit);
+        }
       }
     }
 
@@ -1115,6 +1209,10 @@ namespace Beelina.LIB.BusinessLogic
       using var transaction = _beelinaRepository.ClientDbContext.Database.BeginTransaction();
       try
       {
+
+        _logger.LogInformation("Start of Transaction - Transfer product stocks");
+        _logger.LogInformation("===========================================================================================");
+
         var sourceProductStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(sourceProductId, userAccountId);
         var destinationProductStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(destinationProductId, userAccountId);
         var destinationNumberOfUnitsReceived = 0;
@@ -1142,7 +1240,9 @@ namespace Beelina.LIB.BusinessLogic
                               .Where(p => p.Id == productId)
                               .FirstOrDefaultAsync();
         productFromRepo.NumberOfUnits = productNumberOfUnits;
-        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Part 1 - Updated source product. Params: {@params}", productFromRepo);
 
         // Part 2 - Insert audit entry for the destination product
         if (destinationProductStockPerPanel != null && destinationProductStockPerPanel.Id > 0)
@@ -1158,8 +1258,10 @@ namespace Beelina.LIB.BusinessLogic
             WithdrawalSlipNo = String.Empty,
             WarehouseId = warehouseId
           };
-          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(destinationProductStockAudit);
-          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(destinationProductStockAudit, cancellationToken);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("Part 2 - Inserted audit entry for the destination product. Params: {@params}", destinationProductStockAudit);
         }
         else
         {
@@ -1171,7 +1273,7 @@ namespace Beelina.LIB.BusinessLogic
           };
 
           await _beelinaRepository.ClientDbContext.ProductStockPerPanels.AddAsync(destinationProductStockPerPanel);
-          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
 
           var destinationProductStockAudit = new ProductStockAudit
           {
@@ -1184,8 +1286,10 @@ namespace Beelina.LIB.BusinessLogic
             WithdrawalSlipNo = String.Empty,
             WarehouseId = warehouseId
           };
-          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(destinationProductStockAudit);
-          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(destinationProductStockAudit, cancellationToken);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("Part 2 - Inserted audit entry for the destination product. Params: {@params}", destinationProductStockAudit);
         }
 
         // Part 3 - Insert audit entry for the source product
@@ -1199,14 +1303,23 @@ namespace Beelina.LIB.BusinessLogic
           WithdrawalSlipNo = String.Empty,
           WarehouseId = warehouseId
         };
-        await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(sourceProductStockAudit);
+        await _beelinaRepository.ClientDbContext.ProductStockAudits.AddAsync(sourceProductStockAudit, cancellationToken);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+
+        _logger.LogInformation("Part 3 - Inserted audit entry for the source product. Params: {@params}", sourceProductStockAudit);
+        _logger.LogInformation("End of Transaction. Successfully transferred product stocks. Transaction committed!");
+        _logger.LogInformation("===========================================================================================");
+
       }
-      catch
+      catch (Exception ex)
       {
         // Rollback the transaction if any operation fails
         await transaction.RollbackAsync(cancellationToken);
+
+        _logger.LogError(ex, "End of Transaction. Failed to transfer product stocks. Rollback transaction!");
+        _logger.LogInformation("===========================================================================================");
+
         throw;
       }
 
@@ -1234,6 +1347,9 @@ namespace Beelina.LIB.BusinessLogic
       using var transaction = _beelinaRepository.ClientDbContext.Database.BeginTransaction();
       try
       {
+        _logger.LogInformation("Start of Transaction - Transfer warehouse product stocks");
+        _logger.LogInformation("===========================================================================================");
+
         var sourceProductStockPerPanel = await _productStockPerWarehouseRepository.GetProductStockPerWarehouse(sourceProductId, warehouseId);
         var destinationProductStockPerWarehouse = await _productStockPerWarehouseRepository.GetProductStockPerWarehouse(destinationProductId, warehouseId);
         var destinationNumberOfUnitsReceived = 0;
@@ -1261,7 +1377,9 @@ namespace Beelina.LIB.BusinessLogic
                               .Where(p => p.Id == productId)
                               .FirstOrDefaultAsync();
         productFromRepo.NumberOfUnits = productNumberOfUnits;
-        await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+        await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Part 1 - Updated source product. Params: {@params}", productFromRepo);
 
         // Part 2 - Insert audit entry for the destination product
         if (destinationProductStockPerWarehouse != null && destinationProductStockPerWarehouse.Id > 0)
@@ -1276,8 +1394,10 @@ namespace Beelina.LIB.BusinessLogic
             TransferProductStockType = transferProductStockType,
             PurchaseOrderNumber = String.Empty,
           };
-          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(destinationProductStockAudit);
-          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(destinationProductStockAudit, cancellationToken);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("Part 2 - Inserted audit entry for the destination product. Params: {@params}", destinationProductStockAudit);
         }
         else
         {
@@ -1301,8 +1421,10 @@ namespace Beelina.LIB.BusinessLogic
             TransferProductStockType = transferProductStockType,
             PurchaseOrderNumber = String.Empty,
           };
-          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(destinationProductStockAudit);
-          await _beelinaRepository.ClientDbContext.SaveChangesAsync();
+          await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(destinationProductStockAudit, cancellationToken);
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("Part 2 - Inserted audit entry for the destination product. Params: {@params}", destinationProductStockAudit);
         }
 
         // Part 3 - Insert audit entry for the source product
@@ -1318,11 +1440,19 @@ namespace Beelina.LIB.BusinessLogic
         await _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit.AddAsync(sourceProductStockAudit);
         await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+
+        _logger.LogInformation("Part 3 - Inserted audit entry for the source product. Params: {@params}", sourceProductStockAudit);
+        _logger.LogInformation("End of Transaction. Successfully transferred product stocks. Transaction committed!");
+        _logger.LogInformation("===========================================================================================");
       }
-      catch
+      catch (Exception ex)
       {
         // Rollback the transaction if any operation fails
         await transaction.RollbackAsync(cancellationToken);
+
+        _logger.LogError(ex, "End of Transaction. Failed to transfer product stocks. Rollback transaction!");
+        _logger.LogInformation("===========================================================================================");
+
         throw;
       }
 
