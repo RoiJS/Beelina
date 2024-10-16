@@ -1,5 +1,7 @@
 using Beelina.LIB.Helpers.Classes;
 using Beelina.API.Helpers.Extensions;
+using Beelina.LIB.Interfaces;
+using Beelina.LIB.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -74,6 +76,6 @@ app.MapControllers();
 
 app.MapGraphQL("/graphql");
 
-// app.MapGet("/", async ([Service] IClientRepository<Client> clientRepository) => await clientRepository.GetCompanyInfoByName("BeelinaDeveloper"));
+app.MapGet("/", async ([Service] IClientRepository<Client> clientRepository) => await clientRepository.GetCompanyInfoByName("BeelinaDeveloper"));
 
 app.Run();
