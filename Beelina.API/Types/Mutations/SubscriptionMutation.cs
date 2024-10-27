@@ -7,7 +7,7 @@ namespace Beelina.API.Types.Mutations
     [ExtendObjectType("Mutation")]
     public class SubscriptionMutation
     {
-        public async Task<bool> UpdateClientSubscription(
+        public async Task<ClientSubscription> UpdateClientSubscription(
             [Service] ILogger<SubscriptionMutation> logger,
             [Service] ISubscriptionRepository<ClientSubscription> subscriptionRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
@@ -15,11 +15,11 @@ namespace Beelina.API.Types.Mutations
         {
             try
             {
-                var resut = await subscriptionRepository.UpdateClientSubscription(clientSubscriptionInput, httpContextAccessor.HttpContext.RequestAborted);
+                var result = await subscriptionRepository.UpdateClientSubscription(clientSubscriptionInput, httpContextAccessor.HttpContext.RequestAborted);
 
                 logger.LogInformation("Successfully registered client subscription. Params: {@params}", clientSubscriptionInput);
 
-                return resut;
+                return result;
             }
             catch (Exception ex)
             {
@@ -39,23 +39,26 @@ namespace Beelina.API.Types.Mutations
             [Service] IHttpContextAccessor httpContextAccessor,
             ClientSubscriptionInput clientSubscriptionInput)
         {
+            var result = true;
+
             try
             {
                 var resut = await subscriptionRepository.ApproveClientSubscription(clientSubscriptionInput, httpContextAccessor.HttpContext.RequestAborted);
 
                 logger.LogInformation("Successfully approved client subscription. Params: {@params}", clientSubscriptionInput);
-
-                return resut;
             }
             catch (Exception ex)
             {
+                result = false;
+
                 logger.LogError(ex, "Failed to approve client subscription. Params: {@params}", new
                 {
                     clientSubscriptionInput
                 });
 
-                throw new Exception($"Failed to approve client subscription. {ex.Message}");
             }
+
+            return result;
         }
     }
 }
