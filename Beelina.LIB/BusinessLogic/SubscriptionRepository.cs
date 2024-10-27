@@ -1,16 +1,23 @@
 using Beelina.LIB.GraphQL.Results;
+using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Beelina.LIB.BusinessLogic
 {
     public class SubscriptionRepository
         : BaseRepository<ClientSubscription>, ISubscriptionRepository<ClientSubscription>
     {
-        public SubscriptionRepository(IBeelinaRepository<ClientSubscription> beelinaRepository)
+        private readonly ILogger<SubscriptionRepository> _logger;
+
+        public SubscriptionRepository(
+            IBeelinaRepository<ClientSubscription> beelinaRepository,
+            ILogger<SubscriptionRepository> logger)
             : base(beelinaRepository, beelinaRepository.SystemDbContext)
         {
+            _logger = logger;
         }
 
         public async Task<ClientSubscriptionDetailsResult> GetClientSubscriptionDetails(string appSecretToken, string startDate)
@@ -26,7 +33,7 @@ namespace Beelina.LIB.BusinessLogic
                     c.ClientId == clientFromRepo.Id &&
                     c.StartDate <= Convert.ToDateTime(startDate) &&
                     (c.EndDate ?? DateTime.MaxValue) >= Convert.ToDateTime(startDate) &&
-                    c.IsActive && !c.IsDelete
+                    c.Approve && c.IsActive && !c.IsDelete
                 )
                 .FirstOrDefaultAsync() ?? throw new Exception($"No subscription found for client {appSecretToken}.");
 
@@ -122,6 +129,98 @@ namespace Beelina.LIB.BusinessLogic
             };
 
             return clientSubscriptionDetails;
+        }
+
+        public async Task<bool> UpdateClientSubscription(ClientSubscriptionInput clientSubscriptionInput, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+
+                var clientSubscriptionFromRepo = await _beelinaRepository.SystemDbContext.ClientSubscriptions
+                                    .Where(cs => cs.Id == clientSubscriptionInput.Id)
+                                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (clientSubscriptionFromRepo is null)
+                {
+                    var newClientSubscription = new ClientSubscription
+                    {
+                        ClientId = clientSubscriptionInput.ClientId,
+                        SubscriptionFeatureId = clientSubscriptionInput.SubscriptionFeatureId,
+                        StartDate = Convert.ToDateTime(clientSubscriptionInput.StartDate),
+                        EndDate = String.IsNullOrEmpty(clientSubscriptionInput.EndDate) ? null : Convert.ToDateTime(clientSubscriptionInput.EndDate),
+                        Approve = false
+                    };
+
+                    await AddEntity(newClientSubscription);
+                    await SaveChanges(cancellationToken);
+
+                    _logger.LogInformation("Client subscription has been successfully registered! Params: {@clientSubscriptionInput}.", newClientSubscription);
+                }
+                else
+                {
+                    clientSubscriptionFromRepo.ClientId = clientSubscriptionInput.ClientId;
+                    clientSubscriptionFromRepo.StartDate = Convert.ToDateTime(clientSubscriptionInput.StartDate);
+                    clientSubscriptionFromRepo.EndDate = Convert.ToDateTime(clientSubscriptionInput.EndDate);
+
+                    await SaveChanges(cancellationToken);
+
+                    _logger.LogInformation("Client subscription has been successfully updated! Params: {@clientSubscriptionInput}.", clientSubscriptionFromRepo);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to register new client subscription! Params: {@clientSubscriptionInput}.", clientSubscriptionInput);
+
+                throw;
+            }
+        }
+
+        public async Task<bool> ApproveClientSubscription(ClientSubscriptionInput clientSubscriptionInput, CancellationToken cancellationToken = default)
+        {
+            using var transaction = _beelinaRepository.SystemDbContext.Database.BeginTransaction();
+
+            try
+            {
+                var clientSubscriptionToApprovedFromRepo = await _beelinaRepository.SystemDbContext.ClientSubscriptions
+                                                    .Where(cs => cs.Id == clientSubscriptionInput.Id)
+                                                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (clientSubscriptionToApprovedFromRepo is not null)
+                {
+                    var latestApprovedClientSubscription = await _beelinaRepository.SystemDbContext.ClientSubscriptions
+                                        .Where(cs => cs.ClientId == clientSubscriptionInput.ClientId && cs.Approve)
+                                        .OrderByDescending(cs => cs.StartDate)
+                                        .FirstOrDefaultAsync(cancellationToken);
+
+                    // -- (1) Automatically set the current subscription end date based on the newly approved client subscription minus 1 day. 
+                    if (latestApprovedClientSubscription is not null)
+                    {
+                        latestApprovedClientSubscription.EndDate = Convert.ToDateTime(clientSubscriptionToApprovedFromRepo.StartDate).AddDays(-1);
+                    }
+
+                    // -- (2) Approved new client subscription.
+                    clientSubscriptionToApprovedFromRepo.Approve = true;
+                    await _beelinaRepository.SystemDbContext.SaveChangesAsync(cancellationToken);
+                }
+
+                await transaction.CommitAsync(cancellationToken);
+
+                _logger.LogInformation("Client subscription has been successfully approved! Params: {@clientSubscriptionInput}.", clientSubscriptionToApprovedFromRepo);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                await transaction.RollbackAsync(cancellationToken);
+
+                _logger.LogError(ex, "Failed to register approved client subscription! Params: {@clientSubscriptionInput}.", clientSubscriptionInput);
+
+                throw;
+            }
+
         }
     }
 }
