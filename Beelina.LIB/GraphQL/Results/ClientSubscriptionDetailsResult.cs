@@ -1,12 +1,17 @@
-namespace Beelina.LIB.Models
+
+using Beelina.LIB.Interfaces;
+using Beelina.LIB.Models;
+
+namespace Beelina.LIB.GraphQL.Results
 {
-    public class SubscriptionFeature
-        : Entity
+    public class ClientSubscriptionDetailsResult : IClientSubscriptionDetailsPayload
     {
+        public int ClientId { get; set; }
         public int SubscriptionId { get; set; }
-        public string Version { get; set; }
-        public string Description { get; set; }
-        public bool Custom { get; set; }
+        public string SubscriptionName { get; set; }
+        public int SubscriptionFeatureId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public bool OfflineModeActive { get; set; }
         public int ProductSKUMax { get; set; }
         public bool TopProductsPageActive { get; set; }
@@ -18,13 +23,13 @@ namespace Beelina.LIB.Models
         public int UserAccountsMax { get; set; }
         public bool RegisterUserAddOnActive { get; set; }
         public bool CustomReportAddOnActive { get; set; }
-        public Subscription Subscription { get; set; }
+
+        public double CurrentSubscriptionPrice { get; set; }
+        public double CurrentRegisterUserAddonPrice { get; set; }
+        public double CurrentCustomReportAddonPrice { get; set; }
 
         public List<SubscriptionFeatureHideDashboardWidget> SubscriptionFeatureHideDashboardWidgets { get; set; } = [];
         public List<SubscriptionFeatureAvailableReport> SubscriptionFeatureAvailableReports { get; set; } = [];
-        public List<SubscriptionPriceVersion> SubscriptionPriceVersions { get; set; } = [];
-        public List<SubscriptionRegisterUserAddonPriceVersion> SubscriptionRegisterUserAddonPriceVersions { get; set; } = [];
-        public List<SubscriptionReportAddonPriceVersion> SubscriptionReportAddonPriceVersions { get; set; } = [];
 
     }
 }
