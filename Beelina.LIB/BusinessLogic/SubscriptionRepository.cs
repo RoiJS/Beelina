@@ -131,7 +131,7 @@ namespace Beelina.LIB.BusinessLogic
             return clientSubscriptionDetails;
         }
 
-        public async Task<bool> UpdateClientSubscription(ClientSubscriptionInput clientSubscriptionInput, CancellationToken cancellationToken = default)
+        public async Task<ClientSubscription> UpdateClientSubscription(ClientSubscriptionInput clientSubscriptionInput, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -155,6 +155,8 @@ namespace Beelina.LIB.BusinessLogic
                     await SaveChanges(cancellationToken);
 
                     _logger.LogInformation("Client subscription has been successfully registered! Params: {@clientSubscriptionInput}.", newClientSubscription);
+
+                    return newClientSubscription;
                 }
                 else
                 {
@@ -165,9 +167,9 @@ namespace Beelina.LIB.BusinessLogic
                     await SaveChanges(cancellationToken);
 
                     _logger.LogInformation("Client subscription has been successfully updated! Params: {@clientSubscriptionInput}.", clientSubscriptionFromRepo);
-                }
 
-                return true;
+                    return clientSubscriptionFromRepo;
+                }
             }
             catch (Exception ex)
             {
