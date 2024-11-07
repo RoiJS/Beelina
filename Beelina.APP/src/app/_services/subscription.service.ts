@@ -1,15 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
+import { ApolloQueryResult } from '@apollo/client/core';
 import { map } from 'rxjs';
 
 import { IClientSubscriptionInput } from '../_interfaces/inputs/iclient-subscription.input';
 import { IClientSubscriptionOutput } from '../_interfaces/outputs/iclient-subscription.output';
-import { ApolloQueryResult } from '@apollo/client';
 import { IClientSubscriptionDetailsPayload } from '../_interfaces/payloads/iclient-subscription-details.payload';
 import { ClientSubscriptionDetailsResult } from '../_models/results/client-subscription-details-result';
 import { ClientSubscriptionNotExistsError } from '../_models/errors/client-subscription-not-exists.error';
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { ClientSubscription } from '../_models/client-subscription';
+import { LocalClientSubscriptionDbService } from './local-db/local-client-subscription-db.service';
 
 const UPDATE_CLIENT_SUBSCRIPTION = gql`
   mutation($clientSubscriptionInput: ClientSubscriptionInput!) {
@@ -59,6 +60,7 @@ const GET_CLIENT_SUBSCRIPTION = gql`
             }
             subscriptionFeatureHideDashboardWidgets {
                 id
+                subscriptionFeatureId
                 dashboardModuleWidgetId
             }
         }
@@ -75,6 +77,7 @@ const GET_CLIENT_SUBSCRIPTION = gql`
 export class SubscriptionService {
 
   apollo = inject(Apollo);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
 
   constructor() { }
 
@@ -89,7 +92,7 @@ export class SubscriptionService {
       })
       .valueChanges.pipe(
         map(
-          (
+          async (
             result: ApolloQueryResult<{
               clientSubscriptionDetails: IClientSubscriptionDetailsPayload;
             }>
@@ -106,7 +109,7 @@ export class SubscriptionService {
               clientSubscription.startDate = currentClientSubscriptionDetailsResult.startDate;
               clientSubscription.endDate = currentClientSubscriptionDetailsResult.endDate;
               clientSubscription.offlineModeActive = currentClientSubscriptionDetailsResult.offlineModeActive;
-              clientSubscription.productSkuMax = currentClientSubscriptionDetailsResult.productSkuMax;
+              clientSubscription.productSKUMax = currentClientSubscriptionDetailsResult.productSKUMax;
               clientSubscription.topProductsPageActive = currentClientSubscriptionDetailsResult.topProductsPageActive;
               clientSubscription.customerAccountsMax = currentClientSubscriptionDetailsResult.customerAccountsMax;
               clientSubscription.customersMax = currentClientSubscriptionDetailsResult.customersMax;
@@ -121,6 +124,9 @@ export class SubscriptionService {
               clientSubscription.currentCustomReportAddonPrice = currentClientSubscriptionDetailsResult.currentCustomReportAddonPrice;
               clientSubscription.subscriptionFeatureAvailableReports = currentClientSubscriptionDetailsResult.subscriptionFeatureAvailableReports;
               clientSubscription.subscriptionFeatureHideDashboardWidgets = currentClientSubscriptionDetailsResult.subscriptionFeatureHideDashboardWidgets;
+
+              await this.localClientSubscriptionDbService.saveClientSubscriptionSettings(clientSubscription);
+
               return clientSubscription;
             }
             if (data.typename === 'ClientSubscriptionNotExistsError')

@@ -1,29 +1,31 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription, switchMap } from 'rxjs';
 
 import { authCredentialsSelector, errorSelector } from './store/selectors';
 
-import * as LoginActions from './store/actions';
 import { AppVersionService } from '../_services/app-version.service';
 import { AuthService } from '../_services/auth.service';
 import { NetworkService } from '../_services/network.service';
-import { NotificationService } from '../shared/ui/notification/notification.service';
 import { StorageService } from '../_services/storage.service';
-import { UserAccountService } from '../_services/user-account.service';
+import { SubscriptionService } from '../_services/subscription.service';
 import { UIService } from '../_services/ui.service';
+import { UserAccountService } from '../_services/user-account.service';
+import { NotificationService } from '../shared/ui/notification/notification.service';
+import * as LoginActions from './store/actions';
 
-import { AppStateInterface } from '../_interfaces/app-state.interface';
-import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
-import { ClientInformationResult } from '../_models/results/client-information-result.result';
 import { ModuleEnum } from '../_enum/module.enum';
 import {
   getPermissionLevelEnum,
   PermissionLevelEnum,
 } from '../_enum/permission-level.enum';
+import { AppStateInterface } from '../_interfaces/app-state.interface';
+import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
+import { ClientInformationResult } from '../_models/results/client-information-result.result';
 import { SharedComponent } from '../shared/components/shared/shared.component';
 
 @Component({
@@ -31,7 +33,7 @@ import { SharedComponent } from '../shared/components/shared/shared.component';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent extends SharedComponent implements OnInit {
+export class AuthComponent extends SharedComponent implements OnInit, OnDestroy {
   private _authForm: FormGroup;
 
   authService = inject(AuthService);
@@ -42,8 +44,10 @@ export class AuthComponent extends SharedComponent implements OnInit {
   notificationService = inject(NotificationService);
   storageService = inject(StorageService);
   store = inject(Store<AppStateInterface>);
+  subscriptionService = inject(SubscriptionService);
   translateService = inject(TranslateService);
   userAccountService = inject(UserAccountService);
+  loginSubscription = new Subscription();
 
   constructor(
     protected override uiService: UIService
@@ -54,6 +58,10 @@ export class AuthComponent extends SharedComponent implements OnInit {
       username: ['', Validators.required],
       password: ['', Validators.required],
     });
+  }
+
+  override ngOnDestroy() {
+    this.loginSubscription.unsubscribe();
   }
 
   onSubmit() {
@@ -78,26 +86,29 @@ export class AuthComponent extends SharedComponent implements OnInit {
           const username = this.authForm.get('username').value;
           const password = this.authForm.get('password').value;
 
-          this.store.dispatch(LoginActions.loginAction({ username, password }));
+          this.loginSubscription.add(this.store.dispatch(LoginActions.loginAction({ username, password })));
 
-          this.store.pipe(select(authCredentialsSelector)).subscribe((auth) => {
+          this.loginSubscription.add(this.store.pipe(select(authCredentialsSelector)).subscribe((auth) => {
             if (auth.accessToken) {
               this.userAccountService
-                .getUserSetting(this.authService.userId)
-                .subscribe(() => {
+                .getUserSetting(this.authService.userId).pipe(
+                  switchMap(() => this.subscriptionService.getClientSubscription(
+                    this.storageService.getString('appSecretToken')
+                  ))
+                ).subscribe(() => {
                   this.router.navigate([this.getDefaultLandingPage()], {
                     replaceUrl: true,
                   });
                 });
             }
-          });
+          }));
 
-          this.store.pipe(select(errorSelector)).subscribe((error) => {
+          this.loginSubscription.add(this.store.pipe(select(errorSelector)).subscribe((error) => {
             if (error) {
               this._isLoading = false;
               this.notificationService.openErrorNotification(error);
             }
-          });
+          }));
         },
         error: (e: ClientNotExistsError) => {
           this._isLoading = false;

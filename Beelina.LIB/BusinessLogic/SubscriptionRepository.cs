@@ -73,7 +73,7 @@ namespace Beelina.LIB.BusinessLogic
                     (c.EndDate ?? DateTime.MaxValue) >= Convert.ToDateTime(startDate) &&
                     c.IsActive && !c.IsDelete
                 )
-                .FirstOrDefaultAsync() ?? throw new Exception($"No subscription price for additional user account for client {appSecretToken}.");
+                .FirstOrDefaultAsync();
 
             var subscriptionReportAddonPriceVersionFromRepo = await _beelinaRepository
                 .SystemDbContext
@@ -84,7 +84,7 @@ namespace Beelina.LIB.BusinessLogic
                     (c.EndDate ?? DateTime.MaxValue) >= Convert.ToDateTime(startDate) &&
                     c.IsActive && !c.IsDelete
                 )
-                .FirstOrDefaultAsync() ?? throw new Exception($"No subscription price for custom report for found for client {appSecretToken}.");
+                .FirstOrDefaultAsync();
 
             var subscriptionFeatureAvailableReportsFromRepo = await _beelinaRepository
                 .SystemDbContext
@@ -125,7 +125,9 @@ namespace Beelina.LIB.BusinessLogic
                 CustomReportAddOnActive = subscriptionFeatureFromRepo.CustomReportAddOnActive,
                 CurrentSubscriptionPrice = subscriptionPriceVersionFromRepo is null ? 0 : subscriptionPriceVersionFromRepo.Price,
                 CurrentRegisterUserAddonPrice = subscriptionRegisterUserAddonPriceVersionFromRepo is null ? 0 : subscriptionRegisterUserAddonPriceVersionFromRepo.Price,
-                CurrentCustomReportAddonPrice = subscriptionReportAddonPriceVersionFromRepo is null ? 0 : subscriptionReportAddonPriceVersionFromRepo.Price
+                CurrentCustomReportAddonPrice = subscriptionReportAddonPriceVersionFromRepo is null ? 0 : subscriptionReportAddonPriceVersionFromRepo.Price,
+                SubscriptionFeatureHideDashboardWidgets = subscriptionFeatureHideDashboardWidgetsFromRepo,
+                SubscriptionFeatureAvailableReports = subscriptionFeatureAvailableReportsFromRepo
             };
 
             return clientSubscriptionDetails;

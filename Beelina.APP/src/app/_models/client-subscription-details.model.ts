@@ -9,7 +9,7 @@ export class ClientSubscriptionDetails {
   startDate: Date;
   endDate?: Date;
   offlineModeActive: boolean;
-  productSkuMax: number;
+  productSKUMax: number;
   topProductsPageActive: boolean;
   customerAccountsMax: number;
   customersMax: number;
