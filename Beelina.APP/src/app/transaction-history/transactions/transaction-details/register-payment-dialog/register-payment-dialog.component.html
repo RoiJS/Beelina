@@ -44,16 +44,15 @@
 
         @if(userService.userSetting().allowOrderConfirmation) {
 
-          @if (registerPaymentForm.get('amount').value === maxAmount()) {
+         @if (registerPaymentForm.get('amount').value === maxAmount()) {
             <button mat-raised-button class="width-stretch" color="primary"
-              (click)="onMarkAsPaid()">
-              {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
-            </button>
-          } @else {
-            <button mat-raised-button class="width-stretch" color="primary" (click)="onConfirm()">
-              {{ "GENERAL_TEXTS.CONFIRM" | translate }}
-            </button>
-          }
+            (click)="onMarkAsPaid()">
+            {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
+          </button>
+        }
+        <button mat-raised-button class="width-stretch" color="primary" (click)="onConfirm()">
+          {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+        </button>
         } @else {
           <button mat-raised-button class="width-stretch" color="primary" (click)="onConfirm()">
             {{ "GENERAL_TEXTS.CONFIRM" | translate }}
