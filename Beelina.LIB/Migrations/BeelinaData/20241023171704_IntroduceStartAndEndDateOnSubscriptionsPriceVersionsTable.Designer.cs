@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations.BeelinaData
 {
     [DbContext(typeof(BeelinaDataContext))]
-    partial class BeelinaDataContextModelSnapshot : ModelSnapshot
+    [Migration("20241023171704_IntroduceStartAndEndDateOnSubscriptionsPriceVersionsTable")]
+    partial class IntroduceStartAndEndDateOnSubscriptionsPriceVersionsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,9 +96,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Approve")
-                        .HasColumnType("bit");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
@@ -589,8 +589,8 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<int>("CustomersMax")
                         .HasColumnType("int");
 
-                    b.Property<bool>("DashboardDistributionPageActive")
-                        .HasColumnType("bit");
+                    b.Property<int>("DashboardDistributionPageActive")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");

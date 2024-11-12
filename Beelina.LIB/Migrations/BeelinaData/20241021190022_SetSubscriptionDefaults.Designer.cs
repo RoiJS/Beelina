@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations.BeelinaData
 {
     [DbContext(typeof(BeelinaDataContext))]
-    partial class BeelinaDataContextModelSnapshot : ModelSnapshot
+    [Migration("20241021190022_SetSubscriptionDefaults")]
+    partial class SetSubscriptionDefaults
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,9 +96,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Approve")
-                        .HasColumnType("bit");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
@@ -589,8 +589,8 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<int>("CustomersMax")
                         .HasColumnType("int");
 
-                    b.Property<bool>("DashboardDistributionPageActive")
-                        .HasColumnType("bit");
+                    b.Property<int>("DashboardDistributionPageActive")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -724,8 +724,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("DashboardModuleWidgetId");
 
-                    b.HasIndex("SubscriptionFeatureId");
-
                     b.ToTable("SubscriptionFeatureHideDashboardWidgets");
                 });
 
@@ -736,6 +734,9 @@ namespace Beelina.LIB.Migrations.BeelinaData
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -749,9 +750,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -760,9 +758,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("SubscriptionFeatureId")
                         .HasColumnType("int");
@@ -782,6 +777,9 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -794,9 +792,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -805,9 +800,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("SubscriptionFeatureId")
                         .HasColumnType("int");
@@ -827,6 +819,9 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -839,9 +834,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -850,9 +842,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("SubscriptionFeatureId")
                         .HasColumnType("int");
@@ -974,7 +963,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
                         .IsRequired();
 
                     b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
-                        .WithMany("SubscriptionFeatureAvailableReports")
+                        .WithMany()
                         .HasForeignKey("SubscriptionFeatureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -992,19 +981,13 @@ namespace Beelina.LIB.Migrations.BeelinaData
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beelina.LIB.Models.SubscriptionFeature", null)
-                        .WithMany("SubscriptionFeatureHideDashboardWidgets")
-                        .HasForeignKey("SubscriptionFeatureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("DashboardModuleWidget");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionPriceVersion", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
-                        .WithMany("SubscriptionPriceVersions")
+                        .WithMany()
                         .HasForeignKey("SubscriptionFeatureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1015,7 +998,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionRegisterUserAddonPriceVersion", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
-                        .WithMany("SubscriptionRegisterUserAddonPriceVersions")
+                        .WithMany()
                         .HasForeignKey("SubscriptionFeatureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1026,7 +1009,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionReportAddonPriceVersion", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
-                        .WithMany("SubscriptionReportAddonPriceVersions")
+                        .WithMany()
                         .HasForeignKey("SubscriptionFeatureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1042,19 +1025,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
             modelBuilder.Entity("Beelina.LIB.Models.ReportControl", b =>
                 {
                     b.Navigation("ReportParameter");
-                });
-
-            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeature", b =>
-                {
-                    b.Navigation("SubscriptionFeatureAvailableReports");
-
-                    b.Navigation("SubscriptionFeatureHideDashboardWidgets");
-
-                    b.Navigation("SubscriptionPriceVersions");
-
-                    b.Navigation("SubscriptionRegisterUserAddonPriceVersions");
-
-                    b.Navigation("SubscriptionReportAddonPriceVersions");
                 });
 #pragma warning restore 612, 618
         }
