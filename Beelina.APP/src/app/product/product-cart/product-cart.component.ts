@@ -572,7 +572,7 @@ export class ProductCartComponent
     const transaction = new TransactionDto();
     transaction.id = this._transactionId();
     transaction.storeId = this._selectedCustomer().id;
-    transaction.status = this.transaction().status;
+    transaction.status = TransactionStatusEnum.CONFIRMED;
     transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
     transaction.paid = this._orderForm.get('paid').value;
     transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
