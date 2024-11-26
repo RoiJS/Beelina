@@ -599,21 +599,21 @@ export class ProductCartComponent
       this._orderForm.markAllAsTouched();
       if (!this._orderForm.valid) return;
 
-      const transaction = new TransactionDto();
-      transaction.id = this._transactionId();
-      transaction.storeId = this._selectedCustomer().id;
-      transaction.status = this.transaction().status;
-      transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
-      transaction.paid = this._orderForm.get('paid').value;
-      transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
-      transaction.discount = this._discountForm.get('discount').value;
-      transaction.transactionDate = DateFormatter.format(
-        this._orderForm.get('transactionDate').value
-      );
-      transaction.dueDate = DateFormatter.format(
-        this._orderForm.get('dueDate').value
-      );
-      transaction.productTransactions = this.productTransactions();
+    const transaction = new TransactionDto();
+    transaction.id = this._transactionId();
+    transaction.storeId = this._selectedCustomer().id;
+    transaction.status = TransactionStatusEnum.CONFIRMED;
+    transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+    transaction.paid = this._orderForm.get('paid').value;
+    transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+    transaction.discount = this._discountForm.get('discount').value;
+    transaction.transactionDate = DateFormatter.format(
+      this._orderForm.get('transactionDate').value
+    );
+    transaction.dueDate = DateFormatter.format(
+      this._orderForm.get('dueDate').value
+    );
+    transaction.productTransactions = this.productTransactions();
 
       this.store.dispatch(
         ProductTransactionActions.setSaveOrderLoadingState({
