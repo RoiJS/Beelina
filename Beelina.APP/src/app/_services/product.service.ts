@@ -692,7 +692,8 @@ export class ProductService {
         userAccountId: +this.storageService.getString('currentSalesAgentId'),
         productsFilter: {
           supplierId: 0
-        }
+        },
+        limit: 50
       };
 
       return this.apollo
