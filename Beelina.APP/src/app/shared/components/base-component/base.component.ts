@@ -105,6 +105,26 @@ export class BaseComponent {
         name: "Brewster's Brown Coffee",
         url: '../../../assets/products/AER/Brewster_s_Brown_Coffee_25g-removebg-preview.png',
       },
+      {
+        name: "My Fries",
+        url: '../../../assets/products/AER/my-fries.png',
+      },
+      {
+        name: "Nata De Coco (Mixed Variant)",
+        url: '../../../assets/products/AER/nata-de-coco-red.png',
+      },
+      {
+        name: "Pampam",
+        url: '../../../assets/products/AER/pampam.png',
+      },
+      {
+        name: "Yumshots Tomato 60g",
+        url: '../../../assets/products/AER/yumshots.png',
+      },
+      {
+        name: "Kaong (Mixed Variant)",
+        url: '../../../assets/products/AER/kaong-green.png',
+      },
     ];
 
     const photo =
