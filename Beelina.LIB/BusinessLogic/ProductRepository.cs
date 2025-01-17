@@ -919,7 +919,7 @@ namespace Beelina.LIB.BusinessLogic
           Quantity = productInput.StockQuantity,
           StockAuditSource = StockAuditSourceEnum.OrderFromSupplier,
           PurchaseOrderNumber = productInput.WithdrawalSlipNo,
-          SenderPlateNumber = productInput.PlateNo
+          SenderPlateNumber = productInput.PlateNo,
         };
 
         if (productWarehouseStockAudit.Id == 0)

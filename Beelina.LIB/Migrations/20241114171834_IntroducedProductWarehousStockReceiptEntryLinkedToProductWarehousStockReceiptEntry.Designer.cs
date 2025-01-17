@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations
 {
     [DbContext(typeof(BeelinaClientDataContext))]
-    partial class BeelinaClientDataContextModelSnapshot : ModelSnapshot
+    [Migration("20241114171834_IntroducedProductWarehousStockReceiptEntryLinkedToProductWarehousStockReceiptEntry")]
+    partial class IntroducedProductWarehousStockReceiptEntryLinkedToProductWarehousStockReceiptEntry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -581,7 +584,7 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("ProductStockPerWarehouseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductWarehouseStockReceiptEntryId")
+                    b.Property<int?>("ProductWarehousStockReceiptEntryId")
                         .HasColumnType("int");
 
                     b.Property<string>("PurchaseOrderNumber")
@@ -618,7 +621,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("ProductStockPerWarehouseId");
 
-                    b.HasIndex("ProductWarehouseStockReceiptEntryId");
+                    b.HasIndex("ProductWarehousStockReceiptEntryId");
 
                     b.HasIndex("UpdatedById");
 
@@ -771,7 +774,7 @@ namespace Beelina.LIB.Migrations
                     b.ToTable("ProductUnits");
                 });
 
-            modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
+            modelBuilder.Entity("Beelina.LIB.Models.ProductWarehousStockReceiptEntry", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -812,16 +815,13 @@ namespace Beelina.LIB.Migrations
                     b.Property<string>("ReferenceNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("StockEntryDate")
+                    b.Property<DateTime>("StockEntryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("SupplierId")
+                    b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
                     b.Property<int?>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WarehouseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -836,7 +836,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductWarehouseStockReceiptEntries");
+                    b.ToTable("ProductWarehousStockReceiptEntries");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -1577,11 +1577,9 @@ namespace Beelina.LIB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", "ProductWarehousStockReceiptEntry")
-                        .WithMany("ProductStockWarehouseAudits")
-                        .HasForeignKey("ProductWarehouseStockReceiptEntryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Beelina.LIB.Models.ProductWarehousStockReceiptEntry", "ProductWarehousStockReceiptEntry")
+                        .WithMany()
+                        .HasForeignKey("ProductWarehousStockReceiptEntryId");
 
                     b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
                         .WithMany()
@@ -1658,7 +1656,7 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("ProductTransaction");
                 });
 
-            modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
+            modelBuilder.Entity("Beelina.LIB.Models.ProductWarehousStockReceiptEntry", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
                         .WithMany()
@@ -1674,7 +1672,9 @@ namespace Beelina.LIB.Migrations
 
                     b.HasOne("Beelina.LIB.Models.Supplier", "Supplier")
                         .WithMany()
-                        .HasForeignKey("SupplierId");
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
                         .WithMany()
@@ -1871,11 +1871,6 @@ namespace Beelina.LIB.Migrations
             modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
                 {
                     b.Navigation("ProductTransactionQuantityHistory");
-                });
-
-            modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
-                {
-                    b.Navigation("ProductStockWarehouseAudits");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>

@@ -111,6 +111,9 @@ namespace Beelina.LIB.Helpers.Extensions
 
         public static bool IsMatchAnyKeywords(this string input, string keywords)
         {
+            if (string.IsNullOrEmpty(input) || string.IsNullOrEmpty(keywords))
+                return false;
+
             input = input.ToLower();
             keywords = keywords.ToLower();
             string[] keywordArray = keywords.Split(' ');

@@ -1,0 +1,97 @@
+﻿using Beelina.LIB.Helpers.Classes;
+using Beelina.LIB.Interfaces;
+using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
+using Beelina.LIB.Helpers.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
+namespace Beelina.LIB.BusinessLogic
+{
+    public class ProductWarehouseStockReceiptEntryRepository
+        : BaseRepository<ProductWarehouseStockReceiptEntry>, IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry>
+    {
+        private readonly IOptions<ApplicationSettings> _appSettings;
+
+        public ProductWarehouseStockReceiptEntryRepository(IBeelinaRepository<ProductWarehouseStockReceiptEntry> beelinaRepository, IOptions<ApplicationSettings> appSettings)
+            : base(beelinaRepository, beelinaRepository.ClientDbContext)
+        {
+            _appSettings = appSettings;
+        }
+
+        public async Task<ProductWarehouseStockReceiptEntry> UpdateProductWarehouseStockReceiptEntry(ProductWarehouseStockReceiptEntry productWarehouseStockReceiptEntry)
+        {
+            if (productWarehouseStockReceiptEntry.Id == 0)
+                await AddEntity(productWarehouseStockReceiptEntry);
+            else
+                await SaveChanges();
+
+            return productWarehouseStockReceiptEntry;
+        }
+
+        public async Task<ProductWarehouseStockReceiptEntry> GetProductWarehouseStockReceiptEntry(int productWarehouseStockReceiptEntryId)
+        {
+            var productStockPerWarehouseFromRepo = await _beelinaRepository
+                                    .ClientDbContext
+                                    .ProductWarehouseStockReceiptEntries
+                                    .Where((p) => p.Id == productWarehouseStockReceiptEntryId)
+                                    .FirstOrDefaultAsync();
+
+            return productStockPerWarehouseFromRepo;
+        }
+
+        public async Task<List<ProductWarehouseStockReceiptEntry>> GetProductWarehouseStockReceiptEntries(ProductReceiptEntryFilter productReceiptEntryFilter, string filterKeyword = "", CancellationToken cancellationToken = default)
+        {
+            var productWarehouseStockReceiptEntriesFromRepo = _beelinaRepository
+                                    .ClientDbContext
+                                    .ProductWarehouseStockReceiptEntries
+                                    .Include(t => t.Supplier)
+                                    .Where((p) =>
+                                        (productReceiptEntryFilter == null ||
+                                            (productReceiptEntryFilter != null &&
+                                                (
+                                                    ((productReceiptEntryFilter.SupplierId == 0) || (productReceiptEntryFilter.SupplierId > 0 && p.SupplierId == productReceiptEntryFilter.SupplierId)) &&
+                                                    ((productReceiptEntryFilter.WarehouseId == 0) || (productReceiptEntryFilter.WarehouseId > 0 && p.WarehouseId == productReceiptEntryFilter.WarehouseId))
+                                                )
+                                            )
+                                        )
+                                        && p.Id != 1 // Exclude default
+                                    );
+
+            if (!String.IsNullOrEmpty(productReceiptEntryFilter.DateFrom) || !String.IsNullOrEmpty(productReceiptEntryFilter.DateTo))
+            {
+                if (!String.IsNullOrEmpty(productReceiptEntryFilter.DateFrom))
+                {
+                    productWarehouseStockReceiptEntriesFromRepo = productWarehouseStockReceiptEntriesFromRepo.Where(t => t.StockEntryDate >= Convert.ToDateTime(productReceiptEntryFilter.DateFrom));
+                }
+
+                if (!String.IsNullOrEmpty(productReceiptEntryFilter.DateTo))
+                {
+                    productWarehouseStockReceiptEntriesFromRepo = productWarehouseStockReceiptEntriesFromRepo.Where(t => t.StockEntryDate <= Convert.ToDateTime(productReceiptEntryFilter.DateTo));
+                }
+            }
+
+            var productWarehouseStockReceiptEntries = await productWarehouseStockReceiptEntriesFromRepo.
+                        Select(t => new ProductWarehouseStockReceiptEntry
+                        {
+                            Id = t.Id,
+                            SupplierId = t.SupplierId,
+                            Supplier = t.Supplier,
+                            ReferenceNo = t.ReferenceNo,
+                            PlateNo = t.PlateNo,
+                            WarehouseId = t.WarehouseId,
+                            StockEntryDate = t.StockEntryDate, // TODO: Apply timezone conversion here
+                        }).
+                        ToListAsync(cancellationToken);
+
+            if (!String.IsNullOrEmpty(filterKeyword))
+            {
+                productWarehouseStockReceiptEntries = productWarehouseStockReceiptEntries
+                                .Where((p => p.ReferenceNo.IsMatchAnyKeywords(filterKeyword) || p.PlateNo.IsMatchAnyKeywords(filterKeyword)))
+                                .ToList();
+            }
+
+            return productWarehouseStockReceiptEntries;
+        }
+    }
+}

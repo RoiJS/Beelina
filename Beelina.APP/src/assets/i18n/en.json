@@ -57,6 +57,7 @@
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
     "WAREHOUSE_PRODUCTS": "Warehouse",
+    "PURCHASE_ORDERS": "Purchase Orders",
     "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Draft Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
@@ -1086,6 +1087,32 @@
   "WAREHOUSE_PAGE": {
     "TITLE": "Warehouse",
     "DESCRIPTION": "This is the page where administrator manages products from warehouse."
+  },
+  "PURCHASE_ORDERS_PAGE": {
+    "TITLE": "Purchase Orders",
+    "DESCRIPTION": "Manage purchase order details here.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search reference or plate no..."
+    },
+    "PURCHASE_ORDERS_FILTER_DIALOG": {
+      "TITLE": "Purchase Orders Filter",
+      "FORM_CONTROL_SECTION": {
+        "START_DATE_CONTROL": {
+          "LABEL": "Start Date"
+        },
+        "END_DATE_CONTROL": {
+          "LABEL": "End Date"
+        }
+      }
+    },
+    "TABLE_GRID": {
+      "COLUMN_DEFINITION": {
+        "STOCK_ENTRY_DATE_FIELD": "Stock Entry Date",
+        "REFERENCE_NO_FIELD": "Reference No.",
+        "PLATE_NO_FIELD": "Plate No",
+        "SUPPLIER_FIELD": "Supplier"
+      }
+    }
   },
   "WAREHOUSE_PRODUCT_IMPORT_PAGE": {
     "TITLE": "Product Import",
