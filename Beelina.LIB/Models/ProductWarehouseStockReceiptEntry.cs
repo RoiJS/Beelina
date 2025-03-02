@@ -3,7 +3,7 @@ using Beelina.LIB.Interfaces;
 namespace Beelina.LIB.Models
 {
     public class ProductWarehouseStockReceiptEntry
-    : Entity, IUserActionTracker, IProductWarehouseStockReceiptEntryPayload
+    : Entity, IUserActionTracker
     {
         public int? SupplierId { get; set; }
         public DateTime? StockEntryDate { get; set; }

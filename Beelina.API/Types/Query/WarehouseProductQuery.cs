@@ -41,6 +41,7 @@ namespace Beelina.API.Types.Query
         [Authorize]
         public async Task<ProductWarehouseStockReceiptEntry> UpdateWarehouseStockReceiptEntry(
             [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
+            [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             [Service] ICurrentUserService currentUserService,
             [Service] IMapper mapper,
@@ -52,10 +53,13 @@ namespace Beelina.API.Types.Query
             {
                 productWarehouseStockReceiptEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
+                var warehouseId = 1; // Default
                 var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository
                                             .GetEntity(productWarehouseStockReceiptEntryInput.Id)
                                             .Includes(s => s.ProductStockWarehouseAudits)
                                             .ToObjectAsync();
+
+                await SetProductStockWarehouses(productWarehouseStockReceiptEntryInput, warehouseId, productRepository, httpContextAccessor.HttpContext.RequestAborted);
 
                 if (stockEntryFromRepo is null)
                 {
@@ -84,15 +88,13 @@ namespace Beelina.API.Types.Query
         public async Task<IProductWarehouseStockReceiptEntryPayload> GetProductWarehouseStockReceiptEntry(
             [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
             [Service] ILogger<ProductQuery> logger,
+            [Service] IHttpContextAccessor httpContextAccessor,
             int id
         )
         {
             try
             {
-                var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository
-                                                                       .GetEntity(id)
-                                                                       .Includes(s => s.ProductStockWarehouseAudits)
-                                                                       .ToObjectAsync();
+                var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntry(id, httpContextAccessor.HttpContext.RequestAborted);
 
                 if (stockEntryFromRepo is null)
                 {
@@ -126,14 +128,14 @@ namespace Beelina.API.Types.Query
 
 
         [Authorize]
-        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UsePaging(MaxPageSize = 1000, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]
         public async Task<IList<Product>> GetWarehouseProducts(
-            [Service] IProductRepository<Product> productRepository, 
-            [Service] IHttpContextAccessor httpContextAccessor, 
-            int warehouseId, 
-            ProductsFilter productsFilter, 
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int warehouseId,
+            ProductsFilter productsFilter,
             string filterKeyword = "")
         {
             return await productRepository.GetWarehouseProducts(warehouseId, 0, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
@@ -141,10 +143,10 @@ namespace Beelina.API.Types.Query
 
         [Authorize]
         public async Task<IProductPayload> GetWarehouseProduct(
-            [Service] IProductRepository<Product> productRepository, 
-            [Service] IMapper mapper, 
-            [Service] IHttpContextAccessor httpContextAccessor, 
-            int productId, 
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IMapper mapper,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int productId,
             int warehouseId)
         {
             var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
@@ -187,6 +189,27 @@ namespace Beelina.API.Types.Query
                 });
             }
             return insufficientProductQuantities;
+        }
+
+        private static async Task SetProductStockWarehouses(ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput, int warehouseId, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
+        {
+            foreach (var productStockWarehouseAudit in productWarehouseStockReceiptEntryInput.ProductStockWarehouseAudits)
+            {
+                var product = new Product
+                {
+                    Id = productStockWarehouseAudit.ProductId
+                };
+
+                var productInput = new ProductInput
+                {
+                    Id = productStockWarehouseAudit.ProductId,
+                    PricePerUnit = productStockWarehouseAudit.PricePerUnit
+                };
+
+                var productStockPerWarehouse = await productRepository.ManageProductStockPerWarehouse(product, productInput, warehouseId, cancellationToken);
+
+                productStockWarehouseAudit.ProductStockPerWarehouseId = productStockPerWarehouse.Id;
+            }
         }
     }
 }

@@ -455,7 +455,7 @@ namespace Beelina.LIB.BusinessLogic
                                                       }).ToList();
 
           // Join products with their corresponding absolute stock quantity.
-          finalProductsFromRepo = (from p in filteredProductsFromRepo
+          finalProductsFromRepo = [.. (from p in filteredProductsFromRepo
                                    join owsa in overallWarehouseProductStockAudits
                                    on new { Id = p.Id } equals new { Id = owsa.ProductId }
 
@@ -473,8 +473,7 @@ namespace Beelina.LIB.BusinessLogic
                                      IsTransferable = p.IsTransferable,
                                      SupplierId = p.SupplierId,
                                      Supplier = p.Supplier
-                                   })
-                                  .ToList();
+                                   })];
         }
         else
         {
@@ -845,7 +844,7 @@ namespace Beelina.LIB.BusinessLogic
       return productStockPerPanelFromRepo;
     }
 
-    private async Task<ProductStockPerWarehouse> ManageProductStockPerWarehouse(Product product, ProductInput productInput, int warehouseId, CancellationToken cancellationToken)
+    public async Task<ProductStockPerWarehouse> ManageProductStockPerWarehouse(Product product, ProductInput productInput, int warehouseId, CancellationToken cancellationToken)
     {
       var productStockPerWarehouseFromRepo = await _productStockPerWarehouseRepository.GetProductStockPerWarehouse(productInput.Id, warehouseId);
 

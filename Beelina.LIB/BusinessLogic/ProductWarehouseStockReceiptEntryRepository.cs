@@ -5,6 +5,7 @@ using Beelina.LIB.Models.Filters;
 using Beelina.LIB.Helpers.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Beelina.LIB.GraphQL.Results;
 
 namespace Beelina.LIB.BusinessLogic
 {
@@ -29,15 +30,43 @@ namespace Beelina.LIB.BusinessLogic
             return productWarehouseStockReceiptEntry;
         }
 
-        public async Task<ProductWarehouseStockReceiptEntry> GetProductWarehouseStockReceiptEntry(int productWarehouseStockReceiptEntryId)
+        public async Task<ProductWarehouseStockReceiptEntryResult> GetProductWarehouseStockReceiptEntry(int productWarehouseStockReceiptEntryId, CancellationToken cancellationToken = default)
         {
             var productStockPerWarehouseFromRepo = await _beelinaRepository
                                     .ClientDbContext
                                     .ProductWarehouseStockReceiptEntries
                                     .Where((p) => p.Id == productWarehouseStockReceiptEntryId)
+                                    .Include((p) => p.ProductStockWarehouseAudits)
                                     .FirstOrDefaultAsync();
 
-            return productStockPerWarehouseFromRepo;
+            var productStockPerWarehouse = await _beelinaRepository.ClientDbContext.ProductStockPerWarehouse.ToListAsync();
+
+            var productStockWarehouseAuditResults = (from a in productStockPerWarehouseFromRepo.ProductStockWarehouseAudits.ToList()
+                                                     join b in productStockPerWarehouse
+
+                                                     on new { Id = a.ProductStockPerWarehouseId } equals new { Id = b.Id }
+                                                     into productStockPerWarehouseAuditJoin
+                                                     from b in productStockPerWarehouseAuditJoin.DefaultIfEmpty()
+
+                                                     select new ProductStockWarehouseAuditResult
+                                                     {
+                                                         Id = a.Id,
+                                                         ProductId = b.ProductId,
+                                                         ProductStockPerWarehouseId = b.Id,
+                                                         StockAuditSource = a.StockAuditSource,
+                                                         Quantity = a.Quantity
+                                                     }).ToList();
+
+            var productStockPerWarehouseResult = new ProductWarehouseStockReceiptEntryResult
+            {
+                Id = productStockPerWarehouseFromRepo.Id,
+                ReferenceNo = productStockPerWarehouseFromRepo.ReferenceNo,
+                StockEntryDate = productStockPerWarehouseFromRepo.StockEntryDate,
+                SupplierId = productStockPerWarehouseFromRepo.SupplierId,
+                ProductStockWarehouseAuditsResult = productStockWarehouseAuditResults,
+            };
+
+            return productStockPerWarehouseResult;
         }
 
         public async Task<List<ProductWarehouseStockReceiptEntry>> GetProductWarehouseStockReceiptEntries(ProductReceiptEntryFilter productReceiptEntryFilter, string filterKeyword = "", CancellationToken cancellationToken = default)
