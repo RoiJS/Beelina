@@ -126,7 +126,6 @@ namespace Beelina.API.Types.Query
             return await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntries(productReceiptEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
         }
 
-
         [Authorize]
         [UsePaging(MaxPageSize = 1000, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
@@ -189,6 +188,16 @@ namespace Beelina.API.Types.Query
                 });
             }
             return insufficientProductQuantities;
+        }
+
+        [Authorize]
+        public async Task<IPurchaseOrderPayload> CheckPurchaseOrderCode(
+            [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository, 
+            int purchaseOrderId, 
+            string referenceCode)
+        {
+            var purchaseOrderFromRepo = await productWarehouseStockReceiptEntryRepository.GetPurchaseOrderByUniqueCode(purchaseOrderId, referenceCode);
+            return new CheckPurchaseOrderCodeInformationResult(purchaseOrderFromRepo != null);
         }
 
         private static async Task SetProductStockWarehouses(ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput, int warehouseId, IProductRepository<Product> productRepository, CancellationToken cancellationToken)

@@ -122,5 +122,21 @@ namespace Beelina.LIB.BusinessLogic
 
             return productWarehouseStockReceiptEntries;
         }
+
+        public async Task<ProductWarehouseStockReceiptEntry> GetPurchaseOrderByUniqueCode(int purchaseOrderId, string referenceCode)
+        {
+            var purchaseOrerFromRepo = await _beelinaRepository
+                                      .ClientDbContext
+                                      .ProductWarehouseStockReceiptEntries
+                                      .Where((p) =>
+                                          p.Id != purchaseOrderId &&
+                                          p.ReferenceNo == referenceCode &&
+                                          p.IsActive &&
+                                          !p.IsDelete
+                                      ).FirstOrDefaultAsync();
+
+            return purchaseOrerFromRepo;
+        }
+
     }
 }

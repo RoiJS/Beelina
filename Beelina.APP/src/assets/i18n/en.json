@@ -1130,7 +1130,8 @@
           "LABEL": "Supplier"
         },
         "REFERENCE_NO_CONTROL": {
-          "LABEL": "Reference No."
+          "LABEL": "Reference No.",
+          "ALREADY_EXIST_ERROR_MESSAGE": "Reference Code already exists."
         },
         "PLATE_NO_CONTROL": {
           "LABEL": "Plate No."

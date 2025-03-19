@@ -39,7 +39,13 @@
                 "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.LABEL"
                 | translate }}</label>
               <input type="text" class="reference-no-control" formControlName="referenceNo"
-                [ngClass]="{ 'is-invalid': purchaseOrderDetailsForm.get('referenceNo').hasError('required') && purchaseOrderDetailsForm.get('referenceNo').touched }">
+                [ngClass]="{ 'is-invalid': (purchaseOrderDetailsForm.get('referenceNo').hasError('required') || purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) && purchaseOrderDetailsForm.get('referenceNo').touched }">
+
+              @if(purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) {
+              <span class="biz-form-container__form-control--error-message">{{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                | translate }}</span>
+              }
             </div>
 
             <div class="biz-form-container__form-control">
@@ -169,8 +175,10 @@
     <div class="panel purchase-order-buttons-panel">
       <div class="panel__body-section purchase-order-buttons-panel__body-section">
         <button mat-raised-button color="warn" [disabled]="newPurchaseOrder"
-          (click)="removePurchaseOrder()"><mat-icon>delete_forever</mat-icon>{{ "GENERAL_TEXTS.DELETE" | translate }}</button>
-        <button mat-raised-button color="primary" (click)="save()"><mat-icon>save</mat-icon>{{ "GENERAL_TEXTS.SAVE" | translate }}</button>
+          (click)="removePurchaseOrder()"><mat-icon>delete_forever</mat-icon>{{ "GENERAL_TEXTS.DELETE" | translate
+          }}</button>
+        <button mat-raised-button color="primary" (click)="save()"><mat-icon>save</mat-icon>{{ "GENERAL_TEXTS.SAVE" |
+          translate }}</button>
       </div>
     </div>
 

@@ -68,6 +68,7 @@ namespace Beelina.API.Helpers.Extensions
                     .AddType<ProductWarehouseStockReceiptEntryNotExistsError>()
                     .AddType<SystemUpdateActiveError>()
                     .AddType<CheckProductCodeInformationResult>()
+                    .AddType<CheckPurchaseOrderCodeInformationResult>()
                     .AddType<CheckSupplierCodeInformationResult>()
                     .AddType<UploadType>()
                     .AddType<ClientNotExistsError>();

@@ -266,6 +266,11 @@ button[mat-raised-button] {
         border: 1px solid $error-border-color;
       }
     }
+
+    &--error-message {
+      color: $error-border-color;
+      font-size: 12px;
+    }
   }
 }
 

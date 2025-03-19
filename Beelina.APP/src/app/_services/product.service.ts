@@ -52,6 +52,7 @@ import { IProductWarehouseStockReceiptEntryInput } from '../_interfaces/inputs/i
 import { IProductStockWarehouseAuditInput } from '../_interfaces/inputs/iproduct-stock-warehouse-audit.input';
 import { IProductWarehouseStockReceiptEntryPayload } from '../_interfaces/payloads/iproduct-warehouse-stock-receipt-entry-query.payload';
 import { ProductWarehouseStockReceiptEntryNotExistsError } from '../_models/errors/product-warehouse-stock-receipt-entry-not-exists.error';
+import { CheckPurchaseOrderCodeInformationResult } from '../_models/results/check-purchase-order-code-information-result';
 import { ProductWarehouseStockReceiptEntryResult } from '../_models/results/product-warehouse-stock-receipt-entry-result';
 import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-entry.output';
 
@@ -313,6 +314,17 @@ const CHECK_PRODUCT_CODE = gql`
     checkProductCode(productId: $productId, productCode: $productCode) {
       typename: __typename
       ... on CheckProductCodeInformationResult {
+        exists
+      }
+    }
+  }
+`;
+
+const CHECK_PURCHASE_ORDER_CODE = gql`
+  query($purchaseOrderId: Int!, $referenceCode: String!){
+    checkPurchaseOrderCode(purchaseOrderId: $purchaseOrderId, referenceCode: $referenceCode) {
+      typename: __typename
+      ... on CheckPurchaseOrderCodeInformationResult {
         exists
       }
     }
@@ -1191,6 +1203,34 @@ export class ProductService {
             if (data.typename === 'CheckProductCodeInformationResult')
               return (<CheckProductCodeInformationResult>(
                 result.data.checkProductCode
+              )).exists;
+
+            return false;
+          }
+        )
+      );
+  }
+
+  checkPurchaseOrderCodeExists(purchaseOrderId: number, referenceCode: string) {
+    return this.apollo
+      .watchQuery({
+        query: CHECK_PURCHASE_ORDER_CODE,
+        variables: {
+          purchaseOrderId,
+          referenceCode,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              checkPurchaseOrderCode: IProductWarehouseStockReceiptEntryPayload;
+            }>
+          ) => {
+            const data = result.data.checkPurchaseOrderCode;
+            if (data.typename === 'CheckPurchaseOrderCodeInformationResult')
+              return (<CheckPurchaseOrderCodeInformationResult>(
+                result.data.checkPurchaseOrderCode
               )).exists;
 
             return false;

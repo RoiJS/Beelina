@@ -23,6 +23,7 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
 
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { UniquePurchaseOrderCodeValidator } from 'src/app/_validators/unique-purchase-order-code.validator';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -49,6 +50,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   router = inject(Router);
   supplierService = inject(SupplierService);
   translateService = inject(TranslateService);
+  uniquePurchaseOrderCodeValidator = inject(UniquePurchaseOrderCodeValidator);
 
   table = viewChild(MatTable<PurchaseOrderItemDetails>);
 
@@ -57,7 +59,14 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     this.purchaseOrderDetailsForm = this.formBuilder.group({
       supplierId: [null, Validators.required],
       stockEntryDate: [DateFormatter.format(new Date()), Validators.required],
-      referenceNo: ['', Validators.required],
+      referenceNo: ['',
+        [Validators.required],
+        [
+          this.uniquePurchaseOrderCodeValidator.validate.bind(
+            this.uniquePurchaseOrderCodeValidator
+          ),
+        ],
+      ],
       plateNo: ['']
     });
   }
