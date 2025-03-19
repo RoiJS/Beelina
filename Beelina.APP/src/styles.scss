@@ -267,6 +267,17 @@ button[mat-raised-button] {
       }
     }
 
+    textarea {
+      border: 1px solid #cccccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+      color: #454444;
+      font-family: var(--mat-table-header-headline-font, Roboto, sans-serif);
+      font-size: 15px;
+      padding: 5px;
+      resize: none;
+    }
+
     &--error-message {
       color: $error-border-color;
       font-size: 12px;

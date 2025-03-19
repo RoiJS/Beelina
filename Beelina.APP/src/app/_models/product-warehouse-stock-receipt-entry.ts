@@ -9,6 +9,7 @@ export class ProductWarehouseStockReceiptEntry extends Entity implements IModelN
   public stockEntryDate: Date;
   public referenceNo: string;
   public plateNo: string;
+  public notes: string;
   public warehouseId: number;
   public productStockWarehouseAudits: Array<ProductStockWarehouseAudit>;
 

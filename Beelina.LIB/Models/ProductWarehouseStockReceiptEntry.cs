@@ -9,6 +9,7 @@ namespace Beelina.LIB.Models
         public DateTime? StockEntryDate { get; set; }
         public string ReferenceNo { get; set; }
         public string PlateNo { get; set; }
+        public string Notes { get; set; }
         public int WarehouseId { get; set; }
 
         public List<ProductStockWarehouseAudit> ProductStockWarehouseAudits { get; set; }

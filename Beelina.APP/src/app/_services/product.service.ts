@@ -163,7 +163,7 @@ const GET_PRODUCT_STORE = gql`
   }
 `;
 
-const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT_STORE = gql`
+const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT = gql`
   query($id: Int!) {
     productWarehouseStockReceiptEntry(id: $id){
       typename: __typename
@@ -173,6 +173,8 @@ const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT_STORE = gql`
           stockEntryDate
           referenceNo
           supplierId
+          notes
+          plateNo
           productStockWarehouseAuditsResult {
               id
               productId
@@ -261,18 +263,19 @@ const UPDATE_PRODUCT_QUERY = gql`
 `;
 
 const UPDATE_WAREHOUSE_PRODUCT_QUERY = gql`
-query($productInputs: [ProductInput!]!, $warehouseId: Int!) {
-  updateWarehouseProducts(productInputs: $productInputs, warehouseId:  $warehouseId ){
-    id
-    code
-    name
+  query($productInputs: [ProductInput!]!, $warehouseId: Int!) {
+    updateWarehouseProducts(productInputs: $productInputs, warehouseId:  $warehouseId ){
+      id
+      code
+      name
+      supplierId
+    }
   }
-}
 `;
 
-const UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRY_QUERY = gql`
-  query($productWarehouseStockReceiptEntryInput: ProductWarehouseStockReceiptEntryInput!) {
-    updateWarehouseStockReceiptEntry(productWarehouseStockReceiptEntryInput: $productWarehouseStockReceiptEntryInput){
+const UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
+  query($productWarehouseStockReceiptEntryInputs: [ProductWarehouseStockReceiptEntryInput!]!) {
+    updateWarehouseStockReceiptEntries(productWarehouseStockReceiptEntryInputs: $productWarehouseStockReceiptEntryInputs){
       id
       referenceNo
       stockEntryDate
@@ -864,7 +867,7 @@ export class ProductService {
   getProductWarehouseStockReceiptEntry(id: number) {
     return this.apollo
       .watchQuery({
-        query: GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT_STORE,
+        query: GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT,
         variables: {
           id,
         },
@@ -1085,32 +1088,38 @@ export class ProductService {
       );
   }
 
-  updateWarehouseStockReceiptEntry(productWarehouseStockReceiptEntry: ProductWarehouseStockReceiptEntry) {
-    const productWarehouseStockReceiptEntryInput = <IProductWarehouseStockReceiptEntryInput>{
-      id: productWarehouseStockReceiptEntry.id,
-      supplierId: productWarehouseStockReceiptEntry.supplierId,
-      stockEntryDate: productWarehouseStockReceiptEntry.stockEntryDate,
-      referenceNo: productWarehouseStockReceiptEntry.referenceNo,
-      plateNo: productWarehouseStockReceiptEntry.plateNo,
-      warehouseId: this._warehouseId,
-      productStockWarehouseAudits: productWarehouseStockReceiptEntry.productStockWarehouseAudits.map((p) => {
-        const productStockWarehousAudit: IProductStockWarehouseAuditInput = {
-          id: p.id,
-          productId: p.productId,
-          pricePerUnit: p.pricePerUnit,
-          quantity: p.quantity,
-          stockAuditSource: p.stockAuditSource
-        };
+  updateWarehouseStockReceiptEntries(productWarehouseStockReceiptEntry: Array<ProductWarehouseStockReceiptEntry>) {
 
-        return productStockWarehousAudit;
-      }),
-    };
+    const productWarehouseStockReceiptEntryInputs = productWarehouseStockReceiptEntry.map((p) => {
+      const productWarehouseStockReceiptEntryInput: IProductWarehouseStockReceiptEntryInput = {
+        id: p.id,
+        supplierId: p.supplierId,
+        stockEntryDate: p.stockEntryDate,
+        referenceNo: p.referenceNo,
+        plateNo: p.plateNo,
+        notes: p.notes,
+        warehouseId: this._warehouseId,
+        productStockWarehouseAudits: p.productStockWarehouseAudits.map((a) => {
+          const productStockWarehousAudit: IProductStockWarehouseAuditInput = {
+            id: a.id,
+            productId: a.productId,
+            pricePerUnit: a.pricePerUnit,
+            quantity: a.quantity,
+            stockAuditSource: a.stockAuditSource
+          };
+
+          return productStockWarehousAudit;
+        }),
+      };
+
+      return productWarehouseStockReceiptEntryInput;
+    });
 
     return this.apollo
       .watchQuery({
-        query: UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRY_QUERY,
+        query: UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY,
         variables: {
-          productWarehouseStockReceiptEntryInput,
+          productWarehouseStockReceiptEntryInputs,
         },
       })
       .valueChanges

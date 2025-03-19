@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,6 +16,7 @@ import { PurchaseOrderDetailsComponent } from './purchase-order-details.componen
     CommonModule,
     CustomUISharedModule,
     MatTableModule,
+    MatPaginatorModule,
     NgSelectModule,
     FormsModule,
     ReactiveFormsModule,

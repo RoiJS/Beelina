@@ -14,45 +14,61 @@
     <div class="panel purchase-order-panel">
       <div [formGroup]="purchaseOrderDetailsForm" class="panel__details-group-panel">
         <div class="panel__body-section">
-          <div class="biz-form-container biz-form-container--full-width">
-            <div class="biz-form-container__form-control">
-              <label>{{
-                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
-                | translate }}</label>
-              <ng-select [items]="suppliersDatasource" bindLabel="nameWithCode" bindValue="id"
-                formControlName="supplierId" [editableSearchTerm]="true">
-                <ng-template ng-label-tmp let-item="item">
-                  {{ item.code }} - {{ item.name }}
-                </ng-template>
-              </ng-select>
+          <div class="biz-form-container">
+
+            <div class="form-general-section">
+              <div class="form-column-direction">
+                <div class="biz-form-container__form-control">
+                  <label>{{
+                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
+                    | translate }}</label>
+                  <ng-select [items]="suppliersDatasource" bindLabel="nameWithCode" bindValue="id"
+                    formControlName="supplierId" [editableSearchTerm]="true">
+                    <ng-template ng-label-tmp let-item="item">
+                      {{ item.code }} - {{ item.name }}
+                    </ng-template>
+                  </ng-select>
+                </div>
+
+                <div class="biz-form-container__form-control">
+                  <label>{{
+                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STOCK_ENTRY_DATE_CONTROL.LABEL"
+                    | translate }}</label>
+                  <input type="date" class="date-picker-control" formControlName="stockEntryDate">
+                </div>
+              </div>
+
+              <div class="form-column-direction">
+                <div class="biz-form-container__form-control">
+                  <label>{{
+                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.LABEL"
+                    | translate }}</label>
+                  <input type="text" class="reference-no-control" formControlName="referenceNo"
+                    [ngClass]="{ 'is-invalid': (purchaseOrderDetailsForm.get('referenceNo').hasError('required') || purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) && purchaseOrderDetailsForm.get('referenceNo').touched }">
+
+                  @if(purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) {
+                  <span class="biz-form-container__form-control--error-message">{{
+                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                    | translate }}</span>
+                  }
+                </div>
+
+                <div class="biz-form-container__form-control">
+                  <label>{{
+                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.PLATE_NO_CONTROL.LABEL"
+                    | translate }}</label>
+                  <input type="text" class="plate-no-control" formControlName="plateNo">
+                </div>
+              </div>
             </div>
 
-            <div class="biz-form-container__form-control">
-              <label>{{
-                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STOCK_ENTRY_DATE_CONTROL.LABEL"
-                | translate }}</label>
-              <input type="date" class="date-picker-control" formControlName="stockEntryDate">
-            </div>
-
-            <div class="biz-form-container__form-control">
-              <label>{{
-                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.LABEL"
-                | translate }}</label>
-              <input type="text" class="reference-no-control" formControlName="referenceNo"
-                [ngClass]="{ 'is-invalid': (purchaseOrderDetailsForm.get('referenceNo').hasError('required') || purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) && purchaseOrderDetailsForm.get('referenceNo').touched }">
-
-              @if(purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) {
-              <span class="biz-form-container__form-control--error-message">{{
-                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
-                | translate }}</span>
-              }
-            </div>
-
-            <div class="biz-form-container__form-control">
-              <label>{{
-                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.PLATE_NO_CONTROL.LABEL"
-                | translate }}</label>
-              <input type="text" class="plate-no-control" formControlName="plateNo">
+            <div class="form-notes-section">
+              <div class="biz-form-container__form-control">
+                <label>{{
+                  "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.NOTES_CONTROL.LABEL"
+                  | translate }}</label>
+                <textarea type="text" class="notes-control" formControlName="notes"></textarea>
+              </div>
             </div>
           </div>
         </div>
@@ -71,7 +87,7 @@
           <div class="purchase-order-items-panel__button-container">
             <button mat-raised-button color="primary" (click)="addEntry()">+ Add Item</button>
           </div>
-          <mat-table class="biz-form-container" [dataSource]="purchaseOrderItemsDatasource">
+          <mat-table class="biz-form-container" [dataSource]="purchaseOrderItemsTableDatasource">
             <!-- Product Column -->
             <ng-container matColumnDef="product">
               <mat-header-cell *matHeaderCellDef> {{
@@ -167,6 +183,10 @@
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
             <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
           </mat-table>
+
+          <mat-paginator [pageSize]="10" [length]="purchaseOrderItemsTableDatasource.data.length "
+            [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons>
+          </mat-paginator>
         </div>
       </div>
     </div>

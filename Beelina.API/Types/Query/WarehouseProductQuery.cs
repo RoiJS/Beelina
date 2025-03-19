@@ -39,48 +39,55 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        public async Task<ProductWarehouseStockReceiptEntry> UpdateWarehouseStockReceiptEntry(
+        public async Task<List<ProductWarehouseStockReceiptEntry>> UpdateWarehouseStockReceiptEntries(
             [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             [Service] ICurrentUserService currentUserService,
             [Service] IMapper mapper,
             [Service] ILogger<ProductQuery> logger,
-            ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput
+            List<ProductWarehouseStockReceiptEntryInput> productWarehouseStockReceiptEntryInputs
         )
         {
+            var updatedEntries = new List<ProductWarehouseStockReceiptEntry>();
+            productWarehouseStockReceiptEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
             try
             {
-                productWarehouseStockReceiptEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-
                 var warehouseId = 1; // Default
-                var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository
-                                            .GetEntity(productWarehouseStockReceiptEntryInput.Id)
-                                            .Includes(s => s.ProductStockWarehouseAudits)
-                                            .ToObjectAsync();
 
-                await SetProductStockWarehouses(productWarehouseStockReceiptEntryInput, warehouseId, productRepository, httpContextAccessor.HttpContext.RequestAborted);
+                foreach (var input in productWarehouseStockReceiptEntryInputs)
+                {
+                    var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository
+                                                .GetEntity(input.Id)
+                                                .Includes(s => s.ProductStockWarehouseAudits)
+                                                .ToObjectAsync();
 
-                if (stockEntryFromRepo is null)
-                {
-                    var newStockEntry = mapper.Map<ProductWarehouseStockReceiptEntry>(productWarehouseStockReceiptEntryInput);
-                    await productWarehouseStockReceiptEntryRepository.AddEntity(newStockEntry);
-                    await productWarehouseStockReceiptEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
-                    return newStockEntry;
+                    await SetProductStockWarehouses(input, warehouseId, productRepository, httpContextAccessor.HttpContext.RequestAborted);
+
+                    if (stockEntryFromRepo is null)
+                    {
+                        var newStockEntry = mapper.Map<ProductWarehouseStockReceiptEntry>(input);
+                        await productWarehouseStockReceiptEntryRepository.AddEntity(newStockEntry);
+                        updatedEntries.Add(newStockEntry);
+                    }
+                    else
+                    {
+                        mapper.Map(input, stockEntryFromRepo);
+                        updatedEntries.Add(stockEntryFromRepo);
+                    }
                 }
-                else
-                {
-                    mapper.Map(productWarehouseStockReceiptEntryInput, stockEntryFromRepo);
-                    var hasChanged = productWarehouseStockReceiptEntryRepository.HasChanged();
-                    await productWarehouseStockReceiptEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
-                    return stockEntryFromRepo;
-                }
+                
+                var hasChanged = productWarehouseStockReceiptEntryRepository.HasChanged();
+                await productWarehouseStockReceiptEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+
+                return updatedEntries;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to update product wareshouse entry. Params: userAccountId = {@productWarehouseStockReceiptEntryInput}", productWarehouseStockReceiptEntryInput);
+                logger.LogError(ex, "Failed to update product warehouse entries. Params: userAccountId = {@productWarehouseStockReceiptEntryInputs}", productWarehouseStockReceiptEntryInputs);
 
-                throw new Exception($"Failed to update product wareshouse entry: {ex.Message}");
+                throw new Exception($"Failed to update product warehouse entries: {ex.Message}");
             }
         }
 

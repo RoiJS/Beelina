@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatTable } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom, pairwise, startWith, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { firstValueFrom, pairwise, startWith, Subscription } from 'rxjs';
+import { MatPaginator } from '@angular/material/paginator';
 
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 
@@ -22,8 +23,8 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
-import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { UniquePurchaseOrderCodeValidator } from 'src/app/_validators/unique-purchase-order-code.validator';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -36,11 +37,12 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   private _purchaseOrderDetails: ProductWarehouseStockReceiptEntryResult;
   private _warehouseProductsDatasource: Array<Product>;
   private _supplierDatasource: Array<Supplier>;
+  private _productItemId: number = 0;
 
   private _subscription: Subscription = new Subscription();
 
   purchaseOrderDetailsForm: FormGroup;
-  purchaseOrderItemsDatasource: Array<PurchaseOrderItemDetails> = [];
+  purchaseOrderItemsTableDatasource = new MatTableDataSource<PurchaseOrderItemDetails>([]);
 
   activatedRoute = inject(ActivatedRoute);
   dialogService = inject(DialogService);
@@ -53,6 +55,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   uniquePurchaseOrderCodeValidator = inject(UniquePurchaseOrderCodeValidator);
 
   table = viewChild(MatTable<PurchaseOrderItemDetails>);
+  paginator = viewChild(MatPaginator);
 
   constructor() {
     super();
@@ -67,7 +70,8 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           ),
         ],
       ],
-      plateNo: ['']
+      plateNo: [''],
+      notes: [''],
     });
   }
 
@@ -81,12 +85,11 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           const resetItems = async () => {
             this._isLoading = true;
             this._warehouseProductsDatasource = await this.initWarehouseProductsDatasource(newValue);
-            this.purchaseOrderItemsDatasource = [new PurchaseOrderItemDetails()];
-            this.table().renderRows();
+            this.purchaseOrderItemsTableDatasource.data = [new PurchaseOrderItemDetails()];
             this._isLoading = false;
           }
 
-          if (this.purchaseOrderItemsDatasource.length > 0) {
+          if (this.purchaseOrderItemsTableDatasource.data.length > 0) {
             this.dialogService
               .openConfirmation(
                 this.translateService.instant('PURCHASE_ORDER_DETAILS_PAGE.RESET_PURCHASE_ORDER_ITEMS_DIALOG.TITLE'),
@@ -106,7 +109,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           this._isLoading = true;
 
           this._warehouseProductsDatasource = await this.initWarehouseProductsDatasource(+this._purchaseOrderDetails.supplierId);
-          this.purchaseOrderItemsDatasource = this._purchaseOrderDetails.productStockWarehouseAuditsResult.map((poItem: ProductStockWarehouseAudit) => {
+          this.purchaseOrderItemsTableDatasource.data = this._purchaseOrderDetails.productStockWarehouseAuditsResult.map((poItem: ProductStockWarehouseAudit) => {
             const purchaseOrderItem = new PurchaseOrderItemDetails();
             purchaseOrderItem.id = poItem.id;
             purchaseOrderItem.productId = poItem.productId;
@@ -130,6 +133,8 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           this._isLoading = false;
         }
       }));
+
+    this.purchaseOrderItemsTableDatasource.paginator = this.paginator();
   }
 
   async ngOnInit() {
@@ -149,6 +154,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
       this.purchaseOrderDetailsForm.get('stockEntryDate').setValue(DateFormatter.format(this._purchaseOrderDetails.stockEntryDate));
       this.purchaseOrderDetailsForm.get('referenceNo').setValue(this._purchaseOrderDetails.referenceNo);
       this.purchaseOrderDetailsForm.get('plateNo').setValue(this._purchaseOrderDetails.plateNo);
+      this.purchaseOrderDetailsForm.get('notes').setValue(this._purchaseOrderDetails.notes);
     }
   }
 
@@ -159,20 +165,17 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
       purchaseOrderDetails.unit = selectedProductDetails.productUnit.name;
       purchaseOrderDetails.unitPrice = selectedProductDetails.pricePerUnit;
       purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.unitPrice;
-      this.table().renderRows();
     }
   }
 
   onQuantityChange(quantity: number, purchaseOrderDetails: PurchaseOrderItemDetails) {
     purchaseOrderDetails.quantity = quantity;
     purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.unitPrice;
-    this.table().renderRows();
   }
 
   onUnitPriceChange(unitPrice: number, purchaseOrderDetails: PurchaseOrderItemDetails) {
     purchaseOrderDetails.unitPrice = unitPrice;
     purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.unitPrice;
-    this.table().renderRows();
   }
 
   ngOnDestroy() {
@@ -180,20 +183,24 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   }
 
   addEntry() {
-    this.purchaseOrderItemsDatasource.push(new PurchaseOrderItemDetails());
-    this.table().renderRows();
+    const newProductItem = new PurchaseOrderItemDetails();
+    newProductItem.id = this._productItemId;
+    this._productItemId--;
+    this.purchaseOrderItemsTableDatasource.data.push(newProductItem);
+    this.purchaseOrderItemsTableDatasource.data = [...this.purchaseOrderItemsTableDatasource.data];
+    this.paginator().lastPage();
   }
 
   removeEntry(purchaseOrderDetails: PurchaseOrderItemDetails) {
-    const index = this.purchaseOrderItemsDatasource.indexOf(purchaseOrderDetails);
-    this.purchaseOrderItemsDatasource.splice(index, 1);
-    this.table().renderRows();
+    const index = this.purchaseOrderItemsTableDatasource.data.findIndex((item: PurchaseOrderItemDetails) => item.id == purchaseOrderDetails.id);
+    this.purchaseOrderItemsTableDatasource.data.splice(index, 1);
+    this.purchaseOrderItemsTableDatasource.data = [...this.purchaseOrderItemsTableDatasource.data];
   }
 
   save() {
     this.purchaseOrderDetailsForm.markAllAsTouched();
 
-    if (this.purchaseOrderItemsDatasource.length == 0) {
+    if (this.purchaseOrderItemsTableDatasource.data.length == 0) {
       this.notificationService.openErrorNotification(this.translateService.instant('PURCHASE_ORDER_DETAILS_PAGE.EMPTY_PURCHASE_ORDER_ITEMS_NOTIFICATION.MESSAGE'));
       return;
     }
@@ -223,6 +230,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           const stockEntryDateControl = this.purchaseOrderDetailsForm.get('stockEntryDate');
           const referenceNoControl = this.purchaseOrderDetailsForm.get('referenceNo');
           const plateNoControl = this.purchaseOrderDetailsForm.get('plateNo');
+          const notesControl = this.purchaseOrderDetailsForm.get('notes');
 
           const purchaseOrder = new ProductWarehouseStockReceiptEntry();
 
@@ -231,8 +239,9 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           purchaseOrder.stockEntryDate = stockEntryDateControl.value;
           purchaseOrder.referenceNo = referenceNoControl.value;
           purchaseOrder.plateNo = plateNoControl.value;
+          purchaseOrder.notes = notesControl.value;
 
-          purchaseOrder.productStockWarehouseAudits = this.purchaseOrderItemsDatasource.filter(p => p.productId > 0).map(x => {
+          purchaseOrder.productStockWarehouseAudits = this.purchaseOrderItemsTableDatasource.data.filter(p => p.productId > 0).map(x => {
             const productStockWarehouseAudit = new ProductStockWarehouseAudit();
 
             productStockWarehouseAudit.id = x.id;
@@ -245,10 +254,16 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           });
 
           this.productService
-            .updateWarehouseStockReceiptEntry(purchaseOrder)
+            .updateWarehouseStockReceiptEntries([purchaseOrder])
             .subscribe({
               next: () => {
                 this.notificationService.openSuccessNotification(successMessage);
+
+                if (this._purchaseOrderId > 0) {
+                  window.location.reload();
+                } else {
+                  this.router.navigate([`purchase-orders`]);
+                }
               },
               error: () => {
                 this.notificationService.openErrorNotification(errorMessage);
@@ -323,11 +338,11 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   }
 
   get totalQuantity() {
-    return this.purchaseOrderItemsDatasource.map(t => t.quantity).reduce((acc, value) => acc + value, 0);
+    return this.purchaseOrderItemsTableDatasource.data.map(t => t.quantity).reduce((acc, value) => acc + value, 0);
   }
 
   get totalAmount() {
-    const amount = this.purchaseOrderItemsDatasource.map(t => t.amount).reduce((acc, value) => acc + value, 0);
+    const amount = this.purchaseOrderItemsTableDatasource.data.map(t => t.amount).reduce((acc, value) => acc + value, 0);
     return NumberFormatter.formatCurrency(amount);
   }
 

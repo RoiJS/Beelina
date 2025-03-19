@@ -204,7 +204,7 @@ export class AddProductDetailsComponent implements OnInit {
 
                       purchaseOrder.productStockWarehouseAudits = [productStockWarehouseAudit];
 
-                      await firstValueFrom(this.productService.updateWarehouseStockReceiptEntry(purchaseOrder));
+                      await firstValueFrom(this.productService.updateWarehouseStockReceiptEntries([purchaseOrder]));
                     }
                   }
 

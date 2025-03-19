@@ -63,6 +63,8 @@ namespace Beelina.LIB.BusinessLogic
                 ReferenceNo = productStockPerWarehouseFromRepo.ReferenceNo,
                 StockEntryDate = productStockPerWarehouseFromRepo.StockEntryDate,
                 SupplierId = productStockPerWarehouseFromRepo.SupplierId,
+                Notes = productStockPerWarehouseFromRepo.Notes,
+                PlateNo= productStockPerWarehouseFromRepo.PlateNo,
                 ProductStockWarehouseAuditsResult = productStockWarehouseAuditResults,
             };
 

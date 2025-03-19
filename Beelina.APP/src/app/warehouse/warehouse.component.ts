@@ -244,7 +244,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
               purchaseOrder.productStockWarehouseAudits = [productStockWarehouseAudit];
 
               this.productService
-                .updateWarehouseStockReceiptEntry(purchaseOrder)
+                .updateWarehouseStockReceiptEntries([purchaseOrder])
                 .subscribe({
                   next: () => {
                     this.notificationService.openSuccessNotification(this.translateService.instant(

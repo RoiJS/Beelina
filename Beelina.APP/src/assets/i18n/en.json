@@ -1138,6 +1138,9 @@
         },
         "STOCK_ENTRY_DATE_CONTROL": {
           "LABEL": "Stock Entry Date"
+        },
+        "NOTES_CONTROL": {
+          "LABEL": "Notes"
         }
       }
     },
@@ -1270,6 +1273,9 @@
     "RESET_IMPORT_DIALOG": {
       "TITLE": "Reset import",
       "CONFIRM": "Resetting import setup will remove the uploaded file and remove the extracted products as well. Are you sure you want to proceed?"
+    },
+    "AUTO_REGISTER_PURCHASE_ORDER": {
+      "DEFAULT_NOTES": "This is an automatically generated purchase order from product import."
     }
   },
   "ACCOUNTS_PAGE": {

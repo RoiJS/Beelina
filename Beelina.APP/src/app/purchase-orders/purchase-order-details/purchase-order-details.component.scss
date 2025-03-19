@@ -1,6 +1,31 @@
 @import "../../../app-variables";
 
-.purchase-order-panel,
+.purchase-order-panel {
+  margin-bottom: 1em;
+
+  .biz-form-container {
+    display: flex;
+    gap: 1em;
+  }
+
+  .form-general-section {
+    flex: 2;
+  }
+
+  .form-notes-section {
+    flex: 1;
+
+    textarea {
+      height: 93px;
+    }
+  }
+
+  .form-column-direction {
+    display: flex;
+    gap: 1em;
+  }
+}
+
 .purchase-order-items-panel {
   margin-bottom: 1em;
 
