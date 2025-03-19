@@ -756,9 +756,9 @@ namespace Beelina.LIB.BusinessLogic
 
           // Insert new stock audit for the product
           //===========================================================================================================
-          _logger.LogInformation("Part 5 - Warehouse Product Stock Audit saving...");
+          // _logger.LogInformation("Part 5 - Warehouse Product Stock Audit saving...");
 
-          await ManageWarehouseProductStockAudit(productStockPerWarehouseFromRepo, productInput, cancellationToken);
+          // await ManageWarehouseProductStockAudit(productStockPerWarehouseFromRepo, productInput, cancellationToken);
 
           productsFromRepo.Add(productFromRepo);
 

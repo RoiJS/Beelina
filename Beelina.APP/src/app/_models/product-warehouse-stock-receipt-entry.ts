@@ -4,7 +4,7 @@ import { ProductStockWarehouseAudit } from './product-stock-warehouse-audit';
 import { Supplier } from './supplier';
 
 export class ProductWarehouseStockReceiptEntry extends Entity implements IModelNode {
-  public supplierId: string;
+  public supplierId: number;
   public supplier: Supplier;
   public stockEntryDate: Date;
   public referenceNo: string;

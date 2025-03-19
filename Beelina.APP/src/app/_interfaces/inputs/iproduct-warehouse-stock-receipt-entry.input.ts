@@ -2,7 +2,7 @@ import { IProductStockWarehouseAuditInput } from './iproduct-stock-warehouse-aud
 
 export interface IProductWarehouseStockReceiptEntryInput {
   id: number;
-  supplierId: string;
+  supplierId: number;
   stockEntryDate: Date;
   referenceNo: string;
   plateNo: string;

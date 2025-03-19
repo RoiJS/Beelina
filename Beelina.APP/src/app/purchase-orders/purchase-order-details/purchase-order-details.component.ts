@@ -142,6 +142,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     this._supplierDatasource = await this.initSupplierDatasource();
 
     if (this._purchaseOrderId > 0) {
+      this.uniquePurchaseOrderCodeValidator.purchaseOrderId = this._purchaseOrderId;
       this._purchaseOrderDetails = await firstValueFrom(this.productService.getProductWarehouseStockReceiptEntry(this._purchaseOrderId));
 
       this.purchaseOrderDetailsForm.get('supplierId').setValue(+this._purchaseOrderDetails.supplierId);
