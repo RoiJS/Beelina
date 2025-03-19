@@ -22,6 +22,7 @@
     "BALANCE": "Balance",
     "MARK_AS_PAID": "Mark as Paid",
     "MARK_AS_UNPAID": "Mark as Unpaid",
+    "SAVE": "Save",
     "DELETE": "Delete",
     "EDIT": "Edit",
     "REMOVE": "Remove",
@@ -1112,6 +1113,75 @@
         "PLATE_NO_FIELD": "Plate No",
         "SUPPLIER_FIELD": "Supplier"
       }
+    },
+    "DELETE_PURCHASE_ORDER_DIALOG": {
+      "TITLE": "Delete purchase order",
+      "CONFIRM_MESSAGE": "Are you sure you want to delete purchase order?",
+      "SUCCESS_MESSAGE": "Purchase order has been successfully deleted.",
+      "ERROR_MESSAGE": "Failed to delete purchase order. Please try again later."
+    }
+  },
+  "PURCHASE_ORDER_DETAILS_PAGE": {
+    "TITLE": "Purchase Order Details",
+    "DESCRIPTION": "Manage purchase order details and product items here.",
+    "PURCHASE_ORDER_GENERAL_INFO_PANEL": {
+      "FORM_CONTROL_SECTION": {
+        "SUPPLIER_CONTROL": {
+          "LABEL": "Supplier"
+        },
+        "REFERENCE_NO_CONTROL": {
+          "LABEL": "Reference No."
+        },
+        "PLATE_NO_CONTROL": {
+          "LABEL": "Plate No."
+        },
+        "STOCK_ENTRY_DATE_CONTROL": {
+          "LABEL": "Stock Entry Date"
+        }
+      }
+    },
+    "PURCHASE_ORDER_ITEMS_PANEL": {
+      "TABLE_GRID": {
+        "COLUMN_DEFINITION": {
+          "PRODUCT_FIELD": "Product",
+          "CODE_FIELD": "Code",
+          "QUANTITY_FIELD": "Quantity",
+          "UNIT_FIELD": "Unit",
+          "UNIT_PRICE_FIELD": "Unit Price",
+          "AMOUNT_FIELD": "Amount"
+        },
+        "FOOTER_DEFINITION": {
+          "TOTAL_FIELD": "Total"
+        }
+      }
+    },
+    "RESET_PURCHASE_ORDER_ITEMS_DIALOG": {
+      "TITLE": "Reset items",
+      "CONFIRM_MESSAGE": "Switching supplier will reset the items. Are you sure to proceed?"
+    },
+    "SAVE_NEW_PURCHASE_ORDER_ITEMS_DIALOG": {
+      "TITLE": "New purchase order",
+      "CONFIRM_MESSAGE": "Are you sure you want to save new purchase order?",
+      "SUCCESS_MESSAGE": "New purchase order has been saved.",
+      "ERROR_MESSAGE": "Failed to save new purchase order. Please try again later."
+    },
+    "UPDATE_PURCHASE_ORDER_ITEMS_DIALOG": {
+      "TITLE": "Update purchase order",
+      "CONFIRM_MESSAGE": "Are you sure you want to update purchase order?",
+      "SUCCESS_MESSAGE": "New updates has been successfully saved.",
+      "ERROR_MESSAGE": "Failed to save new updates. Please try again later."
+    },
+    "DELETE_PURCHASE_ORDER_ITEMS_DIALOG": {
+      "TITLE": "Delete purchase order",
+      "CONFIRM_MESSAGE": "Are you sure you want to delete purchase order?",
+      "SUCCESS_MESSAGE": "Purchase order has been successfully deleted.",
+      "ERROR_MESSAGE": "Failed to delete purchase order. Please try again later."
+    },
+    "EMPTY_PURCHASE_ORDER_ITEMS_NOTIFICATION": {
+      "MESSAGE": "Purchase order has empty product list. Please add at least one product."
+    },
+    "INVALID_PURCHASE_ORDER_NOTIFICATION": {
+      "MESSAGE": "Invalid purchase order details. Please fill the required fields."
     }
   },
   "WAREHOUSE_PRODUCT_IMPORT_PAGE": {

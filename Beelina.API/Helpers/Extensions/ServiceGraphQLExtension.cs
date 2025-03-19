@@ -39,6 +39,7 @@ namespace Beelina.API.Helpers.Extensions
                     .AddType<SupplierMutation>()
                     .AddType<PaymentMutation>()
                     .AddType<ProductMutation>()
+                    .AddType<WarehouseProductMutation>()
                     .AddType<StoreMutation>()
                     .AddType<TransactionMutation>()
                     .AddType<ClientMutation>()

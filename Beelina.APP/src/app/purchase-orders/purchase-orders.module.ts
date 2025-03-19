@@ -25,7 +25,18 @@ import { PurchaseOrdersComponent } from './purchase-orders.component';
     RouterModule.forChild([
       {
         path: '',
-        component: PurchaseOrdersComponent
+        component: PurchaseOrdersComponent,
+        title: 'PURCHASE_ORDERS_PAGE.TITLE',
+      },
+      {
+        path: 'add',
+        loadChildren: () => import('./purchase-order-details/purchase-order-details.module').then(m => m.PurchaseOrderDetailsModule),
+        title: 'PURCHASE_ORDER_DETAILS_PAGE.TITLE',
+      },
+      {
+        path: ':id',
+        loadChildren: () => import('./purchase-order-details/purchase-order-details.module').then(m => m.PurchaseOrderDetailsModule),
+        title: 'PURCHASE_ORDER_DETAILS_PAGE.TITLE',
       }
     ])
   ],

@@ -7,5 +7,5 @@ export interface IProductWarehouseStockReceiptEntryInput {
   referenceNo: string;
   plateNo: string;
   warehouseId: number;
-  productStockWarehouseAuditInputs: Array<IProductStockWarehouseAuditInput>;
+  productStockWarehouseAudits: Array<IProductStockWarehouseAuditInput>;
 }

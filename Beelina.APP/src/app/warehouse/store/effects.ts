@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap, takeUntil } from 'rxjs';
+import { catchError, map, of, switchMap, take, takeUntil } from 'rxjs';
+import { Store } from '@ngrx/store';
 
+import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
+import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
 import { Product } from 'src/app/_models/product';
 import { ProductService } from 'src/app/_services/product.service';
+import {
+  endCursorSelector as endCursorWarehouseProductSelector,
+  filterKeywordSelector as filterKeywordWarehouseProductSelector,
+  supplierIdSelector as supplierIdWarehouseProductSelector,
+} from '../../warehouse/store/selectors';
 import * as ProductActions from './actions';
-import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
 
 @Injectable()
 export class WarehouseProductEffects {
@@ -13,7 +20,32 @@ export class WarehouseProductEffects {
     this.actions$.pipe(
       ofType(ProductActions.getWarehouseProductsAction),
       switchMap(() => {
-        return this.productService.getWarehouseProducts().pipe(
+
+        let cursor = null,
+          supplierId = 0,
+          limit = 50,
+          filterKeyword = '';
+
+        this.store
+          .select(endCursorWarehouseProductSelector)
+          .pipe(take(1))
+          .subscribe((currentCursor) => (cursor = currentCursor));
+
+        this.store
+          .select(filterKeywordWarehouseProductSelector)
+          .pipe(take(1))
+          .subscribe(
+            (currentFilterKeyword) => (filterKeyword = currentFilterKeyword)
+          );
+
+        this.store
+          .select(supplierIdWarehouseProductSelector)
+          .pipe(take(1))
+          .subscribe(
+            (currentSupplierId) => (supplierId = currentSupplierId)
+          );
+
+        return this.productService.getWarehouseProducts(cursor, supplierId, filterKeyword, limit).pipe(
           map(
             (data: {
               endCursor: string;
@@ -63,5 +95,6 @@ export class WarehouseProductEffects {
   constructor(
     private actions$: Actions,
     private productService: ProductService,
+    private store: Store<AppStateInterface>
   ) { }
 }

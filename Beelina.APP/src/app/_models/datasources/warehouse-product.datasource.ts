@@ -9,7 +9,6 @@ import { BaseDataSource } from './base.datasource';
 import { productsSelector } from 'src/app/warehouse/store/selectors';
 
 export class WarehouseProductDataSource extends BaseDataSource<Product> {
-
   constructor(protected store: Store<AppStateInterface>) {
     super();
     this._pageSize = 50;

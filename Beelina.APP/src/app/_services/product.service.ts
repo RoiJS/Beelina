@@ -12,11 +12,6 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ProductNotExistsError } from '../_models/errors/product-not-exists.error';
 
 import {
-  endCursorSelector as endCursorWarehouseProductSelector,
-  filterKeywordSelector as filterKeywordWarehouseProductSelector,
-  supplierIdSelector as supplierIdWarehouseProductSelector,
-} from '../warehouse/store/selectors';
-import {
   endCursorSelector as endCursorProductStockAuditSelector, fromDateSelector, sortOrderSelector, stockAuditSourceSelector, toDateSelector,
 } from '../product/edit-product-details/manage-product-stock-audit/store/selectors';
 
@@ -57,6 +52,8 @@ import { IProductWarehouseStockReceiptEntryInput } from '../_interfaces/inputs/i
 import { IProductStockWarehouseAuditInput } from '../_interfaces/inputs/iproduct-stock-warehouse-audit.input';
 import { IProductWarehouseStockReceiptEntryPayload } from '../_interfaces/payloads/iproduct-warehouse-stock-receipt-entry-query.payload';
 import { ProductWarehouseStockReceiptEntryNotExistsError } from '../_models/errors/product-warehouse-stock-receipt-entry-not-exists.error';
+import { ProductWarehouseStockReceiptEntryResult } from '../_models/results/product-warehouse-stock-receipt-entry-result';
+import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-entry.output';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -102,12 +99,13 @@ const GET_PRODUCTS_QUERY = gql`
 `;
 
 const GET_WAREHOUSE_PRODUCTS_QUERY = gql`
-  query ($warehouseId: Int!, $cursor: String, $filterKeyword: String, $productsFilter: ProductsFilterInput!) {
+  query ($warehouseId: Int!, $cursor: String, $filterKeyword: String, $limit: Int!, $productsFilter: ProductsFilterInput!) {
     warehouseProducts(
       warehouseId: $warehouseId,
       after: $cursor,
       filterKeyword: $filterKeyword,
-      productsFilter: $productsFilter
+      productsFilter: $productsFilter,
+      first: $limit
     ) {
       nodes {
         id
@@ -167,17 +165,25 @@ const GET_PRODUCT_STORE = gql`
 const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT_STORE = gql`
   query($id: Int!) {
     productWarehouseStockReceiptEntry(id: $id){
-      id
-      referenceNo
-      stockEntryDate
-      referenceNo
-      supplierId
-      productStockWarehouseAudits {
+      typename: __typename
+      ... on ProductWarehouseStockReceiptEntryResult {
           id
-          productStockPerWarehouseId
-          productWarehouseStockReceiptEntryId
-          stockAuditSource
-          quantity
+          referenceNo
+          stockEntryDate
+          referenceNo
+          supplierId
+          productStockWarehouseAuditsResult {
+              id
+              productId
+              productStockPerWarehouseId
+              productWarehouseStockReceiptEntryId
+              stockAuditSource
+              quantity
+          }
+      }
+
+      ... on ProductWarehouseStockReceiptEntryNotExistsError {
+          message
       }
     }
   }
@@ -277,6 +283,16 @@ const UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRY_QUERY = gql`
           productWarehouseStockReceiptEntryId
           stockAuditSource
           quantity
+      }
+    }
+  }
+`;
+
+const DELETE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRY_QUERY = gql`
+  mutation($stockEntryReceiptId: Int!) {
+    deleteWarehouseStockReceiptEntry(input: { stockEntryReceiptId: $stockEntryReceiptId}) {
+      productWarehouseStockReceiptEntry {
+        id
       }
     }
   }
@@ -644,30 +660,7 @@ export class ProductService {
       );
   }
 
-  getWarehouseProducts() {
-    let cursor = null,
-      supplierId = 0,
-      filterKeyword = '';
-
-    this.store
-      .select(endCursorWarehouseProductSelector)
-      .pipe(take(1))
-      .subscribe((currentCursor) => (cursor = currentCursor));
-
-    this.store
-      .select(filterKeywordWarehouseProductSelector)
-      .pipe(take(1))
-      .subscribe(
-        (currentFilterKeyword) => (filterKeyword = currentFilterKeyword)
-      );
-
-    this.store
-      .select(supplierIdWarehouseProductSelector)
-      .pipe(take(1))
-      .subscribe(
-        (currentSupplierId) => (supplierId = currentSupplierId)
-      );
-
+  getWarehouseProducts(cursor: string, supplierId: number, filterKeyword: string, limit: number) {
     const warehouseId = this._warehouseId;
 
     return this.apollo
@@ -679,7 +672,8 @@ export class ProductService {
           warehouseId,
           productsFilter: {
             supplierId
-          }
+          },
+          limit
         },
       })
       .valueChanges.pipe(
@@ -798,7 +792,8 @@ export class ProductService {
         warehouseId: 1,
         productsFilter: {
           supplierId: 0
-        }
+        },
+        limit: 50
       };
 
       return this.apollo
@@ -871,8 +866,8 @@ export class ProductService {
           ) => {
             const data = result.data.productWarehouseStockReceiptEntry;
 
-            if (data.typename === 'ProductWarehouseStockReceiptEntry')
-              return <ProductWarehouseStockReceiptEntry>result.data.productWarehouseStockReceiptEntry;
+            if (data.typename === 'ProductWarehouseStockReceiptEntryResult')
+              return <ProductWarehouseStockReceiptEntryResult>result.data.productWarehouseStockReceiptEntry;
             if (data.typename === 'ProductWarehouseStockReceiptEntryNotExistsError')
               throw new Error(
                 (<ProductWarehouseStockReceiptEntryNotExistsError>result.data.productWarehouseStockReceiptEntry).message
@@ -1086,10 +1081,11 @@ export class ProductService {
       referenceNo: productWarehouseStockReceiptEntry.referenceNo,
       plateNo: productWarehouseStockReceiptEntry.plateNo,
       warehouseId: this._warehouseId,
-      productStockWarehouseAuditInputs: productWarehouseStockReceiptEntry.productStockWarehouseAudits.map((p) => {
+      productStockWarehouseAudits: productWarehouseStockReceiptEntry.productStockWarehouseAudits.map((p) => {
         const productStockWarehousAudit: IProductStockWarehouseAuditInput = {
           id: p.id,
-          productStockPerWarehouseId: p.productStockPerWarehouseId,
+          productId: p.productId,
+          pricePerUnit: p.pricePerUnit,
           quantity: p.quantity,
           stockAuditSource: p.stockAuditSource
         };
@@ -1118,6 +1114,33 @@ export class ProductService {
           return null;
         }),
         catchError((error) => { throw new Error(error); })
+      );
+  }
+
+  deleteWarehouseStockReceiptEntry(stockEntryReceiptId: number) {
+    return this.apollo
+      .mutate({
+        mutation: DELETE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRY_QUERY,
+        variables: {
+          stockEntryReceiptId,
+        },
+      })
+      .pipe(
+        map((result: MutationResult<{ deleteWarehouseStockReceiptEntry: IStockReceiptEntryOutput }>) => {
+          const output = result.data.deleteWarehouseStockReceiptEntry;
+          const payload = output.productWarehouseStockReceiptEntry;
+          const errors = output.errors;
+
+          if (payload) {
+            return payload;
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
       );
   }
 

@@ -1,0 +1,178 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
+
+<app-loader-layout [busy]="isLoading">
+  <div class="page-container slide-in-left-animation">
+
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "PURCHASE_ORDER_DETAILS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">
+        {{ "PURCHASE_ORDER_DETAILS_PAGE.DESCRIPTION" | translate }}
+      </span>
+    </div>
+
+    <!-- Purchase Order General Info Panel -->
+    <div class="panel purchase-order-panel">
+      <div [formGroup]="purchaseOrderDetailsForm" class="panel__details-group-panel">
+        <div class="panel__body-section">
+          <div class="biz-form-container biz-form-container--full-width">
+            <div class="biz-form-container__form-control">
+              <label>{{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
+                | translate }}</label>
+              <ng-select [items]="suppliersDatasource" bindLabel="nameWithCode" bindValue="id"
+                formControlName="supplierId" [editableSearchTerm]="true">
+                <ng-template ng-label-tmp let-item="item">
+                  {{ item.code }} - {{ item.name }}
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <div class="biz-form-container__form-control">
+              <label>{{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STOCK_ENTRY_DATE_CONTROL.LABEL"
+                | translate }}</label>
+              <input type="date" class="date-picker-control" formControlName="stockEntryDate">
+            </div>
+
+            <div class="biz-form-container__form-control">
+              <label>{{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.LABEL"
+                | translate }}</label>
+              <input type="text" class="reference-no-control" formControlName="referenceNo"
+                [ngClass]="{ 'is-invalid': purchaseOrderDetailsForm.get('referenceNo').hasError('required') && purchaseOrderDetailsForm.get('referenceNo').touched }">
+            </div>
+
+            <div class="biz-form-container__form-control">
+              <label>{{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.PLATE_NO_CONTROL.LABEL"
+                | translate }}</label>
+              <input type="text" class="plate-no-control" formControlName="plateNo">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase Order Items Panel -->
+    <div class="panel purchase-order-items-panel">
+      <div class="panel__details-group-panel">
+
+        <div class="panel__header-section">
+          <label>Product list</label>
+        </div>
+
+        <div class="panel__body-section purchase-order-items-panel__body-section">
+          <div class="purchase-order-items-panel__button-container">
+            <button mat-raised-button color="primary" (click)="addEntry()">+ Add Item</button>
+          </div>
+          <mat-table class="biz-form-container" [dataSource]="purchaseOrderItemsDatasource">
+            <!-- Product Column -->
+            <ng-container matColumnDef="product">
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.PRODUCT_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element;">
+
+                <ng-select class="product-dropdown" appendTo="body" [items]="warehouseProductsDatasource"
+                  bindLabel="nameWithUnit" bindValue="id" [(ngModel)]="element.productId" [editableSearchTerm]="true"
+                  (ngModelChange)="onProductChange($event, element)">
+                  <ng-template ng-label-tmp let-item="item">
+                    {{ item.productUnit.name }} - {{ item.name }}
+                  </ng-template>
+                </ng-select>
+
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef><b>{{
+                  "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.FOOTER_DEFINITION.TOTAL_FIELD" |
+                  translate }}</b></mat-cell>
+            </ng-container>
+
+            <!-- Code -->
+            <ng-container matColumnDef="code">
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.CODE_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.code }}
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
+            </ng-container>
+
+            <!-- Quantity Column -->
+            <ng-container matColumnDef="quantity">`
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.QUANTITY_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div class="biz-form-container__form-control">
+                  <input type="number" [(ngModel)]="element.quantity"
+                    (ngModelChange)="onQuantityChange($event, element)" />
+                </div>
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef> <b>{{ totalQuantity }}</b> </mat-cell>
+            </ng-container>
+
+            <!-- Unit -->
+            <ng-container matColumnDef="unit">
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.UNIT_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.unit }}
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
+            </ng-container>
+
+            <!-- Unit -->
+            <ng-container matColumnDef="unitPrice">
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.UNIT_PRICE_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div class="biz-form-container__form-control">
+                  <input type="number" [(ngModel)]="element.unitPrice"
+                    (ngModelChange)="onUnitPriceChange($event, element)" />
+                </div>
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
+            </ng-container>
+
+            <!-- Unit -->
+            <ng-container matColumnDef="amount">
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.AMOUNT_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.formattedAmount }}
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef> <b>{{ totalAmount }}</b> </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-icon class="delete-icon" (click)="removeEntry(element)">highlight_off</mat-icon>
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+          </mat-table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase Order Buttons Panel -->
+    <div class="panel purchase-order-buttons-panel">
+      <div class="panel__body-section purchase-order-buttons-panel__body-section">
+        <button mat-raised-button color="warn" [disabled]="newPurchaseOrder"
+          (click)="removePurchaseOrder()"><mat-icon>delete_forever</mat-icon>{{ "GENERAL_TEXTS.DELETE" | translate }}</button>
+        <button mat-raised-button color="primary" (click)="save()"><mat-icon>save</mat-icon>{{ "GENERAL_TEXTS.SAVE" | translate }}</button>
+      </div>
+    </div>
+
+  </div>
+</app-loader-layout>
