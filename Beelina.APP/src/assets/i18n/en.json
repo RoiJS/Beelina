@@ -1111,7 +1111,8 @@
         "STOCK_ENTRY_DATE_FIELD": "Stock Entry Date",
         "REFERENCE_NO_FIELD": "Reference No.",
         "PLATE_NO_FIELD": "Plate No",
-        "SUPPLIER_FIELD": "Supplier"
+        "SUPPLIER_FIELD": "Supplier",
+        "NOTES_FIELD": "Notes"
       }
     },
     "DELETE_PURCHASE_ORDER_DIALOG": {

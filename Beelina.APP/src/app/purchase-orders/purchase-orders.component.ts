@@ -146,7 +146,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
   }
 
   get columnDefinition(): string[] {
-    return ['stockEntryDate', 'referenceNo', 'plateNo', 'supplierName', 'actions'];
+    return ['stockEntryDate', 'referenceNo', 'plateNo', 'supplierName', 'notes', 'actions'];
   }
 
 }

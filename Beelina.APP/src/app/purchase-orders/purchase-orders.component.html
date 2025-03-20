@@ -23,7 +23,7 @@
 
         <!-- Stock Entry Date Column -->
         <ng-container matColumnDef="stockEntryDate">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="400">{{
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="200">{{
             "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.STOCK_ENTRY_DATE_FIELD" | translate }}</th>
           <td mat-cell *matCellDef="let element"> {{element?.stockEntryDate | date }} </td>
         </ng-container>
@@ -37,16 +37,23 @@
 
         <!-- Plate No Column -->
         <ng-container matColumnDef="plateNo">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="400">{{
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="200">{{
             "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.PLATE_NO_FIELD" | translate }}</th>
           <td mat-cell *matCellDef="let element"> {{element?.plateNo}} </td>
         </ng-container>
 
         <!-- Supplier Column -->
         <ng-container matColumnDef="supplierName">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="400">{{
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="200">{{
             "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.SUPPLIER_FIELD" | translate }}</th>
           <td mat-cell *matCellDef="let element"> {{element?.supplier?.name}} </td>
+        </ng-container>
+
+        <!-- Notes Column -->
+        <ng-container matColumnDef="notes">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="600">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.NOTES_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element"> {{element?.notes}} </td>
         </ng-container>
 
         <!-- Actions Column -->

@@ -111,6 +111,7 @@ namespace Beelina.LIB.BusinessLogic
                             ReferenceNo = t.ReferenceNo,
                             PlateNo = t.PlateNo,
                             WarehouseId = t.WarehouseId,
+                            Notes = t.Notes,
                             StockEntryDate = t.StockEntryDate, // TODO: Apply timezone conversion here
                         }).
                         ToListAsync(cancellationToken);

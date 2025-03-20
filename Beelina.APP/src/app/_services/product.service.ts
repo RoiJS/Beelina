@@ -216,6 +216,7 @@ const GET_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
                 referenceNo
                 plateNo
                 warehouseId
+                notes
             }
             pageInfo {
                 hasNextPage
@@ -942,6 +943,7 @@ export class ProductService {
             productWarehouseStockReceiptEntry.referenceNo = productWarehouseStockReceiptEntryDto.referenceNo;
             productWarehouseStockReceiptEntry.plateNo = productWarehouseStockReceiptEntryDto.plateNo;
             productWarehouseStockReceiptEntry.warehouseId = productWarehouseStockReceiptEntryDto.warehouseId;
+            productWarehouseStockReceiptEntry.notes = productWarehouseStockReceiptEntryDto.notes;
             return productWarehouseStockReceiptEntry;
           });
 

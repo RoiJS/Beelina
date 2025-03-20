@@ -288,7 +288,6 @@ namespace Beelina.LIB.BusinessLogic
       catch (TaskCanceledException ex)
       {
         _logger.LogError(ex, "Executing GetProducts has been cancelled.");
-        
         throw new Exception($"Executing GetProducts has been cancelled. {ex.Message}");
       }
 
@@ -974,6 +973,9 @@ namespace Beelina.LIB.BusinessLogic
                                                   join u in _beelinaRepository.ClientDbContext.UserAccounts
                                                   on pa.CreatedById equals u.Id
 
+                                                  join pr in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
+                                                  on pa.ProductWarehouseStockReceiptEntryId equals pr.Id
+
                                                   where
                                                     ps.ProductId == productId
                                                     && ps.WarehouseId == warehouseId
@@ -987,8 +989,8 @@ namespace Beelina.LIB.BusinessLogic
                                                     Id = pa.Id,
                                                     Quantity = pa.Quantity,
                                                     StockAuditSource = pa.StockAuditSource,
-                                                    TransactionNumber = (pa.PurchaseOrderNumber ?? ""),
-                                                    PlateNo = pa.SenderPlateNumber,
+                                                    TransactionNumber = pa.StockAuditSource == StockAuditSourceEnum.OrderFromSupplier ? (pr.ReferenceNo ?? "") : (pa.PurchaseOrderNumber ?? ""),
+                                                    PlateNo = (pr.PlateNo ?? ""),
                                                     ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
                                                     ModifiedDate = pa.DateCreated
                                                   }).ToListAsync();
