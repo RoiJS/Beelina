@@ -39,16 +39,121 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        public async Task<List<ProductWarehouseStockReceiptEntry>> UpdateWarehouseStockReceiptEntries(
+            [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] ICurrentUserService currentUserService,
+            [Service] IMapper mapper,
+            [Service] ILogger<ProductQuery> logger,
+            List<ProductWarehouseStockReceiptEntryInput> productWarehouseStockReceiptEntryInputs
+        )
+        {
+            var updatedEntries = new List<ProductWarehouseStockReceiptEntry>();
+            productWarehouseStockReceiptEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+            try
+            {
+                var warehouseId = 1; // Default
+
+                foreach (var input in productWarehouseStockReceiptEntryInputs)
+                {
+                    var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository
+                                                .GetEntity(input.Id)
+                                                .Includes(s => s.ProductStockWarehouseAudits)
+                                                .ToObjectAsync();
+
+                    await SetProductStockWarehouses(input, warehouseId, productRepository, httpContextAccessor.HttpContext.RequestAborted);
+
+                    if (stockEntryFromRepo is null)
+                    {
+                        var newStockEntry = mapper.Map<ProductWarehouseStockReceiptEntry>(input);
+                        await productWarehouseStockReceiptEntryRepository.AddEntity(newStockEntry);
+                        updatedEntries.Add(newStockEntry);
+                    }
+                    else
+                    {
+                        mapper.Map(input, stockEntryFromRepo);
+                        updatedEntries.Add(stockEntryFromRepo);
+                    }
+                }
+                
+                var hasChanged = productWarehouseStockReceiptEntryRepository.HasChanged();
+                await productWarehouseStockReceiptEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+
+                return updatedEntries;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to update product warehouse entries. Params: userAccountId = {@productWarehouseStockReceiptEntryInputs}", productWarehouseStockReceiptEntryInputs);
+
+                throw new Exception($"Failed to update product warehouse entries: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        public async Task<IProductWarehouseStockReceiptEntryPayload> GetProductWarehouseStockReceiptEntry(
+            [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
+            [Service] ILogger<ProductQuery> logger,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int id
+        )
+        {
+            try
+            {
+                var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntry(id, httpContextAccessor.HttpContext.RequestAborted);
+
+                if (stockEntryFromRepo is null)
+                {
+                    return new ProductWarehouseStockReceiptEntryNotExistsError(id);
+                }
+
+                return stockEntryFromRepo;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get product wareshouse entry. Params: id = {id};", id);
+
+                throw new Exception($"Failed to get product ware`shouse entry. {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [UseOffsetPaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]
-        public async Task<IList<Product>> GetWarehouseProducts([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int warehouseId, ProductsFilter productsFilter, string filterKeyword = "")
+        [UseSorting]
+        public async Task<IList<ProductWarehouseStockReceiptEntry>> GetProductWarehouseStockReceiptEntries(
+                     [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
+                     [Service] IHttpContextAccessor httpContextAccessor,
+                     ProductReceiptEntryFilter productReceiptEntryFilter,
+                     string filterKeyword = ""
+                )
+        {
+            return await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntries(productReceiptEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
+        }
+
+        [Authorize]
+        [UsePaging(MaxPageSize = 1000, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        public async Task<IList<Product>> GetWarehouseProducts(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int warehouseId,
+            ProductsFilter productsFilter,
+            string filterKeyword = "")
         {
             return await productRepository.GetWarehouseProducts(warehouseId, 0, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         [Authorize]
-        public async Task<IProductPayload> GetWarehouseProduct([Service] IProductRepository<Product> productRepository, [Service] IMapper mapper, [Service] IHttpContextAccessor httpContextAccessor, int productId, int warehouseId)
+        public async Task<IProductPayload> GetWarehouseProduct(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IMapper mapper,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int productId,
+            int warehouseId)
         {
             var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
 
@@ -90,6 +195,37 @@ namespace Beelina.API.Types.Query
                 });
             }
             return insufficientProductQuantities;
+        }
+
+        [Authorize]
+        public async Task<IPurchaseOrderPayload> CheckPurchaseOrderCode(
+            [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository, 
+            int purchaseOrderId, 
+            string referenceCode)
+        {
+            var purchaseOrderFromRepo = await productWarehouseStockReceiptEntryRepository.GetPurchaseOrderByUniqueCode(purchaseOrderId, referenceCode);
+            return new CheckPurchaseOrderCodeInformationResult(purchaseOrderFromRepo != null);
+        }
+
+        private static async Task SetProductStockWarehouses(ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput, int warehouseId, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
+        {
+            foreach (var productStockWarehouseAudit in productWarehouseStockReceiptEntryInput.ProductStockWarehouseAudits)
+            {
+                var product = new Product
+                {
+                    Id = productStockWarehouseAudit.ProductId
+                };
+
+                var productInput = new ProductInput
+                {
+                    Id = productStockWarehouseAudit.ProductId,
+                    PricePerUnit = productStockWarehouseAudit.PricePerUnit
+                };
+
+                var productStockPerWarehouse = await productRepository.ManageProductStockPerWarehouse(product, productInput, warehouseId, cancellationToken);
+
+                productStockWarehouseAudit.ProductStockPerWarehouseId = productStockPerWarehouse.Id;
+            }
         }
     }
 }

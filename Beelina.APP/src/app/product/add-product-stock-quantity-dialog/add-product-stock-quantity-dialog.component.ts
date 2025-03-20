@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -30,6 +30,11 @@ export class AddProductStockQuantityDialogComponent implements OnInit {
       additionalStockQuantity: [data.additionalStockQuantity],
       senderPlateNo: [],
     });
+
+    if (data.productSource === ProductSourceEnum.Warehouse) {
+      this._productWithDrawalForm.get('transactionNo').setValidators([Validators.required]);
+      this._productWithDrawalForm.get('transactionNo').updateValueAndValidity();
+    }
   }
 
   ngOnInit() { }
@@ -39,6 +44,10 @@ export class AddProductStockQuantityDialogComponent implements OnInit {
   }
 
   onConfirm() {
+    this._productWithDrawalForm.markAllAsTouched();
+
+    if (!this._productWithDrawalForm.valid) return;
+
     const additionalStockQuantity = this._productWithDrawalForm.get('additionalStockQuantity').value;
     const transactionNo = this._productWithDrawalForm.get('transactionNo').value;
     const plateNo = this._productWithDrawalForm.get('senderPlateNo').value;

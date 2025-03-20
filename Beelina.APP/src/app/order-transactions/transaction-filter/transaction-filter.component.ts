@@ -1,13 +1,11 @@
-import { Component, Inject, inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { OrderTransactionStore } from '../order-transactions.store';
 import { TransactionsFilter } from 'src/app/_models/filters/transactions.filter';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
-
 
 @Component({
   selector: 'app-transaction-filter',
@@ -16,8 +14,6 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 })
 export class TransactionFilterComponent extends BaseComponent implements OnInit {
   private _transactionFilterForm: FormGroup;
-
-  transactionsStore = inject(OrderTransactionStore);
 
   constructor(
     private _bottomSheetRef: MatBottomSheetRef<TransactionFilterComponent>,

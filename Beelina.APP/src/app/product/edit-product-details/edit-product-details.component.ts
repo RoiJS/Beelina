@@ -4,7 +4,7 @@ import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-shee
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription, map, startWith } from 'rxjs';
+import { Observable, Subscription, firstValueFrom, map, startWith } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
@@ -36,6 +36,9 @@ import { InsufficientProductQuantity } from 'src/app/_models/insufficient-produc
 
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
+import { ProductWarehouseStockReceiptEntry } from 'src/app/_models/product-warehouse-stock-receipt-entry';
+import { ProductStockWarehouseAudit } from 'src/app/_models/product-stock-warehouse-audit';
+import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
 
 @Component({
   selector: 'app-edit-product-details',
@@ -47,6 +50,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
     AddProductStockQuantityDialogComponent,
     {
       additionalStockQuantity: number;
+      plateNo: string;
       transactionNo: string;
     }
   >;
@@ -108,6 +112,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         stockQuantity: [0],
         stocksRemainingFromWarehouse: [0],
         additionalStockQuantity: [0],
+        plateNo: [''],
         pricePerUnit: [null, Validators.required],
         productUnit: ['', Validators.required],
         isTransferable: [false],
@@ -198,6 +203,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
       product.supplierId = this._productForm.get('supplierId').value;
       product.stockQuantity = this._productForm.get('additionalStockQuantity').value;
       product.withdrawalSlipNo = this._productForm.get('transactionNo').value;
+      product.plateNo = this._productForm.get('plateNo').value;
       product.isTransferable = this._productForm.get('isTransferable').value;
       product.numberOfUnits = this._productForm.get('numberOfUnits').value;
       product.pricePerUnit = this._productForm.get('pricePerUnit').value;
@@ -223,7 +229,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
                 })
               );
               this._updateProductSubscription = this.productService[this._productSourceUpdateFunc[this._productSource]]([product]).subscribe({
-                next: () => {
+                next: async () => {
                   this.notificationService.openSuccessNotification(this.translateService.instant(
                     'EDIT_PRODUCT_DETAILS_PAGE.EDIT_PRODUCT_DIALOG.SUCCESS_MESSAGE'
                   ));
@@ -232,6 +238,30 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
                       state: false,
                     })
                   );
+
+                  if (this._productSource === ProductSourceEnum.Warehouse) {
+
+                    if (product.stockQuantity > 0) {
+                      const purchaseOrder = new ProductWarehouseStockReceiptEntry();
+                      purchaseOrder.id = 0;
+                      purchaseOrder.supplierId = product.supplierId;
+                      purchaseOrder.stockEntryDate = new Date();
+                      purchaseOrder.referenceNo = product.withdrawalSlipNo;
+                      purchaseOrder.plateNo = product.plateNo;
+
+                      const productStockWarehouseAudit = new ProductStockWarehouseAudit();
+                      productStockWarehouseAudit.id = 0;
+                      productStockWarehouseAudit.productId = this._productId;
+                      productStockWarehouseAudit.quantity = product.stockQuantity;
+                      productStockWarehouseAudit.pricePerUnit = product.pricePerUnit;
+                      productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
+
+                      purchaseOrder.productStockWarehouseAudits = [productStockWarehouseAudit];
+
+                      await firstValueFrom(this.productService.updateWarehouseStockReceiptEntries([purchaseOrder]));
+                    }
+                  }
+
                   this.router.navigate([this._productSourceRedirectUrl[this._productSource]]);
                 },
 
@@ -265,6 +295,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         data: {
           additionalStockQuantity: this._productForm.get('additionalStockQuantity').value,
           transactionNo: this._productForm.get('transactionNo').value,
+          PlaceholderEntitiesComponent: this._productForm.get('plateNo').value,
           productSource: this._productSource,
         },
       });
@@ -272,8 +303,9 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
       this._dialogRef
         .afterDismissed()
         .subscribe(
-          (data: {
+          async (data: {
             additionalStockQuantity: number;
+            plateNo: string;
             transactionNo: string;
           }) => {
             if (!data) return;
@@ -286,9 +318,24 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
               this._productForm
                 .get('transactionNo')
                 .setValue(data.transactionNo);
+
+              this._productForm
+                .get('plateNo')
+                .setValue(data.plateNo);
             }
 
-            if (this._productSource == ProductSourceEnum.Panel) {
+            if (this._productSource === ProductSourceEnum.Warehouse) {
+              const checkPurchaseOrderCodeExists = await firstValueFrom(this.productService.checkPurchaseOrderCodeExists(0, data.transactionNo));
+
+              if (checkPurchaseOrderCodeExists) {
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE'
+                ))
+                return;
+              }
+            }
+
+            if (this._productSource === ProductSourceEnum.Panel) {
               this.productService
                 .checkWarehouseProductStockQuantity(this._productId, this._warehouseId, data.additionalStockQuantity)
                 .subscribe((insufficientStocks: Array<InsufficientProductQuantity>) => {
@@ -316,8 +363,6 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
       console.error(ex);
       this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
-
-
   }
 
   private _filter(value: string): Array<ProductUnit> {

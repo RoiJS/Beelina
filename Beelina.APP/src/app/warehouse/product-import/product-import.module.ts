@@ -22,7 +22,7 @@ import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
     MatPaginatorModule,
     MatTableModule,
     MatProgressBarModule,
-    TranslateModule,
+    TranslateModule.forChild(),
     RouterModule.forChild([
       {
         path: '',

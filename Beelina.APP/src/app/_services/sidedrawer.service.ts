@@ -108,6 +108,14 @@ export class SidedrawerService {
         supportOffline: false
       },
       {
+        name: 'MAIN_MENU.PURCHASE_ORDERS',
+        url: '/purchase-orders',
+        icon: 'description',
+        minimumPermissionLevel: administratorPermissionLevel,
+        maximumPermissionLevel: administratorPermissionLevel,
+        supportOffline: false
+      },
+      {
         name: 'MAIN_MENU.ORDER_TRANSACTIONS',
         url: '/order-transactions',
         icon: 'assignment',

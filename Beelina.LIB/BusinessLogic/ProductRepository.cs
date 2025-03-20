@@ -288,7 +288,6 @@ namespace Beelina.LIB.BusinessLogic
       catch (TaskCanceledException ex)
       {
         _logger.LogError(ex, "Executing GetProducts has been cancelled.");
-        
         throw new Exception($"Executing GetProducts has been cancelled. {ex.Message}");
       }
 
@@ -455,7 +454,7 @@ namespace Beelina.LIB.BusinessLogic
                                                       }).ToList();
 
           // Join products with their corresponding absolute stock quantity.
-          finalProductsFromRepo = (from p in filteredProductsFromRepo
+          finalProductsFromRepo = [.. (from p in filteredProductsFromRepo
                                    join owsa in overallWarehouseProductStockAudits
                                    on new { Id = p.Id } equals new { Id = owsa.ProductId }
 
@@ -473,8 +472,7 @@ namespace Beelina.LIB.BusinessLogic
                                      IsTransferable = p.IsTransferable,
                                      SupplierId = p.SupplierId,
                                      Supplier = p.Supplier
-                                   })
-                                  .ToList();
+                                   })];
         }
         else
         {
@@ -757,9 +755,9 @@ namespace Beelina.LIB.BusinessLogic
 
           // Insert new stock audit for the product
           //===========================================================================================================
-          _logger.LogInformation("Part 5 - Warehouse Product Stock Audit saving...");
+          // _logger.LogInformation("Part 5 - Warehouse Product Stock Audit saving...");
 
-          await ManageWarehouseProductStockAudit(productStockPerWarehouseFromRepo, productInput, cancellationToken);
+          // await ManageWarehouseProductStockAudit(productStockPerWarehouseFromRepo, productInput, cancellationToken);
 
           productsFromRepo.Add(productFromRepo);
 
@@ -845,7 +843,7 @@ namespace Beelina.LIB.BusinessLogic
       return productStockPerPanelFromRepo;
     }
 
-    private async Task<ProductStockPerWarehouse> ManageProductStockPerWarehouse(Product product, ProductInput productInput, int warehouseId, CancellationToken cancellationToken)
+    public async Task<ProductStockPerWarehouse> ManageProductStockPerWarehouse(Product product, ProductInput productInput, int warehouseId, CancellationToken cancellationToken)
     {
       var productStockPerWarehouseFromRepo = await _productStockPerWarehouseRepository.GetProductStockPerWarehouse(productInput.Id, warehouseId);
 
@@ -919,7 +917,7 @@ namespace Beelina.LIB.BusinessLogic
           Quantity = productInput.StockQuantity,
           StockAuditSource = StockAuditSourceEnum.OrderFromSupplier,
           PurchaseOrderNumber = productInput.WithdrawalSlipNo,
-          SenderPlateNumber = productInput.PlateNo
+          SenderPlateNumber = productInput.PlateNo,
         };
 
         if (productWarehouseStockAudit.Id == 0)
@@ -975,6 +973,9 @@ namespace Beelina.LIB.BusinessLogic
                                                   join u in _beelinaRepository.ClientDbContext.UserAccounts
                                                   on pa.CreatedById equals u.Id
 
+                                                  join pr in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
+                                                  on pa.ProductWarehouseStockReceiptEntryId equals pr.Id
+
                                                   where
                                                     ps.ProductId == productId
                                                     && ps.WarehouseId == warehouseId
@@ -988,8 +989,8 @@ namespace Beelina.LIB.BusinessLogic
                                                     Id = pa.Id,
                                                     Quantity = pa.Quantity,
                                                     StockAuditSource = pa.StockAuditSource,
-                                                    TransactionNumber = (pa.PurchaseOrderNumber ?? ""),
-                                                    PlateNo = pa.SenderPlateNumber,
+                                                    TransactionNumber = pa.StockAuditSource == StockAuditSourceEnum.OrderFromSupplier ? (pr.ReferenceNo ?? "") : (pa.PurchaseOrderNumber ?? ""),
+                                                    PlateNo = (pr.PlateNo ?? ""),
                                                     ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
                                                     ModifiedDate = pa.DateCreated
                                                   }).ToListAsync();
