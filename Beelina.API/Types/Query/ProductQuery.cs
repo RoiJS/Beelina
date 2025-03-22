@@ -25,7 +25,7 @@ namespace Beelina.API.Types.Query
             try
             {
                 var savedProducts = await productRepository.CreateOrUpdatePanelProducts(userAccountId, warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
-                
+
                 logger.LogInformation("Products Updated. Params: savedProducts = {@savedProducts}", savedProducts);
 
                 return savedProducts;
@@ -33,9 +33,102 @@ namespace Beelina.API.Types.Query
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to register product. Params: userAccountId = {userAccountId}; productInputs = {@productInputs}", userAccountId, productInputs);
-                
+
                 throw new Exception($"Failed to register product: {ex.Message}");
             }
+        }
+
+        [Authorize]
+        public async Task<List<ProductWithdrawalEntry>> UpdateProductWithdrawalEntries(
+                    [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
+                    [Service] IProductRepository<Product> productRepository,
+                    [Service] IHttpContextAccessor httpContextAccessor,
+                    [Service] ICurrentUserService currentUserService,
+                    [Service] IMapper mapper,
+                    [Service] ILogger<ProductQuery> logger,
+                    List<ProductWithdrawalEntryInput> productWithdrawalEntryInputs
+                )
+        {
+            var updatedEntries = new List<ProductWithdrawalEntry>();
+            productWithdrawalEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+            try
+            {
+                foreach (var input in productWithdrawalEntryInputs)
+                {
+                    var withdrawalEntryFromRepo = await productWithdrawalEntryRepository
+                                                .GetEntity(input.Id)
+                                                .Includes(s => s.ProductStockAudits)
+                                                .ToObjectAsync();
+
+                    await SetProductStockPanels(input, productRepository, httpContextAccessor.HttpContext.RequestAborted);
+
+                    if (withdrawalEntryFromRepo is null)
+                    {
+                        var newStockEntry = mapper.Map<ProductWithdrawalEntry>(input);
+                        await productWithdrawalEntryRepository.AddEntity(newStockEntry);
+                        updatedEntries.Add(newStockEntry);
+                    }
+                    else
+                    {
+                        mapper.Map(input, withdrawalEntryFromRepo);
+                        updatedEntries.Add(withdrawalEntryFromRepo);
+                    }
+                }
+
+                var hasChanged = productWithdrawalEntryRepository.HasChanged();
+                await productWithdrawalEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+
+                return updatedEntries;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to update product warehouse entries. Params: userAccountId = {@productWarehouseStockReceiptEntryInputs}", productWithdrawalEntryInputs);
+
+                throw new Exception($"Failed to update product warehouse entries: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        public async Task<IProductWithdrawalEntryPayload> GetProductWithdrawalEntry(
+            [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
+            [Service] ILogger<ProductQuery> logger,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int id
+        )
+        {
+            try
+            {
+                var withdrawalEntryFromRepo = await productWithdrawalEntryRepository.GetProductWithdrawalEntry(id, httpContextAccessor.HttpContext.RequestAborted);
+
+                if (withdrawalEntryFromRepo is null)
+                {
+                    return new ProductWithdrawalEntryNotExistsError(id);
+                }
+
+                return withdrawalEntryFromRepo;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get product wareshouse entry. Params: id = {id};", id);
+
+                throw new Exception($"Failed to get product ware`shouse entry. {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [UseOffsetPaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<IList<ProductWithdrawalEntry>> GetProductWithdrawalEntries(
+                     [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
+                     [Service] IHttpContextAccessor httpContextAccessor,
+                     ProductWithdrawalFilter productWithdrawalEntryFilter,
+                     string filterKeyword = ""
+                )
+        {
+            return await productWithdrawalEntryRepository.GetProductWithdarawalEntries(productWithdrawalEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         [Authorize]
@@ -130,6 +223,27 @@ namespace Beelina.API.Types.Query
             var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
             var inventoryTotalValue = productsFromRepo.Sum(x => x.StockQuantity * x.Price);
             return inventoryTotalValue;
+        }
+
+        private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
+        {
+            foreach (var productStockAudit in productWithdrawalEntryInput.ProductStockAudits)
+            {
+                var product = new Product
+                {
+                    Id = productStockAudit.ProductId
+                };
+
+                var productInput = new ProductInput
+                {
+                    Id = productStockAudit.ProductId,
+                    PricePerUnit = productStockAudit.PricePerUnit
+                };
+
+                var productStockPerPanel = await productRepository.ManageProductStockPerPanel(product, productInput, productWithdrawalEntryInput.UserAccountId, cancellationToken);
+
+                productStockAudit.ProductStockPerPanelId = productStockPerPanel.Id;
+            }
         }
     }
 }

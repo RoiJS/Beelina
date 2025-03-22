@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations
 {
     [DbContext(typeof(BeelinaClientDataContext))]
-    partial class BeelinaClientDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250321164029_IntroduceTableProductWithdrawalEntries")]
+    partial class IntroduceTableProductWithdrawalEntries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,9 +373,6 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("ProductStockPerPanelId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductWithdrawalEntryId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -406,8 +406,6 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("DeletedById");
 
                     b.HasIndex("ProductStockPerPanelId");
-
-                    b.HasIndex("ProductWithdrawalEntryId");
 
                     b.HasIndex("UpdatedById");
 
@@ -891,9 +889,6 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserAccountId")
-                        .HasColumnType("int");
-
                     b.Property<string>("WithdrawalSlipNo")
                         .HasColumnType("nvarchar(max)");
 
@@ -906,8 +901,6 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("DeletedById");
 
                     b.HasIndex("UpdatedById");
-
-                    b.HasIndex("UserAccountId");
 
                     b.ToTable("ProductWithdrawalEntries");
                 });
@@ -1529,12 +1522,6 @@ namespace Beelina.LIB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beelina.LIB.Models.ProductWithdrawalEntry", "ProductWithdrawalEntry")
-                        .WithMany("ProductStockAudits")
-                        .HasForeignKey("ProductWithdrawalEntryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -1546,8 +1533,6 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("ProductStockPerPanel");
-
-                    b.Navigation("ProductWithdrawalEntry");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -1790,10 +1775,6 @@ namespace Beelina.LIB.Migrations
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "UserAccount")
-                        .WithMany()
-                        .HasForeignKey("UserAccountId");
-
                     b.Navigation("CreatedBy");
 
                     b.Navigation("DeactivatedBy");
@@ -1801,8 +1782,6 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("UpdatedBy");
-
-                    b.Navigation("UserAccount");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -1990,11 +1969,6 @@ namespace Beelina.LIB.Migrations
             modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
                 {
                     b.Navigation("ProductStockWarehouseAudits");
-                });
-
-            modelBuilder.Entity("Beelina.LIB.Models.ProductWithdrawalEntry", b =>
-                {
-                    b.Navigation("ProductStockAudits");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>

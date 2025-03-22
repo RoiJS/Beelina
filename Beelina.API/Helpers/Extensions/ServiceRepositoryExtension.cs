@@ -39,6 +39,7 @@ namespace Beelina.API.Helpers.Extensions
             services.AddScoped(typeof(IGeneralSettingRepository<GeneralSetting>), typeof(GeneralSettingRepository));
             services.AddScoped(typeof(ISubscriptionRepository<ClientSubscription>), typeof(SubscriptionRepository));
             services.AddScoped(typeof(IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry>), typeof(ProductWarehouseStockReceiptEntryRepository));
+            services.AddScoped(typeof(IProductWithdrawalEntryRepository<ProductWithdrawalEntry>), typeof(ProductWithdrawalEntryRepository));
             services.AddTransient<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
         }
     }

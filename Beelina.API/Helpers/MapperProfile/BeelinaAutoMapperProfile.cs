@@ -21,7 +21,9 @@ namespace Beelina.API.Helpers.MapperProfile
             CreateMap<BarangayInput, Barangay>();
             CreateMap<SupplierInput, Supplier>();
             CreateMap<ProductWarehouseStockReceiptEntryInput, ProductWarehouseStockReceiptEntry>();
+            CreateMap<ProductWithdrawalEntryInput, ProductWithdrawalEntry>();
             CreateMap<ProductStockWarehouseAuditInput, ProductStockWarehouseAudit>();
+            CreateMap<ProductStockAuditInput, ProductStockAudit>();
 
             CreateMap<Client, ClientInformationResult>();
             CreateMap<Store, StoreInformationResult>();

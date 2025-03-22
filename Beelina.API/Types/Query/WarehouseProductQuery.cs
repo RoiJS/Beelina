@@ -16,7 +16,7 @@ namespace Beelina.API.Types.Query
     {
         [Authorize]
         public async Task<List<Product>> UpdateWarehouseProducts(
-            [Service] ILogger<ProductQuery> logger,
+            [Service] ILogger<WarehouseProductQuery> logger,
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             int warehouseId,
@@ -45,7 +45,7 @@ namespace Beelina.API.Types.Query
             [Service] IHttpContextAccessor httpContextAccessor,
             [Service] ICurrentUserService currentUserService,
             [Service] IMapper mapper,
-            [Service] ILogger<ProductQuery> logger,
+            [Service] ILogger<WarehouseProductQuery> logger,
             List<ProductWarehouseStockReceiptEntryInput> productWarehouseStockReceiptEntryInputs
         )
         {
@@ -94,7 +94,7 @@ namespace Beelina.API.Types.Query
         [Authorize]
         public async Task<IProductWarehouseStockReceiptEntryPayload> GetProductWarehouseStockReceiptEntry(
             [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
-            [Service] ILogger<ProductQuery> logger,
+            [Service] ILogger<WarehouseProductQuery> logger,
             [Service] IHttpContextAccessor httpContextAccessor,
             int id
         )

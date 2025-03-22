@@ -48,11 +48,17 @@ import { TransactionDto } from './transaction.service';
 import { ITransactionInput } from '../_interfaces/inputs/itransaction.input';
 import { IProductTransactionInput } from '../_interfaces/inputs/iproduct-transaction.input';
 import { ProductWarehouseStockReceiptEntry } from '../_models/product-warehouse-stock-receipt-entry';
+import { ProductWithdrawalEntry } from '../_models/product-withdrawal-entry';
 import { IProductWarehouseStockReceiptEntryInput } from '../_interfaces/inputs/iproduct-warehouse-stock-receipt-entry.input';
+import { IProductWithdrawalEntryInput } from '../_interfaces/inputs/iproduct-withdrawal-entry.input';
 import { IProductStockWarehouseAuditInput } from '../_interfaces/inputs/iproduct-stock-warehouse-audit.input';
+import { IProductStockAuditInput } from '../_interfaces/inputs/iproduct-stock-audit.input';
 import { IProductWarehouseStockReceiptEntryPayload } from '../_interfaces/payloads/iproduct-warehouse-stock-receipt-entry-query.payload';
+import { IProductWithdrawalEntryPayload } from '../_interfaces/payloads/iproduct-withdrawal-entry-query.payload';
 import { ProductWarehouseStockReceiptEntryNotExistsError } from '../_models/errors/product-warehouse-stock-receipt-entry-not-exists.error';
+import { ProductWithdrawalEntryNotExistsError } from '../_models/errors/product-withdrawal-entry-not-exists.error';
 import { CheckPurchaseOrderCodeInformationResult } from '../_models/results/check-purchase-order-code-information-result';
+import { ProductWithdrawalEntryResult } from '../_models/results/product-withdrawal-entry-result';
 import { ProductWarehouseStockReceiptEntryResult } from '../_models/results/product-warehouse-stock-receipt-entry-result';
 import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-entry.output';
 
@@ -192,6 +198,33 @@ const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT = gql`
   }
 `;
 
+
+const GET_PRODUCT_WITHDRAWAL_ENTRY_RECEIPT = gql`
+  query($id: Int!) {
+    productWithdrawalEntry(id: $id){
+      typename: __typename
+      ... on ProductWithdrawalEntryResult {
+          id
+          withdrawalSlipNo
+          stockEntryDate
+          userAccountId
+          productWithdrawalAuditsResult {
+              id
+              productStockPerPanelId
+              productWithdrawalEntryId
+              stockAuditSource
+              quantity
+              warehouseId
+          }
+      }
+
+      ... on ProductWithdrawalEntryNotExistsError {
+          message
+      }
+    }
+  }
+`;
+
 const GET_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
   query(
     $filterKeyword: String,
@@ -225,6 +258,35 @@ const GET_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
             totalCount
       }
     }
+`;
+
+const GET_PRODUCT_WITHDRAWALS_ENTRIES_QUERY = gql`
+  query($filterKeyword: String, $productWithdrawalFilter: ProductWithdrawalFilterInput!, $skip: Int!, $take: Int!, $order: [ProductWithdrawalEntrySortInput!]) {
+    productWithdrawalEntries(
+          filterKeyword: $filterKeyword,
+          productWithdrawalEntryFilter: $productWithdrawalFilter,
+          order: $order,
+          skip: $skip,
+          take: $take
+      ) {
+          items {
+              id
+              userAccountId
+              userAccount {
+                  firstName,
+                  lastName
+              }
+              stockEntryDate
+              withdrawalSlipNo
+              notes
+          }
+          pageInfo {
+              hasNextPage
+              hasPreviousPage
+          }
+          totalCount
+    }
+  }
 `;
 
 const GET_WAREHOUSE_PRODUCT_STORE = gql`
@@ -288,6 +350,25 @@ const UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
           productWarehouseStockReceiptEntryId
           stockAuditSource
           quantity
+      }
+    }
+  }
+`;
+
+const UPDATE_PRODUCT_WITHDRAWAL_ENTRIES_QUERY = gql`
+  query($productWithdrawalEntryInputs: [ProductWithdrawalEntryInput!]!) {
+    updateProductWithdrawalEntries(productWithdrawalEntryInputs: $productWithdrawalEntryInputs){
+      id
+      withdrawalSlipNo
+      stockEntryDate
+      userAccountId
+      productStockAudits {
+          id
+          productStockPerPanelId
+          productWithdrawalEntryId
+          stockAuditSource
+          quantity
+          warehouseId
       }
     }
   }
@@ -865,6 +946,36 @@ export class ProductService {
       );
   }
 
+  getProductWithdrawalEntry(id: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_PRODUCT_WITHDRAWAL_ENTRY_RECEIPT,
+        variables: {
+          id,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              productWithdrawalEntry: IProductWithdrawalEntryPayload;
+            }>
+          ) => {
+            const data = result.data.productWithdrawalEntry;
+
+            if (data.typename === 'ProductWithdrawalEntryResult')
+              return <ProductWithdrawalEntryResult>result.data.productWithdrawalEntry;
+            if (data.typename === 'ProductWithdrawalEntryNotExistsError')
+              throw new Error(
+                (<ProductWithdrawalEntryNotExistsError>result.data.productWithdrawalEntry).message
+              );
+
+            return null;
+          }
+        )
+      );
+  }
+
   getProductWarehouseStockReceiptEntry(id: number) {
     return this.apollo
       .watchQuery({
@@ -952,6 +1063,73 @@ export class ProductService {
               endCursor,
               hasNextPage,
               productWarehouseStockReceiptEntries,
+              totalCount
+            };
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
+      );
+  }
+
+  getProductWithdrawalEntries(filterKeyword: string, userAccountId: number, dateFrom: string, dateTo: string, skip: number, take: number, sortField: string, sortDirection: SortOrderOptionsEnum) {
+
+    let order: any = {
+      [sortField]: sortDirection
+    };
+
+    if (sortField === "firstName") {
+      order = {
+        userAccount: {
+          firstName: sortDirection
+        }
+      };
+    }
+
+    return this.apollo
+      .watchQuery({
+        query: GET_PRODUCT_WITHDRAWALS_ENTRIES_QUERY,
+        variables: {
+          filterKeyword,
+          productWithdrawalEntryFilter: {
+            userAccountId,
+            dateFrom,
+            dateTo
+          },
+          skip,
+          take,
+          order
+        },
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ productWithdrawalEntries: IBaseConnection }>) => {
+          const data = result.data.productWithdrawalEntries;
+          const errors = result.errors;
+          const endCursor = data.pageInfo.endCursor;
+          const hasNextPage = data.pageInfo.hasNextPage;
+          const totalCount = data.totalCount;
+          const productWithdrawalEntriesDto = <Array<ProductWithdrawalEntry>>data.items;
+
+          const productWithdrawalsEntries: Array<ProductWithdrawalEntry> = productWithdrawalEntriesDto.map((productWithdrawalEntryDto) => {
+            const productWithdrawalEntry = new ProductWithdrawalEntry();
+            productWithdrawalEntry.id = productWithdrawalEntryDto.id;
+            productWithdrawalEntry.userAccountId = productWithdrawalEntryDto.userAccountId;
+            productWithdrawalEntry.userAccount = productWithdrawalEntryDto.userAccount;
+            productWithdrawalEntry.stockEntryDate = productWithdrawalEntryDto.stockEntryDate;
+            productWithdrawalEntry.withdrawalSlipNo = productWithdrawalEntryDto.withdrawalSlipNo;
+            productWithdrawalEntry.notes = productWithdrawalEntryDto.notes;
+            return productWithdrawalEntry;
+          });
+
+          if (productWithdrawalsEntries) {
+            return {
+              endCursor,
+              hasNextPage,
+              productWithdrawalsEntries,
               totalCount
             };
           }
@@ -1090,9 +1268,9 @@ export class ProductService {
       );
   }
 
-  updateWarehouseStockReceiptEntries(productWarehouseStockReceiptEntry: Array<ProductWarehouseStockReceiptEntry>) {
+  updateWarehouseStockReceiptEntries(productWarehouseStockReceiptEntries: Array<ProductWarehouseStockReceiptEntry>) {
 
-    const productWarehouseStockReceiptEntryInputs = productWarehouseStockReceiptEntry.map((p) => {
+    const productWarehouseStockReceiptEntryInputs = productWarehouseStockReceiptEntries.map((p) => {
       const productWarehouseStockReceiptEntryInput: IProductWarehouseStockReceiptEntryInput = {
         id: p.id,
         supplierId: p.supplierId,
@@ -1126,9 +1304,57 @@ export class ProductService {
       })
       .valueChanges
       .pipe(
-        map((result: ApolloQueryResult<{ updateWarehouseStockReceiptEntry: ProductWarehouseStockReceiptEntry }>) => {
+        map((result: ApolloQueryResult<{ updateWarehouseStockReceiptEntries: Array<ProductWithdrawalEntry> }>) => {
           const output = result.data;
-          const payload = output.updateWarehouseStockReceiptEntry;
+          const payload = output.updateWarehouseStockReceiptEntries;
+
+          if (payload) {
+            return payload;
+          }
+
+          return null;
+        }),
+        catchError((error) => { throw new Error(error); })
+      );
+  }
+
+  updateProductWithdrawalEntries(productWithdrawalEntries: Array<ProductWithdrawalEntry>) {
+    const productWithdrawalEntryInputs = productWithdrawalEntries.map((p) => {
+      const productWithdrawalEntryInput: IProductWithdrawalEntryInput = {
+        id: p.id,
+        userAccountId: p.userAccountId,
+        stockEntryDate: p.stockEntryDate,
+        withdrawalSlipNo: p.withdrawalSlipNo,
+        notes: p.notes,
+        productStockAudits: p.productStockAudits.map((a) => {
+          const productStockAudit: IProductStockAuditInput = {
+            id: a.id,
+            productId: a.productWithdrawalEntryId,
+            pricePerUnit: a.pricePerUnit,
+            quantity: a.quantity,
+            warehouseId: a.warehouseId,
+            stockAuditSource: a.stockAuditSource
+          };
+
+          return productStockAudit;
+        }),
+      };
+
+      return productWithdrawalEntryInput;
+    });
+
+    return this.apollo
+      .watchQuery({
+        query: UPDATE_PRODUCT_WITHDRAWAL_ENTRIES_QUERY,
+        variables: {
+          productWithdrawalEntryInputs,
+        },
+      })
+      .valueChanges
+      .pipe(
+        map((result: ApolloQueryResult<{ updateProductWithdrawalEntries: Array<ProductWithdrawalEntry> }>) => {
+          const output = result.data;
+          const payload = output.updateProductWithdrawalEntries;
 
           if (payload) {
             return payload;

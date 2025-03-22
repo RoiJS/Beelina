@@ -4,6 +4,7 @@ using Beelina.LIB.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Beelina.LIB.Migrations
 {
     [DbContext(typeof(BeelinaClientDataContext))]
-    partial class BeelinaClientDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250321165442_IntroducedProductWithdrawalIdOnTableProductStockAudits")]
+    partial class IntroducedProductWithdrawalIdOnTableProductStockAudits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -891,9 +894,6 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserAccountId")
-                        .HasColumnType("int");
-
                     b.Property<string>("WithdrawalSlipNo")
                         .HasColumnType("nvarchar(max)");
 
@@ -906,8 +906,6 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("DeletedById");
 
                     b.HasIndex("UpdatedById");
-
-                    b.HasIndex("UserAccountId");
 
                     b.ToTable("ProductWithdrawalEntries");
                 });
@@ -1790,10 +1788,6 @@ namespace Beelina.LIB.Migrations
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("Beelina.LIB.Models.UserAccount", "UserAccount")
-                        .WithMany()
-                        .HasForeignKey("UserAccountId");
-
                     b.Navigation("CreatedBy");
 
                     b.Navigation("DeactivatedBy");
@@ -1801,8 +1795,6 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("UpdatedBy");
-
-                    b.Navigation("UserAccount");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
