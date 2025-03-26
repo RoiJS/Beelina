@@ -11,11 +11,11 @@ export class ProductWarehouseStockReceiptEntry extends Entity implements IModelN
   public plateNo: string;
   public notes: string;
   public warehouseId: number;
-  public productStockWarehouseAudits: Array<ProductStockWarehouseAudit>;
+  public productStockWarehouseAuditInputs: Array<ProductStockWarehouseAudit>;
 
   constructor() {
     super();
     this.supplier = new Supplier();
-    this.productStockWarehouseAudits = [];
+    this.productStockWarehouseAuditInputs = [];
   }
 }

@@ -45,6 +45,7 @@
     "PRINT": "Print",
     "SEND_VIA_EMAIL": "Send via Email",
     "SYNC": "Sync",
+    "ADD_ITEM": "+ Add Item",
     "ONLINE_MESSAGE": "You are back online. You are now using bizual online mode.",
     "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode."
   },
@@ -59,6 +60,7 @@
     "PRODUCTS_CATALOGUE": "Products Catalogue",
     "WAREHOUSE_PRODUCTS": "Warehouse",
     "PURCHASE_ORDERS": "Purchase Orders",
+    "PRODUCT_WITHDRAWALS": "Product Withdrawals",
     "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Draft Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
@@ -932,8 +934,8 @@
     "FORM_CONTROL_SECTION": {
       "TEXT_ORDER_CONTROL": {
         "LABEL": "Type @ to search product...",
-        "HINT_LABEL_1": "[ProductCode]:[Quantity]:[WithdrawalNumber]:[Price]",
-        "HINT_LABEL_2": "<strong>Example:</strong> RP-0006:15:T-123:115.50"
+        "HINT_LABEL_1": "[ProductCode]:[Quantity]:[Price]",
+        "HINT_LABEL_2": "<strong>Example:</strong> RP-0006:15:115.50"
       },
       "BUTTON_OPTIONS": {
         "PREVIEW_TEXT_INVENTORIES": "Preview Text Inventories"
@@ -1187,6 +1189,102 @@
     },
     "INVALID_PURCHASE_ORDER_NOTIFICATION": {
       "MESSAGE": "Invalid purchase order details. Please fill the required fields."
+    }
+  },
+  "PRODUCT_WITHDRAWALS_PAGE": {
+    "TITLE": "Product Withdrawals",
+    "DESCRIPTION": "Manage product withdrawal details here.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search withdrawal slip no"
+    },
+    "PRODUCT_WITHDRAWALS_FILTER_DIALOG": {
+      "TITLE": "Product Withdrawal Filter",
+      "FORM_CONTROL_SECTION": {
+        "START_DATE_CONTROL": {
+          "LABEL": "Start Date"
+        },
+        "END_DATE_CONTROL": {
+          "LABEL": "End Date"
+        }
+      }
+    },
+    "TABLE_GRID": {
+      "COLUMN_DEFINITION": {
+        "STOCK_ENTRY_DATE_FIELD": "Stock Entry Date",
+        "WITHDARAWAL_SLIP_NO_FIELD": "Withdrawal Slip No.",
+        "SALES_AGENT_FIELD": "Sales Agent",
+        "NOTES_FIELD": "Notes"
+      }
+    },
+    "DELETE_PRODUCT_WITHDRAWAL_DIALOG": {
+      "TITLE": "Delete product withdrawal",
+      "CONFIRM_MESSAGE": "Are you sure you want to delete product withdrawal?",
+      "SUCCESS_MESSAGE": "Product withdrawal has been successfully deleted.",
+      "ERROR_MESSAGE": "Failed to delete product withdrawal. Please try again later."
+    }
+  },
+  "PRODUCT_WITHDRAWAL_DETAILS_PAGE": {
+    "TITLE": "Product Withdrawal Details",
+    "DESCRIPTION": "Manage product withdrawal details and product items here.",
+    "PRODUCT_WITHDRAWAL_GENERAL_INFO_PANEL": {
+      "FORM_CONTROL_SECTION": {
+        "SALES_AGENT_CONTROL": {
+          "LABEL": "Sales Agent"
+        },
+        "WITHDRAWAL_SLIP_NO_CONTROL": {
+          "LABEL": "Withdrawal Slip No.",
+          "ALREADY_EXIST_ERROR_MESSAGE": "Withdrawal Slip No. already exists. Please enter a unique withdrawal slip no."
+        },
+        "STOCK_ENTRY_DATE_CONTROL": {
+          "LABEL": "Stock Entry Date"
+        },
+        "NOTES_CONTROL": {
+          "LABEL": "Notes"
+        }
+      }
+    },
+    "PRODUCT_WITHDRAWAL_ITEMS_PANEL": {
+      "TABLE_GRID": {
+        "COLUMN_DEFINITION": {
+          "PRODUCT_FIELD": "Product",
+          "CODE_FIELD": "Code",
+          "QUANTITY_FIELD": "Quantity",
+          "UNIT_FIELD": "Unit",
+          "UNIT_PRICE_FIELD": "Unit Price",
+          "AMOUNT_FIELD": "Amount"
+        },
+        "FOOTER_DEFINITION": {
+          "TOTAL_FIELD": "Total"
+        }
+      }
+    },
+    "RESET_PRODUCT_WITHDRAWAL_ITEMS_DIALOG": {
+      "TITLE": "Reset items",
+      "CONFIRM_MESSAGE": "Switching sales agent will reset the items. Are you sure to proceed?"
+    },
+    "SAVE_NEW_PRODUCT_WITHDRAWAL_ITEMS_DIALOG": {
+      "TITLE": "New product withdrawal",
+      "CONFIRM_MESSAGE": "Are you sure you want to save new pproduct withdrawal?",
+      "SUCCESS_MESSAGE": "New product withdrawal has been saved.",
+      "ERROR_MESSAGE": "Failed to save new product withdrawal. Please try again later."
+    },
+    "UPDATE_PRODUCT_WITHDRAWAL_ITEMS_DIALOG": {
+      "TITLE": "Update product withdrawal",
+      "CONFIRM_MESSAGE": "Are you sure you want to update product withdrawal?",
+      "SUCCESS_MESSAGE": "New updates has been successfully saved.",
+      "ERROR_MESSAGE": "Failed to save new updates. Please try again later."
+    },
+    "DELETE_PRODUCT_WITHDRAWAL_ITEMS_DIALOG": {
+      "TITLE": "Delete product withdrawal",
+      "CONFIRM_MESSAGE": "Are you sure you want to delete product withdrawal?",
+      "SUCCESS_MESSAGE": "Product withdrawal has been successfully deleted.",
+      "ERROR_MESSAGE": "Failed to delete product withdrawal. Please try again later."
+    },
+    "EMPTY_PRODUCT_WITHDRAWAL_ITEMS_NOTIFICATION": {
+      "MESSAGE": "Product withdrawal has empty product list. Please add at least one product."
+    },
+    "INVALID_PRODUCT_WITHDRAWAL_NOTIFICATION": {
+      "MESSAGE": "Invalid product withdrawal details. Please fill the required fields."
     }
   },
   "WAREHOUSE_PRODUCT_IMPORT_PAGE": {

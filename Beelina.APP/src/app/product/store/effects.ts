@@ -86,7 +86,10 @@ export class ProductEffects {
           );
         }
 
+        const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
         return this.productService.getProducts(
+          userAccountId,
           cursor,
           filterKeyword,
           supplierId,

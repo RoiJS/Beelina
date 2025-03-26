@@ -241,7 +241,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
               productStockWarehouseAudit.pricePerUnit = this.selectedProduct().pricePerUnit;
               productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
 
-              purchaseOrder.productStockWarehouseAudits = [productStockWarehouseAudit];
+              purchaseOrder.productStockWarehouseAuditInputs = [productStockWarehouseAudit];
 
               this.productService
                 .updateWarehouseStockReceiptEntries([purchaseOrder])

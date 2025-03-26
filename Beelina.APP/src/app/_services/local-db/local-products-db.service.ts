@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { LocalBaseDbService } from './local-base-db.service';
 import { ProductService } from '../product.service';
 import { ProductUnitService } from '../product-unit.service';
+import { StorageService } from '../storage.service';
 
 import { Product } from 'src/app/_models/product';
 import { LocalProduct } from 'src/app/_models/local-db/local-product.model';
@@ -19,6 +20,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
 
   private productService = inject(ProductService);
   private productUnitService = inject(ProductUnitService);
+  private storageService = inject(StorageService);
   private pageNumber: number = 1;
 
   async getProductsFromServer() {
@@ -39,8 +41,10 @@ export class LocalProductsDbService extends LocalBaseDbService {
 
     if (productsCount > 0) return;
 
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+
     do {
-      result = await firstValueFrom(this.productService.getProducts(result.endCursor, "", 0, 1000, []));
+      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, 1000, []));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 

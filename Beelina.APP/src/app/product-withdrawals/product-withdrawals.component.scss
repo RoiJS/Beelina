@@ -1,0 +1,11 @@
+@import "../../app-variables";
+
+.product-withdrawal-grid-container {
+  margin-bottom: 2em;
+
+  .mat-mdc-row:hover .mat-mdc-cell {
+    background-color: $primary;
+    cursor: pointer;
+    color: $white;
+  }
+}

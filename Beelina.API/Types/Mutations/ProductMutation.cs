@@ -42,6 +42,41 @@ namespace Beelina.API.Types.Mutations
             }
         }
 
+
+        [Authorize]
+        [Error(typeof(ProductErrorFactory))]
+        public async Task<ProductWithdrawalEntry> DeleteProductWithdrawalEntry(
+                    [Service] ILogger<ProductMutation> logger,
+                    [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
+                    [Service] ICurrentUserService currentUserService,
+                    int withdrawalId)
+        {
+            try
+            {
+                productWithdrawalEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+                var withdrawalEntryFromRepo = await productWithdrawalEntryRepository
+                                            .GetEntity(withdrawalId)
+                                            .Includes(s => s.ProductStockAudits)
+                                            .ToObjectAsync();
+
+                if (withdrawalEntryFromRepo == null)
+                    throw new ProductWithdrawalNotExistsException(withdrawalId);
+
+                productWithdrawalEntryRepository.DeleteEntity(withdrawalEntryFromRepo, true);
+                await productWithdrawalEntryRepository.SaveChanges();
+
+                logger.LogInformation("Product Withdrawal Entry has successfully deleted. Params: withdrawalId = {withdrawalId}", withdrawalId);
+                return withdrawalEntryFromRepo;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to delete product withdrawal entry. Params: withdrawalId = {withdrawalId}", withdrawalId);
+
+                throw new Exception($"Failed to delete product withdrawal entry. {ex.Message}");
+            }
+        }
+
         [Authorize]
         public async Task<Product> TransferProductStockFromOwnInventory(
                     [Service] ILogger<ProductMutation> logger,

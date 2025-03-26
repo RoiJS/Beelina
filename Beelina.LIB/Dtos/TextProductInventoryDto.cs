@@ -10,7 +10,6 @@ namespace Beelina.LIB.Dtos
         public double Price { get; set; }
         public bool IsTransferable { get; set; }
         public int NumberOfUnits { get; set; }
-        public string WithdrawalSlipNo { get; set; }
         public ProductUnitDto ProductUnit { get; set; }
 
         public TextProductInventoryDto()

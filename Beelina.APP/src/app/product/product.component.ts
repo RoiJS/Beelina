@@ -49,6 +49,9 @@ import { User } from '../_models/user.model';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 import { ProductsFilter } from '../_models/filters/products.filter';
 import { ProductFilterComponent } from './product-filter/product-filter.component';
+import { ProductWithdrawalEntry } from '../_models/product-withdrawal-entry';
+import { ProductStockAudit } from '../_models/product-stock-audit';
+import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 
 @Component({
   selector: 'app-product',
@@ -433,47 +436,52 @@ export class ProductComponent
                   })
                 );
 
-                const product = new Product();
-                product.id = this.selectedProduct().id;
-                product.name = this.selectedProduct().name;
-                product.code = this.selectedProduct().code;
-                product.description = this.selectedProduct().description;
-                product.stockQuantity = data.additionalStockQuantity;
-                product.withdrawalSlipNo = data.transactionNo;
-                product.isTransferable = this.selectedProduct().isTransferable;
-                product.numberOfUnits = this.selectedProduct().numberOfUnits;
-                product.pricePerUnit = this.selectedProduct().pricePerUnit;
-                product.supplierId = this.selectedProduct().supplierId;
-                product.productUnit.name = this.selectedProduct().productUnit.name;
+                const productWithdrawal = new ProductWithdrawalEntry();
+                productWithdrawal.id = 0;
+                productWithdrawal.userAccountId = +this.storageService.getString('currentSalesAgentId');
+                productWithdrawal.stockEntryDate = new Date();
+                productWithdrawal.withdrawalSlipNo = data.transactionNo;
 
-                this.productService.updateProductInformation([product]).subscribe({
-                  next: () => {
-                    this.notificationService.openSuccessNotification(this.translateService.instant(
-                      'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.SUCCESS_MESSAGE'
-                    ));
-                    this.store.dispatch(
-                      ProductActions.setUpdateProductLoadingState({
-                        state: false,
-                      })
-                    );
+                const productStockAudits = new ProductStockAudit();
+                productStockAudits.id = 0;
+                productStockAudits.productId = this.selectedProduct().id;
+                productStockAudits.quantity = data.additionalStockQuantity;
+                productStockAudits.pricePerUnit = this.selectedProduct().pricePerUnit;
+                productStockAudits.warehouseId = this.warehouseId();
+                productStockAudits.stockAuditSource = StockAuditSourceEnum.FromWithdrawal;
 
-                    this.store.dispatch(ProductActions.resetProductState());
-                    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent().value() }));
-                    this.store.dispatch(ProductActions.getProductsAction());
-                  },
+                productWithdrawal.productStockAudits = [productStockAudits];
 
-                  error: () => {
-                    this.notificationService.openErrorNotification(this.translateService.instant(
-                      'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.ERROR_MESSAGE'
-                    ));
+                this.productService
+                  .updateProductWithdrawalEntries([productWithdrawal])
+                  .subscribe({
+                    next: () => {
+                      this.notificationService.openSuccessNotification(this.translateService.instant(
+                        'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.SUCCESS_MESSAGE'
+                      ));
+                      this.store.dispatch(
+                        ProductActions.setUpdateProductLoadingState({
+                          state: false,
+                        })
+                      );
 
-                    this.store.dispatch(
-                      ProductActions.setUpdateProductLoadingState({
-                        state: false,
-                      })
-                    );
-                  },
-                })
+                      this.store.dispatch(ProductActions.resetProductState());
+                      this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent().value() }));
+                      this.store.dispatch(ProductActions.getProductsAction());
+                    },
+
+                    error: () => {
+                      this.notificationService.openErrorNotification(this.translateService.instant(
+                        'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.ERROR_MESSAGE'
+                      ));
+
+                      this.store.dispatch(
+                        ProductActions.setUpdateProductLoadingState({
+                          state: false,
+                        })
+                      );
+                    },
+                  });
               }
             })
           }

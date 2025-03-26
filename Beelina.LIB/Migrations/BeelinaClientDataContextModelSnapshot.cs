@@ -370,6 +370,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("ProductStockPerPanelId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ProductWithdrawalEntryId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -403,6 +406,8 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("DeletedById");
 
                     b.HasIndex("ProductStockPerPanelId");
+
+                    b.HasIndex("ProductWithdrawalEntryId");
 
                     b.HasIndex("UpdatedById");
 
@@ -840,6 +845,71 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("ProductWarehouseStockReceiptEntries");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.ProductWithdrawalEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeactivatedById")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeletedById")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StockEntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WithdrawalSlipNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DeactivatedById");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("UserAccountId");
+
+                    b.ToTable("ProductWithdrawalEntries");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -1459,6 +1529,12 @@ namespace Beelina.LIB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Beelina.LIB.Models.ProductWithdrawalEntry", "ProductWithdrawalEntry")
+                        .WithMany("ProductStockAudits")
+                        .HasForeignKey("ProductWithdrawalEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -1470,6 +1546,8 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("ProductStockPerPanel");
+
+                    b.Navigation("ProductWithdrawalEntry");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -1694,6 +1772,39 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.ProductWithdrawalEntry", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeactivatedBy")
+                        .WithMany()
+                        .HasForeignKey("DeactivatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "UserAccount")
+                        .WithMany()
+                        .HasForeignKey("UserAccountId");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("DeactivatedBy");
+
+                    b.Navigation("DeletedBy");
+
+                    b.Navigation("UpdatedBy");
+
+                    b.Navigation("UserAccount");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.UserAccount", "UserAccount")
@@ -1879,6 +1990,11 @@ namespace Beelina.LIB.Migrations
             modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
                 {
                     b.Navigation("ProductStockWarehouseAudits");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.ProductWithdrawalEntry", b =>
+                {
+                    b.Navigation("ProductStockAudits");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>

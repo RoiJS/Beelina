@@ -9,6 +9,6 @@
         public string PlateNo { get; set; }
         public int WarehouseId { get; set; }
         public string Notes { get; set; }
-        public List<ProductStockWarehouseAuditInput> ProductStockWarehouseAudits { get; set; }
+        public List<ProductStockWarehouseAuditInput> ProductStockWarehouseAuditInputs { get; set; }
     }
 }

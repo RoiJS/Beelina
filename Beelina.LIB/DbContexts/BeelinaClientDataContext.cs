@@ -38,6 +38,7 @@ namespace Beelina.LIB.DbContexts
         public DbSet<ProductStockPerWarehouse> ProductStockPerWarehouse { get; set; }
         public DbSet<ProductStockWarehouseAudit> ProductStockWarehouseAudit { get; set; }
         public DbSet<ProductWarehouseStockReceiptEntry> ProductWarehouseStockReceiptEntries { get; set; }
+        public DbSet<ProductWithdrawalEntry> ProductWithdrawalEntries { get; set; }
         public DbSet<GeneralSetting> GeneralSettings { get; set; }
 
         #endregion

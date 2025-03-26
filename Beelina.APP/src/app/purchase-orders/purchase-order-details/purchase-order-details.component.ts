@@ -241,7 +241,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           purchaseOrder.plateNo = plateNoControl.value;
           purchaseOrder.notes = notesControl.value;
 
-          purchaseOrder.productStockWarehouseAudits = this.purchaseOrderItemsTableDatasource.data.filter(p => p.productId > 0).map(x => {
+          purchaseOrder.productStockWarehouseAuditInputs = this.purchaseOrderItemsTableDatasource.data.filter(p => p.productId > 0).map(x => {
             const productStockWarehouseAudit = new ProductStockWarehouseAudit();
 
             productStockWarehouseAudit.id = x.id;

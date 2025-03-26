@@ -12,6 +12,7 @@ import { ProductService } from 'src/app/_services/product.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { LogMessageService } from 'src/app/_services/log-message.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { StorageService } from 'src/app/_services/storage.service';
 
 import * as ProductUnitActions from '../../units/store/actions';
 import * as ProductActions from '../store/actions';
@@ -31,6 +32,8 @@ import { SupplierStore } from 'src/app/suppliers/suppliers.store';
 import { ProductWarehouseStockReceiptEntry } from 'src/app/_models/product-warehouse-stock-receipt-entry';
 import { ProductStockWarehouseAudit } from 'src/app/_models/product-stock-warehouse-audit';
 import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
+import { ProductWithdrawalEntry } from 'src/app/_models/product-withdrawal-entry';
+import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
 
 @Component({
   selector: 'app-add-product-details',
@@ -66,6 +69,7 @@ export class AddProductDetailsComponent implements OnInit {
   notificationService = inject(NotificationService);
   uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
   supplierStore = inject(SupplierStore);
+  storageService = inject(StorageService);
   translateService = inject(TranslateService);
 
   suppliers = computed(() => this.supplierStore.suppliers());
@@ -202,9 +206,28 @@ export class AddProductDetailsComponent implements OnInit {
                       productStockWarehouseAudit.pricePerUnit = product.pricePerUnit;
                       productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
 
-                      purchaseOrder.productStockWarehouseAudits = [productStockWarehouseAudit];
+                      purchaseOrder.productStockWarehouseAuditInputs = [productStockWarehouseAudit];
 
                       await firstValueFrom(this.productService.updateWarehouseStockReceiptEntries([purchaseOrder]));
+                    }
+                  } else {
+                    if (product.stockQuantity > 0) {
+                      const productWithdrawal = new ProductWithdrawalEntry();
+                      productWithdrawal.id = 0;
+                      productWithdrawal.userAccountId = +this.storageService.getString('currentSalesAgentId');
+                      productWithdrawal.stockEntryDate = new Date();
+                      productWithdrawal.withdrawalSlipNo = product.withdrawalSlipNo;
+
+                      const productStockAudit = new ProductStockAudit();
+                      productStockAudit.id = 0;
+                      productStockAudit.productId = products[0].id;
+                      productStockAudit.quantity = product.stockQuantity;
+                      productStockAudit.pricePerUnit = product.pricePerUnit;
+                      productStockAudit.stockAuditSource = StockAuditSourceEnum.FromWithdrawal;
+
+                      productWithdrawal.productStockAudits = [productStockAudit];
+
+                      await firstValueFrom(this.productService.updateProductWithdrawalEntries([productWithdrawal]));
                     }
                   }
 
@@ -248,12 +271,33 @@ export class AddProductDetailsComponent implements OnInit {
       this._dialogRef
         .afterDismissed()
         .subscribe(
-          (data: {
+          async (data: {
             additionalStockQuantity: number;
             transactionNo: string;
             plateNo: string;
           }) => {
             if (!data) return;
+
+            if (this._productSource === ProductSourceEnum.Warehouse) {
+              const checkPurchaseOrderCodeExists = await firstValueFrom(this.productService.checkPurchaseOrderCodeExists(0, data.transactionNo));
+
+              if (checkPurchaseOrderCodeExists) {
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE'
+                ))
+                return;
+              }
+            } else {
+              const checkProductWithdrawalCodeExists = await firstValueFrom(this.productService.checkProductWithdrawalCodeExists(0, data.transactionNo));
+
+              if (checkProductWithdrawalCodeExists) {
+                this.notificationService.openErrorNotification(this.translateService.instant(
+                  'PRODUCT_WITHDRAWAL_DETAILS_PAGE.PRODUCT_WITHDRAWAL_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.PRODUCT_WITHDRAWAL_DETAILS_PAGE.ALREADY_EXIST_ERROR_MESSAGE'
+                ))
+                return;
+              }
+            }
+
             this._productForm
               .get('additionalStockQuantity')
               .setValue(data.additionalStockQuantity);
