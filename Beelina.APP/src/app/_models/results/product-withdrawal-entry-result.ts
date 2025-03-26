@@ -5,10 +5,10 @@ import { ProductStockAuditsResult } from './product-stock-audit-result';
 
 export class ProductWithdrawalEntryResult extends ProductWithdrawalEntry implements IProductWithdrawalEntryPayload, IModelNode {
   public typename: string;
-  public productStockAuditsResult: Array<ProductStockAuditsResult>;
+  public productWithdrawalAuditsResult: Array<ProductStockAuditsResult>;
 
   constructor() {
     super();
-    this.productStockAuditsResult = [];
+    this.productWithdrawalAuditsResult = [];
   }
 }

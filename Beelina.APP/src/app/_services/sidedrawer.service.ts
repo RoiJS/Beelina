@@ -116,6 +116,14 @@ export class SidedrawerService {
         supportOffline: false
       },
       {
+        name: 'MAIN_MENU.PRODUCT_WITHDRAWALS',
+        url: '/product-withdrawals',
+        icon: 'description',
+        minimumPermissionLevel: managerPermissionLevel,
+        maximumPermissionLevel: managerPermissionLevel,
+        supportOffline: false
+      },
+      {
         name: 'MAIN_MENU.ORDER_TRANSACTIONS',
         url: '/order-transactions',
         icon: 'assignment',

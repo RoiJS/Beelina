@@ -6,4 +6,6 @@ export interface IProductStockWarehouseAuditInput {
   pricePerUnit: number;
   quantity: number;
   stockAuditSource: StockAuditSourceEnum;
+  productWarehouseStockReceiptEntryId: number;
+  productStockPerWarehouseId: number;
 }

@@ -658,11 +658,6 @@ namespace Beelina.LIB.BusinessLogic
           _logger.LogInformation("Part 4 -  Product Stock Per Panel Information saving...");
           var productStockPerPanelFromRepo = await ManageProductStockPerPanel(productFromRepo, productInput, userAccountId, cancellationToken);
 
-          // Insert new stock audit for the product
-          //===========================================================================================================
-          _logger.LogInformation("Part 5 - Product Stock Audit saving...");
-          await ManageProductStockAudit(productStockPerPanelFromRepo, productInput, warehouseId, cancellationToken);
-          productsFromRepo.Add(productFromRepo);
 
           // Commit transaction if all operations succeeded
           if (counter == (productInputs.Count - 1))
@@ -1106,6 +1101,9 @@ namespace Beelina.LIB.BusinessLogic
                                                     join u in _beelinaRepository.ClientDbContext.UserAccounts
                                                     on pa.CreatedById equals u.Id
 
+                                                    join pr in _beelinaRepository.ClientDbContext.ProductWithdrawalEntries
+                                                    on pa.ProductWithdrawalEntryId equals pr.Id
+
                                                     where
                                                       ps.ProductId == productId
                                                       && ps.UserAccountId == userAccountId
@@ -1117,7 +1115,7 @@ namespace Beelina.LIB.BusinessLogic
                                                       Id = pa.Id,
                                                       Quantity = pa.Quantity,
                                                       StockAuditSource = pa.StockAuditSource,
-                                                      TransactionNumber = pa.WithdrawalSlipNo,
+                                                      TransactionNumber = pa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal ? (pr.WithdrawalSlipNo ?? "") : (pa.WithdrawalSlipNo ?? ""),
                                                       ModifiedBy = String.Format("{0} {1}", u.FirstName, u.LastName),
                                                       ModifiedDate = pa.DateCreated
                                                     }).ToListAsync();

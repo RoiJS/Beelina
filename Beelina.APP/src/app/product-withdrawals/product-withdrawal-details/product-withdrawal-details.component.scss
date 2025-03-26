@@ -1,0 +1,99 @@
+@import "../../../app-variables";
+
+.product-withdrawal-panel {
+  margin-bottom: 1em;
+
+  .biz-form-container {
+    display: flex;
+    gap: 1em;
+  }
+
+  .form-general-section {
+    flex: 1;
+  }
+
+  .form-notes-section {
+    flex: 1;
+
+    textarea {
+      height: 93px;
+    }
+  }
+
+  .form-column-direction {
+    display: flex;
+    gap: 1em;
+  }
+}
+
+.product-withdrawal-items-panel {
+  margin-bottom: 1em;
+
+  &__button-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+
+    button {
+      position: absolute;
+    }
+  }
+
+  &__body-section {
+    overflow: auto;
+  }
+
+  mat-table {
+    margin-top: 2.5em;
+
+    .mat-mdc-row:hover .mat-mdc-cell {
+      background-color: $primary;
+      color: $white;
+    }
+
+    .mat-column-code,
+    .mat-column-unit {
+      flex: none;
+      width: 120px;
+      text-align: center;
+    }
+
+    .mat-column-product {
+      flex: none;
+      width: 600px;
+    }
+
+    .mat-column-quantity {
+      flex: none;
+      width: 100px;
+    }
+
+    .mat-column-amount,
+    .mat-column-unitPrice {
+      flex: none;
+      width: 150px;
+    }
+
+    .product-dropdown {
+      width: 100%;
+    }
+
+    .delete-icon {
+      cursor: pointer;
+      text-align: right;
+      width: 100%;
+    }
+  }
+}
+
+.product-withdrawal-buttons-panel {
+  padding: 1em;
+
+  &__body-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1em;
+    padding: 0;
+    width: 100%;
+  }
+}

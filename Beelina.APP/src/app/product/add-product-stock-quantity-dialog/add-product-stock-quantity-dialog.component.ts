@@ -26,15 +26,10 @@ export class AddProductStockQuantityDialogComponent implements OnInit {
     private translateService: TranslateService
   ) {
     this._productWithDrawalForm = this.formBuilder.group({
-      transactionNo: [data.transactionNo],
+      transactionNo: [data.transactionNo, [Validators.required]],
       additionalStockQuantity: [data.additionalStockQuantity],
-      senderPlateNo: [],
+      senderPlateNo: [''],
     });
-
-    if (data.productSource === ProductSourceEnum.Warehouse) {
-      this._productWithDrawalForm.get('transactionNo').setValidators([Validators.required]);
-      this._productWithDrawalForm.get('transactionNo').updateValueAndValidity();
-    }
   }
 
   ngOnInit() { }

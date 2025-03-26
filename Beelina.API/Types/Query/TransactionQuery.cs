@@ -556,10 +556,9 @@ namespace Beelina.API.Types.Query
 					{
 						var productCode = textOrderLines[0].Trim();
 						var productAdditionalQuantity = Convert.ToInt32(textOrderLines[1].Trim());
-						var withdrawalSlipNo = textOrderLines.Length > 2 ? textOrderLines[2].Trim() : "";
 						var productFromRepo = await productRepository.GetProductByCode(productCode);
 						var productPerPanelFromRepo = await productStockPerPanelRepository.GetProductStockPerPanel(productFromRepo.Id, userAccountId);
-						var price = textOrderLines.Length > 3 ? Convert.ToDouble(textOrderLines[3].Trim()) : (productPerPanelFromRepo != null ? productPerPanelFromRepo.PricePerUnit : 0.0);
+						var price = textOrderLines.Length > 2 ? Convert.ToDouble(textOrderLines[2].Trim()) : (productPerPanelFromRepo != null ? productPerPanelFromRepo.PricePerUnit : 0.0);
 
 						if (productFromRepo != null && (productAdditionalQuantity > 0 || productAdditionalQuantity < 0))
 						{
@@ -573,7 +572,6 @@ namespace Beelina.API.Types.Query
 								Price = price,
 								IsTransferable = productFromRepo.IsTransferable,
 								NumberOfUnits = productFromRepo.NumberOfUnits,
-								WithdrawalSlipNo = withdrawalSlipNo,
 								ProductUnit = new ProductUnitDto
 								{
 									Id = productFromRepo.ProductUnit.Id,

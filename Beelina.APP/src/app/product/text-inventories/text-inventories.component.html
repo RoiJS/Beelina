@@ -7,6 +7,53 @@
         "TEXT_INVENTORIES_DIALOG.DESCRIPTION" | translate
         }}</span>
     </div>
+
+    <div class="panel product-withdrawal-panel">
+      <div [formGroup]="productWithdrawalDetailsForm" class="panel__details-group-panel">
+        <div class="panel__body-section">
+          <div class="biz-form-container">
+
+            <div class="form-general-section">
+              <div class="form-column-direction">
+
+                <div class="biz-form-container__form-control">
+                  <label>{{
+                    "PRODUCT_WITHDRAWAL_DETAILS_PAGE.PRODUCT_WITHDRAWAL_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STOCK_ENTRY_DATE_CONTROL.LABEL"
+                    | translate }}</label>
+                  <input type="date" class="date-picker-control" formControlName="stockEntryDate">
+                </div>
+              </div>
+
+              <div class="form-column-direction">
+                <div class="biz-form-container__form-control">
+                  <label>{{
+                    "PRODUCT_WITHDRAWAL_DETAILS_PAGE.PRODUCT_WITHDRAWAL_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.WITHDRAWAL_SLIP_NO_CONTROL.LABEL"
+                    | translate }}</label>
+                  <input type="text" class="reference-no-control" formControlName="withdrawalSlipNo"
+                    [ngClass]="{ 'is-invalid': (productWithdrawalDetailsForm.get('withdrawalSlipNo').hasError('required') || productWithdrawalDetailsForm.get('withdrawalSlipNo').hasError('productWithdrawalAlreadyExists')) && productWithdrawalDetailsForm.get('withdrawalSlipNo').touched }">
+
+                  @if(productWithdrawalDetailsForm.get('withdrawalSlipNo').hasError('productWithdrawalAlreadyExists')) {
+                  <span class="biz-form-container__form-control--error-message">{{
+                    "PRODUCT_WITHDRAWAL_DETAILS_PAGE.PRODUCT_WITHDRAWAL_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.WITHDRAWAL_SLIP_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                    | translate }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="form-notes-section">
+              <div class="biz-form-container__form-control">
+                <label>{{
+                  "PRODUCT_WITHDRAWAL_DETAILS_PAGE.PRODUCT_WITHDRAWAL_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.NOTES_CONTROL.LABEL"
+                  | translate }}</label>
+                <textarea type="text" class="notes-control" formControlName="notes"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div *ngIf="showTextInventoriesTextAreaContainer && !hasActiveTextInventories"
       class="panel text-inventories-textarea-container" [formGroup]="textInventoriesForm">
       <div class="panel__header-section">

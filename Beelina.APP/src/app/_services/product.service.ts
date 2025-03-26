@@ -57,10 +57,12 @@ import { IProductWarehouseStockReceiptEntryPayload } from '../_interfaces/payloa
 import { IProductWithdrawalEntryPayload } from '../_interfaces/payloads/iproduct-withdrawal-entry-query.payload';
 import { ProductWarehouseStockReceiptEntryNotExistsError } from '../_models/errors/product-warehouse-stock-receipt-entry-not-exists.error';
 import { ProductWithdrawalEntryNotExistsError } from '../_models/errors/product-withdrawal-entry-not-exists.error';
+import { CheckProductWithdrawalCodeInformationResult } from '../_models/results/check-product-withdrawal-code-information-result';
 import { CheckPurchaseOrderCodeInformationResult } from '../_models/results/check-purchase-order-code-information-result';
 import { ProductWithdrawalEntryResult } from '../_models/results/product-withdrawal-entry-result';
 import { ProductWarehouseStockReceiptEntryResult } from '../_models/results/product-warehouse-stock-receipt-entry-result';
 import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-entry.output';
+import { IWithdrawalEntryOutput } from '../_interfaces/outputs/iwithdrawal-entry.output';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -210,6 +212,7 @@ const GET_PRODUCT_WITHDRAWAL_ENTRY_RECEIPT = gql`
           userAccountId
           productWithdrawalAuditsResult {
               id
+              productId
               productStockPerPanelId
               productWithdrawalEntryId
               stockAuditSource
@@ -384,6 +387,16 @@ const DELETE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRY_QUERY = gql`
   }
 `;
 
+const DELETE_PRODUCT_WITHDRAWAL_ENTRY_QUERY = gql`
+  mutation($withdrawalId: Int!) {
+    deleteProductWithdrawalEntry(input: { withdrawalId: $withdrawalId}) {
+      productWithdrawalEntry {
+        id
+      }
+    }
+  }
+`;
+
 const DELETE_PRODUCT = gql`
   mutation ($productId: Int!) {
     deleteProduct(input: { productId: $productId }) {
@@ -410,6 +423,17 @@ const CHECK_PURCHASE_ORDER_CODE = gql`
     checkPurchaseOrderCode(purchaseOrderId: $purchaseOrderId, referenceCode: $referenceCode) {
       typename: __typename
       ... on CheckPurchaseOrderCodeInformationResult {
+        exists
+      }
+    }
+  }
+`;
+
+const CHECK_PRODUCT_WITHDRAWAL_CODE = gql`
+  query($productWithdrawalId: Int!, $withdrawalSlipNo: String!){
+    checkProductWithdrawalCode(productWithdrawalId: $productWithdrawalId, withdrawalSlipNo: $withdrawalSlipNo) {
+      typename: __typename
+      ... on CheckProductWithdrawalCodeInformationResult {
         exists
       }
     }
@@ -484,7 +508,6 @@ const ANALYZE_TEXT_INVENTORIES = gql`
       price
       isTransferable
       numberOfUnits
-      withdrawalSlipNo
       productUnit {
         id
         name
@@ -692,10 +715,7 @@ export class ProductService {
   store = inject(Store<AppStateInterface>);
   storageService = inject(StorageService);
 
-  getProducts(cursor: string, filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>) {
-
-    const userAccountId = +this.storageService.getString('currentSalesAgentId');
-
+  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>) {
     return this.apollo
       .watchQuery({
         query: GET_PRODUCTS_QUERY,
@@ -1082,7 +1102,7 @@ export class ProductService {
       [sortField]: sortDirection
     };
 
-    if (sortField === "firstName") {
+    if (sortField === "salesAgent") {
       order = {
         userAccount: {
           firstName: sortDirection
@@ -1095,7 +1115,7 @@ export class ProductService {
         query: GET_PRODUCT_WITHDRAWALS_ENTRIES_QUERY,
         variables: {
           filterKeyword,
-          productWithdrawalEntryFilter: {
+          productWithdrawalFilter: {
             userAccountId,
             dateFrom,
             dateTo
@@ -1207,9 +1227,9 @@ export class ProductService {
       })
       .valueChanges
       .pipe(
-        map((result: ApolloQueryResult<{ products: Array<Product> }>) => {
+        map((result: ApolloQueryResult<{ updateProducts: Array<Product> }>) => {
           const output = result.data;
-          const payload = output.products;
+          const payload = output.updateProducts;
 
           if (payload) {
             return payload;
@@ -1279,13 +1299,15 @@ export class ProductService {
         plateNo: p.plateNo,
         notes: p.notes,
         warehouseId: this._warehouseId,
-        productStockWarehouseAudits: p.productStockWarehouseAudits.map((a) => {
+        productStockWarehouseAuditInputs: p.productStockWarehouseAuditInputs.map((a) => {
           const productStockWarehousAudit: IProductStockWarehouseAuditInput = {
-            id: a.id,
+            id: (a.id <= 0 ? 0 : a.id),
             productId: a.productId,
             pricePerUnit: a.pricePerUnit,
             quantity: a.quantity,
-            stockAuditSource: a.stockAuditSource
+            productWarehouseStockReceiptEntryId: p.id,
+            stockAuditSource: a.stockAuditSource,
+            productStockPerWarehouseId: 0
           };
 
           return productStockWarehousAudit;
@@ -1326,10 +1348,10 @@ export class ProductService {
         stockEntryDate: p.stockEntryDate,
         withdrawalSlipNo: p.withdrawalSlipNo,
         notes: p.notes,
-        productStockAudits: p.productStockAudits.map((a) => {
+        productStockAuditsInputs: p.productStockAudits.map((a) => {
           const productStockAudit: IProductStockAuditInput = {
-            id: a.id,
-            productId: a.productWithdrawalEntryId,
+            id: (a.id <= 0 ? 0 : a.id),
+            productId: a.productId,
             pricePerUnit: a.pricePerUnit,
             quantity: a.quantity,
             warehouseId: a.warehouseId,
@@ -1378,6 +1400,33 @@ export class ProductService {
         map((result: MutationResult<{ deleteWarehouseStockReceiptEntry: IStockReceiptEntryOutput }>) => {
           const output = result.data.deleteWarehouseStockReceiptEntry;
           const payload = output.productWarehouseStockReceiptEntry;
+          const errors = output.errors;
+
+          if (payload) {
+            return payload;
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
+      );
+  }
+
+  deleteProductWithdrawalEntry(withdrawalId: number) {
+    return this.apollo
+      .mutate({
+        mutation: DELETE_PRODUCT_WITHDRAWAL_ENTRY_QUERY,
+        variables: {
+          withdrawalId,
+        },
+      })
+      .pipe(
+        map((result: MutationResult<{ deleteProductWithdrawalEntry: IWithdrawalEntryOutput }>) => {
+          const output = result.data.deleteProductWithdrawalEntry;
+          const payload = output.productWithdrawalEntry;
           const errors = output.errors;
 
           if (payload) {
@@ -1468,6 +1517,35 @@ export class ProductService {
             if (data.typename === 'CheckPurchaseOrderCodeInformationResult')
               return (<CheckPurchaseOrderCodeInformationResult>(
                 result.data.checkPurchaseOrderCode
+              )).exists;
+
+            return false;
+          }
+        )
+      );
+  }
+
+
+  checkProductWithdrawalCodeExists(productWithdrawalId: number, withdrawalSlipNo: string) {
+    return this.apollo
+      .watchQuery({
+        query: CHECK_PRODUCT_WITHDRAWAL_CODE,
+        variables: {
+          productWithdrawalId,
+          withdrawalSlipNo,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              checkProductWithdrawalCode: IProductWithdrawalEntryPayload;
+            }>
+          ) => {
+            const data = result.data.checkProductWithdrawalCode;
+            if (data.typename === 'CheckProductWithdrawalCodeInformationResult')
+              return (<CheckProductWithdrawalCodeInformationResult>(
+                result.data.checkProductWithdrawalCode
               )).exists;
 
             return false;
@@ -1690,7 +1768,6 @@ export class ProductService {
                 product.price = prod.price;
                 product.isTransferable = prod.isTransferable;
                 product.numberOfUnits = prod.numberOfUnits;
-                product.withdrawalSlipNo = prod.withdrawalSlipNo;
                 product.productUnit = prod.productUnit;
                 return product;
               }

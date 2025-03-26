@@ -6,5 +6,5 @@ export interface IProductWithdrawalEntryInput {
   stockEntryDate: Date;
   withdrawalSlipNo: string;
   notes: string;
-  productStockAudits: Array<IProductStockAuditInput>;
+  productStockAuditsInputs: Array<IProductStockAuditInput>;
 }

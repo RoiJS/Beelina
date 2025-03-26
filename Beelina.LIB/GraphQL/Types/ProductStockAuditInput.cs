@@ -2,7 +2,7 @@
 
 namespace Beelina.LIB.GraphQL.Types
 {
-    public class ProductStockAuditInput
+    public class ProductStockAuditInput : IEntityInput
     {
         public int Id { get; set; }
         public int? ProductStockPerPanelId { get; set; }

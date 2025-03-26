@@ -8,6 +8,7 @@ using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Beelina.LIB.Models.Filters;
 using HotChocolate.Authorization;
+using Beelina.LIB.Helpers.Extensions;
 
 namespace Beelina.API.Types.Query
 {
@@ -68,17 +69,20 @@ namespace Beelina.API.Types.Query
                     if (stockEntryFromRepo is null)
                     {
                         var newStockEntry = mapper.Map<ProductWarehouseStockReceiptEntry>(input);
+                        var newStockEntryItems = mapper.Map<List<ProductStockWarehouseAudit>>(input.ProductStockWarehouseAuditInputs);
+
+                        newStockEntry.ProductStockWarehouseAudits = newStockEntryItems;
+
                         await productWarehouseStockReceiptEntryRepository.AddEntity(newStockEntry);
                         updatedEntries.Add(newStockEntry);
                     }
                     else
                     {
                         mapper.Map(input, stockEntryFromRepo);
+                        stockEntryFromRepo.ProductStockWarehouseAudits = mapper.MapEntities<ProductStockWarehouseAuditInput, ProductStockWarehouseAudit>(input.ProductStockWarehouseAuditInputs, stockEntryFromRepo.ProductStockWarehouseAudits);
                         updatedEntries.Add(stockEntryFromRepo);
                     }
                 }
-                
-                var hasChanged = productWarehouseStockReceiptEntryRepository.HasChanged();
                 await productWarehouseStockReceiptEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
 
                 return updatedEntries;
@@ -199,8 +203,8 @@ namespace Beelina.API.Types.Query
 
         [Authorize]
         public async Task<IPurchaseOrderPayload> CheckPurchaseOrderCode(
-            [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository, 
-            int purchaseOrderId, 
+            [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
+            int purchaseOrderId,
             string referenceCode)
         {
             var purchaseOrderFromRepo = await productWarehouseStockReceiptEntryRepository.GetPurchaseOrderByUniqueCode(purchaseOrderId, referenceCode);
@@ -209,7 +213,7 @@ namespace Beelina.API.Types.Query
 
         private static async Task SetProductStockWarehouses(ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput, int warehouseId, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
         {
-            foreach (var productStockWarehouseAudit in productWarehouseStockReceiptEntryInput.ProductStockWarehouseAudits)
+            foreach (var productStockWarehouseAudit in productWarehouseStockReceiptEntryInput.ProductStockWarehouseAuditInputs)
             {
                 var product = new Product
                 {

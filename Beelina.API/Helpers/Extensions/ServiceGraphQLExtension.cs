@@ -72,6 +72,7 @@ namespace Beelina.API.Helpers.Extensions
                     .AddType<CheckProductCodeInformationResult>()
                     .AddType<CheckPurchaseOrderCodeInformationResult>()
                     .AddType<CheckSupplierCodeInformationResult>()
+                    .AddType<CheckProductWithdrawalCodeInformationResult>()
                     .AddType<UploadType>()
                     .AddType<ClientNotExistsError>();
         }

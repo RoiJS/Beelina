@@ -3,6 +3,7 @@ using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.GraphQL.Types;
+using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Beelina.LIB.Models.Filters;
@@ -66,17 +67,21 @@ namespace Beelina.API.Types.Query
                     if (withdrawalEntryFromRepo is null)
                     {
                         var newStockEntry = mapper.Map<ProductWithdrawalEntry>(input);
+                        var newStockEntryItems = mapper.Map<List<ProductStockAudit>>(input.ProductStockAuditsInputs);
+
+                        newStockEntry.ProductStockAudits = newStockEntryItems;
+
                         await productWithdrawalEntryRepository.AddEntity(newStockEntry);
                         updatedEntries.Add(newStockEntry);
                     }
                     else
                     {
                         mapper.Map(input, withdrawalEntryFromRepo);
+                        withdrawalEntryFromRepo.ProductStockAudits = mapper.MapEntities<ProductStockAuditInput, ProductStockAudit>(input.ProductStockAuditsInputs, withdrawalEntryFromRepo.ProductStockAudits);
                         updatedEntries.Add(withdrawalEntryFromRepo);
                     }
                 }
 
-                var hasChanged = productWithdrawalEntryRepository.HasChanged();
                 await productWithdrawalEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
 
                 return updatedEntries;
@@ -225,9 +230,19 @@ namespace Beelina.API.Types.Query
             return inventoryTotalValue;
         }
 
+        [Authorize]
+        public async Task<IProductWithdrawalPayload> CheckProductWithdrawalCode(
+            [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
+            int productWithdrawalId,
+            string withdrawalSlipNo)
+        {
+            var productWithdrawalFromRepo = await productWithdrawalEntryRepository.GetProductWithdrawalByUniqueCode(productWithdrawalId, withdrawalSlipNo);
+            return new CheckProductWithdrawalCodeInformationResult(productWithdrawalFromRepo != null);
+        }
+
         private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
         {
-            foreach (var productStockAudit in productWithdrawalEntryInput.ProductStockAudits)
+            foreach (var productStockAudit in productWithdrawalEntryInput.ProductStockAuditsInputs)
             {
                 var product = new Product
                 {

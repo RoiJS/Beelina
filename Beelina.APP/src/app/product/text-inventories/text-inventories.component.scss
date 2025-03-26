@@ -1,4 +1,30 @@
 .text-inventories-container {
+  .product-withdrawal-panel {
+    margin-bottom: 1em;
+
+    .biz-form-container {
+      display: flex;
+      gap: 1em;
+    }
+
+    .form-general-section {
+      flex: 1;
+    }
+
+    .form-notes-section {
+      flex: 2;
+
+      textarea {
+        height: 93px;
+      }
+    }
+
+    .form-column-direction {
+      display: flex;
+      gap: 1em;
+    }
+  }
+
   .panel {
     display: flex;
     flex-direction: column;

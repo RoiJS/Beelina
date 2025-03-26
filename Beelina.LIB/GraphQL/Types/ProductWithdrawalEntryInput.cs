@@ -7,6 +7,6 @@
         public string StockEntryDate { get; set; }
         public string WithdrawalSlipNo { get; set; }
         public string Notes { get; set; }
-        public List<ProductStockAuditInput> ProductStockAudits { get; set; }
+        public List<ProductStockAuditInput> ProductStockAuditsInputs { get; set; }
     }
 }
