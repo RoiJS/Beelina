@@ -1,0 +1,39 @@
+<div class="product-withdrawal-filter-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "PRODUCT_WITHDRAWALS_PAGE.PRODUCT_WITHDRAWALS_FILTER_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body" [formGroup]="purchaseOrderFilterForm">
+
+    <mat-form-field appearance="fill" class="date-picker-control">
+      <mat-label>{{
+        "PRODUCT_WITHDRAWALS_PAGE.PRODUCT_WITHDRAWALS_FILTER_DIALOG.FORM_CONTROL_SECTION.START_DATE_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <input matInput [matDatepicker]="startDate" formControlName="startDate" />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="startDate"></mat-datepicker-toggle>
+      <mat-datepicker #startDate></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="date-picker-control">
+      <mat-label>{{
+        "PRODUCT_WITHDRAWALS_PAGE.PRODUCT_WITHDRAWALS_FILTER_DIALOG.FORM_CONTROL_SECTION.END_DATE_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <input matInput [matDatepicker]="endDate" formControlName="endDate" />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="endDate"></mat-datepicker-toggle>
+      <mat-datepicker #endDate></mat-datepicker>
+    </mat-form-field>
+
+  </div>
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onReset()">
+        {{ "GENERAL_TEXTS.RESET" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

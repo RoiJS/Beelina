@@ -22,7 +22,7 @@ export class LocalUserSettingsDbService {
 
   async saveLocalUserSettings(userSetting: UserSetting) {
     try {
-      await this.clearLocalUserSettings();
+      await this.clear();
       await firstValueFrom(this.localDbService.add('userSettings', userSetting));
     } catch (error) {
       console.error(error);
@@ -40,7 +40,7 @@ export class LocalUserSettingsDbService {
       });
   }
 
-  async clearLocalUserSettings() {
+  async clear() {
     try {
       await firstValueFrom(this.localDbService.clear('userSettings'));
     } catch (error) {

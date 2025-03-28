@@ -326,10 +326,6 @@ export class UserAccountService {
     this.userSetting.set(localUserSettings);
   }
 
-  async clearUserSettings() {
-    await this.localUserSettingsDbService.clearLocalUserSettings();
-  }
-
   updateAccountInformation(user: User) {
     const userAccountInput: IUserAccountInput = {
       id: user.id,

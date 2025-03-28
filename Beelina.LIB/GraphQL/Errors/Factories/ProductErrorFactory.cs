@@ -25,5 +25,10 @@ namespace Beelina.LIB.GraphQL.Errors.Factories
         {
             return new ExtractedProductsFileError(ex.Message);
         }
+        
+        public ExtractedProductsFileError CreateErrorFrom(ProductWithdrawalNotExistsException ex)
+        {
+            return new ExtractedProductsFileError(ex.Message);
+        }
     }
 }

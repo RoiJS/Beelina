@@ -10,24 +10,38 @@ namespace Beelina.API.Types.Mutations
     {
         [Authorize]
         public async Task<Payment> RegisterPayment(
-                [Service] IPaymentRepository<Payment> paymentRepository,
-                [Service] ICurrentUserService currentUserService,
-                PaymentInput paymentInput)
+            [Service] ILogger<PaymentMutation> logger,
+            [Service] IPaymentRepository<Payment> paymentRepository,
+            [Service] ICurrentUserService currentUserService,
+            PaymentInput paymentInput)
         {
-            paymentRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+            try
+            {
+                paymentRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
-            var payment = new Payment { 
-                TransactionId = paymentInput.TransactionId, 
-                Notes = paymentInput.Notes, 
-                Amount = paymentInput.Amount,
-                PaymentDate = Convert.ToDateTime(paymentInput.PaymentDate)
-                    .AddHours(DateTime.Now.Hour)
-                    .AddMinutes(DateTime.Now.Minute)
-                    .AddSeconds(DateTime.Now.Second)
-            };
+                var payment = new Payment
+                {
+                    TransactionId = paymentInput.TransactionId,
+                    Notes = paymentInput.Notes,
+                    Amount = paymentInput.Amount,
+                    PaymentDate = Convert.ToDateTime(paymentInput.PaymentDate)
+                        .AddHours(DateTime.Now.Hour)
+                        .AddMinutes(DateTime.Now.Minute)
+                        .AddSeconds(DateTime.Now.Second)
+                };
 
-            await paymentRepository.RegisterPayment(payment);
-            return payment;
+                await paymentRepository.RegisterPayment(payment);
+
+                logger.LogInformation("Successfully register payment. Params {@params}", paymentInput);
+
+                return payment;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to register payment. Params {@params}", paymentInput);
+
+                throw new Exception($"Failed to register payment. {ex.Message}");
+            }
         }
     }
 }

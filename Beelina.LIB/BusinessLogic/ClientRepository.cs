@@ -1,14 +1,12 @@
 ﻿using Beelina.LIB.Dtos;
 using Beelina.LIB.Enums;
 using Beelina.LIB.Helpers;
-using Beelina.LIB.Helpers.Class;
 using Beelina.LIB.Helpers.Classes;
+using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ReserbizAPP.LIB.Helpers.Class;
-using ReserbizAPP.LIB.Helpers.Services;
 using RestSharp;
 
 namespace Beelina.LIB.BusinessLogic

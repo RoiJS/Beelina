@@ -23,6 +23,10 @@ export class Product extends Entity implements IModelNode {
     return NumberFormatter.formatCurrency(this.price);
   }
 
+  get nameWithUnit() {
+    return `${this.productUnit.name} - ${this.name}`;
+  }
+
   constructor() {
     super();
     this.productUnit = new ProductUnit();

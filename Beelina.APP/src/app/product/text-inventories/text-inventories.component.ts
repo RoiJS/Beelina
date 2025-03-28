@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
@@ -16,6 +16,11 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { isLoadingSelector, textInventoriesSelector } from '../store/selectors';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+import { UniqueProductWithdrawalCodeValidator } from 'src/app/_validators/unique-product-withdrawal-code.validator';
+import { ProductWithdrawalEntry } from 'src/app/_models/product-withdrawal-entry';
+import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
+import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
 
 @Component({
   selector: 'app-text-inventories',
@@ -24,6 +29,7 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
 })
 export class TextInventoriesComponent extends BaseComponent implements OnInit {
 
+  private _currentSalesAgentId: number;
   private _subscription: Subscription = new Subscription();
   private _textInventoriesForm: FormGroup;
   private _hintLabelText1: string;
@@ -33,6 +39,10 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
   private _textInventoriesList: Product[];
   private _loadingLabel: string;
   private _updateProductInformationSubscription: Subscription;
+
+  uniqueProductWithdrawalCodeValidator = inject(UniqueProductWithdrawalCodeValidator);
+
+  productWithdrawalDetailsForm: FormGroup;
 
   constructor(
     private authService: AuthService,
@@ -48,6 +58,22 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
     super();
     this._textInventoriesForm = this.formBuilder.group({
       textInventories: ['', Validators.required],
+    });
+
+    this._currentSalesAgentId = +this.storageService.getString('currentSalesAgentId');
+
+    this.productWithdrawalDetailsForm = this.formBuilder.group({
+      userAccountId: [this._currentSalesAgentId, Validators.required],
+      stockEntryDate: [DateFormatter.format(new Date()), Validators.required],
+      withdrawalSlipNo: ['',
+        [Validators.required],
+        [
+          this.uniqueProductWithdrawalCodeValidator.validate.bind(
+            this.uniqueProductWithdrawalCodeValidator
+          ),
+        ],
+      ],
+      notes: [''],
     });
 
     if (storageService.hasKey("textInventories")) {
@@ -117,6 +143,10 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
   }
 
   confirm() {
+    this.productWithdrawalDetailsForm.markAllAsTouched();
+
+    if (!this.productWithdrawalDetailsForm.valid) return;
+
     if (this._textInventoriesList.length) {
       this.dialogService.openConfirmation(
         this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.TITLE'),
@@ -124,21 +154,51 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
       ).subscribe((result: ButtonOptions) => {
         if (result === ButtonOptions.YES) {
           this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: true }));
-          this._updateProductInformationSubscription =  this.productService.updateProductInformation(this._textInventoriesList).subscribe({
-            next: () => {
-              this.store.dispatch(ProductActions.resetProductState());
-              this.store.dispatch(ProductActions.getProductsAction());
-              this.storageService.remove('textInventoriesList');
-              this.storageService.remove('textInventories');
-              this.store.dispatch(ProductActions.resetTextInventoriesState());
-              this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: false }));
-              this.notificationService.openSuccessNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE'));
-              this.router.navigate([`product-catalogue/product-list`]);
-            },
-            error: () => {
-              this.notificationService.openErrorNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE'));
-            }
+
+          const userAccountIdControl = this.productWithdrawalDetailsForm.get('userAccountId');
+          const stockEntryDateControl = this.productWithdrawalDetailsForm.get('stockEntryDate');
+          const withdrawalSlipNoControl = this.productWithdrawalDetailsForm.get('withdrawalSlipNo');
+          const notesControl = this.productWithdrawalDetailsForm.get('notes');
+
+          const productWithdrawal = new ProductWithdrawalEntry();
+          const warehouseId = 1;
+
+          productWithdrawal.id = 0;
+          productWithdrawal.userAccountId = userAccountIdControl.value;
+          productWithdrawal.stockEntryDate = stockEntryDateControl.value;
+          productWithdrawal.withdrawalSlipNo = withdrawalSlipNoControl.value;
+          productWithdrawal.notes = notesControl.value;
+
+          productWithdrawal.productStockAudits = this._textInventoriesList.map(x => {
+            const productStockAudit = new ProductStockAudit();
+
+            productStockAudit.id = 0;
+            productStockAudit.productId = x.id;
+            productStockAudit.quantity = x.stockQuantity;
+            productStockAudit.pricePerUnit = x.pricePerUnit;
+            productStockAudit.warehouseId = warehouseId;
+            productStockAudit.stockAuditSource = StockAuditSourceEnum.FromWithdrawal;
+
+            return productStockAudit;
           });
+
+          this.productService
+            .updateProductWithdrawalEntries([productWithdrawal])
+            .subscribe({
+              next: () => {
+                this.store.dispatch(ProductActions.resetProductState());
+                this.store.dispatch(ProductActions.getProductsAction());
+                this.storageService.remove('textInventoriesList');
+                this.storageService.remove('textInventories');
+                this.store.dispatch(ProductActions.resetTextInventoriesState());
+                this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: false }));
+                this.notificationService.openSuccessNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE'));
+                this.router.navigate([`product-catalogue/product-list`]);
+              },
+              error: () => {
+                this.notificationService.openErrorNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE'));
+              }
+            });
         }
       })
     }

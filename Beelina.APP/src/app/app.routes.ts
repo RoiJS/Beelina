@@ -29,6 +29,20 @@ export const routes: Routes = [
     canActivate: [AccessGuard]
   },
   {
+    path: 'purchase-orders',
+    loadChildren: () =>
+      import('./purchase-orders/purchase-orders.module').then((m) => m.PurchaseOrdersModule),
+    canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
+  },
+  {
+    path: 'product-withdrawals',
+    loadChildren: () =>
+      import('./product-withdrawals/product-withdrawals.module').then((m) => m.ProductWithdrawalsModule),
+    canLoad: [AuthGuard],
+    canActivate: [AccessGuard]
+  },
+  {
     path: 'accounts',
     loadChildren: () =>
       import('./accounts/accounts.module').then((m) => m.AccountsModule),

@@ -1,15 +1,13 @@
 ﻿using System.Text;
 using Beelina.LIB.Enums;
-using Beelina.LIB.Helpers.Class;
 using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Extensions;
+using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Beelina.LIB.Models.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ReserbizAPP.LIB.Helpers.Class;
-using ReserbizAPP.LIB.Helpers.Services;
 
 namespace Beelina.LIB.BusinessLogic
 {

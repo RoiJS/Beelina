@@ -86,6 +86,129 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.ToTable("Clients");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.ClientSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Approve")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SubscriptionFeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("SubscriptionFeatureId");
+
+                    b.ToTable("ClientSubscriptions");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.DashboardModule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DashboardModules");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.DashboardModuleWidget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DashboardModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DashboardModuleId");
+
+                    b.ToTable("DashboardModuleWidgets");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.GeneralInformation", b =>
                 {
                     b.Property<int>("Id")
@@ -409,6 +532,368 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.ToTable("ReportParameters");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.Subscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeature", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Custom")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CustomReportAddOnActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CustomerAccountsMax")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomersMax")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("DashboardDistributionPageActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("OfflineModeActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderPrintActive")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductSKUMax")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RegisterUserAddOnActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SendReportEmailActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("TopProductsPageActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("UserAccountsMax")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Version")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("SubscriptionFeatures");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeatureAvailableReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubscriptionFeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportId");
+
+                    b.HasIndex("SubscriptionFeatureId");
+
+                    b.ToTable("SubscriptionFeatureAvailableReports");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeatureHideDashboardWidget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DashboardModuleWidgetId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SubscriptionFeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DashboardModuleWidgetId");
+
+                    b.HasIndex("SubscriptionFeatureId");
+
+                    b.ToTable("SubscriptionFeatureHideDashboardWidgets");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionPriceVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SubscriptionFeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionFeatureId");
+
+                    b.ToTable("SubscriptionPriceVersions");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionRegisterUserAddonPriceVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SubscriptionFeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionFeatureId");
+
+                    b.ToTable("SubscriptionRegisterUserAddonPriceVersion");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionReportAddonPriceVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SubscriptionFeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionFeatureId");
+
+                    b.ToTable("SubscriptionReportAddonPriceVersions");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.ClientSubscription", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionFeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("SubscriptionFeature");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.DashboardModuleWidget", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.DashboardModule", "DashboardModule")
+                        .WithMany()
+                        .HasForeignKey("DashboardModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DashboardModule");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.Client", "Client")
@@ -469,6 +954,86 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Navigation("ReportControl");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeature", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.Subscription", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeatureAvailableReport", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.Report", "Report")
+                        .WithMany()
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
+                        .WithMany("SubscriptionFeatureAvailableReports")
+                        .HasForeignKey("SubscriptionFeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+
+                    b.Navigation("SubscriptionFeature");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeatureHideDashboardWidget", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.DashboardModuleWidget", "DashboardModuleWidget")
+                        .WithMany()
+                        .HasForeignKey("DashboardModuleWidgetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Beelina.LIB.Models.SubscriptionFeature", null)
+                        .WithMany("SubscriptionFeatureHideDashboardWidgets")
+                        .HasForeignKey("SubscriptionFeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DashboardModuleWidget");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionPriceVersion", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
+                        .WithMany("SubscriptionPriceVersions")
+                        .HasForeignKey("SubscriptionFeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionFeature");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionRegisterUserAddonPriceVersion", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
+                        .WithMany("SubscriptionRegisterUserAddonPriceVersions")
+                        .HasForeignKey("SubscriptionFeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionFeature");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionReportAddonPriceVersion", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.SubscriptionFeature", "SubscriptionFeature")
+                        .WithMany("SubscriptionReportAddonPriceVersions")
+                        .HasForeignKey("SubscriptionFeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionFeature");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.Report", b =>
                 {
                     b.Navigation("ReportControlsRelations");
@@ -477,6 +1042,19 @@ namespace Beelina.LIB.Migrations.BeelinaData
             modelBuilder.Entity("Beelina.LIB.Models.ReportControl", b =>
                 {
                     b.Navigation("ReportParameter");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeature", b =>
+                {
+                    b.Navigation("SubscriptionFeatureAvailableReports");
+
+                    b.Navigation("SubscriptionFeatureHideDashboardWidgets");
+
+                    b.Navigation("SubscriptionPriceVersions");
+
+                    b.Navigation("SubscriptionRegisterUserAddonPriceVersions");
+
+                    b.Navigation("SubscriptionReportAddonPriceVersions");
                 });
 #pragma warning restore 612, 618
         }

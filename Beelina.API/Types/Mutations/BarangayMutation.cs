@@ -13,42 +13,78 @@ namespace Beelina.API.Types.Mutations
     {
         [Authorize]
         public async Task<Barangay> UpdateBarangay(
-                [Service] IBarangayRepository<Barangay> barangayRepository,
-                [Service] IMapper mapper,
-                [Service] ICurrentUserService currentUserService,
-                BarangayInput barangayInput)
+            [Service] ILogger<BarangayMutation> logger,
+            [Service] IBarangayRepository<Barangay> barangayRepository,
+            [Service] IMapper mapper,
+            [Service] ICurrentUserService currentUserService,
+            BarangayInput barangayInput)
         {
-            var barangayFromRepo = await barangayRepository.GetEntity(barangayInput.Id).ToObjectAsync();
+            try
+            {
+                var barangayFromRepo = await barangayRepository.GetEntity(barangayInput.Id).ToObjectAsync();
 
-            if (barangayFromRepo is null)
-            {
-                var newBarangay = new Barangay { Id = barangayInput.Id, Name = barangayInput.Name, UserAccountId = currentUserService.CurrentUserId };
-                await barangayRepository.AddEntity(newBarangay);
-                return newBarangay;
+                if (barangayFromRepo is null)
+                {
+                    var newBarangay = new Barangay { Id = barangayInput.Id, Name = barangayInput.Name, UserAccountId = currentUserService.CurrentUserId };
+                    await barangayRepository.AddEntity(newBarangay);
+
+                    logger.LogInformation("New barangay has been created! Params: {@params}", newBarangay);
+                    return newBarangay;
+                }
+                else
+                {
+                    mapper.Map(barangayInput, barangayFromRepo);
+                    await barangayRepository.SaveChanges();
+
+                    logger.LogInformation("Barangay has been updated! Params: {@params}", barangayFromRepo);
+                    return barangayFromRepo;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                mapper.Map(barangayInput, barangayFromRepo);
-                await barangayRepository.SaveChanges();
-                return barangayFromRepo;
+                logger.LogError(ex, "Failed to manage barangay details! Params: {@params}", barangayInput);
+                throw new Exception($"Failed to manage barangay details: {ex.Message}");
             }
         }
 
         [Authorize]
         [Error(typeof(BarangayErrorFactory))]
-        public async Task<Barangay> DeleteBarangay([Service] IBarangayRepository<Barangay> barangayRepository, [Service] ICurrentUserService currentUserService, int barangayId)
+        public async Task<Barangay> DeleteBarangay(
+            [Service] ILogger<BarangayMutation> logger,
+            [Service] IBarangayRepository<Barangay> barangayRepository,
+            [Service] ICurrentUserService currentUserService,
+            int barangayId)
         {
-            var barangayFromRepo = await barangayRepository.GetEntity(barangayId).ToObjectAsync();
 
-            barangayRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+            try
+            {
+                var barangayFromRepo = await barangayRepository.GetEntity(barangayId).ToObjectAsync();
 
-            if (barangayFromRepo is null)
-                throw new BarangayNotExistsException(barangayId);
+                barangayRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
-            barangayRepository.DeleteEntity(barangayFromRepo);
-            await barangayRepository.SaveChanges();
+                if (barangayFromRepo is null)
+                    throw new BarangayNotExistsException(barangayId);
 
-            return barangayFromRepo;
+                barangayRepository.DeleteEntity(barangayFromRepo);
+                await barangayRepository.SaveChanges();
+
+                logger.LogInformation("Successfully deleted barangay. Params {@params}", new
+                {
+                    barangayId
+                });
+
+                return barangayFromRepo;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to delete barangay. Params {@params}", new
+                {
+                    barangayId
+                });
+
+                throw new Exception($"Failed to delete barangay. ${ex.Message}");
+            }
+
         }
     }
 }

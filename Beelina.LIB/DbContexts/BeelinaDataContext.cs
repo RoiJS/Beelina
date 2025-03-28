@@ -28,6 +28,16 @@ namespace Beelina.LIB.DbContexts
         public DbSet<ReportControl> ReportControls { get; set; }
         public DbSet<ReportControlsRelation> ReportControlsRelations { get; set; }
         public DbSet<ReportParameter> ReportParameters { get; set; }
+        public DbSet<DashboardModule> DashboardModules { get; set; }
+        public DbSet<DashboardModuleWidget> DashboardModuleWidgets { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<SubscriptionFeature> SubscriptionFeatures { get; set; }
+        public DbSet<ClientSubscription> ClientSubscriptions { get; set; }
+        public DbSet<SubscriptionPriceVersion> SubscriptionPriceVersions { get; set; }
+        public DbSet<SubscriptionRegisterUserAddonPriceVersion> SubscriptionRegisterUserAddonPriceVersion { get; set; }
+        public DbSet<SubscriptionReportAddonPriceVersion> SubscriptionReportAddonPriceVersions { get; set; }
+        public DbSet<SubscriptionFeatureAvailableReport> SubscriptionFeatureAvailableReports { get; set; }
+        public DbSet<SubscriptionFeatureHideDashboardWidget> SubscriptionFeatureHideDashboardWidgets { get; set; }
 
         #region "Override functions"
 

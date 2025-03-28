@@ -20,6 +20,8 @@ namespace Beelina.LIB.Interfaces
         Task<List<ProductStockAuditItem>> GetProductStockAuditItems(int productId, int userAccountId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate);
         Task<List<ProductStockAuditItem>> GetWarehouseProductStockAuditItems(int productId, int warehouseId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate);
         Task<List<Product>> GetProductsDetailList(int userId, string filterKeyWord = "");
+        Task<ProductStockPerWarehouse> ManageProductStockPerWarehouse(Product product, ProductInput productInput, int warehouseId, CancellationToken cancellationToken);
+        Task<ProductStockPerPanel> ManageProductStockPerPanel(Product product, ProductInput productInput, int userAccountId, CancellationToken cancellationToken);
         Task<Product> TransferProductStockFromOwnInventory(
             int userAccountId,
             int warehouseId,

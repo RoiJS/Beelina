@@ -14,6 +14,7 @@ namespace Beelina.API.Types.Mutations
         [Authorize]
         [Error(typeof(StoreErrorFactory))]
         public async Task<Store> UpdateStore(
+            [Service] ILogger<StoreMutation> logger,
             [Service] IBarangayRepository<Barangay> barangayRepository,
             [Service] IPaymentMethodRepository<PaymentMethod> paymentMethodRepository,
             [Service] IStoreRepository<Store> storeRepository,
@@ -21,69 +22,108 @@ namespace Beelina.API.Types.Mutations
             [Service] ICurrentUserService currentUserService,
             StoreInput storeInput)
         {
-            var storeFromRepo = await storeRepository
-                        .GetEntity(storeInput.Id)
-                        .ToObjectAsync();
-
-            var paymentMethodFromRepo = await paymentMethodRepository.GetPaymentMethodByName(storeInput.PaymentMethodInput.Name);
-            var barangayFromRepo = await barangayRepository.GetBarangayByName(storeInput.BarangayInput.Name, currentUserService.CurrentUserId);
-
-            storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-
-            if (storeFromRepo == null)
+            try
             {
-                storeFromRepo = mapper.Map<Store>(storeInput);
-            }
-            else
-            {
-                mapper.Map(storeInput, storeFromRepo);
-            }
+                var storeFromRepo = await storeRepository
+                                        .GetEntity(storeInput.Id)
+                                        .ToObjectAsync();
 
-            // Create new payment method if not exists.
-            if (paymentMethodFromRepo == null)
-            {
-                paymentMethodFromRepo = new PaymentMethod
+                var paymentMethodFromRepo = await paymentMethodRepository.GetPaymentMethodByName(storeInput.PaymentMethodInput.Name);
+                var barangayFromRepo = await barangayRepository.GetBarangayByName(storeInput.BarangayInput.Name, currentUserService.CurrentUserId);
+
+                storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+
+                if (storeFromRepo == null)
                 {
-                    Name = storeInput.PaymentMethodInput.Name
-                };
-
-                await paymentMethodRepository.AddEntity(paymentMethodFromRepo);
-            }
-
-            // Create new barangay if not exists.
-            if (barangayFromRepo == null)
-            {
-                barangayFromRepo = new Barangay
+                    storeFromRepo = mapper.Map<Store>(storeInput);
+                }
+                else
                 {
-                    Name = storeInput.BarangayInput.Name
-                };
+                    mapper.Map(storeInput, storeFromRepo);
+                }
 
-                await barangayRepository.AddEntity(barangayFromRepo);
+                // Create new payment method if not exists.
+                if (paymentMethodFromRepo == null)
+                {
+                    paymentMethodFromRepo = new PaymentMethod
+                    {
+                        Name = storeInput.PaymentMethodInput.Name
+                    };
+
+                    await paymentMethodRepository.AddEntity(paymentMethodFromRepo);
+                }
+
+                // Create new barangay if not exists.
+                if (barangayFromRepo == null)
+                {
+                    barangayFromRepo = new Barangay
+                    {
+                        Name = storeInput.BarangayInput.Name
+                    };
+
+                    await barangayRepository.AddEntity(barangayFromRepo);
+                }
+
+                storeFromRepo.PaymentMethodId = paymentMethodFromRepo.Id;
+                storeFromRepo.BarangayId = barangayFromRepo.Id;
+
+                await storeRepository.UpdateStore(storeFromRepo);
+
+                logger.LogInformation("Store was updated successfully. Params: {@params}", new
+                {
+                    storeFromRepo
+                });
+
+                return storeFromRepo;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to update store. Params: {@params}", new
+                {
+                    storeInput
+                });
+
+                throw new Exception($"Failed to update store. {ex.Message}");
             }
 
-            storeFromRepo.PaymentMethodId = paymentMethodFromRepo.Id;
-            storeFromRepo.BarangayId = barangayFromRepo.Id;
-
-            await storeRepository.UpdateStore(storeFromRepo);
-
-            return storeFromRepo;
         }
 
         [Authorize]
         [Error(typeof(StoreErrorFactory))]
-        public async Task<Store> DeleteStore([Service] IStoreRepository<Store> storeRepository, [Service] ICurrentUserService currentUserService, int storeId)
+        public async Task<Store> DeleteStore(
+            [Service] ILogger<StoreMutation> logger,
+            [Service] IStoreRepository<Store> storeRepository,
+            [Service] ICurrentUserService currentUserService, int storeId)
         {
-            var storeFromRepo = await storeRepository.GetEntity(storeId).ToObjectAsync();
+            try
+            {
+                var storeFromRepo = await storeRepository.GetEntity(storeId).ToObjectAsync();
 
-            storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
+                storeRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
-            if (storeFromRepo == null)
-                throw new StoreNotExistsException(storeId);
+                if (storeFromRepo == null)
+                    throw new StoreNotExistsException(storeId);
 
-            storeRepository.DeleteEntity(storeFromRepo);
-            await storeRepository.SaveChanges();
+                storeRepository.DeleteEntity(storeFromRepo);
+                await storeRepository.SaveChanges();
 
-            return storeFromRepo;
+                logger.LogInformation("Successfully deleted store information. Params: {@params}", new
+                {
+                    storeId
+                });
+
+                return storeFromRepo;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to delete store information. Params: {@params}", new
+                {
+                    storeId
+                });
+
+                throw new Exception($"Failed to delete store information. {ex.Message}");
+            }
+
         }
     }
 }

@@ -11,4 +11,8 @@ export class Supplier extends Entity implements IModelNode {
     this.code = '';
     this.name = '';
   }
+
+  get nameWithCode() {
+    return `${this.code} - ${this.name}`;
+  }
 }

@@ -82,12 +82,67 @@ export function migrationFactory() {
       // Define the schema for the 'paymentMethods' object store
       store.createIndex('createdById', 'createdById', { unique: false });
     },
+    12: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const clientSubscription = db.createObjectStore('clientSubscription', {
+        keyPath: 'id', autoIncrement: true
+      });
+
+      // Define the schema for the 'clientSubscription' object store
+      clientSubscription.createIndex('clientId', 'clientId', { unique: false });
+      clientSubscription.createIndex('subscriptionId', 'subscriptionId', { unique: false });
+      clientSubscription.createIndex('subscriptionName', 'subscriptionName', { unique: false });
+      clientSubscription.createIndex('subscriptionFeatureId', 'subscriptionFeatureId', { unique: false });
+      clientSubscription.createIndex('startDate', 'startDate', { unique: false });
+      clientSubscription.createIndex('endDate', 'endDate', { unique: false });
+      clientSubscription.createIndex('offlineModeActive', 'offlineModeActive', { unique: false });
+      clientSubscription.createIndex('productSkuMax', 'productSkuMax', { unique: false });
+      clientSubscription.createIndex('topProductsPageActive', 'topProductsPageActive', { unique: false });
+      clientSubscription.createIndex('customerAccountsMax', 'customerAccountsMax', { unique: false });
+      clientSubscription.createIndex('customersMax', 'customersMax', { unique: false });
+      clientSubscription.createIndex('dashboardDistributionPageActive', 'dashboardDistributionPageActive', { unique: false });
+      clientSubscription.createIndex('orderPrintActive', 'orderPrintActive', { unique: false });
+      clientSubscription.createIndex('sendReportEmailActive', 'sendReportEmailActive', { unique: false });
+      clientSubscription.createIndex('userAccountsMax', 'userAccountsMax', { unique: false });
+      clientSubscription.createIndex('registerUserAddOnActive', 'registerUserAddOnActive', { unique: false });
+      clientSubscription.createIndex('customReportAddOnActive', 'customReportAddOnActive', { unique: false });
+      clientSubscription.createIndex('currentSubscriptionPrice', 'currentSubscriptionPrice', { unique: false });
+      clientSubscription.createIndex('currentRegisterUserAddonPrice', 'currentRegisterUserAddonPrice', { unique: false });
+      clientSubscription.createIndex('currentCustomReportAddonPrice', 'currentCustomReportAddonPrice', { unique: false });
+
+      const subscriptionFeatureHideDashboardWidget = db.createObjectStore('subscriptionFeatureHideDashboardWidgets', {
+        keyPath: 'id', autoIncrement: true
+      });
+
+      subscriptionFeatureHideDashboardWidget.createIndex('subscriptionFeatureId', 'subscriptionFeatureId', { unique: false });
+      subscriptionFeatureHideDashboardWidget.createIndex('dashboardModuleWidgetId', 'dashboardModuleWidgetId', { unique: false });
+
+      const subscriptionFeatureAvailableReport = db.createObjectStore('subscriptionFeatureAvailableReports', {
+        keyPath: 'id', autoIncrement: true
+      });
+
+      subscriptionFeatureAvailableReport.createIndex('subscriptionFeatureId', 'subscriptionFeatureId', { unique: false });
+      subscriptionFeatureAvailableReport.createIndex('reportId', 'reportId', { unique: false });
+    },
+    13: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const store = transaction.objectStore('clientSubscription');
+
+      // Define the schema for the 'paymentMethods' object store
+      store.deleteIndex('productSKUMax');
+      store.createIndex('productSKUMax', 'productSKUMax', { unique: false });
+    },
+    14: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const store = transaction.objectStore('clientSubscription');
+
+      // Define the schema for the 'paymentMethods' object store
+      store.deleteIndex('productSkuMax');
+      store.createIndex('productSKUMax', 'productSKUMax', { unique: false });
+    },
   };
 }
 
 const dbConfig: DBConfig = {
   name: 'bizualLocalDb',
-  version: 11,
+  version: 14,
   objectStoresMeta: [
     {
       store: 'customerUsers',

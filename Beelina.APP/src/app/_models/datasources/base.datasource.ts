@@ -1,8 +1,5 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-
-import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 export class BaseDataSource<T> extends DataSource<T | undefined> {
   protected _pageSize = 100;

@@ -1,5 +1,7 @@
 export interface IBaseStateConnection {
   hasNextPage: boolean;
-  endCursor: string;
   filterKeyword: string;
+  endCursor?: string;
+  skip?: number;
+  take?: number;
 }

@@ -1,0 +1,84 @@
+<app-tool-bar [showBackButton]="false" [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
+
+<app-loader-layout [busy]="productWarehouseStockEntriesStore.isLoading()">
+  <div class="page-container slide-in-left-animation">
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "PURCHASE_ORDERS_PAGE.TITLE" | translate }}</label><br />
+      <span class="page-information-description">{{
+        "PURCHASE_ORDERS_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+
+    <app-search-field [filter]="true" (onSearch)="onSearch($event)" (onClear)="onClear()" (onFilter)="openFilter()"
+      [placeHolderTextIdentifier]="
+        'PURCHASE_ORDERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
+      "></app-search-field>
+
+    <div class="purchase-order-grid-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matSortActive="stockEntryDate"
+        matSortDisableClear matSortDirection="desc" (matSortChange)="onSortChange($event)">
+
+        <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Stock Entry Date Column -->
+        <ng-container matColumnDef="stockEntryDate">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="200">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.STOCK_ENTRY_DATE_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element"> {{element?.stockEntryDate | date }} </td>
+        </ng-container>
+
+        <!-- Reference No Column -->
+        <ng-container matColumnDef="referenceNo">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="400">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.REFERENCE_NO_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element"> {{element?.referenceNo}} </td>
+        </ng-container>
+
+        <!-- Plate No Column -->
+        <ng-container matColumnDef="plateNo">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="200">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.PLATE_NO_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element"> {{element?.plateNo}} </td>
+        </ng-container>
+
+        <!-- Supplier Column -->
+        <ng-container matColumnDef="supplierName">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="200">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.SUPPLIER_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element"> {{element?.supplier?.name}} </td>
+        </ng-container>
+
+        <!-- Notes Column -->
+        <ng-container matColumnDef="notes">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="600">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.NOTES_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element"> {{element?.notes}} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="200"> </th>
+          <td mat-cell *matCellDef="let element">
+            <div style="display: flex; justify-content: center; gap: 1em;">
+              <mat-icon (click)="goToPurchaseOrder(element.id)">edit</mat-icon>
+              <mat-icon (click)="removePurchaseOrder(element.id)">highlight_off</mat-icon>
+            </div>
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="columnDefinition; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnDefinition;"></tr>
+      </table>
+
+      <mat-paginator [pageSize]="10" (page)="onPageChange($event)"
+        [length]="productWarehouseStockEntriesStore.totalCount()" [pageSizeOptions]="[10, 20, 50, 100, 200, 500, 1000]"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </div>
+
+  <app-floating-button (tapButton)="addNewPurchasOrder()" [icon]="'add'"></app-floating-button>
+
+</app-loader-layout>

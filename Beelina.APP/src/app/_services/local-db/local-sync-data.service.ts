@@ -1,11 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 
 import { AuthService } from '../auth.service';
+import { LocalClientSubscriptionDbService } from './local-client-subscription-db.service';
 import { LocalProductsDbService } from './local-products-db.service';
 import { LocalCustomerAccountsDbService } from './local-customer-accounts-db.service';
 import { LocalCustomerStoresDbService } from './local-customer-stores-db.service';
 import { LocalPaymentMethodsDbService } from './local-payment-methods-db.service';
 import { LocalOrdersDbService } from './local-orders-db.service';
+import { LocalUserSettingsDbService } from './local-user-settings-db.service';
 
 import { User } from 'src/app/_models/user.model';
 import { NetworkService } from '../network.service';
@@ -16,11 +18,13 @@ import { NetworkService } from '../network.service';
 export class LocalSyncDataService {
 
   authService = inject(AuthService);
+  localClientSubsriptionDbService = inject(LocalClientSubscriptionDbService);
   localProductsDbService = inject(LocalProductsDbService);
   localCustomerAccountsDbService = inject(LocalCustomerAccountsDbService);
   localCustomerStoresDbService = inject(LocalCustomerStoresDbService);
   localPaymentMethodsDbService = inject(LocalPaymentMethodsDbService);
   localOrdersDbService = inject(LocalOrdersDbService);
+  localUserSettingsDbService = inject(LocalUserSettingsDbService);
   networkService = inject(NetworkService);
 
   constructor() { }
@@ -66,10 +70,12 @@ export class LocalSyncDataService {
   }
 
   async clearLocalData() {
+    await this.localUserSettingsDbService.clear();
     await this.localProductsDbService.clear();
     await this.localCustomerAccountsDbService.clear();
     await this.localCustomerStoresDbService.clear();
     await this.localPaymentMethodsDbService.clear();
+    await this.localClientSubsriptionDbService.clear();
   }
 
 }

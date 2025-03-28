@@ -1,4 +1,4 @@
-namespace Beelina.LIB.Helpers.Class
+namespace Beelina.LIB.Helpers.Classes
 {
     public class AppHostInfo
     {

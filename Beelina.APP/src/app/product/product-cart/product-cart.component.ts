@@ -22,6 +22,7 @@ import { AuthService } from 'src/app/_services/auth.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { InvoicePrintService } from 'src/app/_services/print/invoice-print.service';
 import { LocalOrdersDbService } from 'src/app/_services/local-db/local-orders-db.service';
+import { LogMessageService } from 'src/app/_services/log-message.service';
 import { NetworkService } from 'src/app/_services/network.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { ProductService } from 'src/app/_services/product.service';
@@ -52,6 +53,7 @@ import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.he
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
 import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
 import { PrintForSettingsEnum } from 'src/app/_enum/print-for-settings.enum';
@@ -107,6 +109,7 @@ export class ProductCartComponent
   formBuilder = inject(FormBuilder);
   invoicePrintService = inject(InvoicePrintService);
   localDraftOrdersDbService = inject(LocalOrdersDbService);
+  loggerService = inject(LogMessageService);
   notificationService = inject(NotificationService);
   networkService = inject(NetworkService);
   productService = inject(ProductService);
@@ -368,30 +371,64 @@ export class ProductCartComponent
   }
 
   saveAsDraft() {
-    this._orderForm.markAllAsTouched();
-    if (this._orderForm.valid) {
-      const transaction = new TransactionDto();
-      transaction.id = this._transactionId();
-      transaction.storeId = this._selectedCustomer().id;
-      transaction.status = TransactionStatusEnum.DRAFT;
-      transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
-      transaction.paid = this._orderForm.get('paid').value;
-      transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
-      transaction.discount = this._discountForm.get('discount').value;
-      transaction.transactionDate = DateFormatter.format(
-        this._orderForm.get('transactionDate').value
-      );
-      transaction.dueDate = DateFormatter.format(
-        this._orderForm.get('dueDate').value
-      );
-      transaction.productTransactions = this.productTransactions();
+
+    try {
+      this._orderForm.markAllAsTouched();
+      if (this._orderForm.valid) {
+        const transaction = new TransactionDto();
+        transaction.id = this._transactionId();
+        transaction.storeId = this._selectedCustomer().id;
+        transaction.status = TransactionStatusEnum.DRAFT;
+        transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+        transaction.paid = this._orderForm.get('paid').value;
+        transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+        transaction.discount = this._discountForm.get('discount').value;
+        transaction.transactionDate = DateFormatter.format(
+          this._orderForm.get('transactionDate').value
+        );
+        transaction.dueDate = DateFormatter.format(
+          this._orderForm.get('dueDate').value
+        );
+        transaction.productTransactions = this.productTransactions();
+
+        this.dialogService
+          .openConfirmation(
+            this._saveDraftTitle(),
+            this._saveDraftConfirmMessage()
+          )
+          .subscribe((result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
+              this.store.dispatch(
+                ProductTransactionActions.setSaveOrderLoadingState({
+                  state: true,
+                })
+              );
+              this.loaderLayoutComponent().label = this._saveDraftLoadingMessage();
+
+              if (this.isForLocalTransaction()) {
+                this.saveLocalDraftOrder(transaction);
+              } else {
+                this.saveDraftOrderToServer(transaction);
+              }
+            }
+          });
+      }
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
+  }
+
+  async syncLocalDraftOrder() {
+
+    try {
 
       this.dialogService
         .openConfirmation(
-          this._saveDraftTitle(),
-          this._saveDraftConfirmMessage()
+          this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.TITLE"),
+          this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.CONFIRM_MESSAGE"),
         )
-        .subscribe((result: ButtonOptions) => {
+        .subscribe(async (result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
             this.store.dispatch(
               ProductTransactionActions.setSaveOrderLoadingState({
@@ -400,119 +437,104 @@ export class ProductCartComponent
             );
             this.loaderLayoutComponent().label = this._saveDraftLoadingMessage();
 
-            if (this.isForLocalTransaction()) {
-              this.saveLocalDraftOrder(transaction);
+            // Make sure to save changes first before syncing.
+            const transaction = new TransactionDto();
+            transaction.id = this._transactionId();
+            transaction.storeId = this._selectedCustomer().id;
+            transaction.status = TransactionStatusEnum.DRAFT;
+            transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+            transaction.paid = this._orderForm.get('paid').value;
+            transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+            transaction.discount = this._discountForm.get('discount').value;
+            transaction.transactionDate = DateFormatter.format(
+              this._orderForm.get('transactionDate').value
+            );
+            transaction.dueDate = DateFormatter.format(
+              this._orderForm.get('dueDate').value
+            );
+            transaction.productTransactions = this.productTransactions();
+
+            await this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
+            await this.localDraftOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.DRAFT, [this._transactionId()]);
+
+            this.notificationService.openSuccessNotification(this.translateService.instant(
+              "DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.SUCCESS_MESSAGE"
+            ));
+
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+
+            this.storageService.remove('productTransactions');
+            this.store.dispatch(
+              ProductTransactionActions.resetProductTransactionState()
+            );
+
+            if (this._transactionId() === 0) {
+              this.router.navigate(['/product-catalogue']);
             } else {
-              this.saveDraftOrderToServer(transaction);
+              this.router.navigate(['/draft-transactions']);
             }
           }
         });
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
   }
 
-  async syncLocalDraftOrder() {
-    this.dialogService
-      .openConfirmation(
-        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.TITLE"),
-        this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.CONFIRM_MESSAGE"),
-      )
-      .subscribe(async (result: ButtonOptions) => {
-        if (result === ButtonOptions.YES) {
-          this.store.dispatch(
-            ProductTransactionActions.setSaveOrderLoadingState({
-              state: true,
-            })
-          );
-          this.loaderLayoutComponent().label = this._saveDraftLoadingMessage();
-
-          // Make sure to save changes first before syncing.
-          const transaction = new TransactionDto();
-          transaction.id = this._transactionId();
-          transaction.storeId = this._selectedCustomer().id;
-          transaction.status = TransactionStatusEnum.DRAFT;
-          transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
-          transaction.paid = this._orderForm.get('paid').value;
-          transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
-          transaction.discount = this._discountForm.get('discount').value;
-          transaction.transactionDate = DateFormatter.format(
-            this._orderForm.get('transactionDate').value
-          );
-          transaction.dueDate = DateFormatter.format(
-            this._orderForm.get('dueDate').value
-          );
-          transaction.productTransactions = this.productTransactions();
-
-          await this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
-          await this.localDraftOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.DRAFT, [this._transactionId()]);
-
-          this.notificationService.openSuccessNotification(this.translateService.instant(
-            "DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.SUCCESS_MESSAGE"
-          ));
-
-          this.store.dispatch(
-            ProductTransactionActions.setSaveOrderLoadingState({
-              state: false,
-            })
-          );
-
-          this.storageService.remove('productTransactions');
-          this.store.dispatch(
-            ProductTransactionActions.resetProductTransactionState()
-          );
-
-          if (this._transactionId() === 0) {
-            this.router.navigate(['/product-catalogue']);
-          } else {
-            this.router.navigate(['/draft-transactions']);
-          }
-        }
-      });
-  }
-
   saveAsBadOrder() {
-    this._orderForm.markAllAsTouched();
-    if (this._orderForm.valid) {
-      const transaction = new TransactionDto();
-      transaction.id = this._transactionId();
-      transaction.storeId = this._selectedCustomer().id;
-      transaction.status = TransactionStatusEnum.BAD_ORDER;
-      transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
-      transaction.paid = this._orderForm.get('paid').value;
-      transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
-      transaction.discount = this._discountForm.get('discount').value;
-      transaction.transactionDate = DateFormatter.format(
-        this._orderForm.get('transactionDate').value
-      );
-      transaction.dueDate = DateFormatter.format(
-        this._orderForm.get('dueDate').value
-      );
-      transaction.productTransactions = this.productTransactions();
 
-      this.dialogService
-        .openConfirmation(
-          this.translateService.instant(
-            'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.TITLE'
-          ),
-          this.translateService.instant(
-            'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.CONFIRM'
+    try {
+      this._orderForm.markAllAsTouched();
+      if (this._orderForm.valid) {
+        const transaction = new TransactionDto();
+        transaction.id = this._transactionId();
+        transaction.storeId = this._selectedCustomer().id;
+        transaction.status = TransactionStatusEnum.BAD_ORDER;
+        transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+        transaction.paid = this._orderForm.get('paid').value;
+        transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+        transaction.discount = this._discountForm.get('discount').value;
+        transaction.transactionDate = DateFormatter.format(
+          this._orderForm.get('transactionDate').value
+        );
+        transaction.dueDate = DateFormatter.format(
+          this._orderForm.get('dueDate').value
+        );
+        transaction.productTransactions = this.productTransactions();
+
+        this.dialogService
+          .openConfirmation(
+            this.translateService.instant(
+              'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.TITLE'
+            ),
+            this.translateService.instant(
+              'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.CONFIRM'
+            )
           )
-        )
-        .subscribe((result: ButtonOptions) => {
-          if (result === ButtonOptions.YES) {
-            this.store.dispatch(
-              ProductTransactionActions.setSaveOrderLoadingState({
-                state: true,
-              })
-            );
-            this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.LOADING_MESSAGE');
+          .subscribe((result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
+              this.store.dispatch(
+                ProductTransactionActions.setSaveOrderLoadingState({
+                  state: true,
+                })
+              );
+              this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.LOADING_MESSAGE');
 
-            if (this.isForLocalTransaction()) {
-              this.saveLocalBadOrder(transaction);
-            } else {
-              this.saveBadOrderToServer(transaction);
+              if (this.isForLocalTransaction()) {
+                this.saveLocalBadOrder(transaction);
+              } else {
+                this.saveBadOrderToServer(transaction);
+              }
             }
-          }
-        });
+          });
+      }
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
   }
 
@@ -523,40 +545,46 @@ export class ProductCartComponent
     const errorMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.ERROR_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.ERROR_MESSAGE');
     const loadingMessage = this.translateService.instant(paid ? 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_PAID_DIALOG.LOADING_MESSAGE' : 'TRANSACTION_DETAILS_PAGE.MARK_TRANSACTION_AS_UNPAID_DIALOG.LOADING_MESSAGE');
 
-    this.dialogService
-      .openConfirmation(title, confirmationMessage)
-      .subscribe((result: ButtonOptions) => {
-        if (result == ButtonOptions.YES) {
-          this.store.dispatch(
-            ProductTransactionActions.setSaveOrderLoadingState({
-              state: true,
-            })
-          );
-          this.loaderLayoutComponent().label = loadingMessage;
-          this.transactionService
-            .markTransactionsAsPaid([this._transactionId()], paid)
-            .subscribe({
-              next: () => {
-                this.store.dispatch(
-                  ProductTransactionActions.setSaveOrderLoadingState({
-                    state: false,
-                  })
-                );
-                this.notificationService.openSuccessNotification(successMessage);
-                this.router.navigate(['/order-transactions']);
-              },
+    try {
+      this.dialogService
+        .openConfirmation(title, confirmationMessage)
+        .subscribe((result: ButtonOptions) => {
+          if (result == ButtonOptions.YES) {
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: true,
+              })
+            );
+            this.loaderLayoutComponent().label = loadingMessage;
+            this.transactionService
+              .markTransactionsAsPaid([this._transactionId()], paid)
+              .subscribe({
+                next: () => {
+                  this.store.dispatch(
+                    ProductTransactionActions.setSaveOrderLoadingState({
+                      state: false,
+                    })
+                  );
+                  this.notificationService.openSuccessNotification(successMessage);
+                  this.router.navigate(['/order-transactions']);
+                },
 
-              error: () => {
-                this.store.dispatch(
-                  ProductTransactionActions.setSaveOrderLoadingState({
-                    state: false,
-                  })
-                );
-                this.notificationService.openErrorNotification(errorMessage);
-              },
-            });
-        }
-      });
+                error: () => {
+                  this.store.dispatch(
+                    ProductTransactionActions.setSaveOrderLoadingState({
+                      state: false,
+                    })
+                  );
+                  this.notificationService.openErrorNotification(errorMessage);
+                },
+              });
+          }
+        });
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
+
   }
 
   updateItemToCart(productId: number) {
@@ -566,8 +594,10 @@ export class ProductCartComponent
   }
 
   confirm() {
-    this._orderForm.markAllAsTouched();
-    if (!this._orderForm.valid) return;
+
+    try {
+      this._orderForm.markAllAsTouched();
+      if (!this._orderForm.valid) return;
 
     const transaction = new TransactionDto();
     transaction.id = this._transactionId();
@@ -585,132 +615,144 @@ export class ProductCartComponent
     );
     transaction.productTransactions = this.productTransactions();
 
-    this.store.dispatch(
-      ProductTransactionActions.setSaveOrderLoadingState({
-        state: true,
-      })
-    );
-    this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
-    this.productService
-      .validateProductionTransactionsQuantities([transaction])
-      .subscribe(
-        (productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
-          console.log(productsWithInsufficientQuantities);
-
-          this.store.dispatch(
-            ProductTransactionActions.setSaveOrderLoadingState({
-              state: false,
-            })
-          );
-          if (productsWithInsufficientQuantities.length > 0) {
-            let errorMessage = this.translateService.instant(
-              'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
-            );
-
-            const products = productsWithInsufficientQuantities[0].invalidProductTransactionOverallQuantities;
-
-            products.forEach((i) => {
-              errorMessage += `<strong>(${i.productCode})</strong> ${i.productName} <br>`;
-            });
-
-            this.dialogService.openAlert(
-              this.translateService.instant(
-                'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.TITLE'
-              ),
-              errorMessage
-            );
-
-            return;
-          }
-
-          this._dialogRef = this.bottomSheet.open(AgreementConfirmationComponent);
-
-          this._dialogRef
-            .afterDismissed()
-            .subscribe(
-              (data: {
-                confirm: boolean;
-                paid: boolean;
-              }) => {
-                if (!data) return;
-
-                if (data.confirm) {
-                  this._orderForm.get('paid').setValue(data.paid);
-                  this.proceedConfirm();
-                }
-              }
-            );
-        }
+      this.store.dispatch(
+        ProductTransactionActions.setSaveOrderLoadingState({
+          state: true,
+        })
       );
+      this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.LOADING_MESSAGE');
+      this.productService
+        .validateProductionTransactionsQuantities([transaction])
+        .subscribe(
+          (productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>) => {
+            console.log(productsWithInsufficientQuantities);
+
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+            if (productsWithInsufficientQuantities.length > 0) {
+              let errorMessage = this.translateService.instant(
+                'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.MESSAGE'
+              );
+
+              const products = productsWithInsufficientQuantities[0].invalidProductTransactionOverallQuantities;
+
+              products.forEach((i) => {
+                errorMessage += `<strong>(${i.productCode})</strong> ${i.productName} <br>`;
+              });
+
+              this.dialogService.openAlert(
+                this.translateService.instant(
+                  'PRODUCT_CART_PAGE.INSUFFICIENT_PRODUCT_QUANTITY_DIALOG.TITLE'
+                ),
+                errorMessage
+              );
+
+              return;
+            }
+
+            this._dialogRef = this.bottomSheet.open(AgreementConfirmationComponent);
+
+            this._dialogRef
+              .afterDismissed()
+              .subscribe(
+                (data: {
+                  confirm: boolean;
+                  paid: boolean;
+                }) => {
+                  if (!data) return;
+
+                  if (data.confirm) {
+                    this._orderForm.get('paid').setValue(data.paid);
+                    this.proceedConfirm();
+                  }
+                }
+              );
+          }
+        );
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
+
   }
 
   saveNewUpdate() {
-    this._orderForm.markAllAsTouched();
-    if (this._orderForm.valid) {
 
-      if (!this.transactionHasChanged()) return;
+    try {
+      this._orderForm.markAllAsTouched();
+      if (this._orderForm.valid) {
 
-      const transaction = new TransactionDto();
-      transaction.id = this._transactionId();
-      transaction.storeId = this._selectedCustomer().id;
-      transaction.status = this.transaction().status;
-      transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
-      transaction.paid = this._orderForm.get('paid').value;
-      transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
-      transaction.discount = this._discountForm.get('discount').value;
-      transaction.transactionDate = DateFormatter.format(
-        this._orderForm.get('transactionDate').value
-      );
-      transaction.dueDate = DateFormatter.format(
-        this._orderForm.get('dueDate').value
-      );
-      transaction.productTransactions = this.productTransactions();
+        if (!this.transactionHasChanged()) return;
 
-      this.dialogService
-        .openConfirmation(
-          this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.TITLE'),
-          this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.CONFIRM'),
-        )
-        .subscribe((result: ButtonOptions) => {
-          if (result === ButtonOptions.YES) {
-            this.store.dispatch(
-              ProductTransactionActions.setSaveOrderLoadingState({
-                state: true,
-              })
-            );
-            this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.LOADING_MESSAGE');
-            this._subscription.add(this.transactionService
-              .registerTransaction(transaction)
-              .subscribe({
+        const transaction = new TransactionDto();
+        transaction.id = this._transactionId();
+        transaction.storeId = this._selectedCustomer().id;
+        transaction.status = this.transaction().status;
+        transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+        transaction.paid = this._orderForm.get('paid').value;
+        transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+        transaction.discount = this._discountForm.get('discount').value;
+        transaction.transactionDate = DateFormatter.format(
+          this._orderForm.get('transactionDate').value
+        );
+        transaction.dueDate = DateFormatter.format(
+          this._orderForm.get('dueDate').value
+        );
+        transaction.productTransactions = this.productTransactions();
 
-                next: () => {
-                  this.notificationService.openSuccessNotification(this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.SUCCESS_MESSAGE'));
-                  this.store.dispatch(
-                    ProductTransactionActions.setSaveOrderLoadingState({
-                      state: false,
-                    })
-                  );
-                  this.storageService.remove('productTransactions');
-                  this.store.dispatch(
-                    ProductTransactionActions.resetProductTransactionState()
-                  );
+        this.dialogService
+          .openConfirmation(
+            this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.TITLE'),
+            this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.CONFIRM'),
+          )
+          .subscribe((result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
+              this.store.dispatch(
+                ProductTransactionActions.setSaveOrderLoadingState({
+                  state: true,
+                })
+              );
+              this.loaderLayoutComponent().label = this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.LOADING_MESSAGE');
+              this._subscription.add(this.transactionService
+                .registerTransaction(transaction)
+                .subscribe({
 
-                  this.router.navigate(['/order-transactions']);
-                },
+                  next: () => {
+                    this.notificationService.openSuccessNotification(this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.SUCCESS_MESSAGE'));
+                    this.store.dispatch(
+                      ProductTransactionActions.setSaveOrderLoadingState({
+                        state: false,
+                      })
+                    );
+                    this.storageService.remove('productTransactions');
+                    this.store.dispatch(
+                      ProductTransactionActions.resetProductTransactionState()
+                    );
 
-                error: () => {
-                  this.notificationService.openErrorNotification(this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.ERROR_MESSAGE'));
+                    this.router.navigate(['/order-transactions']);
+                  },
 
-                  this.store.dispatch(
-                    ProductTransactionActions.setSaveOrderLoadingState({
-                      state: false,
-                    })
-                  );
-                },
-              }));
-          }
-        });
+                  error: () => {
+                    this.notificationService.openErrorNotification(this.translateService.instant('PRODUCT_CART_PAGE.SAVE_NEW_UPDATE_DIALOG.ERROR_MESSAGE'));
+
+                    this.store.dispatch(
+                      ProductTransactionActions.setSaveOrderLoadingState({
+                        state: false,
+                      })
+                    );
+                  },
+                }));
+            }
+          });
+      }
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
+
   }
 
   registerPayment() {
@@ -780,28 +822,35 @@ export class ProductCartComponent
   }
 
   printReceipt() {
-    this._dialogPrintOptionRef = this.bottomSheet.open(PrintOptionDialogComponent);
 
-    this._dialogPrintOptionRef
-      .afterDismissed()
-      .subscribe(
-        async (data: {
-          printForSettingsEnum: PrintForSettingsEnum;
-        }) => {
-          if (!data) return;
-          this.store.dispatch(
-            ProductTransactionActions.setSaveOrderLoadingState({
-              state: true,
-            })
-          );
-          await this.invoicePrintService.printInvoice(this._transactionId(), data.printForSettingsEnum);
-          this.store.dispatch(
-            ProductTransactionActions.setSaveOrderLoadingState({
-              state: false,
-            })
-          );
-        }
-      );
+    try {
+      this._dialogPrintOptionRef = this.bottomSheet.open(PrintOptionDialogComponent);
+
+      this._dialogPrintOptionRef
+        .afterDismissed()
+        .subscribe(
+          async (data: {
+            printForSettingsEnum: PrintForSettingsEnum;
+          }) => {
+            if (!data) return;
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: true,
+              })
+            );
+            await this.invoicePrintService.printInvoice(this._transactionId(), data.printForSettingsEnum);
+            this.store.dispatch(
+              ProductTransactionActions.setSaveOrderLoadingState({
+                state: false,
+              })
+            );
+          }
+        );
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
+    }
+
   }
 
   ngOnDestroy() {
@@ -957,19 +1006,25 @@ export class ProductCartComponent
 
   private sendOrderReceiptEmailNotification(transactionId: number) {
     this.transactionService
-      .sendOrderReceiptEmailNotification(transactionId).subscribe();
+      .sendOrderReceiptEmailNotification(transactionId)
+      .subscribe();
   }
 
   private sendInvoiceEmailNotification(transactionId: number) {
-    if (this.userService.userSetting().allowSendReceipt && this.userService.userSetting().allowAutoSendReceipt) {
-      this.invoicePrintService
-        .sendInvoice(transactionId, PrintForSettingsEnum.CUSTOMER, (file: File) => {
-          this.transactionService.sendInvoiceTransaction(
-            transactionId,
-            this.authService.userId,
-            file
-          ).subscribe();
-        });
+    try {
+      if (this.userService.userSetting().allowSendReceipt && this.userService.userSetting().allowAutoSendReceipt) {
+        this.invoicePrintService
+          .sendInvoice(transactionId, PrintForSettingsEnum.CUSTOMER, (file: File) => {
+            this.transactionService.sendInvoiceTransaction(
+              transactionId,
+              this.authService.userId,
+              file
+            ).subscribe();
+          });
+      }
+    } catch (ex) {
+      console.error(ex);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
   }
 
