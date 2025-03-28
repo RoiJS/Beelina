@@ -27,6 +27,9 @@ namespace Beelina.LIB.Migrations
                 column: "UserAccountId",
                 principalTable: "UserAccounts",
                 principalColumn: "Id");
+
+            // Insert default user account id
+            migrationBuilder.Sql(@"UPDATE ProductWithdrawalEntries SET UserAccountId = 1 WHERE Id = 1;");
         }
 
         /// <inheritdoc />
@@ -43,6 +46,7 @@ namespace Beelina.LIB.Migrations
             migrationBuilder.DropColumn(
                 name: "UserAccountId",
                 table: "ProductWithdrawalEntries");
+
         }
     }
 }
