@@ -1,3 +1,4 @@
+import { NumberFormatter } from "../_helpers/formatters/number-formatter.helper";
 import { SubscriptionFeatureAvailableReport } from "./subscription-feature-available-report.model";
 import { SubscriptionFeatureHideDashboardWidget } from "./subscription-feature-hide-dashboard-widget.model";
 
@@ -5,6 +6,7 @@ export class ClientSubscriptionDetails {
   clientId: number;
   subscriptionId: number;
   subscriptionName: string;
+  description: string;
   subscriptionFeatureId: number;
   startDate: Date;
   endDate?: Date;
@@ -14,8 +16,9 @@ export class ClientSubscriptionDetails {
   customerAccountsMax: number;
   customersMax: number;
   dashboardDistributionPageActive: boolean;
-  orderPrintActive: number;
+  orderPrintActive: boolean;
   sendReportEmailActive: boolean;
+  allowExceedUserAccountsMax: boolean;
   userAccountsMax: number;
   registerUserAddOnActive: boolean;
   customReportAddOnActive: boolean;
@@ -24,4 +27,8 @@ export class ClientSubscriptionDetails {
   currentCustomReportAddonPrice: number;
   subscriptionFeatureHideDashboardWidgets: SubscriptionFeatureHideDashboardWidget[] = [];
   subscriptionFeatureAvailableReports: SubscriptionFeatureAvailableReport[] = [];
+
+  get formattedCurrentSubscriptionPrice() {
+    return NumberFormatter.formatCurrency(this.currentSubscriptionPrice);
+  }
 }

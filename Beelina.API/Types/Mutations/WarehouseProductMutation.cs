@@ -35,6 +35,12 @@ namespace Beelina.API.Types.Mutations
                 logger.LogInformation("Stock Receipt Entry has successfully deleted. Params: productId = {stockEntryReceiptId}", stockEntryReceiptId);
                 return stockEntryFromRepo;
             }
+            catch (ProductNotExistsException ex)
+            {
+                logger.LogError(ex, "Failed to delete Stock Receipt Entry. Params: productId = {stockEntryReceiptId}", stockEntryReceiptId);
+
+                throw new ProductNotExistsException(stockEntryReceiptId);
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to delete Stock Receipt Entry. Params: productId = {stockEntryReceiptId}", stockEntryReceiptId);

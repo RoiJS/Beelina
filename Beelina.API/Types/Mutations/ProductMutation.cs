@@ -34,6 +34,12 @@ namespace Beelina.API.Types.Mutations
                 logger.LogInformation("Product successfully deleted. Params: productId = {productId}", productId);
                 return productFromRepo;
             }
+            catch (ProductNotExistsException ex)
+            {
+                logger.LogError(ex, "Failed to delete product. Params: productId = {productId}", productId);
+
+                throw new ProductNotExistsException(productId);
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to delete product. Params: productId = {productId}", productId);
@@ -68,6 +74,12 @@ namespace Beelina.API.Types.Mutations
 
                 logger.LogInformation("Product Withdrawal Entry has successfully deleted. Params: withdrawalId = {withdrawalId}", withdrawalId);
                 return withdrawalEntryFromRepo;
+            }
+            catch (ProductWithdrawalNotExistsException ex)
+            {
+                logger.LogError(ex, "Failed to delete product withdrawal entry. Params: withdrawalId = {withdrawalId}", withdrawalId);
+
+                throw new ProductWithdrawalNotExistsException(withdrawalId);
             }
             catch (Exception ex)
             {
@@ -179,7 +191,7 @@ namespace Beelina.API.Types.Mutations
                 await using Stream stream = file.OpenReadStream();
                 var extractedProducts = await extractProductFileService.ReadFile(stream);
                 var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
-                var mapExtractedProductsResult = productRepository.MapProductImport(extractedProducts, warehouseProductsFromRepo);
+                var mapExtractedProductsResult = await productRepository.MapProductImport(extractedProducts, warehouseProductsFromRepo);
 
                 logger.LogInformation("Successfully extracted product excel file. Params: {@params}", new { warehouseId, file });
                 return mapExtractedProductsResult;

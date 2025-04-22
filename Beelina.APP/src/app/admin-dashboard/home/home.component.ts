@@ -1,10 +1,14 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
 import { DateFilterEnum, SalesComponent } from 'src/app/sales/sales.component';
 import { SalesChartViewComponent } from './sales-chart-view/sales-chart-view.component';
 import { SalesPerAgentViewComponent } from './sales-per-agent-view/sales-per-agent-view.component';
+import { LocalClientSubscriptionDbService } from 'src/app/_services/local-db/local-client-subscription-db.service';
+import { ClientSubscriptionDetails } from 'src/app/_models/client-subscription-details.model';
+import { SubscriptionFeatureHideDashboardWidget } from 'src/app/_models/subscription-feature-hide-dashboard-widget.model';
 
 @Component({
   selector: 'app-home',
@@ -15,10 +19,16 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
   @ViewChild(SalesChartViewComponent) salesChartView: SalesChartViewComponent;
   @ViewChild(SalesPerAgentViewComponent) salesPerAgentChartView: SalesPerAgentViewComponent;
 
+  clientSubscriptionDetails: ClientSubscriptionDetails;
   salesChartViewLoading: boolean;
   salesPerAgentChartViewLoading: boolean;
 
   private userId: number;
+
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
+
+  DASHBOARD_WIDGET_ID = 1;
+  hideSalesAgentDistributionWidget = signal<boolean>(false);
 
   constructor(
     protected override authService: AuthService,
@@ -30,8 +40,13 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
     this.userId = this.authService.user.value.id;
   }
 
-  override ngOnInit() {
+
+  override async ngOnInit() {
     super.ngOnInit();
+
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
+    const result = this.clientSubscriptionDetails?.subscriptionFeatureHideDashboardWidgets.findIndex((x: SubscriptionFeatureHideDashboardWidget) => x.dashboardWidgetId === this.DASHBOARD_WIDGET_ID) >= -1;
+    this.hideSalesAgentDistributionWidget.set(result);
   }
 
   dateRanges() {

@@ -11,13 +11,26 @@ import { ClientSubscriptionNotExistsError } from '../_models/errors/client-subsc
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { ClientSubscription } from '../_models/client-subscription';
 import { LocalClientSubscriptionDbService } from './local-db/local-client-subscription-db.service';
+import { StorageService } from './storage.service';
 
 const UPDATE_CLIENT_SUBSCRIPTION = gql`
   mutation($clientSubscriptionInput: ClientSubscriptionInput!) {
-      updateClientSubscription(input: { clientSubscriptionInput: $clientSubscriptionInput }){
-          boolean
+    updateClientSubscription(input: { clientSubscriptionInput: $clientSubscriptionInput }){
+      clientSubscription {
+          id
+          subscriptionFeatureId
+      }
+      errors {
+          __typename
+          ... on SubscriptionRegistrationAlreadyExistsError {
+              message
+          }
+          ... on BaseError {
+              message
+          }
       }
   }
+}
 `;
 
 const APPROVE_CLIENT_SUBSCRIPTION = gql`
@@ -29,46 +42,82 @@ const APPROVE_CLIENT_SUBSCRIPTION = gql`
 `;
 
 const GET_CLIENT_SUBSCRIPTION = gql`
- query($appSecretToken: String!, $startDate: String!) {
-    clientSubscriptionDetails(appSecretToken: $appSecretToken, startDate: $startDate) {
-        typename: __typename
-        ... on ClientSubscriptionDetailsResult {
-            clientId
-            subscriptionId
-            subscriptionName
-            startDate
-            endDate
-            currentCustomReportAddonPrice
-            currentRegisterUserAddonPrice
-            currentSubscriptionPrice
-            customerAccountsMax
-            customersMax
-            customReportAddOnActive
-            dashboardDistributionPageActive
-            offlineModeActive
-            orderPrintActive
-            productSKUMax
-            registerUserAddOnActive
-            sendReportEmailActive
+  query($appSecretToken: String!, $startDate: String!) {
+      clientSubscriptionDetails(appSecretToken: $appSecretToken, startDate: $startDate) {
+          typename: __typename
+          ... on ClientSubscriptionDetailsResult {
+              clientId
+              subscriptionId
+              subscriptionName
+              startDate
+              endDate
+              currentCustomReportAddonPrice
+              currentRegisterUserAddonPrice
+              currentSubscriptionPrice
+              customerAccountsMax
+              customersMax
+              customReportAddOnActive
+              dashboardDistributionPageActive
+              offlineModeActive
+              orderPrintActive
+              productSKUMax
+              registerUserAddOnActive
+              sendReportEmailActive
+              subscriptionFeatureId
+              topProductsPageActive
+              userAccountsMax
+              allowExceedUserAccountsMax
+              subscriptionFeatureAvailableReports {
+                  id
+                  reportId
+                  subscriptionFeatureId
+              }
+              subscriptionFeatureHideDashboardWidgets {
+                  id
+                  subscriptionFeatureId
+                  dashboardModuleWidgetId
+              }
+          }
+          ... on ClientSubscriptionNotExistsError {
+              message
+          }
+      }
+  }
+`;
+
+const GET_SUBSCRIPTIONS = gql`
+  query($subscriptionId: Int!) {
+    subscriptions(subscriptionId: $subscriptionId) {
+        subscriptionId
+        subscriptionName
+        description
+        currentCustomReportAddonPrice
+        currentRegisterUserAddonPrice
+        currentSubscriptionPrice
+        customerAccountsMax
+        customersMax
+        customReportAddOnActive
+        dashboardDistributionPageActive
+        offlineModeActive
+        orderPrintActive
+        productSKUMax
+        registerUserAddOnActive
+        sendReportEmailActive
+        subscriptionFeatureId
+        topProductsPageActive
+        userAccountsMax
+        subscriptionFeatureAvailableReports {
+            id
+            reportId
             subscriptionFeatureId
-            topProductsPageActive
-            userAccountsMax
-            subscriptionFeatureAvailableReports {
-                id
-                reportId
-                subscriptionFeatureId
-            }
-            subscriptionFeatureHideDashboardWidgets {
-                id
-                subscriptionFeatureId
-                dashboardModuleWidgetId
-            }
         }
-        ... on ClientSubscriptionNotExistsError {
-            message
+        subscriptionFeatureHideDashboardWidgets {
+            id
+            subscriptionFeatureId
+            dashboardModuleWidgetId
         }
     }
-}
+  }
 `;
 
 @Injectable({
@@ -78,6 +127,7 @@ export class SubscriptionService {
 
   apollo = inject(Apollo);
   localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
+  storageService = inject(StorageService);
 
   constructor() { }
 
@@ -116,6 +166,7 @@ export class SubscriptionService {
               clientSubscription.dashboardDistributionPageActive = currentClientSubscriptionDetailsResult.dashboardDistributionPageActive;
               clientSubscription.orderPrintActive = currentClientSubscriptionDetailsResult.orderPrintActive;
               clientSubscription.sendReportEmailActive = currentClientSubscriptionDetailsResult.sendReportEmailActive;
+              clientSubscription.allowExceedUserAccountsMax = currentClientSubscriptionDetailsResult.allowExceedUserAccountsMax;
               clientSubscription.userAccountsMax = currentClientSubscriptionDetailsResult.userAccountsMax;
               clientSubscription.registerUserAddOnActive = currentClientSubscriptionDetailsResult.registerUserAddOnActive;
               clientSubscription.customReportAddOnActive = currentClientSubscriptionDetailsResult.customReportAddOnActive;
@@ -140,10 +191,64 @@ export class SubscriptionService {
       );
   }
 
+  getSubscriptions(subscriptionId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_SUBSCRIPTIONS,
+        variables: {
+          subscriptionId
+        }
+      })
+      .valueChanges.pipe(
+        map(
+          async (
+            result: ApolloQueryResult<{
+              subscriptions: Array<ClientSubscriptionDetailsResult>;
+            }>
+          ) => {
+            const data = result.data.subscriptions;
+            const subscriptions: Array<ClientSubscriptionDetails> = [];
+
+            data.forEach((subscription: ClientSubscriptionDetailsResult) => {
+              const currentClientSubscriptionDetailsResult = subscription;
+              const clientSubscription = new ClientSubscriptionDetails();
+              clientSubscription.clientId = currentClientSubscriptionDetailsResult.clientId;
+              clientSubscription.subscriptionId = currentClientSubscriptionDetailsResult.subscriptionId;
+              clientSubscription.subscriptionName = currentClientSubscriptionDetailsResult.subscriptionName;
+              clientSubscription.description = currentClientSubscriptionDetailsResult.description;
+              clientSubscription.subscriptionFeatureId = currentClientSubscriptionDetailsResult.subscriptionFeatureId;
+              clientSubscription.startDate = currentClientSubscriptionDetailsResult.startDate;
+              clientSubscription.endDate = currentClientSubscriptionDetailsResult.endDate;
+              clientSubscription.offlineModeActive = currentClientSubscriptionDetailsResult.offlineModeActive;
+              clientSubscription.productSKUMax = currentClientSubscriptionDetailsResult.productSKUMax;
+              clientSubscription.topProductsPageActive = currentClientSubscriptionDetailsResult.topProductsPageActive;
+              clientSubscription.customerAccountsMax = currentClientSubscriptionDetailsResult.customerAccountsMax;
+              clientSubscription.customersMax = currentClientSubscriptionDetailsResult.customersMax;
+              clientSubscription.dashboardDistributionPageActive = currentClientSubscriptionDetailsResult.dashboardDistributionPageActive;
+              clientSubscription.orderPrintActive = currentClientSubscriptionDetailsResult.orderPrintActive;
+              clientSubscription.sendReportEmailActive = currentClientSubscriptionDetailsResult.sendReportEmailActive;
+              clientSubscription.userAccountsMax = currentClientSubscriptionDetailsResult.userAccountsMax;
+              clientSubscription.registerUserAddOnActive = currentClientSubscriptionDetailsResult.registerUserAddOnActive;
+              clientSubscription.customReportAddOnActive = currentClientSubscriptionDetailsResult.customReportAddOnActive;
+              clientSubscription.currentSubscriptionPrice = currentClientSubscriptionDetailsResult.currentSubscriptionPrice;
+              clientSubscription.currentRegisterUserAddonPrice = currentClientSubscriptionDetailsResult.currentRegisterUserAddonPrice;
+              clientSubscription.currentCustomReportAddonPrice = currentClientSubscriptionDetailsResult.currentCustomReportAddonPrice;
+              clientSubscription.subscriptionFeatureAvailableReports = currentClientSubscriptionDetailsResult.subscriptionFeatureAvailableReports;
+              clientSubscription.subscriptionFeatureHideDashboardWidgets = currentClientSubscriptionDetailsResult.subscriptionFeatureHideDashboardWidgets;
+              subscriptions.push(clientSubscription);
+            });
+
+            return subscriptions;
+          }
+        )
+      );
+  }
+
   updateClientSubscription(clientSubscription: ClientSubscription) {
+    const appSecretToken = this.storageService.getString('appSecretToken');
     const clientSubscriptionInput: IClientSubscriptionInput = {
       id: clientSubscription.id,
-      clientId: clientSubscription.clientId,
+      clientId: appSecretToken,
       subscriptionFeatureId: clientSubscription.subscriptionFeatureId,
       startDate: clientSubscription.startDate,
       endDate: clientSubscription.endDate,
@@ -176,9 +281,10 @@ export class SubscriptionService {
   }
 
   approveClientSubscription(clientSubscription: ClientSubscription) {
+    const appSecretToken = this.storageService.getString('appSecretToken');
     const clientSubscriptionInput: IClientSubscriptionInput = {
       id: clientSubscription.id,
-      clientId: clientSubscription.clientId,
+      clientId: appSecretToken,
       subscriptionFeatureId: clientSubscription.subscriptionFeatureId,
       startDate: clientSubscription.startDate,
       endDate: clientSubscription.endDate,

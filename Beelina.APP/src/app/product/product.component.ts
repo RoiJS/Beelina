@@ -53,6 +53,10 @@ import { ProductWithdrawalEntry } from '../_models/product-withdrawal-entry';
 import { ProductStockAudit } from '../_models/product-stock-audit';
 import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 
+import { ApplySubscriptionService } from '../_services/apply-subscription.service';
+import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
+import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
+
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
@@ -95,10 +99,13 @@ export class ProductComponent
 
   _subscription: Subscription = new Subscription();
   _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
+  clientSubscriptionDetails: ClientSubscriptionDetails;
 
+  applySubscriptionService = inject(ApplySubscriptionService);
   authService = inject(AuthService);
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
   localProductsDbService = inject(LocalProductsDbService);
   localSyncDataService = inject(LocalSyncDataService);
   networkService = inject(NetworkService);
@@ -177,8 +184,9 @@ export class ProductComponent
     }
   }
 
-  override ngOnInit() {
+  override async ngOnInit() {
     super.ngOnInit();
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
   }
 
   override ngOnDestroy() {
@@ -269,7 +277,11 @@ export class ProductComponent
   }
 
   addProduct() {
-    this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Panel } });
+    if (this.totalProductCount() <= this.clientSubscriptionDetails.productSKUMax) {
+      this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Panel } });
+    } else {
+      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", {productSKUMax: this.clientSubscriptionDetails.productSKUMax}));
+    }
   }
 
   addItemToCart(productId: number) {

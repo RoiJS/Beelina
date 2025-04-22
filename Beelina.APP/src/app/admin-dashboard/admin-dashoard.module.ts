@@ -35,14 +35,6 @@ import { TranslateModule } from '@ngx-translate/core';
           {
             path: 'insights',
             loadChildren: () => import('./insights/insights.module').then(m => m.InsightsModule),
-          },
-          {
-            path: 'insights',
-            loadChildren: () => import('./insights/insights.module').then(m => m.InsightsModule),
-          },
-          {
-            path: 'reports',
-            loadChildren: () => import('./reports-admin/reports-admin.module').then(m => m.ReportsAdminModule),
           }
         ]
       },

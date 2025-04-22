@@ -75,6 +75,15 @@ namespace Beelina.API.Types.Mutations
 
                 return barangayFromRepo;
             }
+            catch (BarangayNotExistsException ex)
+            {
+                logger.LogError(ex, "Failed to delete barangay. Params {@params}", new
+                {
+                    barangayId
+                });
+
+                throw new BarangayNotExistsException(barangayId);
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to delete barangay. Params {@params}", new

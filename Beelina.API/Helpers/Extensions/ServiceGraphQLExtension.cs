@@ -58,6 +58,10 @@ namespace Beelina.API.Helpers.Extensions
                     .AddType<ProductWithdrawalEntryResult>()
                     .AddType<ProductStockWarehouseAuditResult>()
                     .AddType<SyncDatabaseResult>()
+                    .AddType<CheckProductCodeInformationResult>()
+                    .AddType<CheckPurchaseOrderCodeInformationResult>()
+                    .AddType<CheckSupplierCodeInformationResult>()
+                    .AddType<CheckProductWithdrawalCodeInformationResult>()
                     .AddType<StoreNotExistsError>()
                     .AddType<BarangayNotExistsError>()
                     .AddType<ProductFailedRegisterError>()
@@ -69,12 +73,9 @@ namespace Beelina.API.Helpers.Extensions
                     .AddType<ProductWarehouseStockReceiptEntryNotExistsError>()
                     .AddType<ProductWithdrawalEntryNotExistsError>()
                     .AddType<SystemUpdateActiveError>()
-                    .AddType<CheckProductCodeInformationResult>()
-                    .AddType<CheckPurchaseOrderCodeInformationResult>()
-                    .AddType<CheckSupplierCodeInformationResult>()
-                    .AddType<CheckProductWithdrawalCodeInformationResult>()
-                    .AddType<UploadType>()
-                    .AddType<ClientNotExistsError>();
+                    .AddType<SubscriptionRegistrationAlreadyExistsError>()
+                    .AddType<ClientNotExistsError>()
+                    .AddType<UploadType>();
         }
     }
 }

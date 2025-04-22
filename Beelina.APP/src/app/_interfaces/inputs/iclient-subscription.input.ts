@@ -1,6 +1,6 @@
 export interface IClientSubscriptionInput {
   id: number;
-  clientId: number;
+  clientId: string;
   subscriptionFeatureId: number;
   startDate: string;
   endDate: string;
