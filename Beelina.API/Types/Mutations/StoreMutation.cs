@@ -114,6 +114,15 @@ namespace Beelina.API.Types.Mutations
 
                 return storeFromRepo;
             }
+            catch (StoreNotExistsException ex)
+            {
+                logger.LogError(ex, "Failed to delete store information. Params: {@params}", new
+                {
+                    storeId
+                });
+
+                throw new StoreNotExistsException(storeId);
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to delete store information. Params: {@params}", new

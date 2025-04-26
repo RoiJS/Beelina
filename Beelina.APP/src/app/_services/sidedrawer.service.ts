@@ -6,16 +6,25 @@ import {
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
 import { NetworkService } from './network.service';
+import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
+import { LocalClientSubscriptionDbService } from './local-db/local-client-subscription-db.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SidedrawerService {
   mainMenu: IMenu[] = [];
+  clientSubscriptionDetails: ClientSubscriptionDetails;
+
   private _currentUserPermissionLevel: number;
   private _networkService = inject(NetworkService);
+  private _localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
 
-  constructor() { }
+  constructor() {
+    (async () => {
+      this.clientSubscriptionDetails = await this._localClientSubscriptionDbService.getLocalClientSubsription();
+    })();
+  }
 
   setCurrentUserPrivileges(userPermissionLevel: number) {
     this._currentUserPermissionLevel = userPermissionLevel;
@@ -41,7 +50,8 @@ export class SidedrawerService {
         icon: 'monetization_on',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.TOP_PRODUCTS',
@@ -49,7 +59,8 @@ export class SidedrawerService {
         icon: 'trending_up',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: this.clientSubscriptionDetails?.topProductsPageActive,
       },
       {
         name: 'MAIN_MENU.PRODUCTS_CATALOGUE',
@@ -57,7 +68,8 @@ export class SidedrawerService {
         icon: 'add_shopping_cart',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: managerPermissionLevel,
-        supportOffline: true
+        supportOffline: true,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.DRAFT_ORDERS',
@@ -65,7 +77,8 @@ export class SidedrawerService {
         icon: 'archive',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: true
+        supportOffline: true,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.CONFIRMED_ORDERS',
@@ -73,7 +86,8 @@ export class SidedrawerService {
         icon: 'check_circle_outline',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.BAD_ORDERS',
@@ -81,7 +95,8 @@ export class SidedrawerService {
         icon: 'remove_shopping_cart',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: true
+        supportOffline: true,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.CUSTOMER_ACCOUNTS',
@@ -89,7 +104,8 @@ export class SidedrawerService {
         icon: 'place',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.DASHBOARD',
@@ -97,7 +113,8 @@ export class SidedrawerService {
         icon: 'bar_chart',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.WAREHOUSE_PRODUCTS',
@@ -105,7 +122,8 @@ export class SidedrawerService {
         icon: 'add_shopping_cart',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.PURCHASE_ORDERS',
@@ -113,7 +131,8 @@ export class SidedrawerService {
         icon: 'description',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.PRODUCT_WITHDRAWALS',
@@ -121,7 +140,8 @@ export class SidedrawerService {
         icon: 'description',
         minimumPermissionLevel: managerPermissionLevel,
         maximumPermissionLevel: managerPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.ORDER_TRANSACTIONS',
@@ -129,7 +149,8 @@ export class SidedrawerService {
         icon: 'assignment',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.SUPPLIERS',
@@ -137,7 +158,8 @@ export class SidedrawerService {
         icon: 'local_mall',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.ACCOUNTS',
@@ -145,7 +167,8 @@ export class SidedrawerService {
         icon: 'person_pin',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.REPORTS',
@@ -153,7 +176,8 @@ export class SidedrawerService {
         icon: 'bar_chart',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       {
         name: 'MAIN_MENU.SETTINGS',
@@ -161,7 +185,8 @@ export class SidedrawerService {
         icon: 'settings',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: false
+        supportOffline: false,
+        visible: true,
       },
       // {
       //   name: 'MAIN_MENU.MANUAL',
@@ -175,7 +200,8 @@ export class SidedrawerService {
         name: 'MAIN_MENU.LOGOUT',
         url: '/logout',
         icon: 'remove_circle_outline',
-        supportOffline: true
+        supportOffline: true,
+        visible: true,
       },
     ];
 
@@ -191,10 +217,14 @@ export class SidedrawerService {
         m.maximumPermissionLevel >= this._currentUserPermissionLevel
     );
 
+    // Filter based on visible attribute.
+    this.mainMenu = this.mainMenu.filter(m => m.visible);
+
     // Filter menu based on the online/offline support
     if (!this._networkService.isOnline.value) {
       this.mainMenu = this.mainMenu.filter((m) => m.supportOffline);
     }
+
     return this.mainMenu;
   }
 }

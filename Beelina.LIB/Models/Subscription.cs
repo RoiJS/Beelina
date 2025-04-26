@@ -6,5 +6,7 @@ namespace Beelina.LIB.Models
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public List<SubscriptionFeature> SubscriptionFeatures { get; set; }
     }
 }

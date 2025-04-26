@@ -9,6 +9,7 @@ namespace Beelina.LIB.GraphQL.Results
         public int ClientId { get; set; }
         public int SubscriptionId { get; set; }
         public string SubscriptionName { get; set; }
+        public string Description { get; set; }
         public int SubscriptionFeatureId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -18,8 +19,9 @@ namespace Beelina.LIB.GraphQL.Results
         public int CustomerAccountsMax { get; set; }
         public int CustomersMax { get; set; }
         public bool DashboardDistributionPageActive { get; set; }
-        public int OrderPrintActive { get; set; }
+        public bool OrderPrintActive { get; set; }
         public bool SendReportEmailActive { get; set; }
+        public bool AllowExceedUserAccountsMax { get; set; }
         public int UserAccountsMax { get; set; }
         public bool RegisterUserAddOnActive { get; set; }
         public bool CustomReportAddOnActive { get; set; }

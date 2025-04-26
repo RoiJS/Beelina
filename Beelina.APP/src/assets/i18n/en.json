@@ -47,7 +47,8 @@
     "SYNC": "Sync",
     "ADD_ITEM": "+ Add Item",
     "ONLINE_MESSAGE": "You are back online. You are now using bizual online mode.",
-    "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode."
+    "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode.",
+    "SUBSCRIBE": "Subscribe"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -1560,6 +1561,23 @@
       "SUCCESS_MESSAGE": "New updates have been sucessfully saved!",
       "ERROR_MESSAGE": "Failed to save settings. Please try again later!"
     }
+  },
+  "SUBSCRIPTION_TEXTS": {
+    "APPLY_SUBSCRIPTION_HEADER_LABEL": "Apply Subscription",
+    "SUBSCRIPTION_CAPTION_1": "You are currently subscribed to",
+    "SUBSCRIPTION_CAPTION_2": "Try subscribing to other subscription type to take advantage of the other advanced features in Bizual.",
+    "APPLY_SUBSCRIPTION_CONFIRMATION_MESSAGE": "You are about the send request to subscribe to {{subscriptionName}}. Are you sure so proceed?",
+    "APPLY_SUBSCRIPTION_SUCCESS_MESSAGE": "Your request has been sent. We will try to review it as soon as possible. You can continue using Bizual {{subscriptionName}} for now.",
+    "APPLY_SUBSCRIPTION_INVITATION_MESSAGE": "Subscribe to a subscription plan to unlock this feature.",
+    "USER_REGISTRATION_EXCEEDS_LIMIT_WARNING": "You will be exceeding the maximum allowed user accounts. Registering more user account will result in additional charges.",
+    "USER_REGISTRATION_EXCEEDS_LIMIT_ERROR": "You can only register up to {{userAccountsMax}} user accounts.",
+    "DASHBOARD_DISTRIBUTION_PAGE_ACTIVE_NO_ACCESS_ERROR": "You don't have access to access this page.",
+    "CUSTOMER_ACCOUNTS_LIMIT_ERROR": "You can only add up to {{customerAccountsMax}} customer accounts.",
+    "CUSTOMER_LIMIT_ERROR": "You can only add up to {{customersMax}} customers.",
+    "PRINTING_INVOICE_ERROR": "Printing invoice is not activated.",
+    "PRODUCT_REGISTRATION_LIMIT_ERROR": "You can only register up to {{productSKUMax}} products.",
+    "SEND_EMAIL_REPORT_ERROR": "Sending invoice via email is not activated.",
+    "OFFLINE_MODE_ERROR": "You are currently offline. Bizual is not avalable in offline mode for free version."
   },
   "DASHBOARD_ADMIN": {
     "TITLE": "Dashboard",

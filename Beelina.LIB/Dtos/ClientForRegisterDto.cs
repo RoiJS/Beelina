@@ -9,7 +9,6 @@ namespace Beelina.LIB.Dtos
         public string Description { get; set; }
         [Required]
         public string FirstName { get; set; }
-        [Required]
         public string MiddleName { get; set; }
         [Required]
         public string LastName { get; set; }
@@ -18,5 +17,6 @@ namespace Beelina.LIB.Dtos
         public string EmailAddress { get; set; }
         public string ContactNumber { get; set; }
         public bool AutoSendEmail { get; set; } = false;
+        public int SubscriptionFeatureId { get; set; }
     }
 }

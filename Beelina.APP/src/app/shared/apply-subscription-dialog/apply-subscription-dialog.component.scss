@@ -1,0 +1,22 @@
+@import "../../../app-variables";
+
+.apply-subscription-dialog-container {
+  .subscription-tile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &__item {
+      box-shadow: 4px 2px 4px rgba(0, 0, 0, 0.3294117647);
+      padding: 0.8em;
+      border: 1px solid $alt-border-color;
+      border-radius: 5px;
+      margin-bottom: 1em;
+
+      .header-info {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

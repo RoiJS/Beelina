@@ -64,6 +64,10 @@ import { InvalidProductTransactionOverallQuantitiesTransactions } from 'src/app/
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 
+import { ApplySubscriptionService } from 'src/app/_services/apply-subscription.service';
+import { ClientSubscriptionDetails } from 'src/app/_models/client-subscription-details.model';
+import { LocalClientSubscriptionDbService } from 'src/app/_services/local-db/local-client-subscription-db.service';
+
 @Component({
   selector: 'app-product-cart',
   templateUrl: './product-cart.component.html',
@@ -108,6 +112,10 @@ export class ProductCartComponent
   dialogService = inject(DialogService);
   formBuilder = inject(FormBuilder);
   invoicePrintService = inject(InvoicePrintService);
+  clientSubscriptionDetails: ClientSubscriptionDetails;
+
+  applySubscriptionService = inject(ApplySubscriptionService);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
   localDraftOrdersDbService = inject(LocalOrdersDbService);
   loggerService = inject(LogMessageService);
   notificationService = inject(NotificationService);
@@ -161,9 +169,10 @@ export class ProductCartComponent
     });
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
+    this.applySubscriptionService.setBottomSheet(this.bottomSheet);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     const barangayControl = this._orderForm.get('barangay');
     const nameControl = this._orderForm.get('name');
     const addressControl = this._orderForm.get('address');
@@ -173,6 +182,7 @@ export class ProductCartComponent
     addressControl.disable();
 
     this._transactionId.set(+this.activatedRoute.snapshot.paramMap.get('id'));
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
 
     if (this._transactionId() > 0) {
       this.store.dispatch(
@@ -599,21 +609,21 @@ export class ProductCartComponent
       this._orderForm.markAllAsTouched();
       if (!this._orderForm.valid) return;
 
-    const transaction = new TransactionDto();
-    transaction.id = this._transactionId();
-    transaction.storeId = this._selectedCustomer().id;
-    transaction.status = TransactionStatusEnum.CONFIRMED;
-    transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
-    transaction.paid = this._orderForm.get('paid').value;
-    transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
-    transaction.discount = this._discountForm.get('discount').value;
-    transaction.transactionDate = DateFormatter.format(
-      this._orderForm.get('transactionDate').value
-    );
-    transaction.dueDate = DateFormatter.format(
-      this._orderForm.get('dueDate').value
-    );
-    transaction.productTransactions = this.productTransactions();
+      const transaction = new TransactionDto();
+      transaction.id = this._transactionId();
+      transaction.storeId = this._selectedCustomer().id;
+      transaction.status = TransactionStatusEnum.CONFIRMED;
+      transaction.modeOfPayment = this._orderForm.get('paymentMethod').value;
+      transaction.paid = this._orderForm.get('paid').value;
+      transaction.invoiceNo = this._orderForm.get('invoiceNo').value;
+      transaction.discount = this._discountForm.get('discount').value;
+      transaction.transactionDate = DateFormatter.format(
+        this._orderForm.get('transactionDate').value
+      );
+      transaction.dueDate = DateFormatter.format(
+        this._orderForm.get('dueDate').value
+      );
+      transaction.productTransactions = this.productTransactions();
 
       this.store.dispatch(
         ProductTransactionActions.setSaveOrderLoadingState({
@@ -822,6 +832,11 @@ export class ProductCartComponent
   }
 
   printReceipt() {
+
+    if (!this.clientSubscriptionDetails.orderPrintActive) {
+      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRINTING_INVOICE_ERROR"));
+      return;
+    }
 
     try {
       this._dialogPrintOptionRef = this.bottomSheet.open(PrintOptionDialogComponent);

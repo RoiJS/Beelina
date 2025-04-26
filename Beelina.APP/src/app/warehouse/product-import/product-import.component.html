@@ -116,7 +116,13 @@
                   <th mat-header-cell *matHeaderCellDef>{{
                     'WAREHOUSE_PRODUCT_IMPORT_PAGE.IMPORT_PRODUCTS_SECTION.SECOND_STEP_SECTION.FAILED_PRODUCTS_EXTRACTED_SECTION.TABLE_RESULT_SECTION.FIELDS.ROW_NUMBER'
                     | translate }} </th>
-                  <td mat-cell *matCellDef="let element"> {{element.rowNumber}} </td>
+                  <td mat-cell *matCellDef="let element">
+                    @if(element.rowNumber > 0) {
+                    {{element.rowNumber}}
+                    } @else {
+                    N/A
+                    }
+                  </td>
                 </ng-container>
 
                 <!-- Message Column -->

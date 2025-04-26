@@ -1,65 +1,81 @@
-import { Component, OnInit } from '@angular/core';
-import { Store, select } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 
 import * as UserAccountActions from '../accounts/store/actions';
 import { filterKeywordSelector, isLoadingSelector, totalCountSelector } from './store/selectors';
 
+import { ButtonOptions } from '../_enum/button-options.enum';
+import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { UserAccountDataSource } from '../_models/datasources/user-account.datasource';
 import { User } from '../_models/user.model';
+
+import { ApplySubscriptionService } from '../_services/apply-subscription.service';
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
-import { NotificationService } from '../shared/ui/notification/notification.service';
-import { ButtonOptions } from '../_enum/button-options.enum';
+import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
 import { UserAccountService } from '../_services/user-account.service';
+import { NotificationService } from '../shared/ui/notification/notification.service';
 
 @Component({
   selector: 'app-accounts',
   templateUrl: './accounts.component.html',
   styleUrls: ['./accounts.component.scss']
 })
-export class AccountsComponent extends BaseComponent implements OnInit {
+export class AccountsComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {
   private _dataSource: UserAccountDataSource;
-  private _filterKeyword: string;
-  private _totalUserAccountCount: number;
+  private _filterKeyword = signal<string>('');
+  private _totalUserAccountCount = signal<number>(0);
   private _subscription: Subscription = new Subscription();
 
-  constructor(
-    private userAccountService: UserAccountService,
-    private dialogService: DialogService,
-    private notificationService: NotificationService,
-    private router: Router,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService
-  ) {
+  clientSubscriptionDetails: ClientSubscriptionDetails;
+
+  applySubscriptionService = inject(ApplySubscriptionService);
+  bottomSheet = inject(MatBottomSheet);
+  dialogService = inject(DialogService);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
+  notificationService = inject(NotificationService);
+  store = inject(Store<AppStateInterface>);
+  router = inject(Router);
+  translateService = inject(TranslateService);
+  userAccountService = inject(UserAccountService);
+
+  constructor() {
     super();
     this.store.dispatch(UserAccountActions.resetUserAccountsState());
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
     this._dataSource = new UserAccountDataSource(this.store);
+    this.applySubscriptionService.setBottomSheet(this.bottomSheet);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.store.dispatch(UserAccountActions.getUserAccountsAction());
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
   }
 
   ngAfterViewInit() {
     this._subscription.add(
       this.store.pipe(select(filterKeywordSelector))
         .subscribe((filterKeyword: string) => {
-          this._filterKeyword = filterKeyword;
+          this._filterKeyword.set(filterKeyword);
         })
     );
 
     this._subscription.add(
       this.store.pipe(select(totalCountSelector))
         .subscribe((totalCount: number) => {
-          this._totalUserAccountCount = totalCount;
+          this._totalUserAccountCount.set(totalCount);
         })
     );
+  }
+
+  ngOnDestroy() {
+    this._subscription.unsubscribe();
   }
 
   onSearch(filterKeyword: string) {
@@ -75,6 +91,13 @@ export class AccountsComponent extends BaseComponent implements OnInit {
   }
 
   addUserAccount() {
+    if (this._totalUserAccountCount() >= this.clientSubscriptionDetails.userAccountsMax) {
+      if (!this.clientSubscriptionDetails.allowExceedUserAccountsMax) {
+        this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.USER_REGISTRATION_EXCEEDS_LIMIT_ERROR", {userAccountsMax: this.clientSubscriptionDetails.userAccountsMax}));
+        return;
+      }
+    }
+
     this.router.navigate(['/accounts/manage-user-account-details']);
   }
 
@@ -146,11 +169,11 @@ export class AccountsComponent extends BaseComponent implements OnInit {
   }
 
   get filterKeyword(): string {
-    return this._filterKeyword;
+    return this._filterKeyword();
   }
 
   get totalUserAccounts(): number {
-    return this._totalUserAccountCount;
+    return this._totalUserAccountCount();
   }
 
   get dataSource(): UserAccountDataSource {

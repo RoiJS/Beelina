@@ -61,7 +61,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("Barangays");
+                    b.ToTable("Barangays", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GeneralSetting", b =>
@@ -145,7 +145,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("GeneralSettings");
+                    b.ToTable("GeneralSettings", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Payment", b =>
@@ -210,7 +210,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.PaymentMethod", b =>
@@ -244,7 +244,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentMethods");
+                    b.ToTable("PaymentMethods", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Product", b =>
@@ -326,7 +326,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockAudit", b =>
@@ -411,7 +411,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductStockAudits");
+                    b.ToTable("ProductStockAudits", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockPerPanel", b =>
@@ -478,7 +478,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("ProductStockPerPanels");
+                    b.ToTable("ProductStockPerPanels", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockPerWarehouse", b =>
@@ -542,7 +542,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("WarehouseId");
 
-                    b.ToTable("ProductStockPerWarehouse");
+                    b.ToTable("ProductStockPerWarehouse", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductStockWarehouseAudit", b =>
@@ -627,7 +627,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductStockWarehouseAudit");
+                    b.ToTable("ProductStockWarehouseAudit", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductTransaction", b =>
@@ -697,7 +697,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductTransactions");
+                    b.ToTable("ProductTransactions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductTransactionQuantityHistory", b =>
@@ -736,7 +736,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("ProductTransactionId");
 
-                    b.ToTable("ProductTransactionQuantityHistory");
+                    b.ToTable("ProductTransactionQuantityHistory", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductUnit", b =>
@@ -773,7 +773,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductUnits");
+                    b.ToTable("ProductUnits", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
@@ -844,7 +844,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("ProductWarehouseStockReceiptEntries");
+                    b.ToTable("ProductWarehouseStockReceiptEntries", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductWithdrawalEntry", b =>
@@ -909,7 +909,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("ProductWithdrawalEntries");
+                    b.ToTable("ProductWithdrawalEntries", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.RefreshToken", b =>
@@ -951,7 +951,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportNotificationEmailAddress", b =>
@@ -990,7 +990,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("ReportNotificationEmailAddresses");
+                    b.ToTable("ReportNotificationEmailAddresses", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -1063,7 +1063,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Supplier", b =>
@@ -1100,7 +1100,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Transaction", b =>
@@ -1177,7 +1177,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserAccount", b =>
@@ -1255,7 +1255,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("UserAccounts");
+                    b.ToTable("UserAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserPermission", b =>
@@ -1297,7 +1297,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("UserPermission");
+                    b.ToTable("UserPermission", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.UserSetting", b =>
@@ -1349,7 +1349,7 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("UserAccountId")
                         .IsUnique();
 
-                    b.ToTable("UserSettings");
+                    b.ToTable("UserSettings", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Warehouse", b =>
@@ -1386,7 +1386,7 @@ namespace Beelina.LIB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Warehouses");
+                    b.ToTable("Warehouses", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Barangay", b =>

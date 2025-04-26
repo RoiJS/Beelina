@@ -4,17 +4,15 @@ import {
   Component,
   OnDestroy,
   OnInit,
-  ViewChild,
-  computed,
-  inject,
-  signal,
+  ViewChild, computed, inject,
+  signal
 } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { TranslateService } from '@ngx-translate/core';
-import { filter } from 'rxjs';
+import { filter, firstValueFrom } from 'rxjs';
 
 import { SharedComponent } from './shared/components/shared/shared.component';
 
@@ -26,16 +24,20 @@ import { AppVersionService } from './_services/app-version.service';
 import { AuthService } from './_services/auth.service';
 import { DialogService } from './shared/ui/dialog/dialog.service';
 import { GeneralInformationService } from './_services/general-information.service';
+import { LocalClientSubscriptionDbService } from './_services/local-db/local-client-subscription-db.service';
 import { LocalSyncDataService } from './_services/local-db/local-sync-data.service';
 import { NotificationService } from './shared/ui/notification/notification.service';
 import { NetworkService } from './_services/network.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { StorageService } from './_services/storage.service';
+import { SubscriptionService } from './_services/subscription.service';
+
 import { UIService } from './_services/ui.service';
 import { UserAccountService } from './_services/user-account.service';
 
 import { IMenu } from './_interfaces/imenu';
 import { GeneralInformation } from './_models/general-information.model';
+import { ClientSubscriptionDetails } from './_models/client-subscription-details.model';
 
 @Component({
   selector: 'app-root',
@@ -49,6 +51,7 @@ export class AppComponent
 
   treeControl = new NestedTreeControl<IMenu>((node) => node.children);
   menuDataSource = signal(new MatTreeNestedDataSource<IMenu>());
+  clientSubscriptionDetails: ClientSubscriptionDetails;
 
   activatedUrl = signal('');
   currentAppVersion = signal<string>('');
@@ -56,17 +59,26 @@ export class AppComponent
   isAuthenticated = signal<boolean>(false);
   isAdmin = signal<boolean>(true);
   pageLoaded = signal<boolean>(false);
+  isOnline = signal<boolean>(true);
+  isOfflineModeAvailable = signal<boolean>(false);
+
+  isAppOnline = computed(() => {
+    const result = this.isOnline() || (!this.isOnline() && this.isOfflineModeAvailable());
+    return result;
+  });
 
   authService = inject(AuthService);
   appVersionService = inject(AppVersionService);
   dialogService = inject(DialogService);
   generalInformationService = inject(GeneralInformationService);
   localSyncDataService = inject(LocalSyncDataService);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
   networkService = inject(NetworkService);
   notificationService = inject(NotificationService);
   router = inject(Router);
   sideDrawerService = inject(SidedrawerService);
   storageService = inject(StorageService);
+  subscriptionService = inject(SubscriptionService);
   swUpdate = inject(SwUpdate);
   translateService = inject(TranslateService);
   userAccountService = inject(UserAccountService);
@@ -79,28 +91,8 @@ export class AppComponent
   }
 
   override ngOnInit(): void {
-    this.authService.user.subscribe((user) => {
-      this.sideDrawerService.setCurrentUserPrivileges(
-        user?.getModulePrivilege(ModuleEnum.Distribution).value
-      );
-      this._currentLoggedInUser = user;
-      this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));
-      this.isAuthenticated.set((user !== null));
-
-      this.setMainMenu();
-
-      // Set current sales agent id
-      if (
-        this.modulePrivilege(ModuleEnum.Distribution) ===
-        this.getPermissionLevel(PermissionLevelEnum.User)
-      ) {
-        this.storageService.storeString(
-          'currentSalesAgentId',
-          this._currentLoggedInUser.id.toString()
-        );
-      }
-    });
-
+    this.initAuthUserListeners();
+    this.initSubscriptionListener();
     this.initRouterEvents();
     this.updateOnlineStatus();
     this.monitorConnectionStatus();
@@ -114,10 +106,7 @@ export class AppComponent
 
   ngAfterViewInit(): void {
     this.uiService.setDrawerRef(this.sideNav);
-
-    (async () => {
-      await this.localSyncDataService.initSyncData();
-    })();
+    this.syncLocalData();
   }
 
   onNavItemTap(name: string, url: string, fragment: string, isExternalUrl: boolean): void {
@@ -148,7 +137,6 @@ export class AppComponent
           }
         });
       }
-
     }
   }
 
@@ -157,16 +145,29 @@ export class AppComponent
     return this.activatedUrl() === currentUrl;
   }
 
+  private async monitorOfflineModeAvailable() {
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
+    this.isOfflineModeAvailable.set(this.clientSubscriptionDetails?.offlineModeActive);
+  }
+
+  private syncLocalData() {
+    (async () => {
+      if (this.isOfflineModeAvailable()) {
+        await this.localSyncDataService.initSyncData();
+      }
+    })();
+  }
+
   private updateOnlineStatus(): void {
     this.networkService.isOnline.next(window.navigator.onLine);
+    this.isOnline.set(window.navigator.onLine);
+
     const isOnline = this.networkService.isOnline.value;
     console.info(`isOnline=[${isOnline}]`);
 
     if (isOnline) {
-
-      (async () => {
-        await this.localSyncDataService.initSyncData();
-      })();
+      this.syncLocalData();
+      firstValueFrom(this.subscriptionService.getClientSubscription(this.storageService.getString('appSecretToken')));
 
       if (this.pageLoaded()) {
         this.notificationService.openSuccessNotification(
@@ -175,9 +176,16 @@ export class AppComponent
       }
     } else {
       if (this.pageLoaded()) {
-        this.notificationService.openWarningNotification(
-          this.translateService.instant("GENERAL_TEXTS.OFFLINE_MESSAGE")
-        );
+
+        if (this.isOfflineModeAvailable()) {
+          this.notificationService.openWarningNotification(
+            this.translateService.instant("GENERAL_TEXTS.OFFLINE_MESSAGE")
+          );
+        } else {
+          this.notificationService.openWarningNotification(
+            this.translateService.instant("SUBSCRIPTION_TEXTS.OFFLINE_MODE_ERROR")
+          );
+        }
       }
     }
 
@@ -194,6 +202,39 @@ export class AppComponent
       const menu = new MatTreeNestedDataSource<IMenu>()
       menu.data = this.sideDrawerService.getMenus();
       return menu;
+    });
+  }
+
+  private initSubscriptionListener() {
+    this.localClientSubscriptionDbService
+      .monitorClientSubscriptionChanges
+      .subscribe(async () => {
+        await this.monitorOfflineModeAvailable();
+      });
+  }
+
+  private initAuthUserListeners() {
+    this.authService.user.subscribe(async (user) => {
+      this.sideDrawerService.setCurrentUserPrivileges(
+        user?.getModulePrivilege(ModuleEnum.Distribution).value
+      );
+      this._currentLoggedInUser = user;
+      this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));
+      this.isAuthenticated.set((user !== null));
+
+      await this.monitorOfflineModeAvailable();
+      this.setMainMenu();
+
+      // Set current sales agent id
+      if (
+        this.modulePrivilege(ModuleEnum.Distribution) ===
+        this.getPermissionLevel(PermissionLevelEnum.User)
+      ) {
+        this.storageService.storeString(
+          'currentSalesAgentId',
+          this._currentLoggedInUser.id.toString()
+        );
+      }
     });
   }
 
