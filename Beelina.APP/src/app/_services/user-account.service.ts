@@ -151,6 +151,9 @@ const GET_USER_SETTINGS_QUERY = gql`
       allowOrderPayments
       allowSendReceipt
       allowAutoSendReceipt
+      allowPrintReceipt
+      autoPrintReceipt
+      sendReceiptEmailAddress
     }
   }
 `;
@@ -312,6 +315,9 @@ export class UserAccountService {
             userSetting.allowOrderPayments = data.allowOrderPayments;
             userSetting.allowSendReceipt = data.allowSendReceipt;
             userSetting.allowAutoSendReceipt = data.allowAutoSendReceipt;
+            userSetting.allowPrintReceipt = data.allowPrintReceipt;
+            userSetting.autoPrintReceipt = data.autoPrintReceipt;
+            userSetting.sendReceiptEmailAddress = data.sendReceiptEmailAddress;
             this.userSetting.set(userSetting);
             await this.localUserSettingsDbService.saveLocalUserSettings(userSetting);
             return userSetting;

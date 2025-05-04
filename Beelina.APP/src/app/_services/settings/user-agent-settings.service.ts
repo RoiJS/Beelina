@@ -43,7 +43,7 @@ export class UserAgentSettingsService {
 
   constructor() { }
 
-  getOrderTransactonsSettings(userId: number) {
+  getOrderTransactionsSettings(userId: number) {
 
     if (!this.networkService.isOnline.value) {
       return from(this.localUserSettingsDbService.getLocalUserSettings())
