@@ -1,13 +1,18 @@
 import { inject, Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
-import { catchError, map } from 'rxjs';
+import { catchError, from, map } from 'rxjs';
 
 import { IUserAgentOrderTransactionSettingsInput } from 'src/app/_interfaces/inputs/iuser-agent-order-transaction-settings.input';
 import { ISaveUserAgentOrderTransactionSettingsOutput } from 'src/app/_interfaces/outputs/isave-user-agent-order-transation-settings-.output';
 import { IUserAgentOrderTransactionQueryPayload } from 'src/app/_interfaces/payloads/iuser-agent-order-transaction-settings.payload';
-import { UserAgentOrderTransactionSettings } from 'src/app/_models/user-agent-order-transaction-settings.model';
+
+import { AuthService } from '../auth.service';
+import { NetworkService } from '../network.service';
 import { LocalUserSettingsDbService } from '../local-db/local-user-settings-db.service';
+import { UserAgentOrderTransactionSettings } from 'src/app/_models/user-agent-order-transaction-settings.model';
+
+import { UserSetting } from 'src/app/_models/user-setting';
 
 const GET_ORDER_TRANSACTION_SETTINGS = gql`
   query($userId: Int!) {
@@ -15,6 +20,8 @@ const GET_ORDER_TRANSACTION_SETTINGS = gql`
       allowSendReceipt
       allowAutoSendReceipt
       sendReceiptEmailAddress
+      allowPrintReceipt
+      autoPrintReceipt
     }
   }
 `;
@@ -30,11 +37,29 @@ const SAVE_USER_AGENT_ORDER_TRANSACTION_SETTINGS = gql`
 @Injectable({ providedIn: 'root' })
 export class UserAgentSettingsService {
   apollo = inject(Apollo);
+  authService = inject(AuthService);
   localUserSettingsDbService = inject(LocalUserSettingsDbService);
+  networkService = inject(NetworkService);
 
   constructor() { }
 
   getOrderTransactonsSettings(userId: number) {
+
+    if (!this.networkService.isOnline.value) {
+      return from(this.localUserSettingsDbService.getLocalUserSettings())
+        .pipe(
+          map((userSetting: UserSetting) => {
+            const userAgentOrderTransactionSettings = new UserAgentOrderTransactionSettings();
+            userAgentOrderTransactionSettings.allowSendReceipt = userSetting.allowSendReceipt;
+            userAgentOrderTransactionSettings.allowAutoSendReceipt = userSetting.allowAutoSendReceipt;
+            userAgentOrderTransactionSettings.sendReceiptEmailAddress = userSetting.sendReceiptEmailAddress;
+            userAgentOrderTransactionSettings.allowPrintReceipt = userSetting.allowPrintReceipt;
+            userAgentOrderTransactionSettings.autoPrintReceipt = userSetting.autoPrintReceipt;
+            return userAgentOrderTransactionSettings;
+          })
+        );;
+    }
+
     return this.apollo
       .watchQuery({
         query: GET_ORDER_TRANSACTION_SETTINGS,
@@ -57,6 +82,8 @@ export class UserAgentSettingsService {
             userAgentOrderTransactionSettings.allowSendReceipt = data.allowSendReceipt;
             userAgentOrderTransactionSettings.allowAutoSendReceipt = data.allowAutoSendReceipt;
             userAgentOrderTransactionSettings.sendReceiptEmailAddress = data.sendReceiptEmailAddress;
+            userAgentOrderTransactionSettings.allowPrintReceipt = data.allowPrintReceipt;
+            userAgentOrderTransactionSettings.autoPrintReceipt = data.autoPrintReceipt;
             return userAgentOrderTransactionSettings;
           }
         ),
@@ -66,13 +93,41 @@ export class UserAgentSettingsService {
       );
   }
 
+  async autoSaveUserAgentOrderTransactionSettings() {
+    const userSettings = await this.localUserSettingsDbService.getLocalUserSettings();
+    console.log(userSettings);
+
+    const localUserSettings: IUserAgentOrderTransactionSettingsInput = {
+      userId: this.authService.userId,
+      allowSendReceipt: userSettings.allowSendReceipt,
+      allowAutoSendReceipt: userSettings.allowAutoSendReceipt,
+      sendReceiptEmailAddress: userSettings.sendReceiptEmailAddress,
+      allowPrintReceipt: userSettings.allowPrintReceipt,
+      autoPrintReceipt: userSettings.autoPrintReceipt,
+    };
+
+    return this.saveUserAgentOrderTransactionSettings(localUserSettings).subscribe((result: boolean) => result);
+  }
+
   saveUserAgentOrderTransactionSettings(userAgentOrderTransactionSettings: UserAgentOrderTransactionSettings) {
     const userAgentOrderTransactionSettingInput: IUserAgentOrderTransactionSettingsInput = {
       userId: userAgentOrderTransactionSettings.userId,
       allowSendReceipt: userAgentOrderTransactionSettings.allowSendReceipt,
       allowAutoSendReceipt: userAgentOrderTransactionSettings.allowAutoSendReceipt,
-      sendReceiptEmailAddress: userAgentOrderTransactionSettings.sendReceiptEmailAddress
+      sendReceiptEmailAddress: userAgentOrderTransactionSettings.sendReceiptEmailAddress,
+      allowPrintReceipt: userAgentOrderTransactionSettings.allowPrintReceipt,
+      autoPrintReceipt: userAgentOrderTransactionSettings.autoPrintReceipt,
     };
+
+    // Save local when offline mode
+    if (!this.networkService.isOnline.value) {
+      return from(this.localUserSettingsDbService.updateOrderTransactionSettings(userAgentOrderTransactionSettings))
+        .pipe(
+          map(() => {
+            return true; // always return true indicates that saving is successful
+          })
+        );
+    }
 
     return this.apollo
       .mutate({

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { firstValueFrom, switchMap } from 'rxjs';
+import { firstValueFrom, of, switchMap } from 'rxjs';
 
 import { SortOrderOptionsEnum } from 'src/app/_enum/sort-order-options.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
@@ -115,10 +115,12 @@ export class LocalOrdersDbService extends LocalBaseDbService {
     localTransaction.dueDate = transaction.dueDate;
 
     if (transaction.id === 0) {
+      let newId = 0;
       // Save draft order to local database
-      this.localDbService.add('transactions', localTransaction)
+      return this.localDbService.add('transactions', localTransaction)
         .pipe(
           switchMap(async (res) => {
+            newId = res.id;
             const localProductTransactions = transaction.productTransactions.map(productTransaction => {
               const localProductTransaction = new LocalProductTransaction();
               localProductTransaction.customerUserId = customerUserId;
@@ -132,13 +134,14 @@ export class LocalOrdersDbService extends LocalBaseDbService {
               return localProductTransaction;
             });
             return this.localDbService.bulkAdd('productTransactions', localProductTransactions);
-          }
-          ),
+          }),
+          switchMap(() => {
+            return of(newId);
+          })
         )
-        .subscribe();
     } else {
       localTransaction.id = transaction.id;
-      this.localDbService.update('transactions', localTransaction).pipe(
+      return this.localDbService.update('transactions', localTransaction).pipe(
         switchMap(async (_) => {
           const productTransactions = <Array<LocalProductTransaction>>await firstValueFrom(this.localDbService.getAll('productTransactions'));
           const localProductTransactions = productTransactions.filter(c => c.customerUserId == customerUserId && c.transactionId == localTransaction.id);
@@ -162,7 +165,10 @@ export class LocalOrdersDbService extends LocalBaseDbService {
 
           return this.localDbService.bulkAdd('productTransactions', newLocalProductTransactions);
         }),
-      ).subscribe();
+        switchMap(() => {
+          return of(transaction.id);
+        })
+      )
     }
   }
 

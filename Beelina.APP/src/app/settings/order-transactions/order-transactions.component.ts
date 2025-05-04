@@ -32,6 +32,8 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
     allowSendReceipt: [false, Validators.required],
     allowAutoSendReceipt: [false, Validators.required],
     sendReceiptEmailAddress: ["", Validators.required],
+    allowPrintReceipt: [false, Validators.required],
+    autoPrintReceipt: [false, Validators.required],
   });
 
   constructor() {
@@ -51,10 +53,12 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
       const allowSendReceipt = this.orderTransactionSettingsForm.value.allowSendReceipt;
       const allowAutoSendReceipt = this.orderTransactionSettingsForm.value.allowAutoSendReceipt;
       const sendReceiptEmailAddress = this.orderTransactionSettingsForm.value.sendReceiptEmailAddress
+      const allowPrintReceipt = this.orderTransactionSettingsForm.value.allowPrintReceipt;
+      const autoPrintReceipt = this.orderTransactionSettingsForm.value.autoPrintReceipt;
 
       this.dialogService.openConfirmation(
-        this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.TITLE"),
-        this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.CONFIRM"),
+        this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.TITLE"),
+        this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.CONFIRM"),
       ).subscribe((result: ButtonOptions) => {
         if (result === ButtonOptions.YES) {
           this._isLoading = true;
@@ -63,7 +67,9 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
             userId: this.authService.userId,
             allowSendReceipt,
             allowAutoSendReceipt,
-            sendReceiptEmailAddress
+            sendReceiptEmailAddress,
+            allowPrintReceipt,
+            autoPrintReceipt
           };
 
           this.userAgentSettingsService
@@ -74,19 +80,19 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
 
                 if (result) {
                   this.notificationService.openSuccessNotification(
-                    this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.SUCCESS_MESSAGE"),
+                    this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.SUCCESS_MESSAGE"),
                   );
                 } else {
 
                   this.notificationService.openErrorNotification(
-                    this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.ERROR_MESSAGE"),
+                    this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.ERROR_MESSAGE"),
                   );
                 }
               },
               error: () => {
                 this._isLoading = false;
                 this.notificationService.openErrorNotification(
-                  this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.ERROR_MESSAGE"),
+                  this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.ERROR_MESSAGE"),
                 );
               }
             });

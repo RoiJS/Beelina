@@ -238,7 +238,11 @@ export class ProductComponent
   }
 
   goToCart() {
-    this.router.navigate([`product-catalogue/product-cart`]);
+    this.router.navigate([`product-catalogue/product-cart`], {
+      state: {
+        isLocalTransaction: !this.networkService.isOnline.value,
+      }
+    });
   }
 
   editProduct(id: number) {
@@ -280,7 +284,7 @@ export class ProductComponent
     if (this.totalProductCount() <= this.clientSubscriptionDetails.productSKUMax) {
       this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Panel } });
     } else {
-      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", {productSKUMax: this.clientSubscriptionDetails.productSKUMax}));
+      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", { productSKUMax: this.clientSubscriptionDetails.productSKUMax }));
     }
   }
 

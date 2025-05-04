@@ -1533,6 +1533,10 @@
         "DESCRIPTION": "Manage your profile account"
       }
     },
+    "REPORTS_SETTINGS_SUBPAGE": {
+      "TITLE": "Report Settings",
+      "DESCRIPTION": "Manage settings related with report module. Here you can configure generating of reports."
+    },
     "ORDER_TRANSACTION_SETTINGS_SUBPAGE": {
       "TITLE": "Order Transaction Settings",
       "DESCRIPTION": "Manage settings related with order transaction module. Here you can configure sending of receipt for each order transaction, and more.",
@@ -1548,18 +1552,22 @@
         "SEND_RECEIPT_EMAIL_ADDRESS_CONTROL": {
           "LABEL": "Invoice Receipt Email Address",
           "HINT": "Specify email address to send invoice receipt."
+        },
+        "ALLOW_PRINT_RECEIPT_CONTROL": {
+          "LABEL": "Allow print receipt",
+          "HINT": "Activate if you want to print invoice receipt via printer. Make sure you have printer connected via bluetooth."
+        },
+        "ALLOW_AUTO_PRINT_RECEIPT_CONTROL": {
+          "LABEL": "Auto print receipt",
+          "HINT": "Activate if you want to automatically print invoice receipt via printer when registering order transaction."
         }
+      },
+      "SAVE_SETTINGS_DIALOG": {
+        "TITLE": "Save changes",
+        "CONFIRM": "Are you sure to save new changes?",
+        "SUCCESS_MESSAGE": "New updates have been sucessfully saved!",
+        "ERROR_MESSAGE": "Failed to save settings. Please try again later!"
       }
-    },
-    "REPORTS_SETTINGS_SUBPAGE": {
-      "TITLE": "Report Settings",
-      "DESCRIPTION": "Manage settings related with report module. Here you can configure generating of reports."
-    },
-    "SAVE_SETTINGS_DIALOG": {
-      "TITLE": "Save changes",
-      "CONFIRM": "Are you sure to save new changes?",
-      "SUCCESS_MESSAGE": "New updates have been sucessfully saved!",
-      "ERROR_MESSAGE": "Failed to save settings. Please try again later!"
     }
   },
   "SUBSCRIPTION_TEXTS": {

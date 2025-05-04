@@ -31,6 +31,7 @@ import { NetworkService } from './_services/network.service';
 import { SidedrawerService } from './_services/sidedrawer.service';
 import { StorageService } from './_services/storage.service';
 import { SubscriptionService } from './_services/subscription.service';
+import { UserAgentSettingsService } from './_services/settings/user-agent-settings.service';
 
 import { UIService } from './_services/ui.service';
 import { UserAccountService } from './_services/user-account.service';
@@ -82,6 +83,7 @@ export class AppComponent
   swUpdate = inject(SwUpdate);
   translateService = inject(TranslateService);
   userAccountService = inject(UserAccountService);
+  userAgentSettingsService = inject(UserAgentSettingsService);
 
   constructor(
     protected override uiService: UIService
@@ -154,6 +156,7 @@ export class AppComponent
     (async () => {
       if (this.isOfflineModeAvailable()) {
         await this.localSyncDataService.initSyncData();
+        await this.userAgentSettingsService.autoSaveUserAgentOrderTransactionSettings();
       }
     })();
   }

@@ -185,7 +185,7 @@ export class SidedrawerService {
         icon: 'settings',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
-        supportOffline: false,
+        supportOffline: true,
         visible: true,
       },
       // {

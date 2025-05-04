@@ -192,25 +192,25 @@
 
             @if (networkService.isOnline | async) {
 
-                @if(!isLocalTransaction()) {
-                  <button mat-raised-button color="primary" (click)="confirm()">
-                    <mat-icon>check_circle_outline</mat-icon>
-                    {{ "GENERAL_TEXTS.CONFIRM" | translate }}
-                  </button>
+              @if(!isLocalTransaction()) {
+                <button mat-raised-button color="primary" (click)="confirm()">
+                  <mat-icon>check_circle_outline</mat-icon>
+                  {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+                </button>
 
-                  <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
-                    <mat-icon>remove_shopping_cart</mat-icon>
-                    {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
-                  </button>
+                <button mat-raised-button color="warn" (click)="saveAsBadOrder()">
+                  <mat-icon>remove_shopping_cart</mat-icon>
+                  {{ "GENERAL_TEXTS.BAD_ORDER" | translate }}
+                </button>
 
-                  @if (isDraftTransaction()) {
+                @if (isDraftTransaction()) {
 
                   <button mat-raised-button color="default" (click)="saveExistingOrderAsDraft()">
                     <mat-icon>save</mat-icon>
                     {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
                   </button>
 
-                  } @else {
+                } @else {
 
                   <button mat-raised-button color="default" (click)="saveNewOrderAsDraft()">
                     <mat-icon>archive</mat-icon>
@@ -224,6 +224,15 @@
                     <mat-icon>clear_all</mat-icon>
                     {{ "GENERAL_TEXTS.CLEAR" | translate }}
                   </button>
+                }
+
+                @if(transaction().id !== 0) {
+                  @if(userSettings.allowPrintReceipt) {
+                    <button mat-raised-button color="default" (click)="printReceiptViaPrinter()">
+                    <mat-icon>print</mat-icon>
+                    {{ "GENERAL_TEXTS.PRINT" | translate }}
+                  </button>
+                  }
                 }
               }
 
@@ -260,11 +269,20 @@
                   {{ "GENERAL_TEXTS.CLEAR" | translate }}
                 </button>
               }
+
+              @if(transaction().id !== 0) {
+                @if(userSettings.allowPrintReceipt) {
+                  <button mat-raised-button color="default" (click)="printReceiptViaPrinter()">
+                  <mat-icon>print</mat-icon>
+                  {{ "GENERAL_TEXTS.PRINT" | translate }}
+                </button>
+                }
+              }
             }
 
           } @else {
 
-            <button mat-raised-button color="default" (click)="printReceipt()">
+            <button mat-raised-button color="default" (click)="printReceiptAsPDF()">
               <mat-icon>print</mat-icon>
               {{ "GENERAL_TEXTS.PRINT" | translate }}
             </button>
