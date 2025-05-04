@@ -22,8 +22,8 @@ export class UIService {
     this._sideNavRef = sideNavRef;
   }
 
-  toggleDrawer(): void {
-    this._sideNavRef?.toggle();
+  toggleDrawer(isOpen: boolean = true): void {
+    this._sideNavRef?.toggle(isOpen);
   }
 
   get isHandset(): Observable<boolean> {
