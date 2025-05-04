@@ -119,12 +119,12 @@ export class AppComponent
     }
 
     if (this.isHandset) {
-      this.uiService.toggleDrawer();
+      this.uiService.toggleDrawer(false);
     }
 
     if (name === 'MAIN_MENU.LOGOUT') {
       if (this.networkService.isOnline.value) {
-        if (this.isAdmin()) this.uiService.toggleDrawer();
+        if (this.isAdmin()) this.uiService.toggleDrawer(false);
         this.authService.logout();
         this.localSyncDataService.clearLocalData();
       } else {
@@ -133,7 +133,7 @@ export class AppComponent
           this.translateService.instant("LOGOUT_DIALOG.CONFIRM_MESSAGE"),
         ).subscribe((result: ButtonOptions) => {
           if (result === ButtonOptions.YES) {
-            if (this.isAdmin()) this.uiService.toggleDrawer();
+            if (this.isAdmin()) this.uiService.toggleDrawer(false);
             this.authService.logout();
             this.localSyncDataService.clearLocalData();
           }
