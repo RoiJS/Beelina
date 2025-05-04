@@ -27,6 +27,8 @@ export class LogMessageService {
           logLevel,
           message
         },
+      }).subscribe(() => {
+        console.info('Log message sent.');
       });
   }
 }

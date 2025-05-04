@@ -64,7 +64,7 @@ export class BluetoothPrinterService {
         await this.sleep(50);
       }
     } catch (error) {
-      this.deviceId = '';
+      this.deviceId = ''; // Reset device id
       throw new Error(error.mesage);
     }
   }

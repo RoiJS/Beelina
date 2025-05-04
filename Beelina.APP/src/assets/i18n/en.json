@@ -1608,6 +1608,11 @@
     },
     "FOOTER_SECTION": {
       "POWERED_BY_LABEL": "Powered by Bizual"
+    },
+    "NOTIFICATION_MESSAGES": {
+      "PRINTING_MESSAGE": "Printing receipt in progress...",
+      "PRINTING_SUCCESS_MESSAGE": "Receipt has been printed successfully.",
+      "PRINTING_ERROR_MESSAGE": "Print receipt has been cancelled."
     }
   },
   "DASHBOARD_ADMIN": {
