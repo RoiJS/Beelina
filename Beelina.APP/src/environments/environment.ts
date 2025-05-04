@@ -7,6 +7,8 @@ export const environment = {
 
   // FOR TESTING USING EMULATOR
   beelinaAPIEndPoint: 'https://localhost:9153/graphql/',
+  bluetoothPrinterServiceUUID: '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+  bluetoothPrinterCharacteristicUUID: '49535343-8841-43f4-a8d4-ecbe34729bb3',
 };
 
 /*

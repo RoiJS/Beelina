@@ -33,6 +33,11 @@ export class LocalUserSettingsDbService {
     const userSettings = await this.getLocalUserSettings();
     userSettings.allowSendReceipt = userAgentOrderTransactionSettings.allowSendReceipt;
     userSettings.allowAutoSendReceipt = userAgentOrderTransactionSettings.allowAutoSendReceipt;
+    userSettings.allowAutoSendReceipt = userAgentOrderTransactionSettings.allowAutoSendReceipt;
+    userSettings.sendReceiptEmailAddress = userAgentOrderTransactionSettings.sendReceiptEmailAddress;
+    userSettings.allowPrintReceipt = userAgentOrderTransactionSettings.allowPrintReceipt;
+    userSettings.autoPrintReceipt = userAgentOrderTransactionSettings.autoPrintReceipt;
+
     this.localDbService
       .update('userSettings', userSettings)
       .subscribe((result) => {
