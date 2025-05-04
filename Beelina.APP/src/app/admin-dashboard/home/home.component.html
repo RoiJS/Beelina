@@ -12,6 +12,10 @@
         {{ "DASHBOARD_ADMIN.HOME_PAGE.ORDER_TRANSACTION_DISTRIBUTION.TITLE" | translate }}
       </div>
       <div class="panel__body-section sales-container__body-section">
+        @if (hideSalesAgentDistributionWidget()) {
+        <app-subscription-panel></app-subscription-panel>
+        }
+
         <app-loader-layout [busy]="salesPerAgentChartViewLoading">
           <div class="sales-per-agent-container">
             <app-sales-per-agent-view></app-sales-per-agent-view>

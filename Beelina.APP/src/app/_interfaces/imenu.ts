@@ -10,4 +10,5 @@ export interface IMenu {
   minimumPermissionLevel?: number;
   maximumPermissionLevel?: number;
   supportOffline?: boolean;
+  visible?: boolean;
 }

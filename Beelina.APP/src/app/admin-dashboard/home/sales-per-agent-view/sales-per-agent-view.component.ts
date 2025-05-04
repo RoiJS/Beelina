@@ -1,10 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
 import { ApexChart, ApexDataLabels, ApexNonAxisChartSeries, ApexPlotOptions, ApexResponsive, ChartComponent } from 'ng-apexcharts';
 
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
-import { ChartOptions } from 'src/app/_models/chart-option.model';
 import { TransactionSalesPerSalesAgent } from 'src/app/_models/sales-per-agent';
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
@@ -29,7 +27,6 @@ export class SalesPerAgentViewComponent extends SalesComponent implements OnInit
   public chartOptions: Partial<DonutChartOptions>;
 
   constructor(
-    private translateService: TranslateService,
     protected override authService: AuthService,
     protected override formBuilder: FormBuilder,
     protected override transactionService: TransactionService) {

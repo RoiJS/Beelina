@@ -21,6 +21,8 @@ namespace Beelina.LIB.BusinessLogic
             userAgentOrderTransactionSettingsDto.AllowSendReceipt = userSettingsFromRepo.AllowSendReceipt;
             userAgentOrderTransactionSettingsDto.AllowAutoSendReceipt = userSettingsFromRepo.AllowAutoSendReceipt;
             userAgentOrderTransactionSettingsDto.SendReceiptEmailAddress = userSettingsFromRepo.SendReceiptEmailAddress;
+            userAgentOrderTransactionSettingsDto.AllowPrintReceipt = userSettingsFromRepo.AllowPrintReceipt;
+            userAgentOrderTransactionSettingsDto.AutoPrintReceipt = userSettingsFromRepo.AutoPrintReceipt;
 
             return userAgentOrderTransactionSettingsDto;
         }
@@ -33,6 +35,8 @@ namespace Beelina.LIB.BusinessLogic
                 userSettingsFromRepo.AllowSendReceipt = userAgentOrderTransactionSettingInput.AllowSendReceipt;
                 userSettingsFromRepo.AllowAutoSendReceipt = userAgentOrderTransactionSettingInput.AllowAutoSendReceipt;
                 userSettingsFromRepo.SendReceiptEmailAddress = userAgentOrderTransactionSettingInput.SendReceiptEmailAddress;
+                userSettingsFromRepo.AllowPrintReceipt = userAgentOrderTransactionSettingInput.AllowPrintReceipt;
+                userSettingsFromRepo.AutoPrintReceipt = userAgentOrderTransactionSettingInput.AutoPrintReceipt;
                 await userSettingsRepository.SaveChanges();
                 return true;
             }

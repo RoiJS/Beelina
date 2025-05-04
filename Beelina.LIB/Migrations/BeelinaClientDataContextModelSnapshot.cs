@@ -1317,7 +1317,13 @@ namespace Beelina.LIB.Migrations
                     b.Property<bool>("AllowOrderPayments")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("AllowPrintReceipt")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("AllowSendReceipt")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AutoPrintReceipt")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("DateCreated")

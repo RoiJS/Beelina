@@ -1,55 +1,69 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Store, select } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
-import { UniqueUsernameValidator } from 'src/app/_validators/unique-username.validator';
-import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { isLoadingSelector } from '../store/selectors';
-import { User } from 'src/app/_models/user.model';
 import { UserAccountInformationResult } from 'src/app/_models/results/user-account-information-result';
 import { UserModulePermission } from 'src/app/_models/user-module-permission';
+import { User } from 'src/app/_models/user.model';
+import { UniqueUsernameValidator } from 'src/app/_validators/unique-username.validator';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { isLoadingSelector, totalCountSelector } from '../store/selectors';
 
-import { ModuleEnum } from 'src/app/_enum/module.enum';
 import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
+import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { ClientSubscriptionDetails } from 'src/app/_models/client-subscription-details.model';
 
-import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { ApplySubscriptionService } from 'src/app/_services/apply-subscription.service';
+import { LocalClientSubscriptionDbService } from 'src/app/_services/local-db/local-client-subscription-db.service';
 import { LogMessageService } from 'src/app/_services/log-message.service';
-import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { UserAccountService } from 'src/app/_services/user-account.service';
+import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
+import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { Subscription } from 'rxjs';
+import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
 @Component({
   selector: 'app-manage-user-account-details',
   templateUrl: './manage-user-account-details.component.html',
   styleUrls: ['./manage-user-account-details.component.scss']
 })
-export class ManageUserAccountDetailsComponent extends BaseComponent implements OnInit {
+export class ManageUserAccountDetailsComponent extends BaseComponent implements OnInit, OnDestroy, AfterViewInit {
   private _accountId: number;
   private _profileForm: FormGroup;
   private _title: string;
   private _userDetails: User = new User();
   private _personalInformationLabelText: string;
   private _accountInformationLabelText: string;
+  private _totalUserAccountCount = signal<number>(0);
+  private _subscription: Subscription = new Subscription();
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private dialogService: DialogService,
-    private formBuilder: FormBuilder,
-    private loggerService: LogMessageService,
-    private notificationService: NotificationService,
-    private router: Router,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService,
-    private uniqueUsernameValidator: UniqueUsernameValidator,
-    private userAccountService: UserAccountService,
-  ) {
+  clientSubscriptionDetails: ClientSubscriptionDetails;
+
+  activatedRoute = inject(ActivatedRoute);
+  applySubscriptionService = inject(ApplySubscriptionService);
+  bottomSheet = inject(MatBottomSheet);
+  dialogService = inject(DialogService);
+  formBuilder = inject(FormBuilder);
+  loggerService = inject(LogMessageService);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
+  notificationService = inject(NotificationService);
+  router = inject(Router);
+  store = inject(Store<AppStateInterface>);
+  translateService = inject(TranslateService);
+  uniqueUsernameValidator = inject(UniqueUsernameValidator);
+  userAccountService = inject(UserAccountService);
+
+  constructor() {
     super();
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
     this._personalInformationLabelText = this.translateService.instant('MANAGE_ACCOUNT_PAGE.TAB_SECTIONS.PERSONAL_INFORMATION');
     this._accountInformationLabelText = this.translateService.instant('MANAGE_ACCOUNT_PAGE.TAB_SECTIONS.ACCOUNT_INFORMATION');
+    this.applySubscriptionService.setBottomSheet(this.bottomSheet);
 
     this._profileForm = this.formBuilder.group(
       {
@@ -106,8 +120,10 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
     };
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this._accountId = +this.activatedRoute.snapshot.paramMap.get('id');
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
+
     if (this._accountId === 0) {
       this._title = this.translateService.instant('MANAGE_ACCOUNT_PAGE.FORM_CONTROL_SECTION.TITLE.CREATE_NEW');
       this._profileForm.get('newPassword')?.setValidators(Validators.required);
@@ -130,7 +146,26 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
     }
   }
 
+  ngAfterViewInit() {
+    this._subscription.add(
+      this.store.pipe(select(totalCountSelector))
+        .subscribe((totalCount: number) => {
+          this._totalUserAccountCount.set(totalCount);
+        })
+    );
+  }
+
+  ngOnDestroy() {
+    this._subscription.unsubscribe();
+  }
+
   saveInfo() {
+
+    if (this._totalUserAccountCount() >= this.clientSubscriptionDetails.userAccountsMax &&
+      this.clientSubscriptionDetails.allowExceedUserAccountsMax) {
+      this.notificationService.openWarningNotification(this.translateService.instant('SUBSCRIPTION_TEXTS.USER_REGISTRATION_EXCEEDS_LIMIT_WARNING'));
+    }
+
     try {
 
       this._profileForm.markAllAsTouched();
@@ -179,8 +214,8 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
 
         this.dialogService
           .openConfirmation(title, message)
-          .subscribe((result: boolean) => {
-            if (result) {
+          .subscribe((result: ButtonOptions) => {
+            if (result === ButtonOptions.YES) {
               this._isLoading = true;
               this.userAccountService.updateAccountInformation(user).subscribe({
                 next: () => {
@@ -203,7 +238,6 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
       console.error(ex);
       this.loggerService.logMessage(LogLevelEnum.ERROR, ex);
     }
-
   }
 
   get profileForm(): FormGroup {

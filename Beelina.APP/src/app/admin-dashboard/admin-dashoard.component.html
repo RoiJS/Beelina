@@ -4,15 +4,15 @@
 <div>
   <router-outlet name="adminDashboard"></router-outlet>
   <mat-toolbar class="bottom-nav-container">
-    <button mat-flat-button routerLink="/dashboard" routerLinkActive="active-link" outlet="adminDashboard">
+    <button mat-flat-button (click)="goToPage('/dashboard')" routerLinkActive="active-link" outlet="adminDashboard">
       <mat-icon>home</mat-icon>
       <span *ngIf="!isHandset">{{ "DASHBOARD_ADMIN.MAIN_MENU.HOME" | translate }}</span>
     </button>
-    <button mat-flat-button routerLink="/dashboard/distribution" routerLinkActive="active-link" outlet="adminDashboard">
+    <button mat-flat-button (click)="goToPage('/dashboard/distribution')" routerLinkActive="active-link" outlet="adminDashboard">
       <mat-icon>shopping_cart</mat-icon>
       <span *ngIf="!isHandset">{{ "DASHBOARD_ADMIN.MAIN_MENU.DISTRIBUTION" | translate }}</span>
     </button>
-    <button mat-flat-button routerLink="/dashboard/insights" routerLinkActive="active-link" outlet="adminDashboard">
+    <button mat-flat-button (click)="goToPage('/dashboard/insights')" routerLinkActive="active-link" outlet="adminDashboard">
       <mat-icon>bar_chart</mat-icon>
       <span *ngIf="!isHandset">{{ "DASHBOARD_ADMIN.MAIN_MENU.INSIGHTS" | translate }}</span>
     </button>

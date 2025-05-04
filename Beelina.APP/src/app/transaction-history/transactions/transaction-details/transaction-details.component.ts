@@ -11,7 +11,9 @@ import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { PaymentMethod } from 'src/app/_models/payment-method';
 import { paymentMethodsSelector } from 'src/app/payment-methods/store/selectors';
+
 import { AuthService } from 'src/app/_services/auth.service';
+import { BluetoothPrintInvoiceService } from 'src/app/_services/bluetooth-print-invoice.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { InvoicePrintService } from 'src/app/_services/print/invoice-print.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
@@ -47,6 +49,7 @@ export class TransactionDetailsComponent
   private _dialogSendInvoiceOptionRef: MatBottomSheetRef<SendInvoiceOptionDialogComponent>;
 
   bottomSheet = inject(MatBottomSheet);
+  bluetoothPrintInvoiceService = inject(BluetoothPrintInvoiceService);
   invoicePrintService = inject(InvoicePrintService);
   userService = inject(UserAccountService);
 
@@ -92,6 +95,10 @@ export class TransactionDetailsComponent
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
+  }
+
+  async print() {
+    await this.bluetoothPrintInvoiceService.print(this._transaction);
   }
 
   saveTransaction() {

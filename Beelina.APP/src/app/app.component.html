@@ -59,6 +59,8 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
+
+    @if (isAppOnline()) {
     @if(!isSystemUpdateActive()) {
     <router-outlet></router-outlet>
     }
@@ -66,5 +68,9 @@
     @if (isSystemUpdateActive()) {
     <app-system-update></app-system-update>
     }
+    } @else {
+    <app-offline></app-offline>
+    }
+
   </mat-sidenav-content>
 </mat-sidenav-container>

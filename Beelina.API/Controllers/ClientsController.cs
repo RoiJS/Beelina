@@ -65,6 +65,9 @@ namespace Beelina.API.Controllers
                 // Create client database
                 await _clientRepository.CreateClientDatabase(createdClient);
 
+                // Register new subscription
+                await _clientRepository.RegisterSubscription(createdClient.Id, clientForRegisterDto.SubscriptionFeatureId);
+
                 _logger.LogInformation("Populating new database...");
                 // Populate default data on the client database
                 await _clientRepository.PopulateDatabase(userAccount, createdClient, (Account account) =>

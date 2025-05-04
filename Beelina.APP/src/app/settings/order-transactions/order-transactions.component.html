@@ -50,6 +50,33 @@
               | translate
               }}</mat-hint>
           </mat-form-field>
+          <br>
+          }
+
+          <br>
+          <div class="order-transaction-settings-panel__allowPrintReceipt mat-form-slide-toggle-container">
+            <mat-slide-toggle formControlName="allowPrintReceipt">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_PRINT_RECEIPT_CONTROL.LABEL"
+              | translate
+              }}</mat-slide-toggle>
+            <span class="mat-form-slide-toggle-container__hint">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_PRINT_RECEIPT_CONTROL.HINT"
+              | translate
+              }}</span>
+          </div>
+
+          @if(orderTransactionSettingsForm.value.allowPrintReceipt) {
+          <br>
+          <div class="order-transaction-settings-panel__autoPrintReceipt mat-form-slide-toggle-container">
+            <mat-slide-toggle formControlName="autoPrintReceipt">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_AUTO_PRINT_RECEIPT_CONTROL.LABEL"
+              | translate
+              }}</mat-slide-toggle>
+            <span class="mat-form-slide-toggle-container__hint">{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_AUTO_PRINT_RECEIPT_CONTROL.HINT"
+              | translate
+              }}</span>
+          </div>
           }
 
         </div>

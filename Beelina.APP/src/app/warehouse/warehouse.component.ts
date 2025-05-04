@@ -18,15 +18,18 @@ import { ProductFilterComponent } from '../product/product-filter/product-filter
 import { SearchFieldComponent } from 'src/app/shared/ui/search-field/search-field.component';
 import { TransferProductInventoryComponent } from '../product/transfer-product-inventory/transfer-product-inventory.component';
 
+import { ApplySubscriptionService } from '../_services/apply-subscription.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
-import { ProductService } from 'src/app/_services/product.service';
+import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { ProductService } from 'src/app/_services/product.service';
 import * as WarehouseProductActions from './store/actions';
 import { filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
 import { ProductsFilter } from '../_models/filters/products.filter';
 import { ProductWarehouseStockReceiptEntry } from '../_models/product-warehouse-stock-receipt-entry';
 import { ProductStockWarehouseAudit } from '../_models/product-stock-warehouse-audit';
 import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
+import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 
 @Component({
   selector: 'app-warehouse',
@@ -60,6 +63,10 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     }
   >;
 
+  clientSubscriptionDetails: ClientSubscriptionDetails;
+
+  applySubscriptionService = inject(ApplySubscriptionService);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
   dialogService = inject(DialogService);
   bottomSheet = inject(MatBottomSheet);
   productService = inject(ProductService);
@@ -74,9 +81,11 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
     this._dataSource = new WarehouseProductDataSource(this.store);
+    this.applySubscriptionService.setBottomSheet(this.bottomSheet);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
   }
 
   ngOnDestroy() {
@@ -293,8 +302,13 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   addProduct() {
-    this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Warehouse } });
+    if (this.totalProducts() <= this.clientSubscriptionDetails.productSKUMax) {
+      this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Warehouse } });
+    } else {
+      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", { productSKUMax: this.clientSubscriptionDetails.productSKUMax }));
+    }
   }
+
   productImport() {
     this.router.navigate(['warehouse-products/product-import'], { state: { productSource: ProductSourceEnum.Warehouse } });
   }

@@ -577,6 +577,9 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AllowExceedUserAccountsMax")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("Custom")
                         .HasColumnType("bit");
 
@@ -616,8 +619,8 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<bool>("OfflineModeActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OrderPrintActive")
-                        .HasColumnType("int");
+                    b.Property<bool>("OrderPrintActive")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ProductSKUMax")
                         .HasColumnType("int");
@@ -957,7 +960,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeature", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.Subscription", "Subscription")
-                        .WithMany()
+                        .WithMany("SubscriptionFeatures")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1042,6 +1045,11 @@ namespace Beelina.LIB.Migrations.BeelinaData
             modelBuilder.Entity("Beelina.LIB.Models.ReportControl", b =>
                 {
                     b.Navigation("ReportParameter");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.Subscription", b =>
+                {
+                    b.Navigation("SubscriptionFeatures");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeature", b =>

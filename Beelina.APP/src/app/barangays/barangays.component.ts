@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
@@ -9,14 +9,17 @@ import { BarangaysDataSource } from '../_models/datasources/barangays.datasource
 import { isLoadingSelector } from '../barangays/store/selectors';
 import { BaseComponent } from '../shared/components/base-component/base.component';
 
+import { ApplySubscriptionService } from '../_services/apply-subscription.service';
 import { BarangayService } from '../_services/barangay.service';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { LocalCustomerAccountsDbService } from '../_services/local-db/local-customer-accounts-db.service';
+import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
 
 import { Barangay } from '../_models/barangay';
 import * as BarangaysStoreActions from '../barangays/store/actions';
 import { ManageBarangayComponent } from './manage-barangay/manage-barangay.component';
+import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 
 @Component({
   selector: 'app-barangays',
@@ -29,22 +32,29 @@ export class BarangaysComponent
   private _dataSource: BarangaysDataSource;
   private _manageBarangayDialogRef: any;
 
-  constructor(
-    private barangayService: BarangayService,
-    private bottomSheet: MatBottomSheet,
-    private dialogService: DialogService,
-    private localCustomerAccountsDbService: LocalCustomerAccountsDbService,
-    private notificationService: NotificationService,
-    private router: Router,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService
-  ) {
+  clientSubscriptionDetails: ClientSubscriptionDetails;
+
+  applySubscriptionService = inject(ApplySubscriptionService);
+  barangayService = inject(BarangayService);
+  bottomSheet = inject(MatBottomSheet);
+  dialogService = inject(DialogService);
+  localCustomerAccountsDbService = inject(LocalCustomerAccountsDbService);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
+  notificationService = inject(NotificationService);
+  router = inject(Router);
+  store = inject(Store<AppStateInterface>);
+  translateService = inject(TranslateService);
+
+  constructor() {
     super();
+    this.applySubscriptionService.setBottomSheet(this.bottomSheet);
     this._dataSource = new BarangaysDataSource(this.store);
     this.$isLoading = this.store.pipe(select(isLoadingSelector));
   }
 
-  ngOnInit() { }
+  async ngOnInit() {
+    this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
+  }
 
   ngOnDestroy() {
     this.store.dispatch(BarangaysStoreActions.resetBarangayState());
@@ -63,7 +73,11 @@ export class BarangaysComponent
   }
 
   addBarangay() {
-    this.openBarangayDialog(new Barangay());
+    if (this._dataSource.data.length <= this.clientSubscriptionDetails.customerAccountsMax) {
+      this.openBarangayDialog(new Barangay());
+    } else {
+      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.CUSTOMER_ACCOUNTS_LIMIT_ERROR", {customerAccountsMax: this.clientSubscriptionDetails.customerAccountsMax}));
+    }
   }
 
   updateBarangay(barangay: Barangay) {

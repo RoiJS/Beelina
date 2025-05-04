@@ -57,6 +57,26 @@ namespace Beelina.LIB.BusinessLogic
             return companyInfo;
         }
 
+        public async Task RegisterSubscription(int clientId, int subscriptionFeatureId)
+        {
+            try
+            {
+                var newClientSubscription = new ClientSubscription
+                {
+                    ClientId = clientId,
+                    SubscriptionFeatureId = subscriptionFeatureId,
+                    StartDate = DateTime.Now
+                };
+
+                await _beelinaRepository.SystemDbContext.ClientSubscriptions.AddAsync(newClientSubscription);
+                await _beelinaRepository.SystemDbContext.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new Exception($"Failed to register susbcription for client {clientId}");
+            }
+        }
+
         private void CreateHashDBName(string dbName, out string dbHashName)
         {
             dbHashName = SystemUtility.EncryptionUtility.Encrypt(dbName);

@@ -137,12 +137,29 @@ export function migrationFactory() {
       store.deleteIndex('productSkuMax');
       store.createIndex('productSKUMax', 'productSKUMax', { unique: false });
     },
+    15: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const store = transaction.objectStore('clientSubscription');
+
+      // Define the schema for the 'allowExceedUserAccountsMax' object store
+      store.createIndex('allowExceedUserAccountsMax', 'allowExceedUserAccountsMax', { unique: false });
+    },
+    16: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const store = transaction.objectStore('userSettings');
+
+      store.createIndex('allowPrintReceipt', 'allowPrintReceipt', { unique: false });
+      store.createIndex('autoPrintReceipt', 'autoPrintReceipt', { unique: false });
+    },
+    17: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const store = transaction.objectStore('userSettings');
+
+      store.createIndex('sendReceiptEmailAddress', 'sendReceiptEmailAddress', { unique: false });
+    },
   };
 }
 
 const dbConfig: DBConfig = {
   name: 'bizualLocalDb',
-  version: 14,
+  version: 17,
   objectStoresMeta: [
     {
       store: 'customerUsers',

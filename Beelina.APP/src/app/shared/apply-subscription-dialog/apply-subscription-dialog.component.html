@@ -1,0 +1,29 @@
+<app-loader-layout [busy]="isLoading">
+  <div class="apply-subscription-dialog-container">
+    <div class="dialog-form-container__header">
+      <span>{{ "SUBSCRIPTION_TEXTS.APPLY_SUBSCRIPTION_HEADER_LABEL" | translate }}</span>
+      <mat-icon (click)="onCancel()">cancel</mat-icon>
+    </div>
+    <div class="dialog-form-container__body">
+      <div class="subscription-tile-container">
+        <span>{{ data?.message }} {{ "SUBSCRIPTION_TEXTS.SUBSCRIPTION_CAPTION_1" | translate }} {{
+          clientSubscriptionDetails?.subscriptionName }}. {{ "SUBSCRIPTION_TEXTS.SUBSCRIPTION_CAPTION_2" | translate }}
+        </span><br>
+        @for (item of subscriptions(); track $index) {
+        <div class="subscription-tile-container__item">
+          <div class="header-info">
+            <h2>{{ item.subscriptionName }}</h2>
+            <h3>{{ item.formattedCurrentSubscriptionPrice }} / month</h3>
+          </div>
+
+          <p>{{ item.description }}</p>
+          <button mat-raised-button color="primary"
+            [disabled]="item.subscriptionId === clientSubscriptionDetails.subscriptionId" (click)="subscribe(item)">{{
+            "GENERAL_TEXTS.SUBSCRIBE" |
+            translate}}</button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</app-loader-layout>

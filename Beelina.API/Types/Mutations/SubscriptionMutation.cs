@@ -1,3 +1,5 @@
+using Beelina.LIB.GraphQL.Errors.Factories;
+using Beelina.LIB.GraphQL.Exceptions;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
@@ -7,6 +9,8 @@ namespace Beelina.API.Types.Mutations
     [ExtendObjectType("Mutation")]
     public class SubscriptionMutation
     {
+
+        [Error(typeof(SubscriptionErrorFactory))]
         public async Task<ClientSubscription> UpdateClientSubscription(
             [Service] ILogger<SubscriptionMutation> logger,
             [Service] ISubscriptionRepository<ClientSubscription> subscriptionRepository,
@@ -17,9 +21,23 @@ namespace Beelina.API.Types.Mutations
             {
                 var result = await subscriptionRepository.UpdateClientSubscription(clientSubscriptionInput, httpContextAccessor.HttpContext.RequestAborted);
 
+                if (result is null)
+                {
+                    throw new SubscriptionRegistrationAlreadyExistsException();
+                }
+
                 logger.LogInformation("Successfully registered client subscription. Params: {@params}", clientSubscriptionInput);
 
                 return result;
+            }
+            catch (SubscriptionRegistrationAlreadyExistsException ex)
+            {
+                logger.LogError(ex, "Failed to register client subscription. Params: {@params}", new
+                {
+                    clientSubscriptionInput
+                });
+
+                throw new SubscriptionRegistrationAlreadyExistsException();
             }
             catch (Exception ex)
             {

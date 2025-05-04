@@ -17,9 +17,9 @@ namespace Beelina.LIB.BusinessLogic
     private readonly ILogger<ProductRepository> _logger;
     private readonly IProductStockPerPanelRepository<ProductStockPerPanel> _productStockPerPanelRepository;
     private IProductStockPerWarehouseRepository<ProductStockPerWarehouse> _productStockPerWarehouseRepository;
-    private readonly IProductStockAuditRepository<ProductStockAudit> _productStockAuditRepository;
     private readonly IProductUnitRepository<ProductUnit> _productUnitRepository;
     private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
+    private readonly ISubscriptionRepository<ClientSubscription> _subscriptionRepository;
     private readonly IGeneralSettingRepository<GeneralSetting> _generalSettingRepository;
     private readonly ICurrentUserService _currentUserService;
 
@@ -30,15 +30,16 @@ namespace Beelina.LIB.BusinessLogic
         IProductStockAuditRepository<ProductStockAudit> productStockAuditRepository,
         IProductUnitRepository<ProductUnit> productUnitRepository,
         IUserAccountRepository<UserAccount> userAccountRepository,
+        ISubscriptionRepository<ClientSubscription> subscriptionRepository,
         ICurrentUserService currentUserService)
         : base(beelinaRepository, beelinaRepository.ClientDbContext)
     {
       _logger = logger;
       _productStockPerPanelRepository = productStockPerPanelRepository;
       _productStockPerWarehouseRepository = productStockPerWarehouseRepository;
-      _productStockAuditRepository = productStockAuditRepository;
       _productUnitRepository = productUnitRepository;
       _userAccountRepository = userAccountRepository;
+      _subscriptionRepository = subscriptionRepository;
       _currentUserService = currentUserService;
     }
 
@@ -1458,7 +1459,7 @@ namespace Beelina.LIB.BusinessLogic
       return sourceProductFromRepo[0];
     }
 
-    public MapExtractedProductResult MapProductImport(ExtractProductResult productImportResult, IList<Product> warehouseProductsFromRepo)
+    public async Task<MapExtractedProductResult> MapProductImport(ExtractProductResult productImportResult, IList<Product> warehouseProductsFromRepo)
     {
       var mapProductResult = new MapExtractedProductResult();
 
@@ -1496,8 +1497,27 @@ namespace Beelina.LIB.BusinessLogic
                                   }).ToList();
 
       mapProductResult.SuccessExtractedProducts = mappedProductsImport;
+
+      await ValidateSubscriptionProductRegistrations(productImportResult, mappedProductsImport.Count);
+
       mapProductResult.FailedExtractedProducts = productImportResult.FailedExtractedProducts;
       return mapProductResult;
+    }
+
+    private async Task ValidateSubscriptionProductRegistrations(ExtractProductResult productImportResult, int mappedProductsImportCount)
+    {
+      var productsCount = await _beelinaRepository.ClientDbContext.Products.Where(p => p.IsActive && p.IsDelete == false).CountAsync();
+      var clientSubscriptionDetails = await _subscriptionRepository.GetClientSubscriptionDetails(_currentUserService.AppSecretToken, DateTime.Now.ToString("yyyy-MM-dd"));
+      var absoluteTotalCounts = productsCount + mappedProductsImportCount;
+
+      if (absoluteTotalCounts >= clientSubscriptionDetails.ProductSKUMax)
+      {
+        productImportResult.FailedExtractedProducts.Add(new FailedExtractedProduct
+        {
+          RowNumber = 0,
+          Message = "You are not allowed to register more than " + clientSubscriptionDetails.ProductSKUMax + " products based on your current subscription."
+        });
+      }
     }
   }
 }
