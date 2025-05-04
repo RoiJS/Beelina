@@ -1587,6 +1587,29 @@
     "SEND_EMAIL_REPORT_ERROR": "Sending invoice via email is not activated.",
     "OFFLINE_MODE_ERROR": "You are currently offline. Bizual is not avalable in offline mode for free version."
   },
+  "PRINTING_RECEIPT_PAGE": {
+    "HEADER_SECTION": {
+      "TRANSACTION_NO": "Transaction No:",
+      "TRANSACTION_DATE": "Transaction Date:"
+    },
+    "BODY_SECTION": {
+      "ITEM_GRID": {
+        "COLUMNS": {
+          "ITEM_NAME": "Item",
+          "QUANTITY": "Qty",
+          "UNIT_PRICE": "Price"
+        },
+        "FOOTER_SECTION": {
+          "GROSS_AMOUNT": "Gross Total:",
+          "DISCOUNT_AMOUNT": "Discount:",
+          "NET_AMOUNT": "Net Total:"
+        }
+      }
+    },
+    "FOOTER_SECTION": {
+      "POWERED_BY_LABEL": "Powered by Bizual"
+    }
+  },
   "DASHBOARD_ADMIN": {
     "TITLE": "Dashboard",
     "MAIN_MENU": {
