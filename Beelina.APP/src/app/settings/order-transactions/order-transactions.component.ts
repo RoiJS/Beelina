@@ -42,7 +42,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
 
   ngOnInit() {
     this.userAgentSettingsService
-      .getOrderTransactonsSettings(this.authService.userId)
+      .getOrderTransactionsSettings(this.authService.userId)
       .subscribe((userAgentOrderTransactionSettings: UserAgentOrderTransactionSettings) => {
         this.orderTransactionSettingsForm.patchValue(userAgentOrderTransactionSettings);
       });
