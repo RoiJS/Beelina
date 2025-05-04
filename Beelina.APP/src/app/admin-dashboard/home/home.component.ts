@@ -45,7 +45,7 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
     super.ngOnInit();
 
     this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
-    const result = this.clientSubscriptionDetails?.subscriptionFeatureHideDashboardWidgets.findIndex((x: SubscriptionFeatureHideDashboardWidget) => x.dashboardWidgetId === this.DASHBOARD_WIDGET_ID) >= -1;
+    const result = this.clientSubscriptionDetails?.subscriptionFeatureHideDashboardWidgets.findIndex((x: SubscriptionFeatureHideDashboardWidget) => x.dashboardModuleWidgetId === this.DASHBOARD_WIDGET_ID) > -1;
     this.hideSalesAgentDistributionWidget.set(result);
   }
 
