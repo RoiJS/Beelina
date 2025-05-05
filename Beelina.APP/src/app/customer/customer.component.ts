@@ -103,10 +103,10 @@ export class CustomerComponent
   }
 
   addCustomer() {
-    if (this._dataSource.data.length <= this.clientSubscriptionDetails.customersMax) {
+    if (this.clientSubscriptionDetails.customersMax === 0 || this._dataSource.data.length <= this.clientSubscriptionDetails.customersMax) {
       this.router.navigate([`/customer-accounts/${this._barangay}/add-customer`]);
     } else {
-      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.CUSTOMER_LIMIT_ERROR", {customersMax: this.clientSubscriptionDetails.customersMax}));
+      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.CUSTOMER_LIMIT_ERROR", { customersMax: this.clientSubscriptionDetails.customersMax }));
     }
   }
 
