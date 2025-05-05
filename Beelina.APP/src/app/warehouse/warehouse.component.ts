@@ -302,7 +302,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   addProduct() {
-    if (this.totalProducts() <= this.clientSubscriptionDetails.productSKUMax) {
+    if (this.clientSubscriptionDetails.productSKUMax === 0 || this.totalProducts() <= this.clientSubscriptionDetails.productSKUMax) {
       this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Warehouse } });
     } else {
       this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", { productSKUMax: this.clientSubscriptionDetails.productSKUMax }));

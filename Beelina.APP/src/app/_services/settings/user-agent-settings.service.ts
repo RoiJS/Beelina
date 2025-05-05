@@ -95,8 +95,6 @@ export class UserAgentSettingsService {
 
   async autoSaveUserAgentOrderTransactionSettings() {
     const userSettings = await this.localUserSettingsDbService.getLocalUserSettings();
-    console.log(userSettings);
-
     const localUserSettings: IUserAgentOrderTransactionSettingsInput = {
       userId: this.authService.userId,
       allowSendReceipt: userSettings.allowSendReceipt,

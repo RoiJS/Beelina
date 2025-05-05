@@ -73,10 +73,10 @@ export class BarangaysComponent
   }
 
   addBarangay() {
-    if (this._dataSource.data.length <= this.clientSubscriptionDetails.customerAccountsMax) {
+    if (this.clientSubscriptionDetails.customerAccountsMax === 0 || this._dataSource.data.length <= this.clientSubscriptionDetails.customerAccountsMax) {
       this.openBarangayDialog(new Barangay());
     } else {
-      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.CUSTOMER_ACCOUNTS_LIMIT_ERROR", {customerAccountsMax: this.clientSubscriptionDetails.customerAccountsMax}));
+      this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.CUSTOMER_ACCOUNTS_LIMIT_ERROR", { customerAccountsMax: this.clientSubscriptionDetails.customerAccountsMax }));
     }
   }
 

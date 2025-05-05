@@ -182,7 +182,7 @@ export class SubscriptionService {
             }
             if (data.typename === 'ClientSubscriptionNotExistsError')
               throw new Error(
-                (<ClientSubscriptionNotExistsError>result.data.clientSubscriptionDetails).message
+                `${data.typename}:${(<ClientSubscriptionNotExistsError>result.data.clientSubscriptionDetails).message}`
               );
 
             return null;

@@ -40,7 +40,7 @@ export class LocalCustomerStoresDbService extends LocalBaseDbService {
     });
 
     const newCustomers = await firstValueFrom(this.localDbService.bulkAdd('customers', localCustomerStores));
-    console.log('newCustomers: ', newCustomers);
+    console.info('newCustomersCount: ', newCustomers.length);
   }
 
   async getMyLocalCustomerStores(storeIds: Array<number> = null): Promise<Array<CustomerStore>> {

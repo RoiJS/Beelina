@@ -91,9 +91,9 @@ export class AccountsComponent extends BaseComponent implements OnInit, OnDestro
   }
 
   addUserAccount() {
-    if (this._totalUserAccountCount() >= this.clientSubscriptionDetails.userAccountsMax) {
+    if (this.clientSubscriptionDetails.userAccountsMax === 0 && this._totalUserAccountCount() >= this.clientSubscriptionDetails.userAccountsMax) {
       if (!this.clientSubscriptionDetails.allowExceedUserAccountsMax) {
-        this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.USER_REGISTRATION_EXCEEDS_LIMIT_ERROR", {userAccountsMax: this.clientSubscriptionDetails.userAccountsMax}));
+        this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.USER_REGISTRATION_EXCEEDS_LIMIT_ERROR", { userAccountsMax: this.clientSubscriptionDetails.userAccountsMax }));
         return;
       }
     }

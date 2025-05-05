@@ -116,7 +116,7 @@ namespace Beelina.LIB.BusinessLogic
             var clientSubscriptionDetails = new ClientSubscriptionDetailsResult
             {
                 ClientId = clientFromRepo.Id,
-                SubscriptionFeatureId = clientSubscriptionFromRepo.Id,
+                SubscriptionFeatureId = clientSubscriptionFromRepo.SubscriptionFeatureId,
                 StartDate = clientSubscriptionFromRepo.StartDate,
                 EndDate = clientSubscriptionFromRepo.EndDate,
                 SubscriptionId = subscriptionTypeFromRepo.Id,

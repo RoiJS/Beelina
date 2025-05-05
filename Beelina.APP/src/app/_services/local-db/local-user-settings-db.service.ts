@@ -40,8 +40,8 @@ export class LocalUserSettingsDbService {
 
     this.localDbService
       .update('userSettings', userSettings)
-      .subscribe((result) => {
-        console.log(result);
+      .subscribe((result: UserSetting) => {
+        console.info(result);
       });
   }
 
