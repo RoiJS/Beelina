@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
@@ -29,11 +30,15 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
   formBuilder = inject(FormBuilder);
 
   orderTransactionSettingsForm = this.formBuilder.group({
-    allowSendReceipt: [false, Validators.required],
-    allowAutoSendReceipt: [false, Validators.required],
-    sendReceiptEmailAddress: ["", Validators.required],
-    allowPrintReceipt: [false, Validators.required],
-    autoPrintReceipt: [false, Validators.required],
+    sendReceiptForm: this.formBuilder.group({
+      allowSendReceipt: [false, Validators.required],
+      allowAutoSendReceipt: [false, Validators.required],
+      sendReceiptEmailAddress: ["", Validators.required],
+    }),
+    printReceiptForm: this.formBuilder.group({
+      allowPrintReceipt: [false, Validators.required],
+      autoPrintReceipt: [false, Validators.required],
+    })
   });
 
   constructor() {
@@ -44,17 +49,39 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
     this.userAgentSettingsService
       .getOrderTransactionsSettings(this.authService.userId)
       .subscribe((userAgentOrderTransactionSettings: UserAgentOrderTransactionSettings) => {
-        this.orderTransactionSettingsForm.patchValue(userAgentOrderTransactionSettings);
+        this.orderTransactionSettingsForm.setValue({
+          sendReceiptForm: {
+            allowSendReceipt: userAgentOrderTransactionSettings.allowSendReceipt,
+            allowAutoSendReceipt: userAgentOrderTransactionSettings.allowAutoSendReceipt,
+            sendReceiptEmailAddress: userAgentOrderTransactionSettings.sendReceiptEmailAddress,
+          },
+          printReceiptForm: {
+            allowPrintReceipt: userAgentOrderTransactionSettings.allowPrintReceipt,
+            autoPrintReceipt: userAgentOrderTransactionSettings.autoPrintReceipt,
+          }
+        })
       });
   }
 
+  validate() {
+    const sendReceiptForm = this.orderTransactionSettingsForm.value.sendReceiptForm;
+
+    if (sendReceiptForm.allowSendReceipt) {
+      if (!sendReceiptForm.sendReceiptEmailAddress) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   save() {
-    if (this.orderTransactionSettingsForm.valid) {
-      const allowSendReceipt = this.orderTransactionSettingsForm.value.allowSendReceipt;
-      const allowAutoSendReceipt = this.orderTransactionSettingsForm.value.allowAutoSendReceipt;
-      const sendReceiptEmailAddress = this.orderTransactionSettingsForm.value.sendReceiptEmailAddress
-      const allowPrintReceipt = this.orderTransactionSettingsForm.value.allowPrintReceipt;
-      const autoPrintReceipt = this.orderTransactionSettingsForm.value.autoPrintReceipt;
+    if (this.validate()) {
+      const allowSendReceipt = this.orderTransactionSettingsForm.value.sendReceiptForm.allowSendReceipt;
+      const allowAutoSendReceipt = this.orderTransactionSettingsForm.value.sendReceiptForm.allowAutoSendReceipt;
+      const sendReceiptEmailAddress = this.orderTransactionSettingsForm.value.sendReceiptForm.sendReceiptEmailAddress
+      const allowPrintReceipt = this.orderTransactionSettingsForm.value.printReceiptForm.allowPrintReceipt;
+      const autoPrintReceipt = this.orderTransactionSettingsForm.value.printReceiptForm.autoPrintReceipt;
 
       this.dialogService.openConfirmation(
         this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.TITLE"),

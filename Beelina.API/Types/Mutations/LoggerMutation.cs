@@ -5,7 +5,6 @@ namespace Beelina.API.Types.Mutations
     [ExtendObjectType("Mutation")]
     public class LoggerMutation
     {
-        [Authorize]
         public bool LogMessage(
             [Service] ILogger<LoggerMutation> logger,
             LogLevel logLevel,
