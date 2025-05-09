@@ -67,7 +67,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     });
 
     const newProducts = await firstValueFrom(this.localDbService.bulkAdd('products', localProducts));
-    console.log('newProducts: ', newProducts);
+    console.info('newProductsCount: ', newProducts.length);
   }
 
   async getMyLocalProducts(filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
@@ -179,7 +179,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     });
 
     const newLocalProductUnits = await firstValueFrom(this.localDbService.bulkAdd('productUnits', localProductUnits));
-    console.log('newLocalProductUnits: ', newLocalProductUnits);
+    console.info('newLocalProductUnitsCount: ', newLocalProductUnits.length);
   }
 
   async getMyLocalProductById(productId: number) {

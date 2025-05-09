@@ -31,7 +31,7 @@ export class LocalPaymentMethodsDbService extends LocalBaseDbService {
     });
 
     const newPaymentMethods = await firstValueFrom(this.localDbService.bulkAdd('paymentMethods', localPaymentMethods));
-    console.log('newPaymentMethods:', newPaymentMethods);
+    console.info('newPaymentMethodsCount:', newPaymentMethods.length);
   }
 
   async getMyLocalPaymentMethods() {

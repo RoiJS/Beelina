@@ -14,7 +14,7 @@
 
     <div class="order-transaction-settings-panel panel">
       <div [formGroup]="orderTransactionSettingsForm" class="panel__details-group-panel">
-        <div class="panel__body-section">
+        <div class="panel__body-section" formGroupName="sendReceiptForm">
           <div class="order-transaction-settings-panel__allowSendReceipt mat-form-slide-toggle-container">
             <mat-slide-toggle formControlName="allowSendReceipt">{{
               "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_SEND_RECEIPT_CONTROL.LABEL"
@@ -26,7 +26,7 @@
               }}</span>
           </div>
 
-          @if(orderTransactionSettingsForm.value.allowSendReceipt) {
+          @if(orderTransactionSettingsForm.value.sendReceiptForm.allowSendReceipt) {
           <br>
           <div class="order-transaction-settings-panel__allowAutoSendReceipt mat-form-slide-toggle-container">
             <mat-slide-toggle formControlName="allowAutoSendReceipt">{{
@@ -50,10 +50,11 @@
               | translate
               }}</mat-hint>
           </mat-form-field>
-          <br>
           }
 
-          <br>
+        </div>
+        <div class="panel__body-section" formGroupName="printReceiptForm">
+
           <div class="order-transaction-settings-panel__allowPrintReceipt mat-form-slide-toggle-container">
             <mat-slide-toggle formControlName="allowPrintReceipt">{{
               "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.ALLOW_PRINT_RECEIPT_CONTROL.LABEL"
@@ -65,7 +66,7 @@
               }}</span>
           </div>
 
-          @if(orderTransactionSettingsForm.value.allowPrintReceipt) {
+          @if(orderTransactionSettingsForm.value.printReceiptForm.allowPrintReceipt) {
           <br>
           <div class="order-transaction-settings-panel__autoPrintReceipt mat-form-slide-toggle-container">
             <mat-slide-toggle formControlName="autoPrintReceipt">{{
@@ -78,7 +79,6 @@
               }}</span>
           </div>
           }
-
         </div>
       </div>
     </div>

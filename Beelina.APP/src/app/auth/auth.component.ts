@@ -4,12 +4,15 @@ import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription, switchMap } from 'rxjs';
+import { map, Subscription, switchMap } from 'rxjs';
 
 import { authCredentialsSelector, errorSelector } from './store/selectors';
 
 import { AppVersionService } from '../_services/app-version.service';
 import { AuthService } from '../_services/auth.service';
+import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
+import { LocalSyncDataService } from '../_services/local-db/local-sync-data.service';
+import { LogMessageService } from '../_services/log-message.service';
 import { NetworkService } from '../_services/network.service';
 import { StorageService } from '../_services/storage.service';
 import { SubscriptionService } from '../_services/subscription.service';
@@ -23,10 +26,13 @@ import {
   getPermissionLevelEnum,
   PermissionLevelEnum,
 } from '../_enum/permission-level.enum';
+
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { ClientNotExistsError } from '../_models/errors/client-not-exists.error';
 import { ClientInformationResult } from '../_models/results/client-information-result.result';
+import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { SharedComponent } from '../shared/components/shared/shared.component';
+import { LogLevelEnum } from '../_enum/log-type.enum';
 
 @Component({
   selector: 'app-auth-module',
@@ -40,6 +46,9 @@ export class AuthComponent extends SharedComponent implements OnInit, OnDestroy 
   appVersionService = inject(AppVersionService);
   formBuilder = inject(FormBuilder);
   router = inject(Router);
+  localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
+  localSyncDataService = inject(LocalSyncDataService);
+  loggerService = inject(LogMessageService);
   networkService = inject(NetworkService);
   notificationService = inject(NotificationService);
   storageService = inject(StorageService);
@@ -84,23 +93,56 @@ export class AuthComponent extends SharedComponent implements OnInit, OnDestroy 
           const username = this.authForm.get('username').value;
           const password = this.authForm.get('password').value;
 
-          this.loginSubscription.add(this.store.dispatch(LoginActions.loginAction({ username, password })));
+          // Get client subscription details
+          this.subscriptionService.getClientSubscription(
+            this.storageService.getString('appSecretToken')
+          ).pipe(
+            // (1) Initialized local sync data
+            switchMap((clientSubscription: Promise<ClientSubscriptionDetails>) => {
+              return clientSubscription.then((clientSubscription: ClientSubscriptionDetails) => {
+                return clientSubscription;
+              });
+            }),
+            map((clientSubscriptionDetails: ClientSubscriptionDetails) => {
+              if (clientSubscriptionDetails?.offlineModeActive) {
+                this.localSyncDataService.initSyncData();
+              }
+            }),
+          ).subscribe({
+            next: () => {
+              this.loginSubscription.add(this.store.dispatch(LoginActions.loginAction({ username, password })));
+            },
+            error: (error) => {
+              if (error.message.includes("ClientSubscriptionNotExistsError")) {
+                this.loginSubscription.add(this.store.dispatch(LoginActions.getLoginError({ error: this.translateService.instant("AUTH_PAGE.ERROR_MESSAGES.NO_ACTIVE_SUBSCRIPTION") })));
+              }
+              console.error(error.message);
+              this.loggerService.logMessage(LogLevelEnum.ERROR, error.message);
+            }
+          });
 
+          // Subscribe to auth credentials
           this.loginSubscription.add(this.store.pipe(select(authCredentialsSelector)).subscribe((auth) => {
             if (auth.accessToken) {
               this.userAccountService
-                .getUserSetting(this.authService.userId).pipe(
-                  switchMap(() => this.subscriptionService.getClientSubscription(
-                    this.storageService.getString('appSecretToken')
-                  ))
-                ).subscribe(() => {
-                  this.router.navigate([this.getDefaultLandingPage()], {
-                    replaceUrl: true,
-                  });
+
+                // Initialized user settings
+                .getUserSetting(this.authService.userId)
+                .subscribe({
+                  next: () => {
+                    this.router.navigate([this.getDefaultLandingPage()], {
+                      replaceUrl: true,
+                    });
+                  },
+                  error: (error) => {
+                    console.error(error.message);
+                    this.loggerService.logMessage(LogLevelEnum.ERROR, error.message);
+                  }
                 });
             }
           }));
 
+          // Subscribe to auth error
           this.loginSubscription.add(this.store.pipe(select(errorSelector)).subscribe((error) => {
             if (error) {
               this._isLoading = false;
@@ -108,16 +150,18 @@ export class AuthComponent extends SharedComponent implements OnInit, OnDestroy 
             }
           }));
         },
-        error: (e: ClientNotExistsError) => {
+        error: (error: ClientNotExistsError) => {
           this._isLoading = false;
-          this.notificationService.openErrorNotification(e.message);
+          console.error(error.message);
+          this.notificationService.openErrorNotification(error.message);
+          this.loggerService.logMessage(LogLevelEnum.ERROR, error.message);
         },
       });
     }
   }
 
   // Get default landing page based on user permission.
-  // For now, we set default landing page as profile page for Managers and
+  // For now, we set default landing page as warehouse page for Managers and
   // sales page for user account with User or Administrator Permission.
   // We will revisit this later on to make this landing page configurable.
   private getDefaultLandingPage() {

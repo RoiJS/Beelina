@@ -122,7 +122,8 @@
       }
     },
     "ERROR_MESSAGES": {
-      "NO_NETWORK": "Unable to login. No network connection."
+      "NO_NETWORK": "Unable to login. No network connection.",
+      "NO_ACTIVE_SUBSCRIPTION": "No active subscription for this comapny."
     }
   },
   "LOGOUT_DIALOG": {

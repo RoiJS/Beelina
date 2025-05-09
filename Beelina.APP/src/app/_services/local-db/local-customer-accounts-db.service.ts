@@ -31,7 +31,7 @@ export class LocalCustomerAccountsDbService extends LocalBaseDbService {
     });
 
     const newCustomerAccounts = await firstValueFrom(this.localDbService.bulkAdd('customerAccounts', localCustomerAccounts));
-    console.log('newCustomerAccounts: ', newCustomerAccounts);
+    console.info('newCustomerAccountsCount: ', newCustomerAccounts.length);
   }
 
   async getMyLocalCustomerAccounts(customerAccountIds: Array<number> = null) {
