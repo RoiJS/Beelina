@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
 
 import { User } from 'src/app/_models/user.model';
+
 import { AuthService } from 'src/app/_services/auth.service';
 import { NetworkService } from 'src/app/_services/network.service';
 import { UIService } from 'src/app/_services/ui.service';
@@ -18,13 +19,12 @@ export class UserCardComponent extends SharedComponent implements OnInit {
   private _user: User;
   private _company: string;
 
-  constructor(
-    private authService: AuthService,
-    private networkService: NetworkService,
-    private router: Router,
-    private translateService: TranslateService,
-    override uiService: UIService
-  ) {
+  private authService = inject(AuthService);
+  private networkService = inject(NetworkService);
+  private router = inject(Router);
+  private translateService = inject(TranslateService);
+
+  constructor(override uiService: UIService) {
     super(uiService);
     this.authService.user.subscribe((user: User) => {
       this._user = user;

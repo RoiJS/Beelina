@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -14,6 +14,11 @@ import { NetworkService } from 'src/app/_services/network.service';
 
 @Injectable()
 export class BarangaysEffects {
+  private actions$ = inject(Actions);
+  private barangayService = inject(BarangayService);
+  private localCustomerAccountsDbService = inject(LocalCustomerAccountsDbService);
+  private networkService = inject(NetworkService);
+
   barangays$ = createEffect(() =>
     this.actions$.pipe(
       ofType(BarangayActions.getBarangaysAction),
@@ -87,11 +92,4 @@ export class BarangaysEffects {
       })
     )
   );
-
-  constructor(
-    private actions$: Actions,
-    private barangayService: BarangayService,
-    private localCustomerAccountsDbService: LocalCustomerAccountsDbService,
-    private networkService: NetworkService
-  ) { }
 }

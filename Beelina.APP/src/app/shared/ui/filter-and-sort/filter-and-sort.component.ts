@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   MAT_BOTTOM_SHEET_DATA,
@@ -13,27 +13,24 @@ import moment from 'moment';
   templateUrl: './filter-and-sort.component.html',
   styleUrls: ['./filter-and-sort.component.scss'],
 })
-export class FilterAndSortComponent implements OnInit {
+export class FilterAndSortComponent {
   private _filterForm: FormGroup;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<FilterAndSortComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      fromDate: string;
-      toDate: string;
-      sortOrder: SortOrderOptionsEnum;
-    },
-    private formBuilder: FormBuilder
-  ) {
+  private _bottomSheetRef = inject(MatBottomSheetRef<FilterAndSortComponent>);
+  private formBuilder = inject(FormBuilder);
+  private data = inject<{
+    fromDate: string;
+    toDate: string;
+    sortOrder: SortOrderOptionsEnum;
+  }>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
     this._filterForm = this.formBuilder.group({
-      dateFrom: [data.fromDate],
-      dateTo: [data.toDate],
-      sortOrder: [data.sortOrder],
+      dateFrom: [this.data.fromDate],
+      dateTo: [this.data.toDate],
+      sortOrder: [this.data.sortOrder],
     });
   }
-
-  ngOnInit() {}
 
   onReset() {
     this._bottomSheetRef.dismiss({

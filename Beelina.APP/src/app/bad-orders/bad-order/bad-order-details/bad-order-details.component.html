@@ -29,7 +29,9 @@
           <mat-divider></mat-divider>
 
           <mat-list role="list" class="product-transaction-list">
-            <mat-list-item *ngFor="let item of transaction?.productTransactions" role="listitem">
+
+            @for (item of transaction?.productTransactions; track $index) {
+            <mat-list-item role="listitem">
               <div class="product-transaction-list__item-section">
                 <div class="product-transaction-information">
                   <span>
@@ -51,19 +53,29 @@
                 </div>
               </div>
             </mat-list-item>
+            }
+
           </mat-list>
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{ "GENERAL_TEXTS.BALANCE" | translate }}</span>
             <span>{{ transaction.balanceFormatted }}</span>
           </div>
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+          }
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
             <span>{{ transaction.grossTotalFormatted }}</span>
           </div>
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+          }
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
               | translate
@@ -71,10 +83,16 @@
             <span>{{ transaction.discount }}</span>
           </div>
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+          }
+
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{ "GENERAL_TEXTS.NET_TOTAL" | translate }}</span>
             <span>{{ transaction.netTotalFormatted }}</span>
           </div>
+          }
+
         </div>
 
         <div class="panel__footer-section transaction-details-panel__footer-section">

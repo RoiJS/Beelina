@@ -163,7 +163,11 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
 
     if (this._totalUserAccountCount() >= this.clientSubscriptionDetails.userAccountsMax &&
       this.clientSubscriptionDetails.allowExceedUserAccountsMax) {
-      this.notificationService.openWarningNotification(this.translateService.instant('SUBSCRIPTION_TEXTS.USER_REGISTRATION_EXCEEDS_LIMIT_WARNING'));
+
+      // Check for new user accounts only.
+      if (this._accountId === 0) {
+        this.notificationService.openWarningNotification(this.translateService.instant('SUBSCRIPTION_TEXTS.USER_REGISTRATION_EXCEEDS_LIMIT_WARNING'));
+      }
     }
 
     try {

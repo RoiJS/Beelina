@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SuccessNotificationComponent } from './success-notification/success-notification.component';
@@ -10,7 +10,7 @@ import { WarningNotificationComponent } from './warning-notification/warning-not
 })
 export class NotificationService {
 
-  constructor(private snackBar: MatSnackBar) { }
+  private snackBar = inject(MatSnackBar);
 
   openSuccessNotification(message: string) {
     this.snackBar.openFromComponent(SuccessNotificationComponent, {

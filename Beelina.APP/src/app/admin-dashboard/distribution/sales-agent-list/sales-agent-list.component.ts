@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, inject, OnInit, output } from '@angular/core';
 
 import { User } from 'src/app/_models/user.model';
 
@@ -14,19 +14,17 @@ import { SharedComponent } from 'src/app/shared/components/shared/shared.compone
 })
 export class SalesAgentListComponent extends SharedComponent implements OnInit {
 
-  @Output() selectSalesAgent = new EventEmitter<User>();
-  @Output() initDefaultSalesAgent = new EventEmitter<User>();
+  selectSalesAgent = output<User>();
+  initDefaultSalesAgent = output<User>();
 
   private _salesAgents: Array<User>;
   private _currentSalesAgent: User;
+  private _productService = inject(ProductService);
 
-  constructor(
-    private productService: ProductService,
-    protected override uiService: UIService
-  ) {
+  constructor(protected override uiService: UIService) {
     super(uiService);
 
-    this.productService.getSalesAgentsList().subscribe({
+    this._productService.getSalesAgentsList().subscribe({
       next: (data: Array<User>) => {
         this._salesAgents = data;
         this._currentSalesAgent = data[0];

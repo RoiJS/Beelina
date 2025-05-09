@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -22,21 +22,23 @@ import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
   styleUrls: ['./bad-order-details.component.scss'],
 })
 export class BadOrderDetailsComponent extends BaseComponent implements AfterViewInit {
-  @ViewChild(LoaderLayoutComponent) loaderLayoutComponent: LoaderLayoutComponent;
-  private _transactionId: number;
-  private _transaction: Transaction;
+  loaderLayoutComponent = viewChild(LoaderLayoutComponent);
   isLocalTransaction = signal<boolean>(false);
 
-  constructor(
-    public networkService: NetworkService,
-    private activatedRoute: ActivatedRoute,
-    private dialogService: DialogService,
-    private localOrdersDbService: LocalOrdersDbService,
-    private notificationService: NotificationService,
-    private router: Router,
-    private transactionService: TransactionService,
-    private translateService: TranslateService
-  ) {
+  private _transactionId: number;
+  private _transaction: Transaction;
+
+  private activatedRoute = inject(ActivatedRoute);
+  private dialogService = inject(DialogService);
+  private localOrdersDbService = inject(LocalOrdersDbService);
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
+  private transactionService = inject(TransactionService);
+  private translateService = inject(TranslateService)
+
+  networkService = inject(NetworkService);
+
+  constructor() {
     super();
     this._transactionId = +this.activatedRoute.snapshot.paramMap.get('id');
     const routerData = <{ isLocalTransaction: boolean }>this.router.getCurrentNavigation()?.extras?.state;
@@ -46,7 +48,7 @@ export class BadOrderDetailsComponent extends BaseComponent implements AfterView
   }
 
   ngAfterViewInit() {
-    this.loaderLayoutComponent.label = this.translateService.instant('LOADER_LAYOUT.LOADING_TEXT');
+    this.loaderLayoutComponent().label = this.translateService.instant('LOADER_LAYOUT.LOADING_TEXT');
 
     if (!this.isLocalTransaction()) {
       this.transactionService
@@ -78,7 +80,7 @@ export class BadOrderDetailsComponent extends BaseComponent implements AfterView
       .subscribe((result: ButtonOptions) => {
         if (result == ButtonOptions.YES) {
           this._isLoading = true;
-          this.loaderLayoutComponent.label = this.translateService.instant('BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.LOADING_MESSAGE');
+          this.loaderLayoutComponent().label = this.translateService.instant('BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.LOADING_MESSAGE');
 
           if (!this.isLocalTransaction()) {
             this.transactionService

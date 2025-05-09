@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { PlaceholderEntityTemplateEnum } from 'src/app/_enum/placeholder-entity-template.enum';
@@ -10,7 +10,7 @@ import { BannerTypeEnum } from '../banner/banner.component';
   templateUrl: './list-container.component.html',
   styleUrls: ['./list-container.component.scss'],
 })
-export class ListContainerComponent implements OnInit {
+export class ListContainerComponent {
   count = input<number>(0);
   templateType = input<PlaceholderEntityTemplateEnum>(null);
   templateSize = input<TemplateSizeEnum>(TemplateSizeEnum.LARGE);
@@ -23,9 +23,4 @@ export class ListContainerComponent implements OnInit {
   bannerType = BannerTypeEnum;
 
   translateService = inject(TranslateService);
-
-  constructor() { }
-
-  ngOnInit() { }
-
 }

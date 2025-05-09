@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexPlotOptions, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
 import { Subscription } from 'rxjs';
 
@@ -26,17 +26,16 @@ export type ChartOptions = {
 })
 export class TopSellingProductsChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild(ChartComponent) chart: ChartComponent;
+  chart = viewChild(ChartComponent);
   public chartOptions: Partial<ChartOptions>;
 
   private _subscription = new Subscription();
   private _topSellingProducts: Array<TopSellingProduct>;
 
-  constructor(
-    private authService: AuthService,
-    private transactionService: TransactionService,
-  ) {
+  private authService = inject(AuthService);
+  private transactionService = inject(TransactionService);
 
+  constructor() {
     this.chartOptions = {
       series: [
         {
@@ -131,7 +130,7 @@ export class TopSellingProductsChartComponent implements OnInit, OnDestroy, Afte
                 categories: this._topSellingProducts.map(x => `${x.code}: ${x.name}`)
               }
             };
-            this.chart?.updateOptions(this.chartOptions);
+            this.chart()?.updateOptions(this.chartOptions);
           }, 500);
         })
     );

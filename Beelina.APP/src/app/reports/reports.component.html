@@ -12,7 +12,9 @@
 
     <app-list-container [templateType]="emptyEntityTemplateEnum.REPORTS" [count]="reports?.length">
       <div class="list-container">
-        <div *ngFor="let item of reports">
+
+        @for (item of reports; track $index) {
+        <div>
           <div class="list-container__item-section" matRipple (click)="goToReportInformation(item.id)">
             <div class="list-container__icon-section list-container__icon-section--right-space">
               <div class="list-container__icon-section--icon-container">
@@ -30,6 +32,8 @@
             </div>
           </div>
         </div>
+        }
+
       </div>
     </app-list-container>
   </div>

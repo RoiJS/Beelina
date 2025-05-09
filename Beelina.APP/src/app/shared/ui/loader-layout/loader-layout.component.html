@@ -1,5 +1,7 @@
 <div class="loader-layout-container">
-  <div class="loader-section" *ngIf="busy">
+
+  @if (busy) {
+  <div class="loader-section">
     <div class="socket">
       <div class="gel center-gel">
         <div class="hex-brick h1"></div>
@@ -192,6 +194,8 @@
     </div>
     <label class="loader-label">{{ label }}</label>
   </div>
+  }
+
   <div class="component-placeholder">
     <ng-content></ng-content>
   </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, input, output } from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -17,10 +17,10 @@ export class SearchFieldComponent implements OnInit {
 
   private _searchForm: FormGroup;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private translateService: TranslateService
-  ) {
+  private formBuilder = inject(FormBuilder);
+  private translateService = inject(TranslateService);
+
+  constructor() {
     this._searchForm = this.formBuilder.group({
       filterKeyword: [''],
     });

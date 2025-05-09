@@ -1,12 +1,8 @@
 import { Location } from '@angular/common';
 import {
   AfterContentChecked,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
+  Component, inject,
+  input, OnDestroy, output
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -23,11 +19,11 @@ import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
 })
 export class ToolBarComponent
   extends BaseComponent
-  implements OnInit, OnDestroy, AfterContentChecked {
-  @Input() title = '';
-  @Input() showBackButton = true;
-  @Input() overrideBackAction = false;
-  @Output() onGoBackOverride = new EventEmitter<void>();
+  implements OnDestroy, AfterContentChecked {
+  title = input<string>('');
+  showBackButton = input<boolean>(true);
+  overrideBackAction = input<boolean>(false);
+  onGoBackOverride = output<void>();
 
   private _isHandset = false;
 
@@ -35,18 +31,17 @@ export class ToolBarComponent
   private _company: string;
   private _subscription: Subscription = new Subscription();
 
+  private authService = inject(AuthService);
+  private uiService = inject(UIService);
+  private location = inject(Location);
+
   isAdmin: boolean;
 
-  constructor(
-    private authService: AuthService,
-    private uiService: UIService,
-    private location: Location) {
+  constructor() {
     super();
     this._currentLoggedInUser = this.authService.user.value;
     this.isAdmin = this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator);
   }
-
-  ngOnInit(): void { }
 
   ngOnDestroy(): void {
     if (this.isHandSetSubscription) {
@@ -55,18 +50,6 @@ export class ToolBarComponent
 
     if (this._subscription) {
       this._subscription.unsubscribe();
-    }
-  }
-
-  toggleDrawer(): void {
-    this.uiService.toggleDrawer();
-  }
-
-  onGoBack() {
-    if (this.overrideBackAction) {
-      this.onGoBackOverride.emit();
-    } else {
-      this.location.back();
     }
   }
 
@@ -82,8 +65,20 @@ export class ToolBarComponent
     }));
   }
 
+  toggleDrawer(): void {
+    this.uiService.toggleDrawer();
+  }
+
+  onGoBack() {
+    if (this.overrideBackAction()) {
+      this.onGoBackOverride.emit();
+    } else {
+      this.location.back();
+    }
+  }
+
   get canGoBack() {
-    return this.showBackButton;
+    return this.showBackButton();
   }
 
   get isHandset(): boolean {
@@ -95,6 +90,6 @@ export class ToolBarComponent
   }
 
   get formattedTitle(): string {
-    return `${this.title}`;
+    return `${this.title()}`;
   }
 }

@@ -1,8 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-
-import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { User } from 'src/app/_models/user.model';
 import { AuthService } from 'src/app/_services/auth.service';
@@ -20,18 +17,18 @@ import { ProductStockAuditComponent } from './product-stock-audit/product-stock-
 })
 export class DistributionComponent extends BaseComponent implements OnInit {
 
-  @ViewChild(SalesInformationComponent) salesInformationComponent: SalesInformationComponent;
-  @ViewChild(ProductListComponent) productListComponent: ProductListComponent;
-  @ViewChild(ProductStockAuditComponent) productStockAuditComponent: ProductStockAuditComponent;
+  salesInformationComponent = viewChild(SalesInformationComponent);
+  productListComponent = viewChild(ProductListComponent);
+  productStockAuditComponent = viewChild(ProductStockAuditComponent);
 
   salesChartViewLoading: boolean;
 
   private _currentSalesAgent: User;
+  private storageService = inject(StorageService);
+  private translateService = inject(TranslateService);
+  private authService = inject(AuthService)
 
-  constructor(
-    private storageService: StorageService,
-    private translateService: TranslateService,
-    private authService: AuthService) {
+  constructor() {
     super();
     this._currentLoggedInUser = this.authService.user.value;
   }
@@ -42,8 +39,8 @@ export class DistributionComponent extends BaseComponent implements OnInit {
   initDefaultSalesAgent(user: User) {
     this._currentSalesAgent = user;
     this.storeCurrentSalesAgentId();
-    this.salesInformationComponent.calculateTotalSales(user);
-    this.productListComponent.initProductList();
+    this.salesInformationComponent().calculateTotalSales(user);
+    this.productListComponent().initProductList();
   }
 
   storeCurrentSalesAgentId() {
@@ -56,13 +53,13 @@ export class DistributionComponent extends BaseComponent implements OnInit {
   showDetailsForSalesAgent(user: User) {
     this._currentSalesAgent = user;
     this.storeCurrentSalesAgentId();
-    this.salesInformationComponent.calculateTotalSales(user);
-    this.productListComponent.initProductList();
-    this.productStockAuditComponent.resetStockAuditList();
+    this.salesInformationComponent().calculateTotalSales(user);
+    this.productListComponent().initProductList();
+    this.productStockAuditComponent().resetStockAuditList();
   }
 
   showStockAudit(id: number) {
-    this.productStockAuditComponent.initStockAuditList(id, this._currentSalesAgent.id);
+    this.productStockAuditComponent().initStockAuditList(id, this._currentSalesAgent.id);
   }
 
   get salesAgentDetails(): string {

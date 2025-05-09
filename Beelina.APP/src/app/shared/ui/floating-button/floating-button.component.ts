@@ -1,18 +1,14 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-floating-button',
   templateUrl: './floating-button.component.html',
   styleUrls: ['./floating-button.component.scss']
 })
-export class FloatingButtonComponent implements OnInit {
-  @Input() icon: string;
-  @Input() bottom: number = 90;
-  @Output() tapButton = new EventEmitter();
-
-  constructor() {}
-
-  ngOnInit() {}
+export class FloatingButtonComponent {
+  icon = input<string>('');
+  bottom = input<number>(90);
+  tapButton = output<number>();
 
   onTapButton() {
     this.tapButton.emit(0);

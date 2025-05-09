@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CustomerSale, CustomerSaleProduct, TransactionService } from 'src/app/_services/transaction.service';
@@ -15,9 +15,11 @@ export class TopCustomerSalesComponent extends BaseComponent implements OnInit, 
   private _customerSalesProducts: Array<CustomerSaleProduct> = [];
   private _subscription = new Subscription();
 
-  constructor(
-    private transactionService: TransactionService
-  ) { super(); }
+  transactionService = inject(TransactionService);
+
+  constructor() {
+    super();
+  }
 
   ngOnInit() {
     this._subscription.add(this.transactionService

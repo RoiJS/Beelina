@@ -23,8 +23,12 @@
             [ngClass]="{ unpaid: !item.allTransactionsPaid }" (click)="goToTransactionDate(item.transactionDate)">
             <span>{{ item.transactionDateFormatted }}</span>
             <div class="transaction-history-list__unpaid-transactions-count-container">
-              <span class="unpaid-transactions-counter" *ngIf="item.numberOfUnPaidTransactions > 0">{{
+
+              @if (item.numberOfUnPaidTransactions > 0) {
+              <span class="unpaid-transactions-counter">{{
                 item.numberOfUnPaidTransactions }}</span>
+              }
+
               <mat-icon>keyboard_arrow_right</mat-icon>
             </div>
           </div>

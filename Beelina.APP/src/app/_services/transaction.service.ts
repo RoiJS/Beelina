@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -547,12 +547,11 @@ export class InvoiceData {
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
-  constructor(
-    private apollo: Apollo,
-    private http: HttpClient,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService,
-  ) { }
+
+  private apollo = inject(Apollo);
+  private http = inject(HttpClient);
+  private store = inject(Store<AppStateInterface>);
+  private translateService = inject(TranslateService);
 
   registerTransaction(transaction: TransactionDto) {
     const transactionInput: ITransactionInput = {
@@ -567,7 +566,7 @@ export class TransactionService {
       dueDate: transaction.dueDate,
       productTransactionInputs: transaction.productTransactions.map((p) => {
         const productTransaction: IProductTransactionInput = {
-          id: p.id,
+          id: p.id <= 0 ? 0 : p.id,
           productId: p.productId,
           quantity: p.quantity,
           price: p.price,

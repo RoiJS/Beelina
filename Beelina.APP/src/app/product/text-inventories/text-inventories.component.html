@@ -54,8 +54,8 @@
       </div>
     </div>
 
-    <div *ngIf="showTextInventoriesTextAreaContainer && !hasActiveTextInventories"
-      class="panel text-inventories-textarea-container" [formGroup]="textInventoriesForm">
+    @if (showTextInventoriesTextAreaContainer && !hasActiveTextInventories) {
+    <div class="panel text-inventories-textarea-container" [formGroup]="textInventoriesForm">
       <div class="panel__header-section">
         <label>{{ "TEXT_INVENTORIES_DIALOG.TITLE" | translate }}</label>
       </div>
@@ -78,16 +78,21 @@
         </button>
       </div>
     </div>
+    }
 
-    <div *ngIf="!showTextInventoriesTextAreaContainer || hasActiveTextInventories"
-      class="panel text-inventories-list-container">
+    @if (!showTextInventoriesTextAreaContainer || hasActiveTextInventories) {
+    <div class="panel text-inventories-list-container">
       <div class="panel__header-section">
         <label>{{ "TEXT_INVENTORIES_DIALOG.TITLE_2" | translate }}</label>
       </div>
       <div class="panel__body-section">
-        <div *ngFor="let item of textInventoriesList" role="listitem">
+
+        @for (item of textInventoriesList; track $index) {
+        <div role="listitem">
           <app-product-card-item [productItem]="item" [hideHeader]="true" [hideImage]="true"></app-product-card-item>
         </div>
+        }
+
       </div>
       <div class="panel__footer-section">
         <button mat-button mat-raised-button (click)="back()">
@@ -98,5 +103,7 @@
         </button>
       </div>
     </div>
+    }
+
   </div>
 </app-loader-layout>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, input, Input, OnInit, viewChild, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { SalesPerDateRange } from 'src/app/_models/sales-per-date-range';
 import { AuthService } from 'src/app/_services/auth.service';
@@ -21,9 +21,9 @@ import { ChartOptions } from 'src/app/_models/chart-option.model';
   styleUrls: ['./sales-chart-view.component.scss']
 })
 export class SalesChartViewComponent extends SalesComponent implements OnInit {
-  @Input() chartType: ChartType = 'bar';
+  chartType = input<ChartType>('bar');
+  chart = viewChild(ChartComponent);
 
-  @ViewChild(ChartComponent) chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
   constructor(
@@ -59,7 +59,7 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
       chart: {
         height: 200,
         width: 800,
-        type: this.chartType,
+        type: this.chartType(),
       },
       plotOptions: {
         bar: {
@@ -154,7 +154,7 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
             categories: transactionSalesPerDateRange.map(x => x.label)
           }
         };
-        this.chart.updateOptions(this.chartOptions);
+        this.chart().updateOptions(this.chartOptions);
 
         if (callback) {
           callback();

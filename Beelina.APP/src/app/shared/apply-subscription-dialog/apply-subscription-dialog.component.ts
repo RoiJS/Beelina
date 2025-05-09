@@ -1,4 +1,4 @@
-import { Component, Inject, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { firstValueFrom } from 'rxjs';
@@ -33,12 +33,9 @@ export class ApplySubscriptionDialogComponent extends BaseComponent implements O
   subscriptions = signal<Array<ClientSubscriptionDetails>>([]);
   clientSubscriptionDetails: ClientSubscriptionDetails;
 
-  constructor(
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      message: string;
-    },
-  ) {
+  data = inject<{ message: string }>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
     super();
   }
 

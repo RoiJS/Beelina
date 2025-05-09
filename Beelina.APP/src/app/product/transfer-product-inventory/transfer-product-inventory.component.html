@@ -20,15 +20,17 @@
               | translate
               }}:</mat-label>
             <mat-select formControlName="transferType">
-              <mat-option *ngFor="let option of transferProductTypeOptionsArray" [value]="option.value">{{ option.key
+              @for (option of transferProductTypeOptionsArray; track $index) {
+              <mat-option [value]="option.value">{{ option.key
                 }}</mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </div>
 
         <!-- Bulk to Pieces -->
-        <div *ngIf="transferProductStockForm.get('transferType').value === 'BULK_TO_PIECE'"
-          [formGroup]="bulkToPiecesGroupForm">
+        @if (transferProductStockForm.get('transferType').value === 'BULK_TO_PIECE') {
+        <div [formGroup]="bulkToPiecesGroupForm">
           <mat-form-field appearance="fill">
             <mat-label>{{ sourceProductNumberOfUnitsLabel }}:</mat-label>
             <input matInput type="number" formControlName="numberOfUnits" />
@@ -43,8 +45,10 @@
               | translate
               }}:</mat-label>
             <mat-select formControlName="productDestination">
-              <mat-option *ngFor="let product of destinationProductOptionsArray" [value]="product.id">{{ product.code
+              @for (product of destinationProductOptionsArray; track $index) {
+              <mat-option [value]="product.id">{{ product.code
                 }} - {{ product.name }} ({{ product.productUnit.name }})</mat-option>
+              }
             </mat-select>
             <mat-hint>{{
               "TRANSFER_PRODUCT_STOCK_DIALOG.FORM_CONTROL_SECTION.BULK_TO_PIECES_CONTROL.PRODUCT_DESTINATION_CONTROL.HINT"
@@ -60,18 +64,23 @@
               }}</mat-hint>
           </mat-form-field>
         </div>
+        }
 
         <!-- Pieces To Bulk -->
-        <div *ngIf="transferProductStockForm.get('transferType').value === 'PIECE_TO_BULK'"
-          [formGroup]="piecesToBulkGroupForm">
+        @if (transferProductStockForm.get('transferType').value === 'PIECE_TO_BULK') {
+        <div [formGroup]="piecesToBulkGroupForm">
           <mat-form-field appearance="fill">
             <mat-label>{{
               "TRANSFER_PRODUCT_STOCK_DIALOG.FORM_CONTROL_SECTION.PIECES_TO_BULK_CONTROL.PRODUCT_DESTINATION_CONTROL.LABEL"
               | translate
               }}:</mat-label>
             <mat-select formControlName="productDestination">
-              <mat-option *ngFor="let product of destinationProductOptionsArray" [value]="product.id">{{ product.code
+
+              @for (product of destinationProductOptionsArray; track $index) {
+              <mat-option [value]="product.id">{{ product.code
                 }} - {{ product.name }} ({{ product.productUnit.name }})</mat-option>
+              }
+
             </mat-select>
             <mat-hint>{{
               "TRANSFER_PRODUCT_STOCK_DIALOG.FORM_CONTROL_SECTION.PIECES_TO_BULK_CONTROL.PRODUCT_DESTINATION_CONTROL.HINT"
@@ -95,6 +104,7 @@
               }}</mat-hint>
           </mat-form-field>
         </div>
+        }
 
       </div>
       <div class="dialog-form-container__footer">

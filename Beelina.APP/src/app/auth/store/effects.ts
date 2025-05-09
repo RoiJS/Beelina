@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap } from 'rxjs';
@@ -13,6 +13,10 @@ import { ILoginAuthCredentials } from '../types/login-auth-credentials.interface
 
 @Injectable()
 export class LoginEffects {
+
+  private actions$ = inject(Actions);
+  private authService = inject(AuthService);
+
   login$ = createEffect(() =>
     this.actions$.pipe(
       ofType(LoginActions.loginAction),
@@ -38,5 +42,4 @@ export class LoginEffects {
       })
     )
   );
-  constructor(private actions$: Actions, private authService: AuthService) {}
 }

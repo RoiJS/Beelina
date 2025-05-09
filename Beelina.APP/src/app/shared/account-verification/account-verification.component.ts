@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   MAT_BOTTOM_SHEET_DATA,
@@ -18,15 +18,13 @@ export class AccountVerificationComponent
   implements OnInit {
   private _accountVerificationForm: FormGroup;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<AccountVerificationComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      defaultUsername: string;
-    },
-    private userAccountService: UserAccountService,
-    private formBuilder: FormBuilder
-  ) {
+  private _bottomSheetRef = inject(MatBottomSheetRef<AccountVerificationComponent>);
+  private userAccountService = inject(UserAccountService);
+  private formBuilder = inject(FormBuilder);
+
+  data = inject<{ defaultUsername: string }>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
     super();
     this._accountVerificationForm = this.formBuilder.group({
       username: ['', Validators.required],

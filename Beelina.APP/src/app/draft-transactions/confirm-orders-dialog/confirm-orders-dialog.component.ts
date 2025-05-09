@@ -11,27 +11,24 @@ import { InvalidProductTransactionOverallQuantitiesTransactions } from 'src/app/
 })
 export class ConfirmOrdersDialogComponent implements OnInit {
 
-  translateService = inject(TranslateService);
   private _bottomSheetRef = inject(MatBottomSheetRef<ConfirmOrdersDialogComponent>);
-
+  translateService = inject(TranslateService);
   confirmationMessage = signal<string>("");
+  data = inject<{
+    selectedItems: Array<number>;
+    productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>
+  }>(MAT_BOTTOM_SHEET_DATA);
 
-  constructor(
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      selectedItems: Array<number>;
-      productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>
-    },
-  ) {
+  constructor() {
 
-    if (data.productsWithInsufficientQuantities.length > 0) {
-      if (data.productsWithInsufficientQuantities.length === data.selectedItems.length) {
+    if (this.data.productsWithInsufficientQuantities.length > 0) {
+      if (this.data.productsWithInsufficientQuantities.length === this.data.selectedItems.length) {
         this.confirmationMessage.set(
           this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.ALL_INVALID_MESSAGE")
         );
       } else {
         this.confirmationMessage.set(
-          this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.SOME_INVALID_MESSAGE").replace("{0}", data.productsWithInsufficientQuantities.length)
+          this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.SOME_INVALID_MESSAGE").replace("{0}", this.data.productsWithInsufficientQuantities.length)
         );
       }
     } else {

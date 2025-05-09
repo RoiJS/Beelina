@@ -1,68 +1,100 @@
 <div matRipple class="product-item list-container__card-item">
-  <div *ngIf="!hideHeader" class="list-container__card-item-header product-item__header">
-    <mat-icon [ngClass]="{ 'no-visibility': hideDeductionCounterIcon }" [matBadge]="productItem?.deductedStock"
-      [matBadgeHidden]="productItem?.deductedStock === 0" matBadgeColor="warn"
+
+  @if (!hideHeader()) {
+  <div class="list-container__card-item-header product-item__header">
+    <mat-icon [ngClass]="{ 'no-visibility': hideDeductionCounterIcon() }" [matBadge]="productItem()?.deductedStock"
+      [matBadgeHidden]="productItem()?.deductedStock === 0" matBadgeColor="warn"
       aria-hidden="false">add_shopping_cart</mat-icon>
 
-    <div class="product-item__header-options" *ngIf="!hideHeaderOptions">
-      <app-badge class="product-linked-icon" *ngIf="productItem?.isLinkedToSalesAgent && allowManageItem" [type]="bannerTypeEnum.SUCCESS"
+    @if (!hideHeaderOptions()) {
+    <div class="product-item__header-options">
+
+      @if (productItem()?.isLinkedToSalesAgent && allowManageItem()) {
+      <app-badge class="product-linked-icon" [type]="bannerTypeEnum.SUCCESS"
         [textIdentifier]="'GENERAL_TEXTS.LINKED'"></app-badge>
+      }
+
       <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
       <mat-menu #menu="matMenu">
-        <button *ngIf="allowManageItem" mat-menu-item (click)="editProduct(productItem?.id)">
+
+        @if (allowManageItem()) {
+        <button mat-menu-item (click)="editProduct(productItem()?.id)">
           <mat-icon>border_color</mat-icon>
           {{ "GENERAL_TEXTS.EDIT" | translate }}
         </button>
-        <button *ngIf="allowManageItem" mat-menu-item (click)="deleteProduct(productItem?.id)">
+        }
+
+        @if (allowManageItem()) {
+        <button mat-menu-item (click)="deleteProduct(productItem()?.id)">
           <mat-icon>delete</mat-icon> {{ "GENERAL_TEXTS.REMOVE" | translate }}
         </button>
-        <button *ngIf="allowTransferStocks"
-          [disabled]="(!productItem?.isTransferable || productItem?.stockQuantity === 0)" mat-menu-item
-          (click)="transferProductInventory(productItem?.id)">
+        }
+
+        @if (allowTransferStocks()) {
+        <button [disabled]="(!productItem()?.isTransferable || productItem()?.stockQuantity === 0)" mat-menu-item
+          (click)="transferProductInventory(productItem()?.id)">
           <mat-icon>move_to_inbox</mat-icon> {{ "GENERAL_TEXTS.TRANSFER_STOCK" | translate }}
         </button>
-        <button *ngIf="allowManageItem" mat-menu-item (click)="addProductStockQuantity()">
+        }
+
+        @if (allowManageItem()) {
+        <button mat-menu-item (click)="addProductStockQuantity()">
           <mat-icon>library_add</mat-icon> {{ "GENERAL_TEXTS.ADD_STOCK_QUANTITY" | translate }}
         </button>
+        }
+
       </mat-menu>
     </div>
+    }
+
   </div>
+  }
+
   <mat-divider></mat-divider>
-  <div (click)="addItemToCart(productItem.id)" class="product-item__body-container">
-    <div *ngIf="!hideImage" class="list-container__card-item-body product-item__body">
+
+  <div (click)="addItemToCart(productItem().id)" class="product-item__body-container">
+
+    @if (!hideImage()) {
+    <div class="list-container__card-item-body product-item__body">
       <img [src]="getProductPhoto(productItem?.name)" />
     </div>
+    }
+
     <div class="list-container__card-item-footer product-item__footer">
       <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.CODE" | translate
-          }}: </span><span [innerHTML]="highlightText(productItem?.code)"></span>
+          }}: </span><span [innerHTML]="highlightText(productItem()?.code)"></span>
       </div>
       <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.NAME" | translate
-          }}: </span><span [innerHTML]="highlightText(productItem?.name)"></span>
+          }}: </span><span [innerHTML]="highlightText(productItem()?.name)"></span>
       </div>
       <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.UNIT" | translate
-          }}: </span><span class="product-info__unit">{{ productItem?.productUnit?.name }}</span>
+          }}: </span><span class="product-info__unit">{{ productItem()?.productUnit?.name }}</span>
       </div>
       <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.PRICE" | translate
-          }}: </span><span>{{ productItem?.priceFormatted }}</span>
+          }}: </span><span>{{ productItem()?.priceFormatted }}</span>
       </div>
       <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.STOCK" | translate
-          }}: </span><span class="product-info__stock">{{ productItem?.stockQuantity }}</span>
+          }}: </span><span class="product-info__stock">{{ productItem()?.stockQuantity }}</span>
       </div>
-      <div *ngIf="productItem?.withdrawalSlipNo" class="product-info">
+
+      @if (productItem()?.withdrawalSlipNo) {
+      <div class="product-info">
         <span class="product-info__label">{{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_CARD_ITEM.WITHDRAWAL_SLIP_NO" | translate
-          }}: </span><span>{{ productItem?.withdrawalSlipNo }}</span>
+          }}: </span><span>{{ productItem()?.withdrawalSlipNo }}</span>
       </div>
+      }
+
     </div>
   </div>
 </div>

@@ -1,5 +1,4 @@
 import { createReducer, on } from '@ngrx/store';
-import { mutableOn } from 'ngrx-etc';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from 'src/app/_models/transaction';
 
 import * as ProductTransactionActions from './actions';
@@ -16,19 +15,21 @@ export const initialState: IProductTransactionState = {
 
 export const reducers = createReducer(
   initialState,
-  mutableOn(
+  on(
     ProductTransactionActions.initializeProductTransactionsSuccess,
-    (state, action) => {
-      state.productTransactions = action.productTransactions;
-    }
+    (state, action) => ({
+      ...state,
+      productTransactions: action.productTransactions,
+    })
   ),
-  mutableOn(
+  on(
     ProductTransactionActions.getProductTransactions,
-    (state, action) => {
-      state.isLoading = true;
-    }
+    (state, action) => ({
+      ...state,
+      isLoading: true,
+    })
   ),
-  mutableOn(ProductTransactionActions.selectProduct, (state, action) => {
+  on(ProductTransactionActions.selectProduct, (state, action) => {
     const productIdx = state.productTransactions.findIndex(
       (p) => p.productId === action.productId
     );
@@ -41,57 +42,73 @@ export const reducers = createReducer(
     productTransaction.quantity = action.quantity;
     productTransaction.currentQuantity = 0;
 
+    const newState = {
+      ...state,
+    };
+
     if (productIdx < 0) {
-      let newIdx = state.currentIdx - 1;
-      productTransaction.id = 0;
-      state.currentIdx = newIdx;
-      state.productTransactions.push(productTransaction);
+      productTransaction.id = state.currentIdx;
+      newState.currentIdx = state.currentIdx - 1;
+      newState.productTransactions = [...state.productTransactions, productTransaction];
     } else {
+      const currentProductTransaction = state.productTransactions.find(
+        (p) => p.productId === action.productId
+      );
+
       if (action.quantity !== 0) {
-        const currentProductTransaction = state.productTransactions.find(
-          (p) => p.productId === action.productId
-        );
+        const productTransactionQuantityHistory = new ProductTransactionQuantityHistory();
+        productTransactionQuantityHistory.quantity = productTransaction.currentQuantity;
+
         productTransaction.id = currentProductTransaction.id;
         productTransaction.currentQuantity = currentProductTransaction.currentQuantity;
 
         if (action.quantity !== productTransaction.currentQuantity) {
-          const productTransactionQuantityHistory = new ProductTransactionQuantityHistory();
-          productTransactionQuantityHistory.quantity = productTransaction.currentQuantity;
-
-          productTransaction.productTransactionQuantityHistory.push(productTransactionQuantityHistory);
+          productTransaction.productTransactionQuantityHistory = [
+            ...currentProductTransaction.productTransactionQuantityHistory,
+            productTransactionQuantityHistory,
+          ];
         }
 
-        state.productTransactions[productIdx] = productTransaction;
-      }
-      else {
-        state.productTransactions.splice(productIdx, 1);
+        newState.productTransactions = state.productTransactions.map((p) =>
+          p.id === productTransaction.id ? productTransaction : p
+        );
+      } else {
+        newState.productTransactions = state.productTransactions.filter(
+          (p) => p.id !== currentProductTransaction.id
+        );
       }
     }
+
+    return newState;
   }),
-  mutableOn(
+  on(
     ProductTransactionActions.setSaveOrderLoadingState,
-    (state, action) => {
-      state.isUpdateLoading = action.state;
-    }
+    (state, action) => ({
+      ...state,
+      isUpdateLoading: action.state,
+    })
   ),
-  mutableOn(
+  on(
     ProductTransactionActions.resetProductTransactionState,
-    (state, action) => {
-      state.productTransactions = initialState.productTransactions;
-    }
+    (state, action) => ({
+      ...state,
+      productTransactions: initialState.productTransactions,
+    })
   ),
-  mutableOn(
+  on(
     ProductTransactionActions.resetTransactionState,
-    (state, action) => {
-      state.transaction = initialState.transaction;
-    }
+    (state, action) => ({
+      ...state,
+      transaction: initialState.transaction,
+    })
   ),
-  mutableOn(
+  on(
     ProductTransactionActions.initializeTransactionDetails,
-    (state, action) => {
-      state.isLoading = false;
-      state.transaction = action.transaction;
-      state.productTransactions = action.transaction.productTransactions;
-    }
+    (state, action) => ({
+      ...state,
+      isLoading: false,
+      transaction: action.transaction,
+      productTransactions: action.transaction.productTransactions,
+    })
   )
 );

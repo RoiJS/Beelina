@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
@@ -11,27 +11,23 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
   templateUrl: './purchase-orders-filter.component.html',
   styleUrls: ['./purchase-orders-filter.component.scss']
 })
-export class PurchaseOrdersFilterComponent extends BaseComponent implements OnInit {
+export class PurchaseOrdersFilterComponent extends BaseComponent {
 
   private _purchaseOrderFilterForm: FormGroup;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<PurchaseOrdersFilterComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: PurchaseOrderFilter,
-    private formBuilder: FormBuilder,
-  ) {
+  private _bottomSheetRef = inject(MatBottomSheetRef<PurchaseOrdersFilterComponent>);
+  private data = inject<PurchaseOrderFilter>(MAT_BOTTOM_SHEET_DATA);
+  private formBuilder = inject(FormBuilder);
+
+  constructor() {
     super();
-    const startDate = data.startDate === '' ? data.startDate : DateFormatter.toDate(data.startDate);
-    const endDate = data.endDate === '' ? data.endDate : DateFormatter.toDate(data.endDate);
+    const startDate = this.data.startDate === '' ? this.data.startDate : DateFormatter.toDate(this.data.startDate);
+    const endDate = this.data.endDate === '' ? this.data.endDate : DateFormatter.toDate(this.data.endDate);
 
     this._purchaseOrderFilterForm = this.formBuilder.group({
       startDate: [startDate],
       endDate: [endDate],
     });
-  }
-
-  ngOnInit() {
   }
 
   onCancel() {

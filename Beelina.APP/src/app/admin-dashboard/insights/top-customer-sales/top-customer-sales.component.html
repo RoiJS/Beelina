@@ -1,20 +1,29 @@
 <div class="top-store-header-container">
-  <button *ngIf="customerSalesProducts.length > 0" mat-button mat-raised-button color="primary"
+  @if (customerSalesProducts.length > 0) {
+  <button mat-button mat-raised-button color="primary"
     (click)="goBack()"><mat-icon>keyboard_arrow_left</mat-icon>Back</button>
-  <div class="top-store-header-container__info-banner" *ngIf="customerSalesProducts.length > 0">
+  }
+
+  @if (customerSalesProducts.length > 0) {
+  <div class="top-store-header-container__info-banner">
     <app-banner [type]="_bannerType.INFO">{{
       "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE_2" | translate
       }}</app-banner>
   </div>
-  <div class="top-store-header-container__info-banner" *ngIf="customerSalesProducts.length === 0">
+  }
+
+  @if (customerSalesProducts.length === 0) {
+  <div class="top-store-header-container__info-banner">
     <app-banner [type]="_bannerType.INFO">{{
       "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE" | translate
       }}</app-banner>
   </div>
+  }
 </div>
 
-<app-list-container *ngIf="customerSalesProducts.length === 0" [templateSize]="_templateSize.SMALL"
-  [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="customerSales?.length">
+@if (customerSalesProducts.length === 0) {
+<app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
+  [count]="customerSales?.length">
   <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
     <div *cdkVirtualFor="let item of customerSales">
       <div matRipple (click)="showTopProducts(item.storeId)"
@@ -34,9 +43,11 @@
     </div>
   </cdk-virtual-scroll-viewport>
 </app-list-container>
+}
 
-<app-list-container *ngIf="customerSalesProducts.length > 0" [templateSize]="_templateSize.SMALL"
-  [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="customerSales?.length">
+@if (customerSalesProducts.length > 0) {
+<app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
+  [count]="customerSales?.length">
   <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
     <div *cdkVirtualFor="let item of customerSalesProducts">
       <div class="list-container__item-section top-store-list-container__item-section">
@@ -48,3 +59,4 @@
     </div>
   </cdk-virtual-scroll-viewport>
 </app-list-container>
+}

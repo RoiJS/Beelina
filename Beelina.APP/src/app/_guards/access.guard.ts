@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   Route,
   UrlSegment,
@@ -12,10 +12,9 @@ import { AuthService } from '../_services/auth.service';
 
 @Injectable()
 export class AccessGuard {
-  constructor(
-    private authService: AuthService,
-    private sidedrawerService: SidedrawerService,
-  ) { }
+
+  private authService = inject(AuthService);
+  private sidedrawerService = inject(SidedrawerService);
 
   canLoad(
     route: Route,

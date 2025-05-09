@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   HttpInterceptor,
   HttpErrorResponse,
@@ -16,7 +16,7 @@ import { AuthToken } from '../_models/auth-token.model';
 
 @Injectable()
 export class ErrorInterceptorService implements HttpInterceptor {
-  constructor(private authService: AuthService) { }
+  private authService = inject(AuthService);
 
   intercept(
     req: HttpRequest<any>,

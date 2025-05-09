@@ -46,7 +46,8 @@
                 [type]="passwordVisible ? 'text' : 'password'" class="input_field" id="password_field"
                 formControlName="password" />
 
-              <mat-icon matSuffix class="icon-password" (click)="setPasswordVisibility()">{{!passwordVisible ? 'visibility' :
+              <mat-icon matSuffix class="icon-password" (click)="setPasswordVisibility()">{{!passwordVisible ?
+                'visibility' :
                 'visibility_off'}}</mat-icon>
             </div>
 
@@ -58,10 +59,12 @@
           </form>
         </div>
 
-        <div *ngIf="!isHandset" class="login-placeholder-section">
+        @if (!isHandset) {
+        <div class="login-placeholder-section">
           <app-placeholder-entities [templateType]="emptyEntityTemplateEnum.LOGIN"
             [templateSize]="emptyEntityTemplateSizeEnum.MEDIUM"></app-placeholder-entities>
         </div>
+        }
       </div>
     </div>
 

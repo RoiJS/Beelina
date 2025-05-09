@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
@@ -19,14 +19,14 @@ export class ReportSettingsComponent implements OnInit {
 
   private _reportSettingsForm: FormGroup;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<ReportSettingsComponent>,
-    private dialogService: DialogService,
-    private reportService: ReportsService,
-    private formBuilder: FormBuilder,
-    private notificationService: NotificationService,
-    private translateService: TranslateService,
-  ) {
+  private _bottomSheetRef = inject(MatBottomSheetRef<ReportSettingsComponent>);
+  private dialogService = inject(DialogService);
+  private reportService = inject(ReportsService);
+  private formBuilder = inject(FormBuilder);
+  private notificationService = inject(NotificationService);
+  private translateService = inject(TranslateService);
+
+  constructor() {
     this._reportSettingsForm = this.formBuilder.group({
       emailAddress: ['', Validators.required],
     });

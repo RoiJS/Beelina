@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 
@@ -27,14 +27,14 @@ export class ManageProductStockAuditComponent extends BaseComponent implements O
   private _userAccountId: number;
   private _productSource: ProductSourceEnum;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private store: Store<AppStateInterface>,
-    private storageService: StorageService,
-    private bottomSheet: MatBottomSheet,
-    private router: Router,
-    private stockAuditFilterService: StockAuditFilterService
-  ) {
+  private activatedRoute = inject(ActivatedRoute);
+  private bottomSheet = inject(MatBottomSheet);
+  private router = inject(Router);
+  private store = inject(Store<AppStateInterface>);
+  private storageService = inject(StorageService);
+  private stockAuditFilterService = inject(StockAuditFilterService);
+
+  constructor() {
     super();
     const state = <any>this.router.getCurrentNavigation().extras.state;
     this._productSource = <ProductSourceEnum>state.productSource;

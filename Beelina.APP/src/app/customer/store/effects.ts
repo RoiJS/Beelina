@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap } from 'rxjs';
@@ -12,6 +12,12 @@ import { NetworkService } from 'src/app/_services/network.service';
 
 @Injectable()
 export class CustomerEffects {
+
+  private actions$ = inject(Actions);
+  private customerStoreService = inject(CustomerStoreService);
+  private localCustomerStoresDbService = inject(LocalCustomerStoresDbService);
+  private networkService = inject(NetworkService);
+
   getCustomers$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CustomerActions.getCustomerStoreAction),
@@ -117,10 +123,4 @@ export class CustomerEffects {
       })
     )
   );
-  constructor(
-    private actions$: Actions,
-    private customerStoreService: CustomerStoreService,
-    private localCustomerStoresDbService: LocalCustomerStoresDbService,
-    private networkService: NetworkService
-  ) { }
 }

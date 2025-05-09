@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
@@ -39,21 +39,17 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
   private _productSourceGetFunc: Array<string> = ["getProduct", "getWarehouseProduct"];
   private _businessModel: BusinessModelEnum;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<TransferProductInventoryComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      productId: number;
-      productSource: ProductSourceEnum;
-    },
-    private authService: AuthService,
-    private notificationService: NotificationService,
-    private dialogService: DialogService,
-    private formBuilder: FormBuilder,
-    private productService: ProductService,
-    private translateService: TranslateService,
-    private storageService: StorageService,
-  ) {
+  private _bottomSheetRef = inject(MatBottomSheetRef<TransferProductInventoryComponent>);
+  private data = inject<{ productId: number; productSource: ProductSourceEnum }>(MAT_BOTTOM_SHEET_DATA);
+  private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
+  private dialogService = inject(DialogService);
+  private formBuilder = inject(FormBuilder);
+  private productService = inject(ProductService);
+  private translateService = inject(TranslateService);
+  private storageService = inject(StorageService);
+
+  constructor() {
     super();
     this._businessModel = this.authService.businessModel;
 
@@ -96,7 +92,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
     });
 
     this._isLoading = true;
-    this.productService[this._productSourceGetFunc[this.data.productSource]](data.productId)
+    this.productService[this._productSourceGetFunc[this.data.productSource]](this.data.productId)
       .subscribe((result: ProductInformationResult) => {
         this._sourceProduct = new Product();
         this._sourceProduct.id = result.id;

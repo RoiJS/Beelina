@@ -1,13 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
-import { Store } from '@ngrx/store';
 
 import { Apollo, gql } from 'apollo-angular';
-import { map, take } from 'rxjs';
+import { map } from 'rxjs';
 
-import { endCursorSelector } from '../payment-methods/store/selectors';
-
-import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 
 import { PaymentMethod } from '../_models/payment-method';
@@ -37,18 +33,11 @@ const GET_PAYMENT_METHODS = gql`
 
 @Injectable({ providedIn: 'root' })
 export class PaymentMethodService {
-  constructor(
-    private apollo: Apollo,
-    private store: Store<AppStateInterface>
-  ) {}
+
+  private apollo = inject(Apollo);
 
   getPaymentMethods() {
     let cursor = null;
-
-    // this.store
-    //   .select(endCursorSelector)
-    //   .pipe(take(1))
-    //   .subscribe((currentCursor) => (cursor = currentCursor));
 
     return this.apollo
       .watchQuery({
