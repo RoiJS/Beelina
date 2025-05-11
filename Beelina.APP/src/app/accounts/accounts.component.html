@@ -31,12 +31,12 @@
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container user-account-list">
         <div *cdkVirtualFor="let item of dataSource">
           <div class="user-account-item-container">
-            <div matRipple class="user-account-item-container__user-icon-container">
+            <div class="user-account-item-container__user-icon-container">
               <div class="user-icon">
                 <img src="../../../assets/icons/user-icon.png" />
               </div>
             </div>
-            <div matRipple class="user-account-item-container__user-info-container">
+            <div class="user-account-item-container__user-info-container">
               <div class="user-info">
                 <span class="user-info__name">{{ item.fullname }}
                   @if (!item.isActive) {
