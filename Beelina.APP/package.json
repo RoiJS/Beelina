@@ -35,7 +35,7 @@
     "html2pdf.js": "^0.10.3",
     "moment": "^2.30.1",
     "ng-apexcharts": "^1.11.0",
-    "ngx-awesome-uploader": "^17.1.0",
+    "ngx-awesome-uploader": "^19.0.1",
     "ngx-indexed-db": "^20.0.0",
     "rxjs": "~7.8.1",
     "textarea-caret": "^3.1.0",
