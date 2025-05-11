@@ -86,15 +86,15 @@ $Beelina-accent-palette: (
   ),
 );
 
-$BeelinaAPP-primary: mat.define-palette($Beelina-primary-palette);
-$BeelinaAPP-accent: mat.define-palette($Beelina-primary-palette);
+$BeelinaAPP-primary: mat.m2-define-palette($Beelina-primary-palette);
+$BeelinaAPP-accent: mat.m2-define-palette($Beelina-primary-palette);
 
 // The warn palette is optional (defaults to red).
-$BeelinaAPP-warn: mat.define-palette(mat.$red-palette);
+$BeelinaAPP-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$BeelinaAPP-theme: mat.define-light-theme(
+$BeelinaAPP-theme: mat.m2-define-light-theme(
   (
     color: (
       primary: $BeelinaAPP-primary,
