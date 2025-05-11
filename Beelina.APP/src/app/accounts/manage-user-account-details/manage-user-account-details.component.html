@@ -43,12 +43,12 @@
                 <input matInput type="email" formControlName="emailAddress" />
 
                 @if (profileForm.get('emailAddress').hasError('email')) {
-                  <mat-error>
-                    {{
-                    "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.INVALID_EMAIL_ERROR_MESSAGE"
-                    | translate
-                    }}
-                  </mat-error>
+                <mat-error>
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.INVALID_EMAIL_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
                 }
 
               </mat-form-field>
@@ -89,19 +89,19 @@
                 <input matInput type="email" formControlName="username" />
 
                 @if (profileForm.get('username')?.hasError('usernameAlreadyExists')) {
-                  <mat-error>
-                    {{
-                    "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
-                    | translate
-                    }}
-                  </mat-error>
+                <mat-error>
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
                 }
 
               </mat-form-field>
 
               <br />
               <br />
-              <app-banner [type]="_bannerType.WARNING">
+              <app-banner [type]="_bannerType.INFO">
                 <span>{{
                   "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
                   | translate
@@ -120,12 +120,12 @@
                   'visibility_off'}}</mat-icon>
 
                 @if (profileForm.get('newPassword').hasError('pattern')) {
-                  <mat-error>
-                    {{
-                    "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
-                    | translate
-                    }}
-                  </mat-error>
+                <mat-error>
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
                 }
 
               </mat-form-field>
@@ -140,23 +140,23 @@
                 <mat-icon matSuffix (click)="setPasswordVisibility()">{{!passwordVisible ? 'visibility' :
                   'visibility_off'}}</mat-icon>
 
-                  @if (profileForm.get('confirmPassword').hasError('pattern')) {
-                    <mat-error>
-                      {{
-                      "PROFILE_PAGE.FORM_CONTROL_SECTION.CONFIRM_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
-                      | translate
-                      }}
-                    </mat-error>
-                  }
+                @if (profileForm.get('confirmPassword').hasError('pattern')) {
+                <mat-error>
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.CONFIRM_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
+                }
 
-                  @if (profileForm.get('confirmPassword').hasError('passwordMismatch')) {
-                    <mat-error>
-                      {{
-                      "PROFILE_PAGE.FORM_CONTROL_SECTION.CONFIRM_PASSWORD_CONTROL.PASSWORD_NOT_MATCHED_ERROR_MESSAGE"
-                      | translate
-                      }}
-                    </mat-error>
-                  }
+                @if (profileForm.get('confirmPassword').hasError('passwordMismatch')) {
+                <mat-error>
+                  {{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.CONFIRM_PASSWORD_CONTROL.PASSWORD_NOT_MATCHED_ERROR_MESSAGE"
+                  | translate
+                  }}
+                </mat-error>
+                }
               </mat-form-field>
             </mat-tab>
           </mat-tab-group>

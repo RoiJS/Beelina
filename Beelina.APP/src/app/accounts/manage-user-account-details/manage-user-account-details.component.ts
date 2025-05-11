@@ -81,26 +81,12 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
             ),
           ],
         ],
-        newPassword: [
-          '',
-          [
-            Validators.pattern(
-              '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$'
-            ),
-          ],
-        ],
-        confirmPassword: [
-          '',
-          [
-            Validators.pattern(
-              '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$'
-            ),
-          ],
-        ],
+        newPassword: [''],
+        confirmPassword: [''],
       },
       {
         updateOn: 'blur',
-        validators: this.passwordMatchValidator()
+        validators: [this.passwordPatternInvalid(), this.passwordMatchValidator()]
       }
     );
   }
@@ -111,9 +97,32 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
       const confirmPassword = control.get('confirmPassword');
 
       if (password.value !== confirmPassword.value) {
-        confirmPassword.setErrors({ 'passwordMismatch': true });
+        confirmPassword.setErrors({ ...confirmPassword.errors, 'passwordMismatch': true });
       } else {
-        confirmPassword.setErrors(null);
+        confirmPassword.setErrors(confirmPassword.errors || null);
+      }
+
+      return null;
+    };
+  }
+
+  passwordPatternInvalid(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: boolean } | null => {
+      const pattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+      const newPassword = control.get('newPassword');
+      const confirmPassword = control.get('confirmPassword');
+
+      if (!pattern.test(newPassword.value)) {
+        newPassword.setErrors({ ...newPassword.errors, 'pattern': true });
+      } else {
+        newPassword.setErrors(newPassword.errors || null);
+      }
+
+      if (!pattern.test(confirmPassword.value)) {
+        confirmPassword.setErrors({ ...confirmPassword.errors, 'pattern': true });
+      } else {
+        confirmPassword.setErrors(confirmPassword.errors || null);
       }
 
       return null;
