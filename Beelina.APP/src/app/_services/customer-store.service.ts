@@ -109,6 +109,7 @@ const GET_ALL_CUSTOMER_STORES = gql`
       barangay {
         id
         name
+        userAccountId
       }
     }
   }
