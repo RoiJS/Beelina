@@ -42,5 +42,8 @@ export const reducers = createReducer(
         ...state,
         error: action.error,
       }
-  )
+  ),
+  on(ProductUnitActions.resetProductUnitsActionError, () => ({
+    ...initialState,
+  })),
 );

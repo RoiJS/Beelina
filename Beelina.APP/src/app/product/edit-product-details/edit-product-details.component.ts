@@ -133,6 +133,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   }
 
   ngOnInit() {
+    this.store.dispatch(ProductUnitActions.resetProductUnitsActionError());
     this.store.dispatch(ProductUnitActions.getProductUnitsAction());
 
     this._productId = +this.activatedRoute.snapshot.paramMap.get('id');
