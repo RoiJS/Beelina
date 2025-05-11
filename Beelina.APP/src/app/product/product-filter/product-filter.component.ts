@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
@@ -16,19 +16,18 @@ export class ProductFilterComponent extends BaseComponent implements OnInit {
 
   private _productFilterForm: FormGroup;
 
+  private _bottomSheetRef = inject(MatBottomSheetRef<ProductFilterComponent>);
+  private _formBuilder = inject(FormBuilder);
   supplierStore = inject(SupplierStore);
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<ProductFilterComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: ProductsFilter,
-    private formBuilder: FormBuilder,
-  ) {
+  data = inject<ProductsFilter>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
     super();
     this.supplierStore.reset();
     this.supplierStore.getSuppliers();
-    this._productFilterForm = this.formBuilder.group({
-      supplierId: [data.supplierId],
+    this._productFilterForm = this._formBuilder.group({
+      supplierId: [this.data.supplierId],
     });
   }
 

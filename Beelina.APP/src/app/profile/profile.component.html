@@ -48,12 +48,16 @@
               | translate
               }}:</mat-label>
             <input matInput type="email" formControlName="emailAddress" />
-            <mat-error *ngIf="profileForm.get('emailAddress').hasError('email')">
+
+            @if (profileForm.get('emailAddress').hasError('email')) {
+            <mat-error>
               {{
               "PROFILE_PAGE.FORM_CONTROL_SECTION.EMAIL_CONTROL.INVALID_EMAIL_ERROR_MESSAGE"
               | translate
               }}
             </mat-error>
+            }
+
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>{{
@@ -62,14 +66,15 @@
               }}:</mat-label>
             <input matInput type="email" formControlName="username" />
 
-            <mat-error *ngIf="
-                profileForm.get('username')?.hasError('usernameAlreadyExists')
-              ">
+            @if (profileForm.get('username')?.hasError('usernameAlreadyExists')) {
+            <mat-error>
               {{
               "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
               | translate
               }}
             </mat-error>
+            }
+
           </mat-form-field>
 
           <mat-form-field appearance="fill">
@@ -83,12 +88,15 @@
             <mat-icon matSuffix (click)="setPasswordVisibility()">{{!passwordVisible ? 'visibility' :
               'visibility_off'}}</mat-icon>
 
-            <mat-error *ngIf="profileForm.get('newPassword').hasError('pattern')">
+            @if (profileForm.get('newPassword').hasError('pattern')) {
+            <mat-error>
               {{
               "PROFILE_PAGE.FORM_CONTROL_SECTION.NEW_PASSWORD_CONTROL.PASSWORD_NOT_STRONG_ERROR_MESSAGE"
               | translate
               }}
             </mat-error>
+            }
+
           </mat-form-field>
         </div>
       </div>

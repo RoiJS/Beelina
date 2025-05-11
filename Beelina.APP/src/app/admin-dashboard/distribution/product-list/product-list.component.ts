@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, output } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
@@ -19,7 +19,8 @@ import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.he
 })
 export class ProductListComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  @Output() selectItem = new EventEmitter<number>();
+  selectItem = output<number>();
+
   private _productDataSource: ProductDataSource;
   private _filterKeyword: string;
   private _totalProductCount: number;
@@ -27,10 +28,10 @@ export class ProductListComponent extends BaseComponent implements OnInit, OnDes
   private _totalProductValue: string;
   private _totalProductValueSubscription: Subscription;
 
-  constructor(
-    private store: Store<AppStateInterface>,
-    private productService: ProductService,
-  ) {
+  private store = inject(Store<AppStateInterface>);
+  private productService = inject(ProductService);
+
+  constructor() {
     super();
     this.store.dispatch(ProductActions.resetProductState());
     this.$isLoading = this.store.pipe(select(isLoadingSelector));

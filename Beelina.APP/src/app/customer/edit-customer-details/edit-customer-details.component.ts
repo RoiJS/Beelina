@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
@@ -32,25 +32,24 @@ import { PaymentMethod } from 'src/app/_models/payment-method';
 })
 export class EditCustomerDetailsComponent implements OnInit {
   private _customerForm: FormGroup;
-
   private _paymentMethodOptions: Array<PaymentMethod> = [];
   private _paymentMethodOptionsSubscription: Subscription;
-
   private _storeId: number;
-  $isLoading: Observable<boolean>;
   private _barangay: string;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private store: Store<AppStateInterface>,
-    private dialogService: DialogService,
-    private customerStoreService: CustomerStoreService,
-    private formBuilder: FormBuilder,
-    private localCustomerStoresDbService: LocalCustomerStoresDbService,
-    private notificationService: NotificationService,
-    private router: Router,
-    private translateService: TranslateService
-  ) {
+  private activatedRoute = inject(ActivatedRoute);
+  private store = inject(Store<AppStateInterface>);
+  private dialogService = inject(DialogService);
+  private customerStoreService = inject(CustomerStoreService);
+  private formBuilder = inject(FormBuilder);
+  private localCustomerStoresDbService = inject(LocalCustomerStoresDbService);
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
+  private translateService = inject(TranslateService);
+
+  $isLoading: Observable<boolean>;
+
+  constructor() {
     this._customerForm = this.formBuilder.group({
       name: ['', Validators.required],
       address: [''],

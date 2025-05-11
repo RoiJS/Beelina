@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Apollo, MutationResult, gql } from 'apollo-angular';
 import { catchError, map } from 'rxjs';
@@ -97,10 +97,9 @@ const UPDATE_REPORT_NOTIFICATION_EMAIL = gql`
   providedIn: 'root',
 })
 export class ReportsService {
-  constructor(
-    private apollo: Apollo,
-    private translateService: TranslateService
-  ) { }
+
+  private apollo = inject(Apollo);
+  private translateService = inject(TranslateService);
 
   getAllReports() {
     return this.apollo

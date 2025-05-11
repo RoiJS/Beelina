@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
 export class TemplatePageTitleStrategyService extends TitleStrategy {
-  constructor(
-    private readonly title: Title,
-    private translateService: TranslateService
-  ) {
+
+  private title = inject(Title);
+  private translateService = inject(TranslateService);
+
+  constructor() {
     super();
   }
 

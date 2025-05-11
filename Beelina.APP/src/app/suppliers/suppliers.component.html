@@ -32,10 +32,13 @@
                   {{ "GENERAL_TEXTS.EDIT" | translate }}
                 </button>
 
-                <button mat-menu-item matRipple *ngIf="item.isDeletable" (click)="deleteSupplier(item.id)">
+                @if (item.isDeletable) {
+                <button mat-menu-item matRipple (click)="deleteSupplier(item.id)">
                   <mat-icon>delete</mat-icon>
                   {{ "GENERAL_TEXTS.REMOVE" | translate }}
                 </button>
+                }
+
               </mat-menu>
             </div>
           </div>

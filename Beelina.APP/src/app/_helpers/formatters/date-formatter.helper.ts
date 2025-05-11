@@ -18,6 +18,8 @@ export class DateFormatter {
   }
 
   static isValidDate(date: string): boolean {
+    if (!date) return false;
+
     const dateToCompare = new Date(date);
     return dateToCompare.getFullYear() !== 1;
   }

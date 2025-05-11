@@ -48,22 +48,22 @@ export class TransactionDetailsComponent
   private _transactionForm: FormGroup;
   private _dialogSendInvoiceOptionRef: MatBottomSheetRef<SendInvoiceOptionDialogComponent>;
 
-  bottomSheet = inject(MatBottomSheet);
-  bluetoothPrintInvoiceService = inject(BluetoothPrintInvoiceService);
-  invoicePrintService = inject(InvoicePrintService);
+  private activatedRoute = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private bottomSheet = inject(MatBottomSheet);
+  private bluetoothPrintInvoiceService = inject(BluetoothPrintInvoiceService);
+  private dialogService = inject(DialogService);
+  private formBuilder = inject(FormBuilder);
+  private invoicePrintService = inject(InvoicePrintService);
+  private router = inject(Router);
+  private notificationService = inject(NotificationService);
+  private transactionService = inject(TransactionService);
+  private translateService = inject(TranslateService);
+  private store = inject(Store<AppStateInterface>);
+
   userService = inject(UserAccountService);
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private authService: AuthService,
-    private dialogService: DialogService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private notificationService: NotificationService,
-    private transactionService: TransactionService,
-    private translateService: TranslateService,
-    private store: Store<AppStateInterface>
-  ) {
+  constructor() {
     super();
     this._transactionForm = this.formBuilder.group({
       paymentMethod: [0, Validators.required],

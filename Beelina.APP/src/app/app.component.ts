@@ -85,9 +85,7 @@ export class AppComponent
   userAccountService = inject(UserAccountService);
   userAgentSettingsService = inject(UserAgentSettingsService);
 
-  constructor(
-    protected override uiService: UIService
-  ) {
+  constructor(protected override uiService: UIService) {
     super(uiService);
     this.translateService.setDefaultLang('en');
   }

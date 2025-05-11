@@ -1,5 +1,5 @@
 <div class="floating-button">
-  <button [ngStyle]="{ 'bottom': bottom + 'px' }" mat-fab (click)="onTapButton()">
-    <mat-icon>{{ icon }}</mat-icon>
+  <button [ngStyle]="{ 'bottom': bottom() + 'px' }" mat-fab (click)="onTapButton()">
+    <mat-icon>{{ icon() }}</mat-icon>
   </button>
 </div>

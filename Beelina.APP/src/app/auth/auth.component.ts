@@ -58,9 +58,7 @@ export class AuthComponent extends SharedComponent implements OnInit, OnDestroy 
   userAccountService = inject(UserAccountService);
   loginSubscription = new Subscription();
 
-  constructor(
-    protected override uiService: UIService
-  ) {
+  constructor(protected override uiService: UIService) {
     super(uiService);
     this._authForm = this.formBuilder.group({
       company: ['', Validators.required],

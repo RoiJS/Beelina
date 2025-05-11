@@ -1,68 +1,46 @@
-<app-tool-bar
-  [overrideBackAction]="true"
-  (onGoBackOverride)="onGoBack()"
-  [title]="barangay"
-></app-tool-bar>
+<app-tool-bar [overrideBackAction]="true" (onGoBackOverride)="onGoBack()" [title]="barangay"></app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "CUSTOMERS_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "CUSTOMERS_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "CUSTOMERS_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
 
-    <app-search-field
-      (onSearch)="onSearch($event)"
-      (onClear)="onClear()"
-      [placeHolderTextIdentifier]="
+    <app-search-field (onSearch)="onSearch($event)" (onClear)="onClear()" [placeHolderTextIdentifier]="
         'CUSTOMERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
-      "
-    ></app-search-field>
+      "></app-search-field>
 
-    <app-list-container
-      [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
-      [count]="dataSource.itemCount"
-    >
-      <cdk-virtual-scroll-viewport
-        itemSize="10"
-        class="list-container customer-list"
-      >
+    <app-list-container [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="dataSource.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container customer-list">
         <div *cdkVirtualFor="let item of dataSource">
           <div matRipple class="list-container__item-section">
-            <div
-              class="list-container__icon-section list-container__icon-section--right-space"
-              (click)="openDetails(item.id)"
-            >
+            <div class="list-container__icon-section list-container__icon-section--right-space"
+              (click)="openDetails(item.id)">
               <div class="list-container__icon-section--icon-container">
                 <mat-icon>store</mat-icon>
               </div>
             </div>
-            <div
-              class="list-container__details-section"
-              (click)="openDetails(item.id)"
-            >
+            <div class="list-container__details-section" (click)="openDetails(item.id)">
               <label class="main-label">{{ item.name }}</label>
               <label>{{ item.address }}</label>
             </div>
             <div class="list-container__options-section">
-              <mat-icon matRipple class="option" [matMenuTriggerFor]="menu"
-                >more_vert</mat-icon
-              >
+              <mat-icon matRipple class="option" [matMenuTriggerFor]="menu">more_vert</mat-icon>
               <mat-menu #menu="matMenu">
                 <button mat-menu-item (click)="openDetails(item.id)">
                   <mat-icon>border_color</mat-icon>
                   {{ "GENERAL_TEXTS.EDIT" | translate }}
                 </button>
-                <button
-                  mat-menu-item
-                  *ngIf="item.isDeletable"
-                  (click)="deleteStore(item.id)"
-                >
+
+                @if (item.isDeletable) {
+                <button mat-menu-item (click)="deleteStore(item.id)">
                   <mat-icon>delete</mat-icon>
                   {{ "GENERAL_TEXTS.REMOVE" | translate }}
                 </button>
+                }
+
               </mat-menu>
             </div>
           </div>
@@ -71,8 +49,5 @@
     </app-list-container>
   </div>
 
-  <app-floating-button
-    (tapButton)="addCustomer()"
-    [icon]="'add'"
-  ></app-floating-button>
+  <app-floating-button (tapButton)="addCustomer()" [icon]="'add'"></app-floating-button>
 </app-loader-layout>

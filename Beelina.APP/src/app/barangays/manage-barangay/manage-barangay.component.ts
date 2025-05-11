@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   MAT_BOTTOM_SHEET_DATA,
@@ -18,33 +18,29 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
   templateUrl: './manage-barangay.component.html',
   styleUrls: ['./manage-barangay.component.scss'],
 })
-export class ManageBarangayComponent implements OnInit {
+export class ManageBarangayComponent {
   private _barangayForm: FormGroup;
   private _dialogTitle: string;
   private _dialogConfirmationMessage: string;
   private _dialogSuccessMessage: string;
   private _dialogErrorMessage: string;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<ManageBarangayComponent>,
-    private barangayService: BarangayService,
-    private dialogService: DialogService,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      barangay: Barangay;
-    },
-    private formBuilder: FormBuilder,
-    private localCustomerAccountsDbService: LocalCustomerAccountsDbService,
-    private notificationService: NotificationService,
-    private translateService: TranslateService
-  ) {
+  private _bottomSheetRef = inject(MatBottomSheetRef<ManageBarangayComponent>);
+  private barangayService = inject(BarangayService);
+  private dialogService = inject(DialogService);
+  private formBuilder = inject(FormBuilder);
+  private localCustomerAccountsDbService = inject(LocalCustomerAccountsDbService);
+  private notificationService = inject(NotificationService);
+  private translateService = inject(TranslateService);
+
+  data = inject<{ barangay: Barangay }>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
     this.setUpLanguageTexts(this.data.barangay.id === 0);
     this._barangayForm = this.formBuilder.group({
-      name: [data.barangay.name, [Validators.required]],
+      name: [this.data.barangay.name, [Validators.required]],
     });
   }
-
-  ngOnInit() { }
 
   onSave() {
     this._barangayForm.markAllAsTouched();

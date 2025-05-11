@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   MAT_BOTTOM_SHEET_DATA,
   MatBottomSheet,
@@ -26,39 +26,39 @@ export class SelectNewProductComponent implements OnInit {
   private _dataSource: ProductDataSource;
   private _productTransactions: Array<ProductTransaction>;
 
+  private _bottomSheet = inject(MatBottomSheet);
+  private _bottomSheetRef = inject(MatBottomSheetRef<SelectNewProductComponent>);
+  private _store = inject(Store<AppStateInterface>);
+
   $isLoading: Observable<boolean>;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<SelectNewProductComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: { productTransactions: Array<ProductTransaction> },
-    private bottomSheet: MatBottomSheet,
-    private store: Store<AppStateInterface>
-  ) {
-    this._productTransactions = data.productTransactions;
+  data = inject<{ productTransactions: Array<ProductTransaction> }>(MAT_BOTTOM_SHEET_DATA);
 
-    this.store.dispatch(ProductActions.resetProductState());
-    this.store.dispatch(ProductActions.setSearchProductAction({ keyword: '' }));
-    this.store.dispatch(ProductActions.setFilterProductAction({ productsFilter: new ProductsFilter() }));
-    this._dataSource = new ProductDataSource(this.store);
+  constructor() {
+    this._productTransactions = this.data.productTransactions;
 
-    this.$isLoading = this.store.pipe(select(isLoadingSelector));
+    this._store.dispatch(ProductActions.resetProductState());
+    this._store.dispatch(ProductActions.setSearchProductAction({ keyword: '' }));
+    this._store.dispatch(ProductActions.setFilterProductAction({ productsFilter: new ProductsFilter() }));
+    this._dataSource = new ProductDataSource(this._store);
+
+    this.$isLoading = this._store.pipe(select(isLoadingSelector));
   }
 
   ngOnInit() { }
 
   addItemToCart(productId: number) {
-    this.bottomSheet.open(AddToCartProductComponent, {
+    this._bottomSheet.open(AddToCartProductComponent, {
       data: { productId, productTransactions: this._productTransactions },
     });
   }
 
   onSearch(filterKeyword: string) {
-    this.store.dispatch(ProductActions.resetProductState());
-    this.store.dispatch(
+    this._store.dispatch(ProductActions.resetProductState());
+    this._store.dispatch(
       ProductActions.setSearchProductAction({ keyword: filterKeyword })
     );
-    this.store.dispatch(ProductActions.getProductsAction());
+    this._store.dispatch(ProductActions.getProductsAction());
   }
 
   onCancel() {

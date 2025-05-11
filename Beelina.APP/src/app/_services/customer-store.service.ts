@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { map, take } from 'rxjs';
 
 import { Store } from '@ngrx/store';
@@ -109,6 +109,7 @@ const GET_ALL_CUSTOMER_STORES = gql`
       barangay {
         id
         name
+        userAccountId
       }
     }
   }
@@ -150,10 +151,9 @@ const DELETE_CUSTOMER = gql`
 
 @Injectable({ providedIn: 'root' })
 export class CustomerStoreService {
-  constructor(
-    private apollo: Apollo,
-    private store: Store<AppStateInterface>
-  ) {}
+
+  private apollo = inject(Apollo);
+  private store = inject(Store<AppStateInterface>);
 
   /**
    * Updates the store information.

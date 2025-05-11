@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
 
@@ -12,22 +12,19 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class DatePickerComponent
   extends BaseControlComponent
-  implements OnInit
-{
+  implements OnInit {
   private _form: FormGroup;
+  private _formBuilder = inject(FormBuilder);
 
-  constructor(
-    private formBuilder: FormBuilder,
-    protected override translateService: TranslateService
-  ) {
+  constructor(protected override translateService: TranslateService) {
     super(translateService);
 
-    this._form = this.formBuilder.group({
+    this._form = this._formBuilder.group({
       date: [new Date(), [Validators.required]],
     });
   }
 
-  override ngOnInit() {}
+  override ngOnInit() { }
 
   override value(value: any): string {
     const date = this._form.get('date').value;

@@ -18,3 +18,7 @@ export const getProductUnitsActionError = createAction(
   '[Product Units] Get Product Units Error',
   props<{ error: string }>()
 );
+
+export const resetProductUnitsActionError = createAction(
+  '[Product Units] Reset Product Units'
+);

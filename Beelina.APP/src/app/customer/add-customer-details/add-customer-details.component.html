@@ -41,9 +41,13 @@
               | translate
               }}:</mat-label>
             <mat-select formControlName="paymentMethod">
-              <mat-option *ngFor="let paymentMethod of paymentMethodOptions" [value]="paymentMethod.name">{{
+
+              @for (paymentMethod of paymentMethodOptions; track $index) {
+              <mat-option [value]="paymentMethod.name">{{
                 paymentMethod.name
                 }}</mat-option>
+              }
+
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">

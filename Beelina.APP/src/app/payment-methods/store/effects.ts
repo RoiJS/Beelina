@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { inject, Injectable } from '@angular/core';
 import { catchError, from, map, of, switchMap } from 'rxjs';
 
 import * as PaymentMethodActions from './actions';
@@ -11,6 +11,12 @@ import { NetworkService } from 'src/app/_services/network.service';
 
 @Injectable()
 export class PaymentMethodsEffects {
+
+  private actions$ = inject(Actions);
+  private paymentMethodService = inject(PaymentMethodService);
+  private localPaymentMethodsDbService = inject(LocalPaymentMethodsDbService);
+  private networkService = inject(NetworkService);
+
   paymentMethods$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PaymentMethodActions.getPaymentMethodsAction),
@@ -57,10 +63,4 @@ export class PaymentMethodsEffects {
       })
     )
   );
-  constructor(
-    private actions$: Actions,
-    private paymentMethodService: PaymentMethodService,
-    private localPaymentMethodsDbService: LocalPaymentMethodsDbService,
-    private networkService: NetworkService
-  ) { }
 }

@@ -44,19 +44,18 @@
     <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="dataSource.itemCount">
 
       @if (networkService.isOnline | async) {
-      @if(hasLocalBadOrders() && !multipleItemsService.selectMultipleActive()) {
-      <app-banner [type]="bannerTypeEnum.WARNING">
-        <div class="offline-order-banner-message">{{ "OFFLINE_ORDERS_MODE.HAS_OFFLINE_ORDERS_LABEL_MESSAGE" | translate
-          }}
-          <button mat-raised-button color="default" (click)="syncAllOfflineBadOrders()">
-            <mat-icon>cloud_upload</mat-icon>
-            {{ 'GENERAL_TEXTS.CONFIRM' | translate }}
-          </button>
-        </div>
-      </app-banner>
+        @if(hasLocalBadOrders() && !multipleItemsService.selectMultipleActive()) {
+        <app-banner [type]="bannerTypeEnum.WARNING">
+          <div class="offline-order-banner-message">{{ "OFFLINE_ORDERS_MODE.HAS_OFFLINE_ORDERS_LABEL_MESSAGE" | translate
+            }}
+            <button mat-raised-button color="default" (click)="syncAllOfflineBadOrders()">
+              <mat-icon>cloud_upload</mat-icon>
+              {{ 'GENERAL_TEXTS.CONFIRM' | translate }}
+            </button>
+          </div>
+        </app-banner>
+        }
       }
-      }
-
 
       @if(multipleItemsService.selectMultipleActive()) {
       <mat-checkbox [checked]="multipleItemsService.isSelectedAll()" (change)="selectAllItems($event.checked)"

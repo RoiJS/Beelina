@@ -5,7 +5,10 @@
       @if(allowAllOption) {
       <mat-option [value]="0">{{ 'GENERAL_TEXTS.ALL' | translate }}</mat-option>
       }
-      <mat-option *ngFor="let salesAgent of salesAgents" [value]="salesAgent.id">{{ salesAgent.fullname }}</mat-option>
+
+      @for (salesAgent of salesAgents; track $index) {
+        <mat-option  [value]="salesAgent.id">{{ salesAgent.fullname }}</mat-option>
+      }
     </mat-select>
   </mat-form-field>
 </div>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 export class AppVersionService {
   private _appVersion = new BehaviorSubject<string>('1.25.5');
 
-  constructor(private translate: TranslateService) { }
+  private translate = inject(TranslateService);
 
   get copyRightText(): string {
     return `${this.translate.instant(

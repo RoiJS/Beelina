@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, input, OnInit } from '@angular/core';
+
 import { PlaceholderEntityTemplateEnum } from 'src/app/_enum/placeholder-entity-template.enum';
 
 export enum TemplateSizeEnum {
@@ -13,8 +14,8 @@ export enum TemplateSizeEnum {
   styleUrls: ['./placeholder-entities.component.scss'],
 })
 export class PlaceholderEntitiesComponent implements OnInit {
-  @Input() templateType: PlaceholderEntityTemplateEnum;
-  @Input() templateSize: TemplateSizeEnum = TemplateSizeEnum.LARGE;
+  templateType = input<PlaceholderEntityTemplateEnum>(null);
+  templateSize = input<TemplateSizeEnum>(TemplateSizeEnum.LARGE);
 
   constructor() { }
 

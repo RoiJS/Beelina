@@ -166,7 +166,7 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
 
   onQuantityChange(quantity: number, productWithdrawalDetails: ProductWithdrawalItemDetails) {
     this.productService
-      .checkWarehouseProductStockQuantity(productWithdrawalDetails.productId, this._warehouseId, quantity)
+      .checkWarehouseProductStockQuantity(productWithdrawalDetails.productId, this._warehouseId, (quantity || 0))
       .subscribe((insufficientStocks: Array<InsufficientProductQuantity>) => {
         if (insufficientStocks.length > 0) {
           this.dialogService

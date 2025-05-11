@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -36,31 +36,31 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
   private _hasActiveOrders: boolean;
   private _loadingLabel: string;
 
-  constructor(
-    private authService: AuthService,
-    private dialogService: DialogService,
-    private formBuilder: FormBuilder,
-    private localProductsDbService: LocalProductsDbService,
-    private networkService: NetworkService,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService,
-    private storageService: StorageService,
-    private notificationService: NotificationService,
-    private productService: ProductService
-  ) {
+  private authService = inject(AuthService);
+  private dialogService = inject(DialogService);
+  private formBuilder = inject(FormBuilder);
+  private localProductsDbService = inject(LocalProductsDbService);
+  private networkService = inject(NetworkService);
+  private store = inject(Store<AppStateInterface>);
+  private translateService = inject(TranslateService);
+  private storageService = inject(StorageService);
+  private notificationService = inject(NotificationService);
+  private productService = inject(ProductService);
+
+  constructor() {
     super();
     this._orderForm = this.formBuilder.group({
       textOrder: ['', Validators.required],
     });
 
-    if (storageService.hasKey("textOrder")) {
-      this._orderForm.get('textOrder').setValue(storageService.getString("textOrder"));
+    if (this.storageService.hasKey("textOrder")) {
+      this._orderForm.get('textOrder').setValue(this.storageService.getString("textOrder"));
     }
 
     this._subscription.add(this._orderForm.get('textOrder')
       .valueChanges
       .subscribe((value: string) => {
-        storageService.storeString("textOrder", value);
+        this.storageService.storeString("textOrder", value);
       }));
 
     this._hintLabelText1 = this.translateService.instant(

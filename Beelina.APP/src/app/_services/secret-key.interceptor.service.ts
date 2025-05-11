@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   HttpInterceptor,
   HttpRequest,
@@ -17,10 +17,9 @@ import { AuthToken } from '../_models/auth-token.model';
   providedIn: 'root',
 })
 export class SecretKeyInterceptorService implements HttpInterceptor {
-  constructor(
-    private forgotPasswordService: ForgotPasswordService,
-    private storageService: StorageService
-  ) { }
+
+  private forgotPasswordService = inject(ForgotPasswordService);
+  private storageService = inject(StorageService);
 
   intercept(
     req: HttpRequest<any>,

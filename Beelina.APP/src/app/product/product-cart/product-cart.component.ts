@@ -1137,7 +1137,8 @@ export class ProductCartComponent
     const currentBarangay = this._orderForm.get('barangay').value.toLowerCase();
     return this._customerStoreOptions().filter((option) => {
       return (
-        option.barangay?.name.toLowerCase().includes(currentBarangay)
+        option.barangay?.name.toLowerCase().includes(currentBarangay) &&
+        (this.isAdmin() || this.authService.user.value.id === option.barangay.userAccountId)
       );
     });
   };

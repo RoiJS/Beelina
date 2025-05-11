@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   MatBottomSheetRef,
@@ -30,19 +30,19 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
   private _productTransactions: Array<ProductTransaction>;
   private _invalidValue: boolean;
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<AddToCartProductComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      productId: number;
-      productTransactions: Array<ProductTransaction>;
-    },
-    private formBuilder: FormBuilder,
-    private store: Store<AppStateInterface>,
-    private productDataService: ProductDataService,
-  ) {
+  private _bottomSheetRef = inject(MatBottomSheetRef<AddToCartProductComponent>);
+  private formBuilder = inject(FormBuilder);
+  private store = inject(Store<AppStateInterface>);
+  private productDataService = inject(ProductDataService);
+
+  data = inject<{
+    productId: number;
+    productTransactions: Array<ProductTransaction>;
+  }>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
     super();
-    this._productTransactions = data.productTransactions;
+    this._productTransactions = this.data.productTransactions;
 
     this._itemCounterForm = this.formBuilder.group({
       itemCounter: [0],
@@ -50,7 +50,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
 
     this._isLoading = true;
     this.productDataService
-      .getProduct(data.productId)
+      .getProduct(this.data.productId)
       .subscribe((result: ProductInformationResult) => {
         this._isLoading = false;
         this._product = new Product();
@@ -63,7 +63,7 @@ export class AddToCartProductComponent extends BaseComponent implements OnInit {
         this._product.productUnit.name = result.productUnit.name;
 
         this._productTransaction = this._productTransactions.find(
-          (p) => p.productId === data.productId
+          (p) => p.productId === this.data.productId
         );
 
         if (this._productTransaction) {

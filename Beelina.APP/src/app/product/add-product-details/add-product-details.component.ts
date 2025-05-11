@@ -111,6 +111,7 @@ export class AddProductDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.store.dispatch(ProductUnitActions.resetProductUnitsActionError());
     this.store.dispatch(ProductUnitActions.getProductUnitsAction());
 
     this._productUnitOptionsSubscription = this.store

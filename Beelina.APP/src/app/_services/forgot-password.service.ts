@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -14,7 +14,7 @@ export class ForgotPasswordService {
   private _user = new BehaviorSubject<ForgotPasswordUser>(null);
   private _appSecretToken = new BehaviorSubject<string>('');
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   verifyUsernameOrEmailAddress(usernameOrEmailAddress: string) {
     return this.http

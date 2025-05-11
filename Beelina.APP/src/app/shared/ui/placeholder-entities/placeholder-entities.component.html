@@ -1,8 +1,8 @@
+@if (templateType() === 'TRANSACTIONS') {
 <svg class="animated empty-template"
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
   id="freepik_stories-reading-list" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" version="1.1"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"
-  *ngIf="templateType === 'TRANSACTIONS'">
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-reading-list:not(.animated) .animable {
       opacity: 0;
@@ -111,10 +111,10 @@
       style="fill: rgb(235, 235, 235); transform-origin: 111.52px 307.75px" id="el674do5b23il" class="animable"></path>
     <g id="el15sinzbxqbg">
       <rect x="166.52" y="288.02" width="68.55" height="3.33" style="
-          fill: rgb(235, 235, 235);
-          transform-origin: 200.795px 289.685px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(235, 235, 235);
+        transform-origin: 200.795px 289.685px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <polygon points="245.69 291.35 258.55 243.17 205.02 243.17 193.38 291.35 245.69 291.35"
       style="fill: rgb(235, 235, 235); transform-origin: 225.965px 267.26px" id="el6cfb3pdqjsj" class="animable">
@@ -164,17 +164,17 @@
       style="fill: rgb(250, 250, 250); transform-origin: 140.93px 119.675px" id="el8ggjou63v1c" class="animable"></path>
     <g id="elsg2dwe25ak">
       <rect x="71.15" y="92.34" width="8.01" height="39.34" style="
-          fill: rgb(224, 224, 224);
-          transform-origin: 75.155px 112.01px;
-          transform: rotate(89.7deg);
-        " class="animable"></rect>
+        fill: rgb(224, 224, 224);
+        transform-origin: 75.155px 112.01px;
+        transform: rotate(89.7deg);
+      " class="animable"></rect>
     </g>
     <g id="el8ehet3ismi9">
       <rect x="71.4" y="108.66" width="12.44" height="43.84" style="
-          fill: rgb(245, 245, 245);
-          transform-origin: 77.62px 130.58px;
-          transform: rotate(89.7deg);
-        " class="animable"></rect>
+        fill: rgb(245, 245, 245);
+        transform-origin: 77.62px 130.58px;
+        transform: rotate(89.7deg);
+      " class="animable"></rect>
     </g>
     <path
       d="M91.13,136.6a44.37,44.37,0,0,1-.22-6.22,44.37,44.37,0,0,1,.22-6.22,47.4,47.4,0,0,1,.21,6.22A47.4,47.4,0,0,1,91.13,136.6Z"
@@ -192,20 +192,20 @@
       style="fill: rgb(224, 224, 224); transform-origin: 78.065px 130.585px" id="elxlgpc7vyvg9" class="animable"></path>
     <g id="el70utj42mjfm">
       <rect x="84.96" y="92.81" width="8.01" height="54.1" style="
-          fill: rgb(235, 235, 235);
-          transform-origin: 88.965px 119.86px;
-          transform: rotate(89.7deg);
-        " class="animable"></rect>
+        fill: rgb(235, 235, 235);
+        transform-origin: 88.965px 119.86px;
+        transform: rotate(89.7deg);
+      " class="animable"></rect>
     </g>
     <ellipse cx="108.29" cy="120.14" rx="2.56" ry="2.59"
       style="fill: rgb(224, 224, 224); transform-origin: 108.29px 120.14px" id="el3f2rnsaxbqu" class="animable">
     </ellipse>
     <g id="eluhi4fuz67s">
       <rect x="82.35" y="102.03" width="1.6" height="36.22" style="
-          fill: rgb(224, 224, 224);
-          transform-origin: 83.15px 120.14px;
-          transform: rotate(90deg);
-        " class="animable"></rect>
+        fill: rgb(224, 224, 224);
+        transform-origin: 83.15px 120.14px;
+        transform: rotate(90deg);
+      " class="animable"></rect>
     </g>
     <rect x="394.25" y="59.12" width="71.66" height="103.87"
       style="fill: rgb(224, 224, 224); transform-origin: 430.08px 111.055px" id="elp7bljrizlzp" class="animable"></rect>
@@ -757,12 +757,13 @@
     </filter>
   </defs>
 </svg>
+}
 
+@if (templateType() === 'CUSTOMERS') {
 <svg
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
   class="animated empty-template" id="freepik_stories-product-tour" xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"
-  *ngIf="templateType === 'CUSTOMERS'">
+  viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-product-tour:not(.animated) .animable {
       opacity: 0;
@@ -868,43 +869,43 @@
       style="fill: rgb(235, 235, 235); transform-origin: 356.75px 196.4px" id="elm49nywovx9p" class="animable"></path>
     <g id="elpquaj6llgsg">
       <rect x="64.81" y="75" width="7.22" height="307.4" style="
-          fill: rgb(224, 224, 224);
-          transform-origin: 68.42px 228.7px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(224, 224, 224);
+        transform-origin: 68.42px 228.7px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <g id="elk610duurrbh">
       <rect x="68.42" y="85.22" width="190.04" height="297.18" style="
-          fill: rgb(245, 245, 245);
-          transform-origin: 163.44px 233.81px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(245, 245, 245);
+        transform-origin: 163.44px 233.81px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <polygon points="89.44 266.45 169.94 266.45 169.94 140.56 90.67 140.08 89.44 266.45"
       style="fill: rgb(224, 224, 224); transform-origin: 129.69px 203.265px" id="eltu5z4g4s5gc" class="animable">
     </polygon>
     <g id="el39uzjfket5q">
       <rect x="90.67" y="139.67" width="80.5" height="125.88" style="
-          fill: rgb(255, 255, 255);
-          transform-origin: 130.92px 202.61px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(255, 255, 255);
+        transform-origin: 130.92px 202.61px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <circle cx="130.92" cy="180.67" r="23.42" style="fill: rgb(245, 245, 245); transform-origin: 130.92px 180.67px"
       id="el8z2bfh19d6q" class="animable"></circle>
     <g id="elo20vsmuewwj">
       <circle cx="130.92" cy="226.91" r="14.16" style="
-          fill: rgb(245, 245, 245);
-          transform-origin: 130.92px 226.91px;
-          transform: rotate(-22.5deg);
-        " class="animable"></circle>
+        fill: rgb(245, 245, 245);
+        transform-origin: 130.92px 226.91px;
+        transform: rotate(-22.5deg);
+      " class="animable"></circle>
     </g>
     <g id="eldtwyt630mf">
       <rect x="428.3" y="75" width="7.22" height="307.4" style="
-          fill: rgb(224, 224, 224);
-          transform-origin: 431.91px 228.7px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(224, 224, 224);
+        transform-origin: 431.91px 228.7px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <rect x="61.25" y="79" width="326.61" height="46.22"
       style="fill: rgb(240, 240, 240); transform-origin: 224.555px 102.11px" id="elexd8evglcw5" class="animable"></rect>
@@ -912,64 +913,64 @@
       style="fill: rgb(255, 255, 255); transform-origin: 297.585px 102.11px" id="eldyb1px6gk0f" class="animable"></rect>
     <g id="el952qocgdv14">
       <rect x="74.7" y="91" width="133.38" height="22.22" style="
-          fill: rgb(255, 255, 255);
-          transform-origin: 141.39px 102.11px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(255, 255, 255);
+        transform-origin: 141.39px 102.11px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <g id="el7cv0z1szj9m">
       <rect x="387.86" y="79" width="50.89" height="46.22" style="
-          fill: rgb(224, 224, 224);
-          transform-origin: 413.305px 102.11px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(224, 224, 224);
+        transform-origin: 413.305px 102.11px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <rect x="412.23" y="91" width="21.71" height="22.22"
       style="fill: rgb(255, 255, 255); transform-origin: 423.085px 102.11px" id="el1pf4oabpuv7" class="animable"></rect>
     <g id="ele23f8tml76f">
       <rect x="395.41" y="91" width="15.02" height="22.22" style="
-          fill: rgb(255, 255, 255);
-          transform-origin: 402.92px 102.11px;
-          transform: rotate(180deg);
-        " class="animable"></rect>
+        fill: rgb(255, 255, 255);
+        transform-origin: 402.92px 102.11px;
+        transform: rotate(180deg);
+      " class="animable"></rect>
     </g>
     <g id="elhud86hhoo7">
       <path
         d="M218.68,235.16H391.73a0,0,0,0,1,0,0V372.43a10,10,0,0,1-10,10H228.65a10,10,0,0,1-10-10V235.16A0,0,0,0,1,218.68,235.16Z"
         style="
-          fill: rgb(224, 224, 224);
-          transform-origin: 305.19px 308.795px;
-          transform: rotate(180deg);
-        " class="animable"></path>
+        fill: rgb(224, 224, 224);
+        transform-origin: 305.19px 308.795px;
+        transform: rotate(180deg);
+      " class="animable"></path>
     </g>
     <g id="eluacdy0v38q">
       <path
         d="M198.6,235.16H371.66a0,0,0,0,1,0,0V372.43a10,10,0,0,1-10,10H208.57a10,10,0,0,1-10-10V235.16A0,0,0,0,1,198.6,235.16Z"
         style="
-          fill: rgb(224, 224, 224);
-          transform-origin: 285.115px 308.795px;
-          transform: rotate(180deg);
-        " class="animable"></path>
+        fill: rgb(224, 224, 224);
+        transform-origin: 285.115px 308.795px;
+        transform: rotate(180deg);
+      " class="animable"></path>
     </g>
     <g id="elsnplravduz">
       <path
         d="M219.82,227.23H357.09a0,0,0,0,1,0,0V393.65a0,0,0,0,1,0,0H219.82a6.65,6.65,0,0,1-6.65-6.65V233.88A6.65,6.65,0,0,1,219.82,227.23Z"
         style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.3;
-          transform-origin: 285.13px 310.44px;
-          transform: rotate(90deg);
-        " class="animable"></path>
+        fill: rgb(255, 255, 255);
+        opacity: 0.3;
+        transform-origin: 285.13px 310.44px;
+        transform: rotate(90deg);
+      " class="animable"></path>
     </g>
     <g id="elvwxn88t7s7">
       <path
         d="M220.7,228.12H358a0,0,0,0,1,0,0V392.76a0,0,0,0,1,0,0H220.7a6.65,6.65,0,0,1-6.65-6.65V234.76A6.65,6.65,0,0,1,220.7,228.12Z"
         style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.9;
-          transform-origin: 286.025px 310.44px;
-          transform: rotate(90deg);
-        " class="animable"></path>
+        fill: rgb(255, 255, 255);
+        opacity: 0.9;
+        transform-origin: 286.025px 310.44px;
+        transform: rotate(90deg);
+      " class="animable"></path>
     </g>
     <polygon points="336.65 235.16 324 235.16 320.23 215.53 332.88 215.53 336.65 235.16"
       style="fill: rgb(224, 224, 224); transform-origin: 328.44px 225.345px" id="elj62o86jlevd" class="animable">
@@ -1029,10 +1030,10 @@
       <path
         d="M142.89,208.16S153,272.3,156,294.67c3.26,24.51,10.14,96.17,10.14,96.17l-13.94,3.84S139,325.24,133.56,301.42c-5.91-25.85-18.83-93.26-18.83-93.26Z"
         style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.5;
-          transform-origin: 140.435px 301.42px;
-        " class="animable"></path>
+        fill: rgb(255, 255, 255);
+        opacity: 0.5;
+        transform-origin: 140.435px 301.42px;
+      " class="animable"></path>
     </g>
     <g id="el5m1xg4u1ufs">
       <path
@@ -1074,10 +1075,10 @@
       <path
         d="M127.5,208.16s.28,59.81-1.18,82.37C124.73,315.24,111,397.08,111,397.08H96.53s7.17-79.85,6.49-104.31c-.73-26.55-2.27-84.61-2.27-84.61Z"
         style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.5;
-          transform-origin: 112.026px 302.62px;
-        " class="animable"></path>
+        fill: rgb(255, 255, 255);
+        opacity: 0.5;
+        transform-origin: 112.026px 302.62px;
+      " class="animable"></path>
     </g>
     <polygon points="95.94 397.08 111.54 397.08 112.45 391.61 95.23 392.46 95.94 397.08"
       style="fill: rgb(214, 146, 19); transform-origin: 103.84px 394.345px" id="eljk281d4p26" class="animable">
@@ -1187,21 +1188,21 @@
       <path
         d="M128.38,261.48h171.3a0,0,0,0,1,0,0V391.41a0,0,0,0,1,0,0H128.38a8.29,8.29,0,0,1-8.29-8.29V269.77A8.29,8.29,0,0,1,128.38,261.48Z"
         style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.3;
-          transform-origin: 209.885px 326.445px;
-          transform: rotate(90deg);
-        " class="animable"></path>
+        fill: rgb(255, 255, 255);
+        opacity: 0.3;
+        transform-origin: 209.885px 326.445px;
+        transform: rotate(90deg);
+      " class="animable"></path>
     </g>
     <g id="elg5ug2yb90gc">
       <path
         d="M127.28,262.58h171.3a0,0,0,0,1,0,0V390.31a0,0,0,0,1,0,0H127.28A8.29,8.29,0,0,1,119,382V270.87A8.29,8.29,0,0,1,127.28,262.58Z"
         style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.9;
-          transform-origin: 208.79px 326.445px;
-          transform: rotate(90deg);
-        " class="animable"></path>
+        fill: rgb(255, 255, 255);
+        opacity: 0.9;
+        transform-origin: 208.79px 326.445px;
+        transform: rotate(90deg);
+      " class="animable"></path>
     </g>
     <rect x="148.41" y="206.66" width="55.37" height="25.84" rx="7.36"
       style="fill: rgb(214, 146, 19); transform-origin: 176.095px 219.58px" id="el7cqwa9kaiu9" class="animable"></rect>
@@ -1213,68 +1214,68 @@
       style="fill: rgb(255, 255, 255); transform-origin: 151.95px 218.48px" id="elj0wa5clbah" class="animable"></path>
     <g id="eljeo4prqqk5q">
       <polygon points="238.76 191.55 219.65 191.55 222.86 232.5 241.97 232.5 238.76 191.55" style="
-          fill: rgb(214, 146, 19);
-          opacity: 0.2;
-          transform-origin: 230.81px 212.025px;
-        " class="animable"></polygon>
+        fill: rgb(214, 146, 19);
+        opacity: 0.2;
+        transform-origin: 230.81px 212.025px;
+      " class="animable"></polygon>
     </g>
     <polygon points="239.93 188.04 220.82 188.04 224.03 228.99 243.14 228.99 239.93 188.04"
       style="fill: rgb(214, 146, 19); transform-origin: 231.98px 208.515px" id="elplu2f33urin" class="animable">
     </polygon>
     <g id="el0dz0vga5sujv">
       <polygon points="240.41 214.17 224.44 214.17 222.51 189.6 238.48 189.6 240.41 214.17" style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.6;
-          transform-origin: 231.46px 201.885px;
-        " class="animable"></polygon>
+        fill: rgb(255, 255, 255);
+        opacity: 0.6;
+        transform-origin: 231.46px 201.885px;
+      " class="animable"></polygon>
     </g>
     <g id="el2myt58q71rv">
       <polygon points="241.45 227.43 225.47 227.43 224.73 218.01 240.71 218.01 241.45 227.43" style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.6;
-          transform-origin: 233.09px 222.72px;
-        " class="animable"></polygon>
+        fill: rgb(255, 255, 255);
+        opacity: 0.6;
+        transform-origin: 233.09px 222.72px;
+      " class="animable"></polygon>
     </g>
     <polygon points="240.56 187.81 221.45 187.77 224.58 228.97 243.69 229.01 240.56 187.81"
       style="fill: rgb(214, 146, 19); transform-origin: 232.57px 208.39px" id="elx1ehs2dnr0f" class="animable">
     </polygon>
     <g id="elwn6ptdqj9zp">
       <polygon points="240.98 214.1 225.01 214.06 223.14 189.35 239.11 189.38 240.98 214.1" style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.6;
-          transform-origin: 232.06px 201.725px;
-        " class="animable"></polygon>
+        fill: rgb(255, 255, 255);
+        opacity: 0.6;
+        transform-origin: 232.06px 201.725px;
+      " class="animable"></polygon>
     </g>
     <g id="el7ggy2p498uj">
       <polygon points="242 227.44 226.02 227.41 225.3 217.93 241.28 217.96 242 227.44" style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.6;
-          transform-origin: 233.65px 222.685px;
-        " class="animable"></polygon>
+        fill: rgb(255, 255, 255);
+        opacity: 0.6;
+        transform-origin: 233.65px 222.685px;
+      " class="animable"></polygon>
     </g>
     <polygon points="241.08 187.29 221.97 187.25 225.1 228.95 244.21 228.99 241.08 187.29"
       style="fill: rgb(214, 146, 19); transform-origin: 233.09px 208.12px" id="el4itilrx64d9" class="animable">
     </polygon>
     <g id="el4jnlikdvib9">
       <polygon points="241.51 213.9 225.53 213.86 223.66 188.84 239.64 188.88 241.51 213.9" style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.6;
-          transform-origin: 232.585px 201.37px;
-        " class="animable"></polygon>
+        fill: rgb(255, 255, 255);
+        opacity: 0.6;
+        transform-origin: 232.585px 201.37px;
+      " class="animable"></polygon>
     </g>
     <g id="elbmsbm7swwzo">
       <polygon points="242.53 227.4 226.54 227.36 225.82 217.77 241.81 217.8 242.53 227.4" style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.6;
-          transform-origin: 234.175px 222.585px;
-        " class="animable"></polygon>
+        fill: rgb(255, 255, 255);
+        opacity: 0.6;
+        transform-origin: 234.175px 222.585px;
+      " class="animable"></polygon>
     </g>
     <g id="eldq9o3njy7t8">
       <polygon points="218.04 191.55 219.65 191.55 222.86 232.5 221.26 232.5 218.04 191.55" style="
-          fill: rgb(214, 146, 19);
-          opacity: 0.4;
-          transform-origin: 220.45px 212.025px;
-        " class="animable"></polygon>
+        fill: rgb(214, 146, 19);
+        opacity: 0.4;
+        transform-origin: 220.45px 212.025px;
+      " class="animable"></polygon>
     </g>
   </g>
   <g id="freepik--character-2--inject-4" class="animable" style="transform-origin: 338.816px 261.381px">
@@ -1392,10 +1393,10 @@
       <path
         d="M374.27,205.66l1.62,3.22c.13.25-.17.51-.58.51H337.57c-.32,0-.59-.16-.61-.37l-.32-3.22c0-.22.25-.41.61-.41h36.43A.66.66,0,0,1,374.27,205.66Z"
         style="
-          fill: rgb(255, 255, 255);
-          opacity: 0.5;
-          transform-origin: 356.28px 207.389px;
-        " class="animable"></path>
+        fill: rgb(255, 255, 255);
+        opacity: 0.5;
+        transform-origin: 356.28px 207.389px;
+      " class="animable"></path>
     </g>
     <path
       d="M369.38,209.73h1c.2,0,.34-.1.33-.22l-.46-4.18c0-.12-.18-.23-.37-.23h-1c-.19,0-.34.11-.33.23l.46,4.18C369,209.63,369.18,209.73,369.38,209.73Z"
@@ -1428,12 +1429,13 @@
     </filter>
   </defs>
 </svg>
+}
 
+@if (templateType() === 'PRODUCTS') {
 <svg
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
   class="animated empty-template" id="freepik_stories-empty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"
-  version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"
-  *ngIf="templateType === 'PRODUCTS'">
+  version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-empty:not(.animated) .animable {
       opacity: 0;
@@ -2061,12 +2063,13 @@
     </filter>
   </defs>
 </svg>
+}
 
+@if(templateType() === 'TOP_PRODUCTS') {
 <svg
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
   class="animated empty-template" id="freepik_stories-progress-overview" xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"
-  *ngIf="templateType === 'TOP_PRODUCTS'">
+  viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-progress-overview:not(.animated) .animable {
       opacity: 0;
@@ -3162,12 +3165,13 @@
     </filter>
   </defs>
 </svg>
+}
 
+@if (templateType() === 'REPORTS') {
 <svg
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
   class="animated empty-template" id="freepik_stories-progress-overview" xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"
-  *ngIf="templateType === 'REPORTS'">
+  viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-progress-overview:not(.animated) .animable {
       opacity: 0;
@@ -4474,11 +4478,13 @@
     </filter>
   </defs>
 </svg>
+}
 
+@if (templateType() === 'SALES_AGENTS') {
 <svg class="animated" class="animated empty-template"
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
   id="freepik_stories-online-review" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-  viewBox="0 0 500 500" version="1.1" xmlns:svgjs="http://svgjs.com/svgjs" *ngIf="templateType === 'SALES_AGENTS'">
+  viewBox="0 0 500 500" version="1.1" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-online-review:not(.animated) .animable {
       opacity: 0;
@@ -5491,11 +5497,13 @@
     </clipPath>
   </defs>
 </svg>
+}
 
+@if (templateType() === 'LOGIN') {
 <svg class="animated empty-template"
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
   id="freepik_stories-secure-login" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" version="1.1"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" *ngIf="templateType === 'LOGIN'">
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-secure-login:not(.animated) .animable {
       opacity: 0;
@@ -6566,11 +6574,13 @@
     </filter>
   </defs>
 </svg>
+}
 
+@if (templateType() === 'USER_ACCOUNTS') {
 <svg class="animated empty-template"
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
-  *ngIf="templateType === 'USER_ACCOUNTS'" id="freepik_stories-personal-site" xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
+  id="freepik_stories-personal-site" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" version="1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-personal-site:not(.animated) .animable {
       opacity: 0;
@@ -7433,11 +7443,13 @@
     </filter>
   </defs>
 </svg>
+}
 
+@if (templateType() === 'PAYMENTS') {
 <svg class="animated empty-template"
-  [ngClass]="{ 'empty-template--for-large': templateSize === 'large', 'empty-template--for-medium': templateSize === 'medium', 'empty-template--for-small': templateSize === 'small' }"
-  *ngIf="templateType === 'PAYMENTS'" id="freepik_stories-wallet" xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 750 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
+  [ngClass]="{ 'empty-template--for-large': templateSize() === 'large', 'empty-template--for-medium': templateSize() === 'medium', 'empty-template--for-small': templateSize() === 'small' }"
+  id="freepik_stories-wallet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" version="1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
   <style>
     svg#freepik_stories-wallet:not(.animated) .animable {
       opacity: 0;
@@ -8315,3 +8327,4 @@
     </filter>
   </defs>
 </svg>
+}

@@ -1,3 +1,5 @@
+import { DateFormatter } from "src/app/_helpers/formatters/date-formatter.helper";
+
 export class ProductWithdrawalFilter {
 
   public startDate: string;
@@ -9,7 +11,7 @@ export class ProductWithdrawalFilter {
   }
 
   isActive() {
-    return !this.startDate || !this.endDate;
+    return DateFormatter.isValidDate(this.startDate) || DateFormatter.isValidDate(this.endDate);
   }
 
   reset() {

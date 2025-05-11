@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   Route,
   UrlSegment,
@@ -13,7 +13,7 @@ import { AppStateInterface } from '../_interfaces/app-state.interface';
 
 @Injectable()
 export class CartGuard {
-  constructor(private store: Store<AppStateInterface>) {}
+  private store = inject(Store<AppStateInterface>);
 
   canLoad(
     route: Route,

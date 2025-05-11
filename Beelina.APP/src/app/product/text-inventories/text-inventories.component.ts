@@ -40,21 +40,20 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
   private _loadingLabel: string;
   private _updateProductInformationSubscription: Subscription;
 
-  uniqueProductWithdrawalCodeValidator = inject(UniqueProductWithdrawalCodeValidator);
+  private authService = inject(AuthService);
+  private dialogService = inject(DialogService);
+  private formBuilder = inject(FormBuilder);
+  private notificationService = inject(NotificationService);
+  private productService = inject(ProductService);
+  private router = inject(Router);
+  private storageService = inject(StorageService);
+  private store = inject(Store<AppStateInterface>);
+  private translateService = inject(TranslateService);
+  private uniqueProductWithdrawalCodeValidator = inject(UniqueProductWithdrawalCodeValidator);
 
   productWithdrawalDetailsForm: FormGroup;
 
-  constructor(
-    private authService: AuthService,
-    private dialogService: DialogService,
-    private formBuilder: FormBuilder,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService,
-    private storageService: StorageService,
-    private notificationService: NotificationService,
-    private productService: ProductService,
-    private router: Router
-  ) {
+  constructor() {
     super();
     this._textInventoriesForm = this.formBuilder.group({
       textInventories: ['', Validators.required],
@@ -76,14 +75,14 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
       notes: [''],
     });
 
-    if (storageService.hasKey("textInventories")) {
-      this._textInventoriesForm.get('textInventories').setValue(storageService.getString("textInventories"));
+    if (this.storageService.hasKey("textInventories")) {
+      this._textInventoriesForm.get('textInventories').setValue(this.storageService.getString("textInventories"));
     }
 
     this._subscription.add(this._textInventoriesForm.get('textInventories')
       .valueChanges
       .subscribe((value: string) => {
-        storageService.storeString("textInventories", value);
+        this.storageService.storeString("textInventories", value);
       }));
 
     this._hintLabelText1 = this.translateService.instant(

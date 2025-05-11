@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 
@@ -12,13 +12,10 @@ export interface ConfirmationDialogData {
   templateUrl: './confirmation-dialog.component.html',
   styleUrls: ['../dialog.scss'],
 })
-export class ConfirmationDialogComponent implements OnInit {
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData
-  ) {}
+export class ConfirmationDialogComponent {
 
-  ngOnInit() {}
+  dialogRef = inject(MatDialogRef<ConfirmationDialogComponent>);
+  data = inject<ConfirmationDialogData>(MAT_DIALOG_DATA);
 
   onConfirm(): void {
     this.dialogRef.close(ButtonOptions.YES);

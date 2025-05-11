@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
 
 @Component({
@@ -6,15 +6,10 @@ import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar'
   templateUrl: './warning-notification.component.html',
   styleUrls: ['./warning-notification.component.scss', '../notification.scss']
 })
-export class WarningNotificationComponent implements OnInit {
+export class WarningNotificationComponent {
 
-  constructor(
-    @Inject(MAT_SNACK_BAR_DATA) public data: { message: string },
-    public dialogRef: MatSnackBarRef<WarningNotificationComponent>,
-  ) { }
-
-  ngOnInit() {
-  }
+  data = inject<{ message: string }>(MAT_SNACK_BAR_DATA);
+  dialogRef = inject(MatSnackBarRef<WarningNotificationComponent>);
 
   close() {
     this.dialogRef.dismiss();

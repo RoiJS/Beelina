@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 import { AuthService } from 'src/app/_services/auth.service';
@@ -16,14 +16,13 @@ import { SubscriptionFeatureHideDashboardWidget } from 'src/app/_models/subscrip
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent extends SalesComponent implements OnInit, AfterViewInit {
-  @ViewChild(SalesChartViewComponent) salesChartView: SalesChartViewComponent;
-  @ViewChild(SalesPerAgentViewComponent) salesPerAgentChartView: SalesPerAgentViewComponent;
+  private userId: number;
 
+  salesChartView = viewChild(SalesChartViewComponent);
+  salesPerAgentChartView = viewChild(SalesPerAgentViewComponent);
   clientSubscriptionDetails: ClientSubscriptionDetails;
   salesChartViewLoading: boolean;
   salesPerAgentChartViewLoading: boolean;
-
-  private userId: number;
 
   localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
 
@@ -40,7 +39,6 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
     this.userId = this.authService.user.value.id;
   }
 
-
   override async ngOnInit() {
     super.ngOnInit();
 
@@ -55,12 +53,12 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
 
   initChartView() {
     this.salesChartViewLoading = true;
-    this.salesChartView.loadTotalSalesChart(this.userId, this.dateRanges(), () => {
+    this.salesChartView().loadTotalSalesChart(this.userId, this.dateRanges(), () => {
       this.salesChartViewLoading = false;
     });
     setTimeout(() => {
       this.salesPerAgentChartViewLoading = true;
-      this.salesPerAgentChartView.loadTotalSalesChart(this.getDateRange(this._currentFilterOption), () => {
+      this.salesPerAgentChartView().loadTotalSalesChart(this.getDateRange(this._currentFilterOption), () => {
         this.salesPerAgentChartViewLoading = false;
       })
     }, 500);

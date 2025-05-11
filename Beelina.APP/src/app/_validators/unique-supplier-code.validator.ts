@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidator,
@@ -12,7 +12,7 @@ import { SupplierService } from '../_services/supplier.service';
 export class UniqueSupplierCodeValidator implements AsyncValidator {
   supplierId: number = 0;
 
-  constructor(private supplierService: SupplierService) {}
+  private supplierService = inject(SupplierService);
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.supplierService

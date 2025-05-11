@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -14,6 +14,11 @@ import { endCursorSelector } from './selectors';
 
 @Injectable()
 export class ProductUnitEffects {
+
+  private actions$ = inject(Actions);
+  private productUnitService = inject(ProductUnitService);
+  private store = inject(Store<AppStateInterface>);
+
   paymentMethods$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductUnitActions.getProductUnitsAction),
@@ -50,9 +55,4 @@ export class ProductUnitEffects {
       })
     )
   );
-  constructor(
-    private actions$: Actions,
-    private productUnitService: ProductUnitService,
-    private store: Store<AppStateInterface>
-  ) { }
 }

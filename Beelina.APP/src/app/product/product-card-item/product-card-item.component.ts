@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 import { Product } from 'src/app/_models/product';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
@@ -8,27 +8,26 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
   templateUrl: './product-card-item.component.html',
   styleUrls: ['./product-card-item.component.scss'],
 })
-export class ProductCardItemComponent extends BaseComponent implements OnInit {
-  @Input() productItem: Product;
-  @Input() allowManageItem: boolean = false;
-  @Input() allowTransferStocks: boolean = true;
-  @Input() hideHeader: boolean = false;
-  @Input() hideImage: boolean = false;
-  @Input() hideHeaderOptions: boolean = false;
-  @Input() hideDeductionCounterIcon: boolean = false;
-  @Input() filterKeyword: string = '';
-  @Output() editItem = new EventEmitter<number>();
-  @Output() deleteItem = new EventEmitter<number>();
-  @Output() transferProduct = new EventEmitter<number>();
-  @Output() addStockQuantity = new EventEmitter<Product>();
-  @Output() selectItem = new EventEmitter<number>();
-  @Output() addItem = new EventEmitter<number>();
+export class ProductCardItemComponent extends BaseComponent {
+  productItem = input<Product>();
+  allowManageItem = input<boolean>(false);
+  allowTransferStocks = input<boolean>(true);
+  hideHeader = input<boolean>(false);
+  hideImage = input<boolean>(false);
+  hideHeaderOptions = input<boolean>(false);
+  hideDeductionCounterIcon = input<boolean>(false);
+  filterKeyword = input<string>('');
+
+  editItem = output<number>();
+  deleteItem = output<number>();
+  transferProduct = output<number>();
+  addStockQuantity = output<Product>();
+  selectItem = output<number>();
+  addItem = output<number>();
 
   constructor() {
     super();
   }
-
-  ngOnInit() { }
 
   editProduct(id: number) {
     this.editItem.emit(id);
@@ -43,7 +42,7 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
   }
 
   addProductStockQuantity() {
-    this.addStockQuantity.emit(this.productItem);
+    this.addStockQuantity.emit(this.productItem());
   }
 
   addItemToCart(id: number) {
@@ -53,8 +52,8 @@ export class ProductCardItemComponent extends BaseComponent implements OnInit {
   highlightText(text: string) {
     let formattedString = text;
 
-    if (this.filterKeyword.length === 0) return formattedString;
-    const keywords = this.filterKeyword.split(' ').filter(k => k.trim().length > 0);
+    if (this.filterKeyword().length === 0) return formattedString;
+    const keywords = this.filterKeyword().split(' ').filter(k => k.trim().length > 0);
 
     for (const keyword of keywords) {
       const textIndeces = this.findAllIndicesForMultiWordKeyword(formattedString, keyword);
