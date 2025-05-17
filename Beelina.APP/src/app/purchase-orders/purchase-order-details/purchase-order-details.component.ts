@@ -158,8 +158,14 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     }
   }
 
-  onProductChange(productId: number, purchaseOrderDetails: PurchaseOrderItemDetails) {
+  onProductChange(productId: number, purchaseOrderDetails: PurchaseOrderItemDetails, index: number) {
     const selectedProductDetails = this._warehouseProductsDatasource.find(p => p.id == productId);
+    const lastItemIndex = this.purchaseOrderItemsTableDatasource.data.length - 1;
+
+    if (index === lastItemIndex) {
+      this.addEntry();
+    }
+
     if (selectedProductDetails) {
       purchaseOrderDetails.code = selectedProductDetails.code;
       purchaseOrderDetails.unit = selectedProductDetails.productUnit.name;
@@ -191,7 +197,10 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     this.paginator().lastPage();
   }
 
-  removeEntry(purchaseOrderDetails: PurchaseOrderItemDetails) {
+  removeEntry(purchaseOrderDetails: PurchaseOrderItemDetails, rowIndex: number) {
+    const lastItemIndex = this.purchaseOrderItemsTableDatasource.data.length - 1;
+    if (rowIndex === lastItemIndex) return;
+
     const index = this.purchaseOrderItemsTableDatasource.data.findIndex((item: PurchaseOrderItemDetails) => item.id == purchaseOrderDetails.id);
     this.purchaseOrderItemsTableDatasource.data.splice(index, 1);
     this.purchaseOrderItemsTableDatasource.data = [...this.purchaseOrderItemsTableDatasource.data];

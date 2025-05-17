@@ -154,7 +154,13 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
     }
   }
 
-  onProductChange(productId: number, productWithdrawalDetails: ProductWithdrawalItemDetails) {
+  onProductChange(productId: number, productWithdrawalDetails: ProductWithdrawalItemDetails, index: number) {
+    const lastItemIndex = this.productWithdrawalItemsTableDatasource.data.length - 1;
+
+    if (index === lastItemIndex) {
+      this.addEntry();
+    }
+
     const selectedProductDetails = this._panelProductsDatasource.find(p => p.id == productId);
     if (selectedProductDetails) {
       productWithdrawalDetails.code = selectedProductDetails.code;
@@ -207,7 +213,10 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
     this.paginator().lastPage();
   }
 
-  removeEntry(productWithdrawalDetails: ProductWithdrawalItemDetails) {
+  removeEntry(productWithdrawalDetails: ProductWithdrawalItemDetails, rowIndex: number) {
+    const lastItemIndex = this.productWithdrawalItemsTableDatasource.data.length - 1;
+    if (rowIndex === lastItemIndex) return;
+
     const index = this.productWithdrawalItemsTableDatasource.data.findIndex((item: ProductWithdrawalItemDetails) => item.id == productWithdrawalDetails.id);
     this.productWithdrawalItemsTableDatasource.data.splice(index, 1);
     this.productWithdrawalItemsTableDatasource.data = [...this.productWithdrawalItemsTableDatasource.data];

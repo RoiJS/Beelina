@@ -1131,6 +1131,7 @@
     "TITLE": "Purchase Order Details",
     "DESCRIPTION": "Manage purchase order details and product items here.",
     "PURCHASE_ORDER_GENERAL_INFO_PANEL": {
+      "TITLE": "Product List",
       "FORM_CONTROL_SECTION": {
         "SUPPLIER_CONTROL": {
           "LABEL": "Supplier"
@@ -1247,6 +1248,7 @@
       }
     },
     "PRODUCT_WITHDRAWAL_ITEMS_PANEL": {
+      "TITLE": "Product List",
       "TABLE_GRID": {
         "COLUMN_DEFINITION": {
           "PRODUCT_FIELD": "Product",
