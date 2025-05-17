@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
 import { from, switchMap } from 'rxjs';
@@ -24,29 +24,19 @@ import * as TransactionDateActions from '../../../transaction-history/store/acti
   templateUrl: './transaction-date-option-menu.component.html',
   styleUrls: ['./transaction-date-option-menu.component.scss']
 })
-export class TransactionDateOptionMenuComponent implements OnInit {
+export class TransactionDateOptionMenuComponent {
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<TransactionDateOptionMenuComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      transactionDateInformation: TransactionDateInformation,
-      transactionStatus: TransactionStatusEnum
-    },
-    private dialogService: DialogService,
-    private localOrdersDbService: LocalOrdersDbService,
-    private networkService: NetworkService,
-    private notificationService: NotificationService,
-    private router: Router,
-    private transactionService: TransactionService,
-    private translateService: TranslateService,
-    private store: Store<AppStateInterface>
-  ) {
+  private bottomSheetRef = inject(MatBottomSheetRef<TransactionDateOptionMenuComponent>);
+  private dialogService = inject(DialogService);
+  private localOrdersDbService = inject(LocalOrdersDbService);
+  private networkService = inject(NetworkService);
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
+  private transactionService = inject(TransactionService);
+  private translateService = inject(TranslateService);
+  private store = inject(Store<AppStateInterface>);
 
-  }
-
-  ngOnInit() {
-  }
+  data = inject<{ transactionDateInformation: TransactionDateInformation; transactionStatus: TransactionStatusEnum }>(MAT_BOTTOM_SHEET_DATA);
 
   viewOrders() {
     // Format the transaction date as a string
@@ -67,7 +57,7 @@ export class TransactionDateOptionMenuComponent implements OnInit {
     // Navigate to the transaction history page
     this.router.navigate([url]);
 
-    this._bottomSheetRef.dismiss();
+    this.bottomSheetRef.dismiss();
   }
 
   deleteOrders() {
@@ -93,7 +83,7 @@ export class TransactionDateOptionMenuComponent implements OnInit {
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_BY_DATE_DIALOG.SUCCESS_MESSAGE'
                 ));
-                this._bottomSheetRef.dismiss();
+                this.bottomSheetRef.dismiss();
                 this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
                 this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: this.data.transactionStatus }));
               });
@@ -106,7 +96,7 @@ export class TransactionDateOptionMenuComponent implements OnInit {
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_BY_DATE_DIALOG.SUCCESS_MESSAGE'
                 ));
-                this._bottomSheetRef.dismiss();
+                this.bottomSheetRef.dismiss();
                 this.store.dispatch(TransactionDateActions.resetTransactionDatesState());
                 this.store.dispatch(TransactionDateActions.getTransactionDatesAction({ transactionStatus: this.data.transactionStatus }));
               },

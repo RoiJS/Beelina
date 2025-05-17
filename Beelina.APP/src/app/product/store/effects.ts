@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap, take, takeUntil, tap } from 'rxjs';
@@ -26,6 +26,15 @@ import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 @Injectable()
 export class ProductEffects {
+
+  private actions$ = inject(Actions);
+  private localProductsDbService = inject(LocalProductsDbService);
+  private networkService = inject(NetworkService);
+  private productService = inject(ProductService);
+  private router = inject(Router);
+  private storageService = inject(StorageService);
+  private store = inject(Store<AppStateInterface>);
+
   products$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductActions.getProductsAction),
@@ -192,14 +201,4 @@ export class ProductEffects {
       })
     )
   );
-
-  constructor(
-    private actions$: Actions,
-    private localProductsDbService: LocalProductsDbService,
-    private networkService: NetworkService,
-    private productService: ProductService,
-    private router: Router,
-    private storageService: StorageService,
-    private store: Store<AppStateInterface>
-  ) { }
 }

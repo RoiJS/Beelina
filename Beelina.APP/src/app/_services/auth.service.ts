@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Store } from '@ngrx/store';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
@@ -96,13 +96,13 @@ export class AuthService {
   private _tokenExpirationTimer: any;
   private _jwtHelper = new JwtHelperService();
 
-  constructor(
-    private apollo: Apollo,
-    private routingService: RoutingService,
-    private storageService: StorageService,
-    private store: Store<AppStateInterface>,
-    private userAccountService: UserAccountService
-  ) {
+  private apollo = inject(Apollo);
+  private routingService = inject(RoutingService);
+  private storageService = inject(StorageService);
+  private store = inject(Store<AppStateInterface>);
+  private userAccountService = inject(UserAccountService);
+
+  constructor() {
     this._company.next(this.storageService.getString('company'));
   }
 

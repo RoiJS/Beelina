@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
@@ -14,19 +14,14 @@ import { StockAuditFilterService } from 'src/app/_services/stock-audit-filter.se
   templateUrl: './product-stock-audit.component.html',
   styleUrls: ['./product-stock-audit.component.scss']
 })
-export class ProductStockAuditComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ProductStockAuditComponent extends BaseComponent implements OnDestroy {
 
-  private _productStockAuditDataSource: ProductStockAuditsDatasource;
+  private bottomSheet = inject(MatBottomSheet);
+  private store = inject(Store<AppStateInterface>);
+  private stockAuditFilterService = inject(StockAuditFilterService);
 
-  constructor(
-    private bottomSheet: MatBottomSheet,
-    private store: Store<AppStateInterface>,
-    private stockAuditFilterService: StockAuditFilterService
-  ) {
+  constructor() {
     super();
-  }
-
-  ngOnInit() {
   }
 
   ngOnDestroy() {

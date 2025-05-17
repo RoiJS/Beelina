@@ -1,16 +1,12 @@
 import {
-  Directive,
-  Input,
-  Output,
-  EventEmitter,
-  HostBinding,
+  Directive, output,
   HostListener
 } from '@angular/core';
 
 @Directive({ selector: '[appLongPress]' })
 export class LongPressDirective {
 
-  @Output() longPress = new EventEmitter();
+  longPress = output<Event>();
   private pressing: boolean = false;
   private longPressing: boolean = false;
   private timeout: any;

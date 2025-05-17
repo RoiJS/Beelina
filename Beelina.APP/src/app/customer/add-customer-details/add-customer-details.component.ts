@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { select, Store } from '@ngrx/store';
@@ -40,19 +40,19 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
 
   private _barangay: string;
 
+  private activatedRoute = inject(ActivatedRoute);
+  private customerStoreService = inject(CustomerStoreService);
+  private dialogService = inject(DialogService);
+  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
+  private notificationService = inject(NotificationService);
+  private localCustomerStoresDbService = inject(LocalCustomerStoresDbService);
+  private store = inject(Store<AppStateInterface>);
+  private translateService = inject(TranslateService);
+
   $isLoading: Observable<boolean>;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private customerStoreService: CustomerStoreService,
-    private dialogService: DialogService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private notificationService: NotificationService,
-    private localCustomerStoresDbService: LocalCustomerStoresDbService,
-    private store: Store<AppStateInterface>,
-    private translateService: TranslateService
-  ) {
+  constructor() {
     this._customerForm = this.formBuilder.group({
       name: ['', Validators.required],
       address: [''],

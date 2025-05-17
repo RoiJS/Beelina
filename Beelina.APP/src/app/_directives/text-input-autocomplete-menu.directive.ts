@@ -5,6 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
+  inject,
   Injector,
   Input,
   OnDestroy,
@@ -96,12 +97,12 @@ export class TextInputAutocompleteDirective implements OnDestroy {
 
   private searchTerms = new Subject<string>();
 
-  constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private viewContainerRef: ViewContainerRef,
-    private injector: Injector,
-    private elm: ElementRef
-  ) {
+  private componentFactoryResolver = inject(ComponentFactoryResolver);
+  private viewContainerRef = inject(ViewContainerRef);
+  private injector = inject(Injector);
+  private elm = inject(ElementRef);
+
+  constructor() {
     this.searchTerms.pipe(
       debounceTime(400),
       distinctUntilChanged(),

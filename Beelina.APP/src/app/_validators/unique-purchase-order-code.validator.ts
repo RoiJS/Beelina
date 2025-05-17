@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidator,
@@ -12,7 +12,7 @@ import { ProductService } from '../_services/product.service';
 export class UniquePurchaseOrderCodeValidator implements AsyncValidator {
   purchaseOrderId: number = 0;
 
-  constructor(private productService: ProductService) {}
+  private productService = inject(ProductService);
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.productService

@@ -73,10 +73,13 @@
                   </div>
 
                   <div class="product-transaction-information-status">
-                    <app-badge *ngIf="item?.isPaid" [type]="bannerTypeEnum.SUCCESS"
-                      [textIdentifier]="'GENERAL_TEXTS.PAID'"></app-badge>
-                    <app-badge *ngIf="!item?.isPaid" [type]="bannerTypeEnum.ERROR"
-                      [textIdentifier]="'GENERAL_TEXTS.UNPAID'"></app-badge>
+                    @if (item?.isPaid) {
+                    <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'GENERAL_TEXTS.PAID'"></app-badge>
+                    }
+
+                    @if (!item?.isPaid) {
+                    <app-badge [type]="bannerTypeEnum.ERROR" [textIdentifier]="'GENERAL_TEXTS.UNPAID'"></app-badge>
+                    }
                   </div>
                 </div>
               </mat-list-item>
@@ -86,23 +89,33 @@
           </div>
 
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{ "GENERAL_TEXTS.BALANCE" | translate }}</span>
             <span>{{ transaction.balanceFormatted }}</span>
           </div>
           <br />
-          <div class="product-transaction-amount-information"
-            *ngIf="transaction?.productTransactions?.length > 0 && transaction.badOrderAmount > 0">
+          }
+
+          @if (transaction?.productTransactions?.length > 0 && transaction.badOrderAmount > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{ "GENERAL_TEXTS.BAD_ORDERS_AMOUNT" | translate }}</span>
             <span>{{ transaction.badOrderFormatted }}</span>
           </div>
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+          }
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{ "GENERAL_TEXTS.GROSS_TOTAL" | translate }}</span>
             <span>{{ transaction.grossTotalFormatted }}</span>
           </div>
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+          }
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{
               "PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
               | translate
@@ -110,10 +123,14 @@
             <span>{{ transaction.discount }}</span>
           </div>
           <br />
-          <div class="product-transaction-amount-information" *ngIf="transaction?.productTransactions?.length > 0">
+          }
+
+          @if (transaction?.productTransactions?.length > 0) {
+          <div class="product-transaction-amount-information">
             <span>{{ "GENERAL_TEXTS.NET_TOTAL" | translate }}</span>
             <span>{{ transaction.netTotalFormatted }}</span>
           </div>
+          }
 
           <div class="product-transaction-mode-of-payment-information" [formGroup]="transactionForm">
             <mat-form-field appearance="fill">
@@ -122,9 +139,12 @@
                 | translate
                 }}:</mat-label>
               <mat-select formControlName="paymentMethod">
-                <mat-option *ngFor="let paymentMethod of paymentMethodOptions" [value]="paymentMethod.id">{{
+
+                @for (paymentMethod of paymentMethodOptions; track $index) {
+                <mat-option [value]="paymentMethod.id">{{
                   paymentMethod.name
                   }}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>

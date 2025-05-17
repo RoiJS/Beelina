@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,21 +13,20 @@ import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 export class AddProductStockQuantityDialogComponent implements OnInit {
 
   private _productWithDrawalForm: FormGroup;
+  private _bottomSheetRef = inject(MatBottomSheetRef<AddProductStockQuantityDialogComponent>);
+  private _formBuilder = inject(FormBuilder);
+  private _translateService = inject(TranslateService);
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<AddProductStockQuantityDialogComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      additionalStockQuantity: number;
-      transactionNo: string;
-      productSource: ProductSourceEnum;
-    },
-    private formBuilder: FormBuilder,
-    private translateService: TranslateService
-  ) {
-    this._productWithDrawalForm = this.formBuilder.group({
-      transactionNo: [data.transactionNo, [Validators.required]],
-      additionalStockQuantity: [data.additionalStockQuantity],
+  data = inject<{
+    additionalStockQuantity: number;
+    transactionNo: string;
+    productSource: ProductSourceEnum;
+  }>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
+    this._productWithDrawalForm = this._formBuilder.group({
+      transactionNo: [this.data.transactionNo, [Validators.required]],
+      additionalStockQuantity: [this.data.additionalStockQuantity],
       senderPlateNo: [''],
     });
   }
@@ -55,10 +54,10 @@ export class AddProductStockQuantityDialogComponent implements OnInit {
   }
 
   get dialogTitle(): string {
-    return this.translateService.instant(this.data.productSource === ProductSourceEnum.Panel ? 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_PANEL.TITLE' : 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_WAREHOUSE.TITLE');
+    return this._translateService.instant(this.data.productSource === ProductSourceEnum.Panel ? 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_PANEL.TITLE' : 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_WAREHOUSE.TITLE');
   }
 
   get fieldLabel(): string {
-    return this.translateService.instant(this.data.productSource === ProductSourceEnum.Panel ? 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_PANEL.FORM_CONTROL_SECTION.TRANSACTION_NO' : 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_WAREHOUSE.FORM_CONTROL_SECTION.TRANSACTION_NO');
+    return this._translateService.instant(this.data.productSource === ProductSourceEnum.Panel ? 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_PANEL.FORM_CONTROL_SECTION.TRANSACTION_NO' : 'ADD_PRODUCT_STOCK_QUANTITY_DIALOG.FOR_WAREHOUSE.FORM_CONTROL_SECTION.TRANSACTION_NO');
   }
 }

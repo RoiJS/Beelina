@@ -1,5 +1,5 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 import { Transaction } from 'src/app/_models/transaction';
 import { MultipleEntitiesService } from 'src/app/_services/multiple-entities.service';
@@ -15,10 +15,10 @@ export class ViewSelectedOrdersComponent implements OnInit {
   currentSelectedItems = signal<Array<Transaction>>([]);
   selectedItems = signal<Array<Transaction>>([]);
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<ViewSelectedOrdersComponent>,
-    public multipleItemsService: MultipleEntitiesService<Transaction>,
-  ) {
+  multipleItemsService = inject(MultipleEntitiesService);
+  private _bottomSheetRef = inject(MatBottomSheetRef<ViewSelectedOrdersComponent>);
+
+  constructor() {
     this.currentSelectedItems.set(this.multipleItemsService.selectedItems());
     this.selectedItems.set(this.multipleItemsService.selectedItems());
     this.isSelectedAll.set(this.isSelectedAllItems());

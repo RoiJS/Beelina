@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
@@ -14,17 +14,16 @@ import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper
 })
 export class TransactionFilterComponent extends BaseComponent implements OnInit {
   private _transactionFilterForm: FormGroup;
+  private _bottomSheetRef = inject(MatBottomSheetRef<TransactionFilterComponent>);
+  private _formBuilder = inject(FormBuilder);
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<TransactionFilterComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: TransactionsFilter,
-    private formBuilder: FormBuilder,
-  ) {
+  data = inject<TransactionsFilter>(MAT_BOTTOM_SHEET_DATA);
+
+  constructor() {
     super();
-    const transactionDate = data.transactionDate === '' ? data.transactionDate : DateFormatter.toDate(data.transactionDate);
-    this._transactionFilterForm = this.formBuilder.group({
-      transactionStatus: [data.status],
+    const transactionDate = this.data.transactionDate === '' ? this.data.transactionDate : DateFormatter.toDate(this.data.transactionDate);
+    this._transactionFilterForm = this._formBuilder.group({
+      transactionStatus: [this.data.status],
       transactionDate: [transactionDate],
     });
   }

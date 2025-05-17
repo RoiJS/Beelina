@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, output, viewChild, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { User } from 'src/app/_models/user.model';
 
@@ -13,11 +13,10 @@ import { SalesChartViewComponent } from '../../home/sales-chart-view/sales-chart
   styleUrls: ['./sales-information.component.scss']
 })
 export class SalesInformationComponent extends SalesComponent implements OnInit {
-  @ViewChild(SalesChartViewComponent) salesChartView: SalesChartViewComponent;
   private _currentSalesAgent: User;
 
-  @Output() salesChartViewLoadingState = new EventEmitter<boolean>(false);
-
+  salesChartView = viewChild(SalesChartViewComponent);
+  salesChartViewLoadingState = output<boolean>();
   salesChartViewLoading: boolean;
 
   constructor(
@@ -39,7 +38,7 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
 
   initChartView() {
     this.salesChartViewLoadingState.emit(true);
-    this.salesChartView.loadTotalSalesChart(this._currentSalesAgent.id, this.dateRanges(), () => {
+    this.salesChartView().loadTotalSalesChart(this._currentSalesAgent.id, this.dateRanges(), () => {
       this.salesChartViewLoadingState.emit(false);
     });
   }

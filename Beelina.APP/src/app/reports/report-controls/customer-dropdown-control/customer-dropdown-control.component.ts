@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,11 +15,10 @@ export class CustomerDropdownControlComponent extends BaseControlComponent imple
   private _form: FormGroup;
   private _stores: CustomerStore[];
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private storeService: CustomerStoreService,
-    protected override translateService: TranslateService
-  ) {
+  private formBuilder = inject(FormBuilder);
+  private storeService = inject(CustomerStoreService);
+
+  constructor(protected override translateService: TranslateService) {
     super(translateService);
 
     this._form = this.formBuilder.group({

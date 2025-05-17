@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
@@ -26,18 +26,13 @@ import { TransactionDateInformation } from '../_services/transaction.service';
 export class TransactionHistoryComponent
   extends BaseComponent
   implements OnDestroy, IFilterAndSortTransactions {
-  /**
-   * Constructor for the class.
-   *
-   * @param {Router} router - The router object.
-   * @param {Store<AppStateInterface>} store - The store object.
-   */
-  constructor(
-    private router: Router,
-    private store: Store<AppStateInterface>,
-    private bottomSheet: MatBottomSheet,
-    private filterAndSortTransactionsService: BaseFilterAndSortService<TransactionDateInformation>
-  ) {
+
+  private router = inject(Router);
+  private store = inject(Store<AppStateInterface>);
+  private bottomSheet = inject(MatBottomSheet);
+  private filterAndSortTransactionsService = inject(BaseFilterAndSortService<TransactionDateInformation>);
+
+  constructor() {
     super();
 
     // Assign the result of store.pipe(select(isLoadingSelector)) to this.$isLoading.

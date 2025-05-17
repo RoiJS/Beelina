@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import {
@@ -15,22 +15,20 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SortOrderControlComponent
   extends BaseControlComponent
-  implements OnInit
-{
-  private _form: FormGroup;
+  implements OnInit {
 
-  constructor(
-    private formBuilder: FormBuilder,
-    protected override translateService: TranslateService
-  ) {
+  private _form: FormGroup;
+  private _formBuilder = inject(FormBuilder);
+
+  constructor(protected override translateService: TranslateService) {
     super(translateService);
 
-    this._form = this.formBuilder.group({
+    this._form = this._formBuilder.group({
       sortOrder: [SortOrderOptionsEnum.DESCENDING],
     });
   }
 
-  override ngOnInit() {}
+  override ngOnInit() { }
 
   override value(value: any) {
     const currentValue = this._form.get('sortOrder').value;

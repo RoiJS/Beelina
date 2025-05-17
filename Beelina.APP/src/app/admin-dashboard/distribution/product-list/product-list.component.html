@@ -11,15 +11,21 @@
       [placeHolderTextIdentifier]="'PRODUCTS_CATALOGUE_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'"></app-search-field>
 
     <div class="product-list-status-bar-container">
-      <div class="product-list-status-bar-container__total-value-section" *ngIf="totalProductValue">
-        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCTS_TOTAL_VALUE_CONTAINER.LABEL' | translate }}: </span>
-        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductValue"></app-badge>
-      </div>
 
-      <div class="product-list-status-bar-container__total-products-counter-section" *ngIf="filterKeyword?.length > 0">
-        <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
-        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
-      </div>
+      @if (totalProductValue) {
+        <div class="product-list-status-bar-container__total-value-section">
+          <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCTS_TOTAL_VALUE_CONTAINER.LABEL' | translate }}: </span>
+          <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProductValue"></app-badge>
+        </div>
+      }
+
+      @if (filterKeyword?.length > 0) {
+        <div class="product-list-status-bar-container__total-products-counter-section">
+          <span>{{ 'PRODUCTS_CATALOGUE_PAGE.PRODUCT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+          <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalProducts.toString()"></app-badge>
+        </div>
+      }
+
     </div>
 
     <app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.PRODUCTS"

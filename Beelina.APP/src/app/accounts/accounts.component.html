@@ -12,31 +12,37 @@
         'ACCOUNTS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
       "></app-search-field>
     <div class="user-account-list-status-bar-container">
-      <div class="user-account-list-status-bar-container__search-result-counter-section"
-        *ngIf="filterKeyword?.length > 0">
-        <span>{{ 'ACCOUNTS_PAGE.ACCOUNT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
-        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalUserAccounts.toString()"></app-badge>
-      </div>
+      @if(filterKeyword?.length > 0) {
+        <div class="user-account-list-status-bar-container__search-result-counter-section">
+          <span>{{ 'ACCOUNTS_PAGE.ACCOUNT_SEARCH_RESULT_CONTAINER.LABEL' | translate }}: </span>
+          <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalUserAccounts.toString()"></app-badge>
+        </div>
+      }
 
-      <div class="user-account-list-status-bar-container__total-accounts-counter-section"
-        *ngIf="filterKeyword?.length === 0">
-        <span>{{ 'ACCOUNTS_PAGE.ACCOUNT_COUNTER_CONTAINER.LABEL' | translate }}: </span>
-        <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalUserAccounts.toString()"></app-badge>
-      </div>
+      @if (filterKeyword?.length === 0) {
+        <div class="user-account-list-status-bar-container__total-accounts-counter-section">
+          <span>{{ 'ACCOUNTS_PAGE.ACCOUNT_COUNTER_CONTAINER.LABEL' | translate }}: </span>
+          <app-badge class="value" [type]="bannerTypeEnum.WARNING" [label]="totalUserAccounts.toString()"></app-badge>
+        </div>
+      }
+
     </div>
     <app-list-container [templateType]="emptyEntityTemplateEnum.USER_ACCOUNTS" [count]="dataSource?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container user-account-list">
         <div *cdkVirtualFor="let item of dataSource">
           <div class="user-account-item-container">
-            <div matRipple class="user-account-item-container__user-icon-container">
+            <div class="user-account-item-container__user-icon-container">
               <div class="user-icon">
                 <img src="../../../assets/icons/user-icon.png" />
               </div>
             </div>
-            <div matRipple class="user-account-item-container__user-info-container">
+            <div class="user-account-item-container__user-info-container">
               <div class="user-info">
-                <span class="user-info__name">{{ item.fullname }} <app-badge *ngIf="!item.isActive"
-                    [type]="bannerTypeEnum.WARNING" [textIdentifier]="'GENERAL_TEXTS.INACTIVE'"></app-badge></span>
+                <span class="user-info__name">{{ item.fullname }}
+                  @if (!item.isActive) {
+                    <app-badge [type]="bannerTypeEnum.WARNING" [textIdentifier]="'GENERAL_TEXTS.INACTIVE'"></app-badge>
+                  }
+                </span>
                 <span class="user-info__username">{{ item.username }}</span><br>
                 <span class="user-info__user-type">{{ item.userType }}</span>
               </div>
@@ -50,12 +56,16 @@
                     <button mat-menu-item (click)="deleteUser(item)">
                       <mat-icon>delete</mat-icon> {{ "GENERAL_TEXTS.REMOVE" | translate }}
                     </button>
-                    <button *ngIf="item.isActive" mat-menu-item (click)="activateUser(item, false)">
-                      <mat-icon>remove_circle_outline</mat-icon> {{ "GENERAL_TEXTS.DEACTIVATE" | translate }}
-                    </button>
-                    <button *ngIf="!item.isActive" mat-menu-item (click)="activateUser(item, true)">
-                      <mat-icon>check_circle_outline</mat-icon> {{ "GENERAL_TEXTS.ACTIVATE" | translate }}
-                    </button>
+
+                    @if (item.isActive) {
+                      <button mat-menu-item (click)="activateUser(item, false)">
+                        <mat-icon>remove_circle_outline</mat-icon> {{ "GENERAL_TEXTS.DEACTIVATE" | translate }}
+                      </button>
+                    } @else {
+                      <button mat-menu-item (click)="activateUser(item, true)">
+                        <mat-icon>check_circle_outline</mat-icon> {{ "GENERAL_TEXTS.ACTIVATE" | translate }}
+                      </button>
+                    }
                   </mat-menu>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidator,
@@ -12,7 +12,7 @@ import { UserAccountService } from '../_services/user-account.service';
 export class UniqueUsernameValidator implements AsyncValidator {
   userId: number = 0;
 
-  constructor(private userAccountService: UserAccountService) {}
+  private userAccountService = inject(UserAccountService)
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.userAccountService

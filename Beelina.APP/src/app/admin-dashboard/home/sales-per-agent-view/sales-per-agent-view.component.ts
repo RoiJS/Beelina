@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ApexChart, ApexDataLabels, ApexNonAxisChartSeries, ApexPlotOptions, ApexResponsive, ChartComponent } from 'ng-apexcharts';
 
@@ -23,8 +23,8 @@ export type DonutChartOptions = {
   styleUrls: ['./sales-per-agent-view.component.scss']
 })
 export class SalesPerAgentViewComponent extends SalesComponent implements OnInit {
-  @ViewChild(ChartComponent) chart: ChartComponent;
-  public chartOptions: Partial<DonutChartOptions>;
+  chart = viewChild(ChartComponent);
+  chartOptions: Partial<DonutChartOptions>;
 
   constructor(
     protected override authService: AuthService,

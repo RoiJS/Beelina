@@ -9,8 +9,8 @@
         }}</span>
     </div>
 
-    <app-search-field [filter]="true" (onSearch)="onSearch($event)" (onClear)="onClear()" (onFilter)="openFilter()"
-      [placeHolderTextIdentifier]="
+    <app-search-field [filter]="true" [filterActive]="purchaseOrdersFilter().isActive()"
+      (onSearch)="onSearch($event)" (onClear)="onClear()" (onFilter)="openFilter()" [placeHolderTextIdentifier]="
         'PURCHASE_ORDERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
       "></app-search-field>
 

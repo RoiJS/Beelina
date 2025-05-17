@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Store, select } from '@ngrx/store';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
@@ -17,12 +17,12 @@ import { TopSellingProductsFilterService } from 'src/app/_services/top-selling-p
 })
 export class TopProductsComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  constructor(
-    private authService: AuthService,
-    private store: Store<AppStateInterface>,
-    private bottomSheet: MatBottomSheet,
-    private topSellingProductsFilterService: TopSellingProductsFilterService
-  ) {
+  private authService = inject(AuthService);
+  private store = inject(Store<AppStateInterface>);
+  private bottomSheet = inject(MatBottomSheet);
+  private topSellingProductsFilterService = inject(TopSellingProductsFilterService);
+
+  constructor() {
     super();
 
     this.$isLoading = this.store.pipe(select(isLoadingSelector));

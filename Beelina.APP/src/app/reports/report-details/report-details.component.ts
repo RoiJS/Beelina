@@ -1,9 +1,9 @@
 import {
   AfterViewInit,
   Component,
+  inject,
   OnInit,
-  ViewChild,
-  ViewContainerRef,
+  viewChild, ViewContainerRef
 } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute } from '@angular/router';
@@ -34,8 +34,7 @@ import { ReportGenerateOptionDialogComponent } from './report-generate-option-di
 export class ReportDetailsComponent
   extends BaseComponent
   implements OnInit, AfterViewInit {
-  @ViewChild('container', { read: ViewContainerRef })
-  container: ViewContainerRef;
+  container = viewChild('container', { read: ViewContainerRef });
 
   private _reportId: number;
   private _reportName: string;
@@ -51,15 +50,15 @@ export class ReportDetailsComponent
     generateReportOption: GenerateReportOptionEnum
   }>;
 
-  constructor(
-    private authService: AuthService,
-    private activatedRoute: ActivatedRoute,
-    private bottomSheet: MatBottomSheet,
-    private loggerService: LogMessageService,
-    private notificationService: NotificationService,
-    private reportService: ReportsService,
-    private translateService: TranslateService
-  ) {
+  private authService = inject(AuthService);
+  private activatedRoute = inject(ActivatedRoute);
+  private bottomSheet = inject(MatBottomSheet);
+  private loggerService = inject(LogMessageService);
+  private notificationService = inject(NotificationService);
+  private reportService = inject(ReportsService);
+  private translateService = inject(TranslateService);
+
+  constructor() {
     super();
     this._reportId = +this.activatedRoute.snapshot.paramMap.get('id');
     this._isLoading = true;
@@ -117,7 +116,7 @@ export class ReportDetailsComponent
     allowAllOption: boolean
   ) {
     // Attach the component to the ViewContainerRef
-    const componentRef = this.container.createComponent(
+    const componentRef = this.container().createComponent(
       componentsRegistry[componentName]
     );
     const componentRefInstance = componentRef.instance as BaseControlComponent;

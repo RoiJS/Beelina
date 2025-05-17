@@ -62,7 +62,9 @@
             </div>
 
             <div class="sales-date-filter-options" [formGroup]="filterForm">
-              <div *ngIf="currentFilterOption === 1">
+
+              @if (currentFilterOption === 1) {
+              <div>
                 <mat-form-field class="transaction-date" appearance="fill">
                   <mat-label>{{
                     "SALES_PAGE.FILTER_OPTIONS_PANEL.PICK_DATE" | translate
@@ -72,37 +74,52 @@
                   <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
               </div>
+              }
 
-              <div *ngIf="currentFilterOption === 2">
+              @if (currentFilterOption === 2) {
+              <div>
                 <mat-form-field appearance="fill">
                   <mat-label>{{
                     "SALES_PAGE.FILTER_OPTIONS_PANEL.PICK_WEEK" | translate
                     }}:</mat-label>
                   <mat-select formControlName="week" (selectionChange)="weekChange($event)">
-                    <mat-option *ngFor="let week of weekOptions; index as i" [value]="i">{{ week }}</mat-option>
+                    @for (week of weekOptions; track $index) {
+                    <mat-option [value]="$index">{{ week }}</mat-option>
+                    }
                   </mat-select>
                 </mat-form-field>
               </div>
+              }
 
-              <div *ngIf="currentFilterOption === 3">
+              @if(currentFilterOption === 3) {
+              <div>
                 <mat-form-field appearance="fill">
                   <mat-label>{{
                     "SALES_PAGE.FILTER_OPTIONS_PANEL.PICK_MONTH" | translate
                     }}:</mat-label>
                   <mat-select formControlName="month" (selectionChange)="monthChange($event)">
-                    <mat-option *ngFor="let month of monthlyOptions; index as i" [value]="i">{{ month }}</mat-option>
+                    @for (month of monthlyOptions; track $index) {
+                    <mat-option [value]="$index">{{ month }}</mat-option>
+                    }
                   </mat-select>
                 </mat-form-field>
               </div>
+              }
+
             </div>
             <div class="panel sales-information-panel">
               <div class="sales-information-panel__amount-container">
                 <label>{{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}:</label>
-                <span class="scale-in-center-animation" *ngIf="!isLoading">{{
+
+                @if(!isLoading) {
+                <span class="scale-in-center-animation">{{
                   sales
                   }}</span>
+                }
               </div>
-              <div *ngIf="!isLoading" class="sales-information-panel__amount-breakdown-container">
+
+              @if (!isLoading) {
+              <div class="sales-information-panel__amount-breakdown-container">
                 <div></div>
                 <div>
                   <div class="amount-information">
@@ -131,6 +148,7 @@
                   </div>
                 </div>
               </div>
+              }
             </div>
           </div>
         </div>

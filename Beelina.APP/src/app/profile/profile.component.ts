@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -18,19 +18,19 @@ import { ButtonOptions } from '../_enum/button-options.enum';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent extends BaseComponent implements OnInit {
+export class ProfileComponent extends BaseComponent {
   private _profileForm: FormGroup;
   private _userDetails: User;
 
-  constructor(
-    private authService: AuthService,
-    private userAccountService: UserAccountService,
-    private formBuilder: FormBuilder,
-    private dialogService: DialogService,
-    private notificationService: NotificationService,
-    private translateService: TranslateService,
-    private uniqueUsernameValidator: UniqueUsernameValidator
-  ) {
+  private authService = inject(AuthService);
+  private userAccountService = inject(UserAccountService);
+  private formBuilder = inject(FormBuilder);
+  private dialogService = inject(DialogService);
+  private notificationService = inject(NotificationService);
+  private translateService = inject(TranslateService);
+  private uniqueUsernameValidator = inject(UniqueUsernameValidator);
+
+  constructor() {
     super();
 
     this._profileForm = this.formBuilder.group(
@@ -76,8 +76,6 @@ export class ProfileComponent extends BaseComponent implements OnInit {
         this._profileForm.get('username').setValue(data.username);
       });
   }
-
-  ngOnInit() {}
 
   profileHasChanged(): boolean {
     return (

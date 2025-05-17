@@ -23,14 +23,13 @@ export class TransactionsComponent
   private _transactionDate: string;
   private _transactions: Array<Transaction>;
 
-  transactionOptionsService = inject(TransactionOptionsService);
-  bottomSheet = inject(MatBottomSheet);
+  private activatedRoute = inject(ActivatedRoute);
+  private bottomSheet = inject(MatBottomSheet);
+  private router = inject(Router);
+  private transactionService = inject(TransactionService);
+  private transactionOptionsService = inject(TransactionOptionsService);
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private transactionService: TransactionService
-  ) {
+  constructor() {
     super();
     this.transactionOptionsService.setBottomSheet(this.bottomSheet);
     this.transactionOptionsService.optionDismissedSub.subscribe((data: boolean) => {

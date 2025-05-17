@@ -1510,7 +1510,7 @@ namespace Beelina.LIB.BusinessLogic
       var clientSubscriptionDetails = await _subscriptionRepository.GetClientSubscriptionDetails(_currentUserService.AppSecretToken, DateTime.Now.ToString("yyyy-MM-dd"));
       var absoluteTotalCounts = productsCount + mappedProductsImportCount;
 
-      if (absoluteTotalCounts >= clientSubscriptionDetails.ProductSKUMax)
+      if (clientSubscriptionDetails.ProductSKUMax > 0 && absoluteTotalCounts >= clientSubscriptionDetails.ProductSKUMax)
       {
         productImportResult.FailedExtractedProducts.Add(new FailedExtractedProduct
         {

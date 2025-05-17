@@ -80,24 +80,21 @@
       <div class="panel__details-group-panel">
 
         <div class="panel__header-section">
-          <label>Product list</label>
+          <label>{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.TITLE" | translate }}</label>
         </div>
 
         <div class="panel__body-section purchase-order-items-panel__body-section">
-          <div class="purchase-order-items-panel__button-container">
-            <button mat-raised-button color="primary" (click)="addEntry()">+ Add Item</button>
-          </div>
           <mat-table class="biz-form-container" [dataSource]="purchaseOrderItemsTableDatasource">
             <!-- Product Column -->
             <ng-container matColumnDef="product">
               <mat-header-cell *matHeaderCellDef> {{
                 "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.PRODUCT_FIELD" |
                 translate }} </mat-header-cell>
-              <mat-cell *matCellDef="let element;">
+              <mat-cell *matCellDef="let element; let i = index">
 
                 <ng-select class="product-dropdown" appendTo="body" [items]="warehouseProductsDatasource"
                   bindLabel="nameWithUnit" bindValue="id" [(ngModel)]="element.productId" [editableSearchTerm]="true"
-                  (ngModelChange)="onProductChange($event, element)">
+                  (ngModelChange)="onProductChange($event, element, i)">
                   <ng-template ng-label-tmp let-item="item">
                     {{ item.productUnit.name }} - {{ item.name }}
                   </ng-template>
@@ -121,7 +118,7 @@
             </ng-container>
 
             <!-- Quantity Column -->
-            <ng-container matColumnDef="quantity">`
+            <ng-container matColumnDef="quantity">
               <mat-header-cell *matHeaderCellDef> {{
                 "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.QUANTITY_FIELD" |
                 translate }} </mat-header-cell>
@@ -173,8 +170,8 @@
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef> </mat-header-cell>
-              <mat-cell *matCellDef="let element">
-                <mat-icon class="delete-icon" (click)="removeEntry(element)">highlight_off</mat-icon>
+              <mat-cell *matCellDef="let element; let i = index">
+                <mat-icon class="delete-icon" (click)="removeEntry(element, i)">highlight_off</mat-icon>
               </mat-cell>
               <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
             </ng-container>
@@ -183,6 +180,11 @@
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
             <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
           </mat-table>
+
+          <div class="purchase-order-items-panel__button-container">
+            <button mat-raised-button color="primary" (click)="addEntry()">{{ "GENERAL_TEXTS.ADD_ITEM" | translate
+              }}</button>
+          </div>
 
           <mat-paginator [pageSize]="10" [length]="purchaseOrderItemsTableDatasource.data.length "
             [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons>

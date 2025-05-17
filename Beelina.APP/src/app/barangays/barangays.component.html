@@ -1,73 +1,45 @@
-<app-tool-bar
-  [showBackButton]="false"
-  [title]="'GENERAL_TEXTS.BIZUAL' | translate"
-></app-tool-bar>
+<app-tool-bar [showBackButton]="false" [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
-      <label>{{ "CUSTOMER_ACCOUNTS_PAGE.TITLE" | translate }}</label
-      ><br />
+      <label>{{ "CUSTOMER_ACCOUNTS_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
         "CUSTOMER_ACCOUNTS_PAGE.DESCRIPTION" | translate
-      }}</span>
+        }}</span>
     </div>
-    <app-search-field
-      (onSearch)="onSearch($event)"
-      (onClear)="onClear()"
-      [placeHolderTextIdentifier]="
+    <app-search-field (onSearch)="onSearch($event)" (onClear)="onClear()" [placeHolderTextIdentifier]="
         'CUSTOMER_ACCOUNTS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
-      "
-    ></app-search-field>
+      "></app-search-field>
 
-    <app-list-container
-      [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
-      [count]="dataSource.itemCount"
-    >
-      <cdk-virtual-scroll-viewport
-        itemSize="10"
-        class="list-container barangays-list"
-      >
+    <app-list-container [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="dataSource.itemCount">
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container barangays-list">
         <div *cdkVirtualFor="let item of dataSource">
           <div class="list-container__item-section" matRipple>
-            <div
-              class="list-container__icon-section list-container__icon-section--right-space"
-              (click)="goToCustomers(item.name)"
-            >
+            <div class="list-container__icon-section list-container__icon-section--right-space"
+              (click)="goToCustomers(item.name)">
               <div class="list-container__icon-section--icon-container">
                 <mat-icon>place</mat-icon>
               </div>
             </div>
-            <div
-              class="list-container__details-section"
-              (click)="goToCustomers(item.name)"
-            >
+            <div class="list-container__details-section" (click)="goToCustomers(item.name)">
               <label class="main-label">{{ item.name }}</label>
             </div>
             <div class="list-container__options-section">
-              <mat-icon matRipple class="option" [matMenuTriggerFor]="menu"
-                >more_vert</mat-icon
-              >
+              <mat-icon matRipple class="option" [matMenuTriggerFor]="menu">more_vert</mat-icon>
               <mat-menu #menu="matMenu">
                 <button mat-menu-item matRipple (click)="updateBarangay(item)">
                   <mat-icon matRipple class="option">border_color</mat-icon>
                   {{ "GENERAL_TEXTS.EDIT" | translate }}
                 </button>
 
-                <button
-                  mat-menu-item
-                  matRipple
-                  *ngIf="item.isDeletable"
-                  (click)="deleteBarangay(item.id)"
-                >
+                @if (item.isDeletable) {
+                <button mat-menu-item matRipple (click)="deleteBarangay(item.id)">
                   <mat-icon>delete</mat-icon>
                   {{ "GENERAL_TEXTS.REMOVE" | translate }}
                 </button>
+                }
 
-                <button
-                  mat-menu-item
-                  matRipple
-                  (click)="goToCustomers(item.name)"
-                >
+                <button mat-menu-item matRipple (click)="goToCustomers(item.name)">
                   <mat-icon matRipple>store</mat-icon>
                   {{ "GENERAL_TEXTS.STORES" | translate }}
                 </button>
@@ -79,8 +51,5 @@
     </app-list-container>
   </div>
 
-  <app-floating-button
-    (tapButton)="addBarangay()"
-    [icon]="'add'"
-  ></app-floating-button>
+  <app-floating-button (tapButton)="addBarangay()" [icon]="'add'"></app-floating-button>
 </app-loader-layout>

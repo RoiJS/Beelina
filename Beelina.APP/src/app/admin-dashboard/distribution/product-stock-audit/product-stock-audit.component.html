@@ -1,5 +1,6 @@
 <div class="product-stock-audit-container">
-  <div class="page-container product-stock-audit-container__page-container" *ngIf="productStockAuditDataSource">
+  @if (productStockAuditDataSource?.itemCount > 0) {
+  <div class="page-container product-stock-audit-container__page-container">
     <div class="page-container__page-divider slide-in-left-animation">
       <label>{{ "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.PRODUCT_STOCK_AUDIT_LIST_CONTAINER.TITLE"
         | translate }}</label><br />
@@ -24,36 +25,54 @@
             <div class="product-stock-audit-list__item-section">
               <div class="product-stock-audit-list__info-section"><b>{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_LABEL' | translate }}:</b>
+
+                @if (item.stockAuditSource === 'FROM_WITHDRAWAL') {
                 <span
-                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--from-withdrawal"
-                  *ngIf="item.stockAuditSource === 'FROM_WITHDRAWAL'">{{
+                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--from-withdrawal">{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_TYPE.FROM_WITHDRAWAL' | translate }}</span>
+                }
+
+                @if (item.stockAuditSource === 'MOVED_FROM_OTHER_PRODUCT_INVENTORY') {
                 <span
-                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--moved-from-other-product-inventory"
-                  *ngIf="item.stockAuditSource === 'MOVED_FROM_OTHER_PRODUCT_INVENTORY'">{{
+                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--moved-from-other-product-inventory">{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_TYPE.MOVED_FROM_OTHER_PRODUCT_INVENTORY' |
                   translate }}</span>
+                }
+
+                @if (item.stockAuditSource === 'MOVED_TO_OTHER_PRODUCT_INVENTORY') {
                 <span
-                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--moved-to-other-product-inventory"
-                  *ngIf="item.stockAuditSource === 'MOVED_TO_OTHER_PRODUCT_INVENTORY'">{{
+                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--moved-to-other-product-inventory">{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_TYPE.MOVED_TO_OTHER_PRODUCT_INVENTORY' |
                   translate }}</span>
+                }
+
+                @if (item.stockAuditSource === 'ORDER_TRANSACTION') {
                 <span
-                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--order-transaction"
-                  *ngIf="item.stockAuditSource === 'ORDER_TRANSACTION'">{{
+                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--order-transaction">{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_TYPE.ORDER_TRANSACTION' |
                   translate }}</span>
+                }
+
+                @if (item.stockAuditSource === 'ORDER_FROM_SUPPLIER') {
                 <span
-                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--order-from-supplier"
-                  *ngIf="item.stockAuditSource === 'ORDER_FROM_SUPPLIER'">{{
+                  class="product-stock-audit-list__source-type product-stock-audit-list__source-type--order-from-supplier">{{
                   'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.SOURCE_TYPE.ORDER_FROM_SUPPLIER' |
                   translate }}</span>
+                }
+
               </div>
               <div class="product-stock-audit-list__info-section">
-                <span *ngIf="item.stockAuditSource === 'FROM_WITHDRAWAL'"><b>{{
+
+                @if (item.stockAuditSource === 'FROM_WITHDRAWAL') {
+                <span><b>{{
                     'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.WITHDRAWAL_SLIP_NO_LABEL' | translate }}:</b></span>
-                <span *ngIf="item.stockAuditSource === 'ORDER_TRANSACTION'"><b>{{
+                }
+
+                @if (item.stockAuditSource === 'ORDER_TRANSACTION') {
+                <span><b>{{
                     'MANAGE_PRODUCT_STOCK_AUDITS_PAGE.LIST_ITEM.INVOICE_NO_LABEL' | translate }}:</b></span>
+                }
+
                 {{ item.transactionNumber }}
               </div>
               <div class="product-stock-audit-list__info-section"><b>{{
@@ -72,4 +91,5 @@
       </cdk-virtual-scroll-viewport>
     </app-list-container>
   </div>
+  }
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, Inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,26 +24,24 @@ import { NetworkService } from 'src/app/_services/network.service';
   templateUrl: './transaction-option-menu.component.html',
   styleUrls: ['./transaction-option-menu.component.scss']
 })
-export class TransactionOptionMenuComponent extends BaseComponent implements OnInit {
+export class TransactionOptionMenuComponent extends BaseComponent {
 
   transaction = signal<Transaction>(new Transaction());
+
+  private bottomSheetRef = inject(MatBottomSheetRef<TransactionOptionMenuComponent>);
+  private dialogService = inject(DialogService);
+  private localOrdersDbService = inject(LocalOrdersDbService);
+  private notificationService = inject(NotificationService);
+  private networkService = inject(NetworkService);
+  private router = inject(Router);
+  private store = inject(Store<AppStateInterface>);
+  private transactionService = inject(TransactionService);
+  private translateService = inject(TranslateService);
+
+  data = inject<{ transaction: Transaction }>(MAT_BOTTOM_SHEET_DATA);
   userService = inject(UserAccountService);
 
-  constructor(
-    private _bottomSheetRef: MatBottomSheetRef<TransactionOptionMenuComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA)
-    public data: {
-      transaction: Transaction
-    },
-    private dialogService: DialogService,
-    private localOrdersDbService: LocalOrdersDbService,
-    private notificationService: NotificationService,
-    private networkService: NetworkService,
-    private router: Router,
-    private store: Store<AppStateInterface>,
-    private transactionService: TransactionService,
-    private translateService: TranslateService,
-  ) {
+  constructor() {
     super();
 
     if (!this.data.transaction.isLocal) {
@@ -59,10 +57,6 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
           this.transaction.set(transaction[0]);
         });
     }
-  }
-
-  ngOnInit() {
-
   }
 
   registerOrder() {
@@ -97,7 +91,7 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
                     'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                   ));
 
-                  this._bottomSheetRef.dismiss(true);
+                  this.bottomSheetRef.dismiss(true);
                 },
 
                 error: () => {
@@ -113,7 +107,7 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
                   'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                 ));
 
-                this._bottomSheetRef.dismiss(true);
+                this.bottomSheetRef.dismiss(true);
               }).catch(() => {
                 this.notificationService.openErrorNotification(this.translateService.instant(
                   'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
@@ -138,7 +132,7 @@ export class TransactionOptionMenuComponent extends BaseComponent implements OnI
             "DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.SUCCESS_MESSAGE"
           ));
 
-          this._bottomSheetRef.dismiss(true);
+          this.bottomSheetRef.dismiss(true);
         }
       });
   }

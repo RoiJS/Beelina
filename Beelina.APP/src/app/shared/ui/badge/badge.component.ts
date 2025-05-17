@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { BannerTypeEnum } from '../banner/banner.component';
@@ -8,17 +8,14 @@ import { BannerTypeEnum } from '../banner/banner.component';
   templateUrl: './badge.component.html',
   styleUrls: ['./badge.component.scss']
 })
-export class BadgeComponent implements OnInit {
-  @Input() type: BannerTypeEnum;
-  @Input() textIdentifier: string = '';
-  @Input() label: string = '';
+export class BadgeComponent {
+  type = input<BannerTypeEnum>(BannerTypeEnum.INFO);
+  textIdentifier = input<string>('');
+  label = input<string>('');
 
-  constructor(private translateService: TranslateService) { }
-
-  ngOnInit() {
-  }
+  private translateService = inject(TranslateService);
 
   get text(): string {
-    return this.textIdentifier.length > 0 ? this.translateService.instant(this.textIdentifier) : this.label;
+    return this.textIdentifier().length > 0 ? this.translateService.instant(this.textIdentifier()) : this.label();
   }
 }

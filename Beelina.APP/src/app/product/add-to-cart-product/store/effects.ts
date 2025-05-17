@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -16,6 +16,12 @@ import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 
 @Injectable()
 export class ProductTransactionsEffects {
+
+  private actions$ = inject(Actions);
+  private localOrdersDbService = inject(LocalOrdersDbService);
+  private transactionService = inject(TransactionService);
+  private storageService = inject(StorageService);
+
   productTransactionsFromLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductTransactionActions.initializeProductTransactions),
@@ -30,6 +36,7 @@ export class ProductTransactionsEffects {
           ProductTransactionActions.initializeProductTransactionsSuccess({
             productTransactions: productTransactions.map((p) => {
               const productTransaction = new ProductTransaction();
+              productTransaction.id = p.id;
               productTransaction.code = p.code;
               productTransaction.productId = p.productId;
               productTransaction.productName = p.productName;
@@ -73,10 +80,6 @@ export class ProductTransactionsEffects {
       })
     )
   );
-  constructor(
-    private actions$: Actions,
-    private localOrdersDbService: LocalOrdersDbService,
-    private transactionService: TransactionService,
-    private storageService: StorageService
-  ) { }
+
+
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Apollo, gql } from 'apollo-angular';
 import { map } from 'rxjs';
@@ -31,9 +31,8 @@ const GET_PRODUCT_UNITS = gql`
 
 @Injectable({ providedIn: 'root' })
 export class ProductUnitService {
-  constructor(
-    private apollo: Apollo,
-  ) { }
+
+  private apollo = inject(Apollo);
 
   getProductUnits(cursor: string, limit: number = 100) {
     return this.apollo
