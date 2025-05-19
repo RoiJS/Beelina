@@ -1,4 +1,5 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.Enums;
+using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
 {
@@ -9,6 +10,7 @@ namespace Beelina.LIB.Models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string EmailAddress { get; set; } = String.Empty;
+        public SalesAgentTypeEnum SalesAgentTypeEnum { get; set; } = SalesAgentTypeEnum.None; // This property is used only when the Distribution module permission of the user is set to "User".
 
         public List<RefreshToken> RefreshTokens { get; set; }
         public List<UserPermission> UserPermissions { get; set; }
@@ -34,7 +36,7 @@ namespace Beelina.LIB.Models
         public List<Store> CreatedStores { get; set; }
         public List<Store> DeactivatedStores { get; set; }
         #endregion
-        
+
         #region Transactions Tracker
         public List<Transaction> DeletedTransactions { get; set; }
         public List<Transaction> UpdatedTransactions { get; set; }

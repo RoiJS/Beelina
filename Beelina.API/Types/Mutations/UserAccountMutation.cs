@@ -11,9 +11,7 @@ using Beelina.LIB.Models;
 using HotChocolate.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NLog;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 
@@ -196,9 +194,9 @@ namespace Beelina.API.Types.Mutations
                 new (BeelinaClaimTypes.FirstName, user.FirstName),
                 new (BeelinaClaimTypes.MiddleName, user.MiddleName),
                 new (BeelinaClaimTypes.LastName, user.LastName),
-                new (BeelinaClaimTypes.Gender, ((int)user.Gender).ToString()),
                 new (BeelinaClaimTypes.Username, user.Username),
                 new (BeelinaClaimTypes.EmailAddress, user.EmailAddress),
+                new (BeelinaClaimTypes.SalesAgentType, ((int)user.SalesAgentTypeEnum).ToString()),
                 new (BeelinaClaimTypes.BusinessModel, ((int)generalSetting.BusinessModel).ToString()),
             };
 
