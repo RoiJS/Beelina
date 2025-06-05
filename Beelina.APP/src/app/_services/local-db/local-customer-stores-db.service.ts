@@ -25,7 +25,7 @@ export class LocalCustomerStoresDbService extends LocalBaseDbService {
 
     const allCustomerStores = await firstValueFrom(this.customerStoreService.getAllCustomerStores());
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localCustomerStores = allCustomerStores.map(c => {
       const localCustomerStore = new LocalCustomerStore();
       localCustomerStore.customerUserId = customerUserId;
@@ -44,7 +44,7 @@ export class LocalCustomerStoresDbService extends LocalBaseDbService {
   }
 
   async getMyLocalCustomerStores(storeIds: Array<number> = null): Promise<Array<CustomerStore>> {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localCustomerStoresFromLocalDb = <Array<LocalCustomerStore>>await firstValueFrom(this.localDbService.getAll('customers'));
     let myLocalCustomers = localCustomerStoresFromLocalDb.filter(c => c.customerUserId == customerUserId);
 
@@ -63,10 +63,12 @@ export class LocalCustomerStoresDbService extends LocalBaseDbService {
       customerStore.paymentMethod = paymentMethod;
 
       const localCustomerAccount = await this.getLocalCustomerAccount(lcs.barangayId);
-      const barangay = new Barangay();
+      const customerUser = await this.getCustomerUser(customerUserId);
 
+      const barangay = new Barangay();
       barangay.id = localCustomerAccount.barangayId;
       barangay.name = localCustomerAccount.name;
+      barangay.userAccountId = customerUser.userId;
       customerStore.barangay = barangay;
 
       return customerStore;
@@ -76,7 +78,7 @@ export class LocalCustomerStoresDbService extends LocalBaseDbService {
   }
 
   async manageLocalCustomerStore(customerStore: CustomerStore) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
 
     const localCustomerStores = await this.getMyLocalCustomerStores([customerStore.id]);
     const newLocalCustomerStore = new LocalCustomerStore();

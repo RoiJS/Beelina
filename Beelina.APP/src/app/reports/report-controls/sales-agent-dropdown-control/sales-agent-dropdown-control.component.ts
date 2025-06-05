@@ -7,6 +7,7 @@ import { ProductService } from 'src/app/_services/product.service';
 import { User } from 'src/app/_models/user.model';
 
 import { BaseControlComponent } from '../base-control/base-control.component';
+import { getSalesAgentTypeEnumNumeric } from 'src/app/_enum/sales-agent-type.enum';
 
 @Component({
   selector: 'app-sales-agent-dropdown-control',
@@ -31,6 +32,7 @@ export class SalesAgentDropdownControlComponent extends BaseControlComponent imp
 
     this.productService.getSalesAgentsList().subscribe({
       next: (data: Array<User>) => {
+        if (this.agentTypeOptions) data = data.filter((user: User) => this.agentTypeOptions.includes(getSalesAgentTypeEnumNumeric(user.salesAgentType).toString()));
         this._salesAgents = data;
       },
     });

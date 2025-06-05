@@ -39,9 +39,9 @@
           "PRODUCTS_CATALOGUE_PAGE.SALES_AGENT_SELECT_CONTROL.LABEL"
           | translate
           }}:</mat-label>
-        <mat-select [(ngModel)]="currentSalesAgentId" (selectionChange)="switchSaleAgent($event)">
+        <mat-select [(ngModel)]="currentSalesAgent" (selectionChange)="switchSaleAgent($event)">
           @for(salesAgent of salesAgents(); track salesAgent.id) {
-          <mat-option [value]="salesAgent.id">{{ salesAgent.fullname
+          <mat-option [value]="salesAgent">{{ salesAgent.fullname
             }}</mat-option>
           }
         </mat-select>
@@ -92,7 +92,7 @@
                 getPermissionLevel(permissionLevelEnum.User)
             " (editItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
             (selectItem)="addItemToCart($event)" (transferProduct)="transferProductInventory($event)"
-            (addStockQuantity)="addProductStockQuantity($event)"></app-product-card-item>
+            (addStockQuantity)="addProductStockQuantity()"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>

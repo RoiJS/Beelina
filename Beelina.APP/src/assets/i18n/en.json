@@ -84,6 +84,10 @@
     "MANAGER": "Manager",
     "ADMINISTRATOR": "Administrator"
   },
+  "SALES_AGENT_TYPE": {
+    "FIELD_AGENT": "Field Agent",
+    "WAREHOUSE_AGENT": "Warehouse Agent"
+  },
   "DIALOG": {
     "CONFIRM_DIALOG_BUTTONS": {
       "CONFIRM": "Confirm",
@@ -1053,6 +1057,13 @@
           "USER": "Sales agent",
           "MANAGER": "Manager",
           "ADMINISTRATOR": "Administrator"
+        }
+      },
+      "SALES_AGENT_TYPE_CONTROL": {
+        "LABEL": "Agent Type",
+        "OPTIONS": {
+          "FIELD_AGENT": "Field agent",
+          "WAREHOUSE_AGENT": "Warehouse agent"
         }
       },
       "USERNAME_CONTROL": {

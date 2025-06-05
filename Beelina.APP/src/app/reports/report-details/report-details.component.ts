@@ -91,10 +91,10 @@ export class ReportDetailsComponent
               const userPrivileges = this.authService.user.value.getModulePrivilege(ModuleEnum.Distribution).value;
               const businessModel = this.authService.businessModel;
 
-              const show = (!relation.onlyAvailableOnBusinessModel && !relation.onlyAvailableOnBusinessModelForMinimumPrivilege) || (businessModel === getBusinessModelEnum(relation.onlyAvailableOnBusinessModel?.toString())
+              const show = (!relation.onlyAvailableOnBusinessModel && !relation.onlyAvailableOnBusinessModelForMinimumPrivilege) || (relation.onlyAvailableOnBusinessModel.includes(businessModel.toString())
                 && userPrivileges >= getPermissionLevelEnum(relation.onlyAvailableOnBusinessModelForMinimumPrivilege));
 
-              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show, relation.allowAllOption);
+              this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show, relation.allowAllOption, relation.agentTypeOptions);
             }
           );
         });
@@ -113,7 +113,8 @@ export class ReportDetailsComponent
     componentName: string,
     controlLabelIdentifier: string,
     show: boolean,
-    allowAllOption: boolean
+    allowAllOption: boolean,
+    agentTypeOptions: string
   ) {
     // Attach the component to the ViewContainerRef
     const componentRef = this.container().createComponent(
@@ -123,6 +124,7 @@ export class ReportDetailsComponent
     componentRefInstance.setControlLabelIdentifier(controlLabelIdentifier);
     componentRefInstance.setControlVisibility(show);
     componentRefInstance.setAllowAllOption(allowAllOption);
+    componentRefInstance.setAgentTypeOptions(agentTypeOptions);
 
     this.controlComponents.push({
       id: id,

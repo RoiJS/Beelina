@@ -5,10 +5,13 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, pairwise, startWith, Subscription } from 'rxjs';
+
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { SalesAgentTypeEnum } from 'src/app/_enum/sales-agent-type.enum';
 import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
+
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 import { Product } from 'src/app/_models/product';
 import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
@@ -17,12 +20,14 @@ import { ProductWithdrawalItemDetails } from 'src/app/_models/product-withdrawal
 import { PurchaseOrderItemDetails } from 'src/app/_models/purchase-order-item-details.model';
 import { ProductWithdrawalEntryResult } from 'src/app/_models/results/product-withdrawal-entry-result';
 import { User } from 'src/app/_models/user.model';
-import { ProductService } from 'src/app/_services/product.service';
-import { SupplierService } from 'src/app/_services/supplier.service';
-import { UniqueProductWithdrawalCodeValidator } from 'src/app/_validators/unique-product-withdrawal-code.validator';
-import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
+import { ProductService } from 'src/app/_services/product.service';
+import { SupplierService } from 'src/app/_services/supplier.service';
+
+import { UniqueProductWithdrawalCodeValidator } from 'src/app/_validators/unique-product-withdrawal-code.validator';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-product-withdrawal-details',
@@ -347,7 +352,9 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
   }
 
   private async initSalesAgentDatasource() {
-    return await firstValueFrom(this.productService.getSalesAgentsList());
+    const allSalesAgents = await firstValueFrom(this.productService.getSalesAgentsList());
+    const fieldSalesAgents = allSalesAgents.filter(s => s.salesAgentType === SalesAgentTypeEnum.FieldAgent); // Only field sales agents
+    return fieldSalesAgents;
   }
 
   get panelProductsDatasource() {
