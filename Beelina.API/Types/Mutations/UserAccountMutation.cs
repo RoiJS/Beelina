@@ -196,7 +196,7 @@ namespace Beelina.API.Types.Mutations
                 new (BeelinaClaimTypes.LastName, user.LastName),
                 new (BeelinaClaimTypes.Username, user.Username),
                 new (BeelinaClaimTypes.EmailAddress, user.EmailAddress),
-                new (BeelinaClaimTypes.SalesAgentType, ((int)user.SalesAgentTypeEnum).ToString()),
+                new (BeelinaClaimTypes.SalesAgentType, ((int)user.SalesAgentType).ToString()),
                 new (BeelinaClaimTypes.BusinessModel, ((int)generalSetting.BusinessModel).ToString()),
             };
 

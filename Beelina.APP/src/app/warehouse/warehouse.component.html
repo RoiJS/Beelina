@@ -34,9 +34,9 @@
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource">
           <app-product-card-item [hideDeductionCounterIcon]="true" [productItem]="item"
-            [filterKeyword]="filterKeyword()" [allowManageItem]="true" (editItem)="editProduct($event)"
+            [filterKeyword]="filterKeyword()" [allowManageItem]="true" [allowAddItem]="true" (editItem)="editProduct($event)"
             (selectItem)="editProduct($event)" (deleteItem)="deleteProduct($event)"
-            (addStockQuantity)="addProductStockQuantity($event)"
+            (addStockQuantity)="addProductStockQuantity()"
             (transferProduct)="transferProductInventory($event)"></app-product-card-item>
         </div>
       </cdk-virtual-scroll-viewport>

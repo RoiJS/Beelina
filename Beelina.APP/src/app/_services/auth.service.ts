@@ -19,6 +19,7 @@ import { BusinessModelEnum } from '../_enum/business-model.enum';
 import { GenderEnum } from '../_enum/gender.enum';
 import { ModuleEnum } from '../_enum/module.enum';
 import { PermissionLevelEnum } from '../_enum/permission-level.enum';
+import { SalesAgentTypeEnum } from '../_enum/sales-agent-type.enum';
 
 import { IAuthenticationOutput } from '../_interfaces/outputs/ilogin.output';
 import { ILoginInput } from '../_interfaces/inputs/ilogin.input';
@@ -302,6 +303,8 @@ export class AuthService {
       username: string;
       gender: GenderEnum;
       emailAddress: string;
+      businessModel: BusinessModelEnum;
+      salesAgentType: SalesAgentTypeEnum;
       userPermissions: Array<UserModulePermission>;
     } = JSON.parse(<string>this.storageService.getString('userData'));
 
@@ -319,6 +322,8 @@ export class AuthService {
     loadedUser.username = user.username;
     loadedUser.gender = user.gender;
     loadedUser.emailAddress = user.emailAddress;
+    loadedUser.businessModel = user.businessModel;
+    loadedUser.salesAgentType = user.salesAgentType;
     loadedUser.userPermissions.push(...user.userPermissions);
 
     if (tokenInfo.isAuth) {
@@ -389,6 +394,7 @@ export class AuthService {
     user.gender = parseInt(currentUser.gender);
     user.emailAddress = currentUser.emailAddress;
     user.businessModel = parseInt(currentUser.businessModel);
+    user.salesAgentType = user.getSalesAgentType(parseInt(currentUser.salesAgentType));
 
     // Keep user permission per module
     // (1) Distribution Module

@@ -101,6 +101,7 @@ const GET_USER_ACCOUNTS_QUERY = gql`
           emailAddress
           username
           isActive
+          salesAgentType
           userPermissions {
               id
               moduleId
@@ -130,6 +131,7 @@ query ($userId: Int!) {
       gender
       emailAddress
       username
+      salesAgentType
       userPermissions {
         id
         moduleId
@@ -227,6 +229,7 @@ export class UserAccountService {
             user.emailAddress = currentUser.emailAddress;
             user.username = currentUser.username;
             user.isActive = currentUser.isActive;
+            user.salesAgentType = currentUser.salesAgentType;
             user.userPermissions = currentUser.userPermissions;
             user.userType = this.getUserType(user);
             return user;
@@ -280,6 +283,7 @@ export class UserAccountService {
               user.username = currentUser.username;
               user.isActive = currentUser.isActive;
               user.userPermissions = currentUser.userPermissions;
+              user.salesAgentType = currentUser.salesAgentType;
               user.userType = this.getUserType(user);
               return user;
             }
@@ -342,6 +346,7 @@ export class UserAccountService {
       emailAddress: user.emailAddress,
       username: user.username,
       newPassword: user.password,
+      salesAgentType: user.salesAgentType,
       userPermissions: user.userPermissions.map((p) => {
         return <IUserPermissionInput>{
           id: p.id,

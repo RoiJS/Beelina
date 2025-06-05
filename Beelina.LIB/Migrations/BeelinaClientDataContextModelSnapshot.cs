@@ -1239,7 +1239,7 @@ namespace Beelina.LIB.Migrations
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SalesAgentTypeEnum")
+                    b.Property<int>("SalesAgentType")
                         .HasColumnType("int");
 
                     b.Property<int?>("UpdatedById")

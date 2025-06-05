@@ -523,6 +523,7 @@ const GET_SALES_AGENTS_LIST = gql`
       firstName
       lastName
       username
+      salesAgentType
     }
   }
 `;
@@ -1795,6 +1796,7 @@ export class ProductService {
             user.middleName = currentUser.middleName;
             user.lastName = currentUser.lastName;
             user.username = currentUser.username;
+            user.salesAgentType = currentUser.salesAgentType;
             return user;
           });
 

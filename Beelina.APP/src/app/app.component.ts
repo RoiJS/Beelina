@@ -39,6 +39,7 @@ import { UserAccountService } from './_services/user-account.service';
 import { IMenu } from './_interfaces/imenu';
 import { GeneralInformation } from './_models/general-information.model';
 import { ClientSubscriptionDetails } from './_models/client-subscription-details.model';
+import { User } from './_models/user.model';
 
 @Component({
   selector: 'app-root',
@@ -215,9 +216,12 @@ export class AppComponent
   }
 
   private initAuthUserListeners() {
-    this.authService.user.subscribe(async (user) => {
+    this.authService.user.subscribe(async (user: User) => {
       this.sideDrawerService.setCurrentUserPrivileges(
         user?.getModulePrivilege(ModuleEnum.Distribution).value
+      );
+      this.sideDrawerService.setBusinessModel(
+        user?.businessModel
       );
       this._currentLoggedInUser = user;
       this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));

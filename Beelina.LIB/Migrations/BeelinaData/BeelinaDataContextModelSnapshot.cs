@@ -329,8 +329,8 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<string>("NameTextIdentifier")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OnlyAvailableOnBusinessModel")
-                        .HasColumnType("int");
+                    b.Property<string>("OnlyAvailableOnBusinessModel")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReportClass")
                         .HasColumnType("nvarchar(max)");
@@ -400,6 +400,9 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AgentTypeOptions")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("AllowAllOption")
                         .HasColumnType("bit");
 
@@ -424,8 +427,8 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OnlyAvailableOnBusinessModel")
-                        .HasColumnType("int");
+                    b.Property<string>("OnlyAvailableOnBusinessModel")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OnlyAvailableOnBusinessModelForMinimumPrivilege")
                         .HasColumnType("int");

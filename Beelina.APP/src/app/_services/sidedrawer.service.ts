@@ -8,6 +8,7 @@ import {
 import { NetworkService } from './network.service';
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { LocalClientSubscriptionDbService } from './local-db/local-client-subscription-db.service';
+import { BusinessModelEnum } from '../_enum/business-model.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class SidedrawerService {
   clientSubscriptionDetails: ClientSubscriptionDetails;
 
   private _currentUserPermissionLevel: number;
+  private _currentBusinessModel: BusinessModelEnum;
   private _networkService = inject(NetworkService);
   private _localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
 
@@ -28,6 +30,10 @@ export class SidedrawerService {
 
   setCurrentUserPrivileges(userPermissionLevel: number) {
     this._currentUserPermissionLevel = userPermissionLevel;
+  }
+
+  setBusinessModel(businessModel: BusinessModelEnum) {
+    this._currentBusinessModel = businessModel;
   }
 
   getMenus() {
@@ -129,7 +135,7 @@ export class SidedrawerService {
         name: 'MAIN_MENU.PURCHASE_ORDERS',
         url: '/purchase-orders',
         icon: 'description',
-        minimumPermissionLevel: administratorPermissionLevel,
+        minimumPermissionLevel: managerPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
         supportOffline: false,
         visible: true,
@@ -141,7 +147,7 @@ export class SidedrawerService {
         minimumPermissionLevel: managerPermissionLevel,
         maximumPermissionLevel: managerPermissionLevel,
         supportOffline: false,
-        visible: true,
+        visible: this._currentBusinessModel !== BusinessModelEnum.WarehouseMonitoring,
       },
       {
         name: 'MAIN_MENU.ORDER_TRANSACTIONS',

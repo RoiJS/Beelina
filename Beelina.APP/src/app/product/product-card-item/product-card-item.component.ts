@@ -10,6 +10,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 })
 export class ProductCardItemComponent extends BaseComponent {
   productItem = input<Product>();
+  allowAddItem = input<boolean>(false);
   allowManageItem = input<boolean>(false);
   allowTransferStocks = input<boolean>(true);
   hideHeader = input<boolean>(false);

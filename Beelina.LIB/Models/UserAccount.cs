@@ -10,7 +10,7 @@ namespace Beelina.LIB.Models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string EmailAddress { get; set; } = String.Empty;
-        public SalesAgentTypeEnum SalesAgentTypeEnum { get; set; } = SalesAgentTypeEnum.None; // This property is used only when the Distribution module permission of the user is set to "User".
+        public SalesAgentTypeEnum SalesAgentType { get; set; } = SalesAgentTypeEnum.None; // This property is used only when the Distribution module permission of the user is set to "User".
 
         public List<RefreshToken> RefreshTokens { get; set; }
         public List<UserPermission> UserPermissions { get; set; }

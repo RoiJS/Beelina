@@ -19,7 +19,7 @@ namespace Beelina.LIB.GraphQL.Types
 
         public string NewPassword { get; set; }
 
-        public SalesAgentTypeEnum SalesAgentTypeEnum { get; set; } = SalesAgentTypeEnum.None;
+        public SalesAgentTypeEnum SalesAgentType { get; set; } = SalesAgentTypeEnum.None;
 
         public List<UserPermissionInput> UserPermissions { get; set; }
     }

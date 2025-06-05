@@ -48,7 +48,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localProducts: Array<LocalProduct> = allProducts.map(product => {
       const localProduct = new LocalProduct();
       localProduct.customerUserId = customerUserId;
@@ -87,7 +87,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
       products: [],
       totalCount: 0
     };
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localProductsFromLocalDb = <Array<LocalProduct>>await firstValueFrom(this.localDbService.getAll('products'));
     result.totalCount = localProductsFromLocalDb.length;
 
@@ -169,7 +169,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
       allProductUnits.push(...result.productUnits);
     } while (result.hasNextPage);
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localProductUnits = allProductUnits.map(productUnit => {
       const localProductUnit = new LocalProductUnit();
       localProductUnit.customerUserId = customerUserId;

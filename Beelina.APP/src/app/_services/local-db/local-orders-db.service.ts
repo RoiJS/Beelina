@@ -26,7 +26,7 @@ export class LocalOrdersDbService extends LocalBaseDbService {
   private pageNumber: number = 1;
 
   async getMyLocalOrders(status: TransactionStatusEnum, transactionId: Array<number> = [], transactioDates: Array<string> = []) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const userId = this.authService.user.value.id;
     const localOrders = <Array<LocalTransaction>>await firstValueFrom(this.localDbService.getAll('transactions'));
     let myLocalOrders = localOrders.filter(c => c.customerUserId == customerUserId && c.createdById === userId);
@@ -93,14 +93,14 @@ export class LocalOrdersDbService extends LocalBaseDbService {
   }
 
   async hasLocalOrders(status: TransactionStatusEnum) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localOrders = <Array<LocalTransaction>>await firstValueFrom(this.localDbService.getAll('transactions'));
     const localDraftOrders = localOrders.filter(c => c.customerUserId == customerUserId && c.status == status);
     return localDraftOrders.length > 0;
   }
 
   async saveLocalOrder(status: TransactionStatusEnum, transaction: TransactionDto) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const userId = this.authService.user.value.id;
     const localTransaction = new LocalTransaction();
     localTransaction.customerUserId = customerUserId;
@@ -173,7 +173,7 @@ export class LocalOrdersDbService extends LocalBaseDbService {
   }
 
   async deleteLocalOrders(transactionIds: Array<number> = []) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localProductTransactions = <LocalProductTransaction[]>await firstValueFrom(this.localDbService.getAll('productTransactions'));
     const localProductTransactionsIds = localProductTransactions.filter(c => c.customerUserId == customerUserId && transactionIds.includes(c.transactionId)).map(c => c.id);
 
@@ -219,7 +219,7 @@ export class LocalOrdersDbService extends LocalBaseDbService {
   }
 
   async getMyLocalOrderDates(status: TransactionStatusEnum, limit: number, sortOrder: SortOrderOptionsEnum, fromDate: string, toDate: string) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const userId = this.authService.user.value.id;
     const localOrders = <Array<LocalTransaction>>await firstValueFrom(this.localDbService.getAll('transactions'));
     let localDraftOrders = localOrders.filter(c => c.customerUserId == customerUserId && c.createdById === userId);

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, inject, input, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -68,6 +68,7 @@ export class ProductComponent
   searchFieldComponent = viewChild(SearchFieldComponent);
 
   businessModel = signal<BusinessModelEnum>(BusinessModelEnum.WarehousePanelMonitoring);
+  currentSalesAgent: User = null;
   currentSalesAgentId: number = 0;
   dataSource = signal<ProductDataSource>(null);
   filterKeyword = signal<string>('');
@@ -160,10 +161,10 @@ export class ProductComponent
       this.getPermissionLevel(PermissionLevelEnum.User)
     ) {
       this.currentSalesAgentId = this._currentLoggedInUser.id;
-      this.storageService.storeString(
-        'currentSalesAgentId',
-        this._currentLoggedInUser.id.toString()
-      );
+      this.currentSalesAgent = this._currentLoggedInUser;
+
+      this.storageService.storeString('currentSalesAgentId', this.currentSalesAgent.id.toString());
+      this.storageService.storeString('currentSalesAgentType', this.currentSalesAgent.salesAgentType);
       this.calculateTotalInventoryValue();
       this.dataSource.set(new ProductDataSource(this.store));
     } else {
@@ -171,10 +172,11 @@ export class ProductComponent
         next: (data: Array<User>) => {
           this.salesAgents.set(data);
 
-          if (this.storageService.hasKey('currentSalesAgentId')) {
-            this.currentSalesAgentId = +this.storageService.getString(
-              'currentSalesAgentId'
-            );
+          if (this.storageService.hasKey('currentSalesAgentId') && this.storageService.hasKey('currentSalesAgentType')) {
+            this.currentSalesAgent = this.salesAgents().find(
+              (user: User) => user.id === +this.storageService.getString('currentSalesAgentId')
+            )
+            this.currentSalesAgentId = +this.storageService.getString('currentSalesAgentId');
 
             this.calculateTotalInventoryValue();
             this.dataSource.set(new ProductDataSource(this.store));
@@ -368,8 +370,10 @@ export class ProductComponent
   }
 
   switchSaleAgent(e) {
-    this.storageService.storeString('currentSalesAgentId', e.value.toString());
-    this.currentSalesAgentId = e.value;
+    this.currentSalesAgent = <User>e.value;
+    this.currentSalesAgentId = (<User>e.value).id;
+    this.storageService.storeString('currentSalesAgentId', this.currentSalesAgent.id.toString());
+    this.storageService.storeString('currentSalesAgentType', this.currentSalesAgent.salesAgentType);
     this.store.dispatch(ProductActions.resetProductState());
     this.store.dispatch(
       ProductTransactionActions.initializeProductTransactions()
@@ -396,113 +400,8 @@ export class ProductComponent
     })
   }
 
-  addProductStockQuantity(product: Product) {
-    this.selectedProduct.set(product);
-    this._dialogAddQuantityRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
-      data: {
-        additionalStockQuantity: 0,
-        transactionNo: '',
-        productSource: ProductSourceEnum.Panel
-      },
-    });
-
-    this._dialogAddQuantityRef
-      .afterDismissed()
-      .subscribe(
-        (data: {
-          additionalStockQuantity: number;
-          transactionNo: string;
-          productSource: ProductSourceEnum;
-        }) => {
-          if (!data || data.additionalStockQuantity === 0) return;
-
-          this.productService
-            .checkWarehouseProductStockQuantity(this.selectedProduct().id, this.warehouseId(), data.additionalStockQuantity)
-            .subscribe((insufficientStocks: Array<InsufficientProductQuantity>) => {
-              if (insufficientStocks.length > 0) {
-                this.dialogService
-                  .openAlert(
-                    this.translateService.instant(
-                      'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.TITLE'
-                    ),
-                    this.translateService.instant(
-                      'EDIT_PRODUCT_DETAILS_PAGE.CHECK_WAREHOUSE_PRODUCT_QUANTITY_DIALOG.ERROR_MESSAGE'
-                    ).replace("{0}", insufficientStocks[0].currentQuantity.toString())
-                  )
-                return;
-              } else {
-                updateStockValue();
-              }
-            });
-
-          const updateStockValue = () => {
-            this.dialogService.openConfirmation(
-              this.translateService.instant(
-                'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.TITLE',
-              ),
-              this.translateService.instant(
-                'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.CONFIRM',
-              )
-            ).subscribe((result: ButtonOptions) => {
-              if (result === ButtonOptions.YES) {
-
-                this.store.dispatch(
-                  ProductActions.setUpdateProductLoadingState({
-                    state: true,
-                  })
-                );
-
-                const productWithdrawal = new ProductWithdrawalEntry();
-                productWithdrawal.id = 0;
-                productWithdrawal.userAccountId = +this.storageService.getString('currentSalesAgentId');
-                productWithdrawal.stockEntryDate = new Date();
-                productWithdrawal.withdrawalSlipNo = data.transactionNo;
-
-                const productStockAudits = new ProductStockAudit();
-                productStockAudits.id = 0;
-                productStockAudits.productId = this.selectedProduct().id;
-                productStockAudits.quantity = data.additionalStockQuantity;
-                productStockAudits.pricePerUnit = this.selectedProduct().pricePerUnit;
-                productStockAudits.warehouseId = this.warehouseId();
-                productStockAudits.stockAuditSource = StockAuditSourceEnum.FromWithdrawal;
-
-                productWithdrawal.productStockAudits = [productStockAudits];
-
-                this.productService
-                  .updateProductWithdrawalEntries([productWithdrawal])
-                  .subscribe({
-                    next: () => {
-                      this.notificationService.openSuccessNotification(this.translateService.instant(
-                        'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.SUCCESS_MESSAGE'
-                      ));
-                      this.store.dispatch(
-                        ProductActions.setUpdateProductLoadingState({
-                          state: false,
-                        })
-                      );
-
-                      this.store.dispatch(ProductActions.resetProductState());
-                      this.store.dispatch(ProductActions.setSearchProductAction({ keyword: this.searchFieldComponent().value() }));
-                      this.store.dispatch(ProductActions.getProductsAction());
-                    },
-
-                    error: () => {
-                      this.notificationService.openErrorNotification(this.translateService.instant(
-                        'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.ERROR_MESSAGE'
-                      ));
-
-                      this.store.dispatch(
-                        ProductActions.setUpdateProductLoadingState({
-                          state: false,
-                        })
-                      );
-                    },
-                  });
-              }
-            })
-          }
-        }
-      );
+  addProductStockQuantity() {
+    this.router.navigate(['/purchase-orders']);
   }
 
   get currentUserPermission(): number {

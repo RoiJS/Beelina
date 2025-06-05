@@ -20,7 +20,7 @@ export class LocalCustomerAccountsDbService extends LocalBaseDbService {
 
     if (customerAccountsCount > 0) return;
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const allCustomerAccounts = await firstValueFrom(this.barangayService.getAllBarangays());
     const localCustomerAccounts = allCustomerAccounts.map(c => {
       const localCustomerStore = new LocalCustomerAccount();
@@ -35,7 +35,9 @@ export class LocalCustomerAccountsDbService extends LocalBaseDbService {
   }
 
   async getMyLocalCustomerAccounts(customerAccountIds: Array<number> = null) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
+    const customerUser = await this.getCustomerUser(customerUserId);
+
     const localCustomerAccountsFromLocalDb = <Array<LocalCustomerAccount>>await firstValueFrom(this.localDbService.getAll('customerAccounts'));
     let myLocalCustomerAccounts = localCustomerAccountsFromLocalDb.filter(c => c.customerUserId == customerUserId);
 
@@ -47,6 +49,7 @@ export class LocalCustomerAccountsDbService extends LocalBaseDbService {
       const barangay = new Barangay();
       barangay.id = lca.barangayId;
       barangay.name = lca.name;
+      barangay.userAccountId = customerUser.userId;
       return barangay;
     });
 
@@ -54,7 +57,7 @@ export class LocalCustomerAccountsDbService extends LocalBaseDbService {
   }
 
   async manageLocalCustomerAccount(customerAccount: Barangay) {
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
 
     const localCustomerAccounts = await this.getMyLocalCustomerAccounts([customerAccount.id]);
     const newLocalCustomerAccount = new LocalCustomerAccount();
