@@ -41,7 +41,6 @@ import {
 import { ProductSourceEnum } from '../_enum/product-source.enum';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
-import { InsufficientProductQuantity } from '../_models/insufficient-product-quantity';
 import { Product } from '../_models/product';
 import { ProductDataSource } from '../_models/datasources/product.datasource';
 import { User } from '../_models/user.model';
@@ -49,13 +48,11 @@ import { User } from '../_models/user.model';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
 import { ProductsFilter } from '../_models/filters/products.filter';
 import { ProductFilterComponent } from './product-filter/product-filter.component';
-import { ProductWithdrawalEntry } from '../_models/product-withdrawal-entry';
-import { ProductStockAudit } from '../_models/product-stock-audit';
-import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 
 import { ApplySubscriptionService } from '../_services/apply-subscription.service';
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
+import { StockStatusEnum } from '../_enum/stock-status.enum';
 
 @Component({
   selector: 'app-product',
@@ -344,12 +341,14 @@ export class ProductComponent
       .afterDismissed()
       .subscribe(
         (data: {
-          supplierId: number
+          supplierId: number,
+          stockStatus: StockStatusEnum
         }) => {
           if (!data) return;
 
           const productsFilter = new ProductsFilter();
           productsFilter.supplierId = data.supplierId;
+          productsFilter.stockStatus = data.stockStatus;
           this.productsFilter.set(productsFilter);
 
           this.store.dispatch(ProductActions.resetProductState());

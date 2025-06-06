@@ -4,7 +4,7 @@ import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Router } from '@angular/router';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
@@ -26,10 +26,8 @@ import { ProductService } from 'src/app/_services/product.service';
 import * as WarehouseProductActions from './store/actions';
 import { filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
 import { ProductsFilter } from '../_models/filters/products.filter';
-import { ProductWarehouseStockReceiptEntry } from '../_models/product-warehouse-stock-receipt-entry';
-import { ProductStockWarehouseAudit } from '../_models/product-stock-warehouse-audit';
-import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
+import { StockStatusEnum } from '../_enum/stock-status.enum';
 
 @Component({
   selector: 'app-warehouse',
@@ -60,6 +58,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     ProductFilterComponent,
     {
       supplierId: number;
+      stockStatus: StockStatusEnum;
     }
   >;
 
@@ -143,11 +142,16 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
       .afterDismissed()
       .subscribe(
         (data: {
-          supplierId: number
+          supplierId: number,
+          stockStatus: StockStatusEnum
         }) => {
           if (!data) return;
 
-          this.productsFilter().supplierId = data.supplierId;
+          const productsFilter = new ProductsFilter();
+          productsFilter.supplierId = data.supplierId;
+          productsFilter.stockStatus = data.stockStatus;
+          this.productsFilter.set(productsFilter);
+
           this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
           this.store.dispatch(WarehouseProductActions.setFilterProductAction({
             productsFilter: this.productsFilter()

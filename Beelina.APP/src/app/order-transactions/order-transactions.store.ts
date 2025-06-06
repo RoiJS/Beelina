@@ -84,8 +84,8 @@ export const OrderTransactionStore = signalStore(
       patchState(store, {
         transactions: initialState.transactions,
         endCursor: initialState.endCursor,
-        transactionDate: initialState.transactionDate,
-        transactionStatus: initialState.transactionStatus
+        transactionDate: store.transactionDate(),
+        transactionStatus: store.transactionStatus()
       });
     }
   }))

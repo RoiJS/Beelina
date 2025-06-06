@@ -12,6 +12,7 @@ import { LocalProductUnit } from 'src/app/_models/local-db/local-product-unit.mo
 import { ProductUnit } from 'src/app/_models/product-unit';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
     do {
-      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, 1000, []));
+      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, 1000, []));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 
@@ -70,7 +71,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     console.info('newProductsCount: ', newProducts.length);
   }
 
-  async getMyLocalProducts(filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
+  async getMyLocalProducts(filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
     endCursor: string;
     hasNextPage: boolean;
     products: Array<Product>;
@@ -93,15 +94,25 @@ export class LocalProductsDbService extends LocalBaseDbService {
 
     let myLocalProducts = localProductsFromLocalDb.filter(c => c.customerUserId == customerUserId);
 
+    // Filter based on supplier id
     if (supplierId > 0) {
       myLocalProducts = myLocalProducts.filter(c => c.supplierId == supplierId);
     }
 
+    // Filter based on stock status
+    if (stockStatus !== StockStatusEnum.All) {
+      if (stockStatus === StockStatusEnum.WithStocks) {
+        myLocalProducts = myLocalProducts.filter(c => c.stockQuantity > 0);
+      } else if (stockStatus === StockStatusEnum.WithoutStocks) {
+        myLocalProducts = myLocalProducts.filter(c => c.stockQuantity === 0);
+      }
+    }
+
     if (filterKeyword) {
-      const filterKeywords = filterKeyword.toLowerCase().split(' ');
+      const filterKeywords = filterKeyword.toLowerCase().split(',').map(k => k.trim().split(' '));
 
       myLocalProducts = myLocalProducts.filter(product =>
-        filterKeywords.every(keyword => product.name.toLowerCase().includes(keyword) || product.code.toLowerCase().includes(keyword))
+        filterKeywords.some(keywordArray => keywordArray.every(keyword => product.name.toLowerCase().includes(keyword) || product.code.toLowerCase().includes(keyword)))
       );
 
       result.totalCount = myLocalProducts.length;

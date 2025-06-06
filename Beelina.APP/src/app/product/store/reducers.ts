@@ -5,6 +5,7 @@ import { IProductState } from '../types/product-state.interface';
 
 import * as ProductActions from './actions';
 import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 
 export const initialState: IProductState = {
   isLoading: false,
@@ -20,6 +21,7 @@ export const initialState: IProductState = {
   hasNextPage: false,
   error: null,
   supplierId: 0,
+  stockStatus: StockStatusEnum.All
 };
 
 export const reducers = createReducer(
@@ -84,6 +86,7 @@ export const reducers = createReducer(
   on(ProductActions.setFilterProductAction, (state, action) => ({
     ...state,
     supplierId: action.productsFilter.supplierId,
+    stockStatus: action.productsFilter.stockStatus,
   })),
   on(ProductActions.resetProductState, (state, action) =>
   (<IProductState>{
