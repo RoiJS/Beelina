@@ -163,6 +163,7 @@ export class BaseComponent {
 
     return indices.length > 0 ? indices : null;
   }
+
   insertMarkAtIndex(originalString: string, startIndex: number, endIndex: number) {
     if (startIndex < 0 || endIndex >= originalString.length || startIndex > endIndex) {
       console.error("Invalid indices");

@@ -54,12 +54,25 @@ export class ProductCardItemComponent extends BaseComponent {
     let formattedString = text;
 
     if (this.filterKeyword().length === 0) return formattedString;
-    const keywords = this.filterKeyword().split(' ').filter(k => k.trim().length > 0);
+    const keywords = this.filterKeyword().split(',').map(k => k.trim().toLowerCase());
 
     for (const keyword of keywords) {
-      const textIndeces = this.findAllIndicesForMultiWordKeyword(formattedString, keyword);
-      if (!textIndeces || textIndeces.length === 0) continue;
-      formattedString = this.insertMarkAtIndex(formattedString, textIndeces?.[0]?.startIndex, textIndeces?.[0]?.endIndex);
+      const keywordWords = keyword.split(' ');
+      if (keywordWords.length === 1) {
+        const textIndeces = this.findAllIndicesForMultiWordKeyword(formattedString, keyword);
+        if (!textIndeces || textIndeces.length === 0) continue;
+        for (const index of textIndeces) {
+          formattedString = this.insertMarkAtIndex(formattedString, index.startIndex, index.endIndex);
+        }
+      } else {
+        for (const word of keywordWords) {
+          const textIndeces = this.findAllIndicesForMultiWordKeyword(formattedString, word);
+          if (!textIndeces || textIndeces.length === 0) continue;
+          for (const index of textIndeces) {
+            formattedString = this.insertMarkAtIndex(formattedString, index.startIndex, index.endIndex);
+          }
+        }
+      }
     }
 
     return formattedString;
