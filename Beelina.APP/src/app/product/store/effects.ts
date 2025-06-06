@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import {
   endCursorSelector as endCursorProductSelector,
   filterKeywordSelector as filterKeywordProductSelector,
+  priceStatusSelector,
   stockStatusSelector,
   supplierIdSelector as supplierIdProductSelector,
 } from '../../product/store/selectors';
@@ -25,6 +26,7 @@ import * as ProductTransactionActions from '../add-to-cart-product/store/actions
 import * as ProductActions from './actions';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
 
 @Injectable()
 export class ProductEffects {
@@ -46,6 +48,7 @@ export class ProductEffects {
           filterKeyword = '',
           supplierId = 0,
           stockStatus = StockStatusEnum.All,
+          priceStatus = PriceStatusEnum.All,
           limit = 50,
           productTransactionItems = Array<ProductTransaction>();
 
@@ -82,11 +85,19 @@ export class ProductEffects {
             (currentStockStatus) => (stockStatus = currentStockStatus)
           );
 
+        this.store
+          .select(priceStatusSelector)
+          .pipe(take(1))
+          .subscribe(
+            (currentPriceStatus) => (priceStatus = currentPriceStatus)
+          );
+
         if (!this.networkService.isOnline.value) {
           return from(this.localProductsDbService.getMyLocalProducts(
             filterKeyword,
             supplierId,
             stockStatus,
+            priceStatus,
             limit,
             productTransactionItems
           )).pipe(
@@ -114,6 +125,7 @@ export class ProductEffects {
           filterKeyword,
           supplierId,
           stockStatus,
+          priceStatus,
           limit,
           productTransactionItems
         ).pipe(

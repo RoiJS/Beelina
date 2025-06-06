@@ -26,6 +26,7 @@ import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.he
 import { UniquePurchaseOrderCodeValidator } from 'src/app/_validators/unique-purchase-order-code.validator';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -324,7 +325,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     };
 
     do {
-      result = await firstValueFrom(this.productService.getWarehouseProducts(result.endCursor, supplierId, StockStatusEnum.All, "", 1000));
+      result = await firstValueFrom(this.productService.getWarehouseProducts(result.endCursor, supplierId, StockStatusEnum.All, PriceStatusEnum.All, "", 1000));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 

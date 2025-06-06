@@ -64,6 +64,7 @@ import { ProductWarehouseStockReceiptEntryResult } from '../_models/results/prod
 import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-entry.output';
 import { IWithdrawalEntryOutput } from '../_interfaces/outputs/iwithdrawal-entry.output';
 import { StockStatusEnum } from '../_enum/stock-status.enum';
+import { PriceStatusEnum } from '../_enum/price-status.enum';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -717,7 +718,7 @@ export class ProductService {
   store = inject(Store<AppStateInterface>);
   storageService = inject(StorageService);
 
-  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>) {
+  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>) {
     return this.apollo
       .watchQuery({
         query: GET_PRODUCTS_QUERY,
@@ -727,7 +728,8 @@ export class ProductService {
           userAccountId,
           productsFilter: {
             supplierId,
-            stockStatus
+            stockStatus,
+            priceStatus
           },
           limit
         },
@@ -780,7 +782,7 @@ export class ProductService {
       );
   }
 
-  getWarehouseProducts(cursor: string, supplierId: number, stockStatus: StockStatusEnum, filterKeyword: string, limit: number) {
+  getWarehouseProducts(cursor: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, filterKeyword: string, limit: number) {
     const warehouseId = this._warehouseId;
 
     return this.apollo
@@ -792,7 +794,8 @@ export class ProductService {
           warehouseId,
           productsFilter: {
             supplierId,
-            stockStatus
+            stockStatus,
+            priceStatus
           },
           limit
         },

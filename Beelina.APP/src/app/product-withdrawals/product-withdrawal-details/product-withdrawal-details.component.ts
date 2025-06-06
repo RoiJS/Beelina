@@ -29,6 +29,7 @@ import { SupplierService } from 'src/app/_services/supplier.service';
 import { UniqueProductWithdrawalCodeValidator } from 'src/app/_validators/unique-product-withdrawal-code.validator';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
 
 @Component({
   selector: 'app-product-withdrawal-details',
@@ -345,7 +346,7 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
     };
 
     do {
-      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, 1000, []));
+      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, PriceStatusEnum.All, 1000, []));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 

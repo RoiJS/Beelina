@@ -214,6 +214,18 @@ namespace Beelina.LIB.BusinessLogic
           }
         }
 
+
+        if (productsFilter is not null && productsFilter.PriceStatus != ProductPriceStatusEnum.All)
+        {
+          if (productsFilter.PriceStatus == ProductPriceStatusEnum.WithPrice)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.PricePerUnit > 0)];
+          }
+          else if (productsFilter.PriceStatus == ProductPriceStatusEnum.WithoutPrice)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.PricePerUnit <= 0)];
+          }
+        }
       }
       catch (TaskCanceledException ex)
       {
@@ -331,6 +343,18 @@ namespace Beelina.LIB.BusinessLogic
           else if (productsFilter.StockStatus == ProductStockStatusEnum.WithoutStocks)
           {
             finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.StockQuantity <= 0)];
+          }
+        }
+
+        if (productsFilter is not null && productsFilter.PriceStatus != ProductPriceStatusEnum.All)
+        {
+          if (productsFilter.PriceStatus == ProductPriceStatusEnum.WithPrice)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.PricePerUnit > 0)];
+          }
+          else if (productsFilter.PriceStatus == ProductPriceStatusEnum.WithoutPrice)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.PricePerUnit <= 0)];
           }
         }
       }

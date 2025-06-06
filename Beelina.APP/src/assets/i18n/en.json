@@ -624,6 +624,15 @@
             "WITH_STOCKS": "With Stocks",
             "WITHOUT_STOCKS": "Without Stocks"
           }
+        },
+        "PRICE_STATUS_CONTROL": {
+          "LABEL": "Price Status",
+          "HINT": "Please choose price status",
+          "OPTIONS": {
+            "ALL": "All",
+            "WITH_PRICE": "With Price",
+            "WITHOUT_PRICE": "Without Price"
+          }
         }
       }
     },
