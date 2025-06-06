@@ -53,6 +53,7 @@ import { ApplySubscriptionService } from '../_services/apply-subscription.servic
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
 import { StockStatusEnum } from '../_enum/stock-status.enum';
+import { PriceStatusEnum } from '../_enum/price-status.enum';
 
 @Component({
   selector: 'app-product',
@@ -92,6 +93,8 @@ export class ProductComponent
     ProductFilterComponent,
     {
       supplierId: number;
+      stockStatus: StockStatusEnum;
+      priceStatus: PriceStatusEnum;
     }
   >;
 
@@ -342,13 +345,15 @@ export class ProductComponent
       .subscribe(
         (data: {
           supplierId: number,
-          stockStatus: StockStatusEnum
+          stockStatus: StockStatusEnum,
+          priceStatus: PriceStatusEnum
         }) => {
           if (!data) return;
 
           const productsFilter = new ProductsFilter();
           productsFilter.supplierId = data.supplierId;
           productsFilter.stockStatus = data.stockStatus;
+          productsFilter.priceStatus = data.priceStatus;
           this.productsFilter.set(productsFilter);
 
           this.store.dispatch(ProductActions.resetProductState());

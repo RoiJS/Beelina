@@ -62,6 +62,11 @@ export const stockStatusSelector = createSelector(
   (state) => state.stockStatus
 );
 
+export const priceStatusSelector = createSelector(
+  selectFeature,
+  (state) => state.priceStatus
+);
+
 export const totalCountSelector = createSelector(
   selectFeature,
   (state) => state.totalCount

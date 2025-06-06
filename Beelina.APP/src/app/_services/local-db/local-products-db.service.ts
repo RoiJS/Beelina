@@ -13,6 +13,7 @@ import { ProductUnit } from 'src/app/_models/product-unit';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +46,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
     do {
-      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, 1000, []));
+      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, PriceStatusEnum.All, 1000, []));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 
@@ -71,7 +72,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     console.info('newProductsCount: ', newProducts.length);
   }
 
-  async getMyLocalProducts(filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
+  async getMyLocalProducts(filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
     endCursor: string;
     hasNextPage: boolean;
     products: Array<Product>;
@@ -105,6 +106,15 @@ export class LocalProductsDbService extends LocalBaseDbService {
         myLocalProducts = myLocalProducts.filter(c => c.stockQuantity > 0);
       } else if (stockStatus === StockStatusEnum.WithoutStocks) {
         myLocalProducts = myLocalProducts.filter(c => c.stockQuantity === 0);
+      }
+    }
+
+    // Filter based on price status
+    if (priceStatus !== PriceStatusEnum.All) {
+      if (priceStatus === PriceStatusEnum.WithPrice) {
+        myLocalProducts = myLocalProducts.filter(c => c.pricePerUnit > 0);
+      } else if (priceStatus === PriceStatusEnum.WithoutPrice) {
+        myLocalProducts = myLocalProducts.filter(c => c.pricePerUnit === 0);
       }
     }
 

@@ -43,6 +43,31 @@
       </mat-select>
     </mat-form-field>
 
+    <mat-form-field appearance="fill">
+      <mat-label>{{ "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <mat-select formControlName="priceStatus">
+        <mat-option [value]="PriceStatusEnum.All">
+          {{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.OPTIONS.ALL"
+          | translate
+          }}
+        </mat-option>
+        <mat-option [value]="PriceStatusEnum.WithPrice">
+          {{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.OPTIONS.WITH_PRICE"
+          | translate
+          }}
+        </mat-option>
+        <mat-option [value]="PriceStatusEnum.WithoutPrice">
+          {{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.OPTIONS.WITHOUT_PRICE"
+          | translate
+          }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
   </div>
   <div class="dialog-form-container__footer">
     <div class="button-container">

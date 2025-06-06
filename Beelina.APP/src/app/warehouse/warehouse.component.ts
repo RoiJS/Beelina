@@ -28,6 +28,7 @@ import { filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCoun
 import { ProductsFilter } from '../_models/filters/products.filter';
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { StockStatusEnum } from '../_enum/stock-status.enum';
+import { PriceStatusEnum } from '../_enum/price-status.enum';
 
 @Component({
   selector: 'app-warehouse',
@@ -59,6 +60,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     {
       supplierId: number;
       stockStatus: StockStatusEnum;
+      priceStatus: PriceStatusEnum;
     }
   >;
 
@@ -143,13 +145,15 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
       .subscribe(
         (data: {
           supplierId: number,
-          stockStatus: StockStatusEnum
+          stockStatus: StockStatusEnum,
+          priceStatus: PriceStatusEnum
         }) => {
           if (!data) return;
 
           const productsFilter = new ProductsFilter();
           productsFilter.supplierId = data.supplierId;
           productsFilter.stockStatus = data.stockStatus;
+          productsFilter.priceStatus = data.priceStatus;
           this.productsFilter.set(productsFilter);
 
           this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
