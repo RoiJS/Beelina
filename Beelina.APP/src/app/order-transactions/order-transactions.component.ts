@@ -9,23 +9,25 @@ import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { OrderTransactionDataSource } from '../_models/datasources/order-transactions.datasource';
 import { TransactionsFilter } from '../_models/filters/transactions.filter';
 import { Transaction } from '../_models/transaction';
-import { StorageService } from '../_services/storage.service';
-import { TransactionService } from '../_services/transaction.service';
+import { OrderTransactionStore } from './order-transactions.store';
+
 import { BaseComponent } from '../shared/components/base-component/base.component';
+import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
+import { TransactionFilterComponent } from './transaction-filter/transaction-filter.component';
+import { ViewSelectedOrdersComponent } from './view-selected-orders/view-selected-orders.component';
+
 import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { MultipleEntitiesService } from '../_services/multiple-entities.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
-import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
-import { OrderTransactionStore } from './order-transactions.store';
-import { TransactionFilterComponent } from './transaction-filter/transaction-filter.component';
-import { ViewSelectedOrdersComponent } from './view-selected-orders/view-selected-orders.component';
+import { StorageService } from '../_services/storage.service';
+import { TransactionService } from '../_services/transaction.service';
 
 @Component({
   selector: 'app-order-transactions',
   templateUrl: './order-transactions.component.html',
   styleUrls: ['./order-transactions.component.scss']
 })
-export class OrderTransactionsComponent extends BaseComponent implements OnInit, OnDestroy {
+export class OrderTransactionsComponent extends BaseComponent implements OnDestroy {
 
   searchFieldComponent = viewChild(SearchFieldComponent);
   dataSource: OrderTransactionDataSource;
@@ -64,7 +66,14 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit,
     if (!this.orderTransactionStore.filterKeyword()) {
       this.transactionsFilter.update(() => {
         const newTransactionsFilter = new TransactionsFilter();
-        newTransactionsFilter.transactionDate = DateFormatter.format(new Date());
+        newTransactionsFilter.status = this.orderTransactionStore.transactionStatus();
+
+        if (this.orderTransactionStore.transactionDate().length === 0) {
+          newTransactionsFilter.transactionDate = DateFormatter.format(new Date());
+        } else {
+          newTransactionsFilter.transactionDate = this.orderTransactionStore.transactionDate();
+        }
+
         return newTransactionsFilter;
       });
       this.orderTransactionStore.setTransactionFilter(this.transactionsFilter());
@@ -80,9 +89,6 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit,
     this.orderTransactionStore.resetList();
     this._dialogOpenViewSelectedOrdersRef = null;
     this._dialogOpenFilterRef = null;
-  }
-
-  ngOnInit() {
   }
 
   onSearch(filterKeyword: string) {

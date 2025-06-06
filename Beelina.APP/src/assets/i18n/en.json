@@ -615,6 +615,15 @@
         "SUPPLIER_CONTROL": {
           "LABEL": "Supplier",
           "HINT": "Please choose supplier"
+        },
+        "STOCK_STATUS_CONTROL": {
+          "LABEL": "Stock Status",
+          "HINT": "Please choose stock status",
+          "OPTIONS": {
+            "ALL": "All",
+            "WITH_STOCKS": "With Stocks",
+            "WITHOUT_STOCKS": "Without Stocks"
+          }
         }
       }
     },

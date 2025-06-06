@@ -26,7 +26,7 @@ export class Transaction extends Entity implements IModelNode {
   public modeOfPayment: number;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
-  public balance: number;
+  public balance: number = 0;
   public total: number;
   public badOrderAmount: number = 0;
   public status: TransactionStatusEnum;

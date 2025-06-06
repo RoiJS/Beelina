@@ -1,3 +1,4 @@
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
 import { IBaseStateConnection } from 'src/app/_interfaces/states/ibase-connection.state';
 import { IBaseState } from 'src/app/_interfaces/states/ibase.state';
@@ -12,4 +13,5 @@ export interface IProductState extends IBaseState, IBaseStateConnection {
   totalCount: number;
   textProductInventories: Array<Product>;
   supplierId: number;
+  stockStatus: StockStatusEnum;
 }

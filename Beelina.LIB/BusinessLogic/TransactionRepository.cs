@@ -306,7 +306,9 @@ namespace Beelina.LIB.BusinessLogic
                         DateUpdated = t.DateUpdated,
                         UpdatedBy = up.PersonFullName ?? String.Empty,
                     }
-                ).ToListAsync();
+                )
+                .AsNoTracking()
+                .ToListAsync();
 
 
             transactions = (from t in transactions

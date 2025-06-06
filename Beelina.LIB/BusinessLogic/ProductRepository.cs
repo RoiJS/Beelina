@@ -202,6 +202,18 @@ namespace Beelina.LIB.BusinessLogic
           }
         }
 
+        if (productsFilter is not null && productsFilter.StockStatus != ProductStockStatusEnum.All)
+        {
+          if (productsFilter.StockStatus == ProductStockStatusEnum.WithStocks)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.StockQuantity > 0)];
+          }
+          else if (productsFilter.StockStatus == ProductStockStatusEnum.WithoutStocks)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.StockQuantity <= 0)];
+          }
+        }
+
       }
       catch (TaskCanceledException ex)
       {
@@ -308,6 +320,18 @@ namespace Beelina.LIB.BusinessLogic
         if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelHybridMonitoring)
         {
           finalProductsFromRepo = await GetProductStocksFromWarehouseForBusinessModel3(filteredProductsFromRepo, warehouseId, cancellationToken);
+        }
+
+        if (productsFilter is not null && productsFilter.StockStatus != ProductStockStatusEnum.All)
+        {
+          if (productsFilter.StockStatus == ProductStockStatusEnum.WithStocks)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.StockQuantity > 0)];
+          }
+          else if (productsFilter.StockStatus == ProductStockStatusEnum.WithoutStocks)
+          {
+            finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.StockQuantity <= 0)];
+          }
         }
       }
       catch (TaskCanceledException ex)

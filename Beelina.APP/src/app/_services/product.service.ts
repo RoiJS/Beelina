@@ -63,6 +63,7 @@ import { ProductWithdrawalEntryResult } from '../_models/results/product-withdra
 import { ProductWarehouseStockReceiptEntryResult } from '../_models/results/product-warehouse-stock-receipt-entry-result';
 import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-entry.output';
 import { IWithdrawalEntryOutput } from '../_interfaces/outputs/iwithdrawal-entry.output';
+import { StockStatusEnum } from '../_enum/stock-status.enum';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -716,7 +717,7 @@ export class ProductService {
   store = inject(Store<AppStateInterface>);
   storageService = inject(StorageService);
 
-  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>) {
+  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>) {
     return this.apollo
       .watchQuery({
         query: GET_PRODUCTS_QUERY,
@@ -725,7 +726,8 @@ export class ProductService {
           filterKeyword,
           userAccountId,
           productsFilter: {
-            supplierId
+            supplierId,
+            stockStatus
           },
           limit
         },
@@ -778,7 +780,7 @@ export class ProductService {
       );
   }
 
-  getWarehouseProducts(cursor: string, supplierId: number, filterKeyword: string, limit: number) {
+  getWarehouseProducts(cursor: string, supplierId: number, stockStatus: StockStatusEnum, filterKeyword: string, limit: number) {
     const warehouseId = this._warehouseId;
 
     return this.apollo
@@ -789,7 +791,8 @@ export class ProductService {
           filterKeyword,
           warehouseId,
           productsFilter: {
-            supplierId
+            supplierId,
+            stockStatus
           },
           limit
         },

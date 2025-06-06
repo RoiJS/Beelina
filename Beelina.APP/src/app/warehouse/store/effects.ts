@@ -10,9 +10,11 @@ import { ProductService } from 'src/app/_services/product.service';
 import {
   endCursorSelector as endCursorWarehouseProductSelector,
   filterKeywordSelector as filterKeywordWarehouseProductSelector,
+  stockStatusSelector,
   supplierIdSelector as supplierIdWarehouseProductSelector,
 } from '../../warehouse/store/selectors';
 import * as ProductActions from './actions';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 
 @Injectable()
 export class WarehouseProductEffects {
@@ -28,6 +30,7 @@ export class WarehouseProductEffects {
 
         let cursor = null,
           supplierId = 0,
+          stockStatus = StockStatusEnum.All,
           limit = 50,
           filterKeyword = '';
 
@@ -50,7 +53,14 @@ export class WarehouseProductEffects {
             (currentSupplierId) => (supplierId = currentSupplierId)
           );
 
-        return this.productService.getWarehouseProducts(cursor, supplierId, filterKeyword, limit).pipe(
+          this.store
+          .select(stockStatusSelector)
+          .pipe(take(1))
+          .subscribe(
+            (currentStockStatus) => (stockStatus = currentStockStatus)
+          );
+
+        return this.productService.getWarehouseProducts(cursor, supplierId, stockStatus, filterKeyword, limit).pipe(
           map(
             (data: {
               endCursor: string;

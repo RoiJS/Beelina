@@ -21,6 +21,7 @@ import { ProductService } from 'src/app/_services/product.service';
 import { StorageService } from 'src/app/_services/storage.service';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 
 @Component({
   selector: 'app-text-order',
@@ -90,7 +91,7 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
         });
     } else {
       this.localProductsDbService
-        .getMyLocalProducts('', 0, 0, [])
+        .getMyLocalProducts('', 0, StockStatusEnum.All, 0, [])
         .then((data) => {
           this._productList = data.products;
         });
@@ -117,7 +118,7 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
         });
     } else {
       this.localProductsDbService
-        .getMyLocalProducts('', 0, 0, [])
+        .getMyLocalProducts('', 0, StockStatusEnum.All, 0, [])
         .then((data) => {
           this.notificationService.openSuccessNotification(this.translateService.instant(
             'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
