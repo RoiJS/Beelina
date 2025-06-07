@@ -886,7 +886,9 @@ export class ProductService {
         filterKeyword: productName,
         userAccountId: +this.storageService.getString('currentSalesAgentId'),
         productsFilter: {
-          supplierId: 0
+          supplierId: 0,
+          stockStatus: StockStatusEnum.All,
+          priceStatus: PriceStatusEnum.All
         },
         limit: 50
       };
@@ -915,7 +917,9 @@ export class ProductService {
         filterKeyword: productName,
         warehouseId: 1,
         productsFilter: {
-          supplierId: 0
+          supplierId: 0,
+          stockStatus: StockStatusEnum.All,
+          priceStatus: PriceStatusEnum.All
         },
         limit: 50
       };

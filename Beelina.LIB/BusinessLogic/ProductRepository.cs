@@ -462,7 +462,6 @@ namespace Beelina.LIB.BusinessLogic
           _logger.LogInformation("Part 4 -  Product Stock Per Panel Information saving...");
           var productStockPerPanelFromRepo = await ManageProductStockPerPanel(productFromRepo, productInput, userAccountId, cancellationToken);
 
-
           // Commit transaction if all operations succeeded
           if (counter == (productInputs.Count - 1))
           {

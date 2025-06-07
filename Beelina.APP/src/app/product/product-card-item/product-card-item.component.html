@@ -43,6 +43,12 @@
         </button>
         }
 
+        @if (allowCopyItem()) {
+        <button mat-menu-item (click)="copyProductItem()">
+          <mat-icon>file_copy</mat-icon> {{ "GENERAL_TEXTS.COPY" | translate }}
+        </button>
+        }
+
       </mat-menu>
     </div>
     }

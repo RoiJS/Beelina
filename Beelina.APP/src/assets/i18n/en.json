@@ -29,6 +29,7 @@
     "STORES": "Stores",
     "TRANSFER_STOCK": "Transfer Stocks",
     "ADD_STOCK_QUANTITY": "Add Stock Quantity",
+    "COPY": "Copy",
     "LINKED": "Linked",
     "SAVE_CHANGES": "Save Changes",
     "NEW": "New",
@@ -48,7 +49,8 @@
     "ADD_ITEM": "+ Add Item",
     "ONLINE_MESSAGE": "You are back online. You are now using bizual online mode.",
     "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode.",
-    "SUBSCRIBE": "Subscribe"
+    "SUBSCRIBE": "Subscribe",
+    "COPY_OF": "Copy of"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -509,7 +511,7 @@
         "HINT": "Please specify unit"
       },
       "TRANSFERRABLE_CONTROL": {
-        "LABEL": "Stock Quantity Transferable"
+        "LABEL": "Stock Quantity Transferrable"
       },
       "NUMBER_OF_UNITS_CONTROL": {
         "LABEL": "Quantity per unit"
@@ -564,7 +566,7 @@
         "HINT": "Please specify unit"
       },
       "TRANSFERRABLE_CONTROL": {
-        "LABEL": "Stock Quantity Transferable"
+        "LABEL": "Stock Quantity Transferrable"
       },
       "NUMBER_OF_UNITS_CONTROL": {
         "LABEL": "Quantity per unit"
@@ -668,6 +670,12 @@
       "CONFIRM": "Are you sure to add new product quantity?",
       "SUCCESS_MESSAGE": "New product quantity has been successfully added!",
       "ERROR_MESSAGE": "Adding new product quantity failed. Please again later."
+    },
+    "COPY_PRODUCT_DIALOG": {
+      "TITLE": "Copy Product",
+      "CONFIRM": "Are you sure you want to copy the selected product?",
+      "SUCCESS_MESSAGE": "Product has been successfully copied!",
+      "ERROR_MESSAGE": "Failed to copy product. Please try again later."
     }
   },
   "ADD_TO_CART_PAGE": {

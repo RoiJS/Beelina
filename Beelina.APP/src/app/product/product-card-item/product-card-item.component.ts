@@ -11,6 +11,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 export class ProductCardItemComponent extends BaseComponent {
   productItem = input<Product>();
   allowAddItem = input<boolean>(false);
+  allowCopyItem = input<boolean>(false);
   allowManageItem = input<boolean>(false);
   allowTransferStocks = input<boolean>(true);
   hideHeader = input<boolean>(false);
@@ -25,6 +26,7 @@ export class ProductCardItemComponent extends BaseComponent {
   addStockQuantity = output<Product>();
   selectItem = output<number>();
   addItem = output<number>();
+  copyItem = output<Product>();
 
   constructor() {
     super();
@@ -48,6 +50,10 @@ export class ProductCardItemComponent extends BaseComponent {
 
   addItemToCart(id: number) {
     this.selectItem.emit(id);
+  }
+
+  copyProductItem() {
+    this.copyItem.emit(this.productItem());
   }
 
   highlightText(text: string) {
