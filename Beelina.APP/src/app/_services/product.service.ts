@@ -709,6 +709,18 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
   }
 `;
 
+const GET_LATEST_PRODUCT_WITHDRAWAL_CODE_QUERY = gql`
+  query {
+    latestProductWithdrawalCode
+  }
+`;
+
+const GET_LATEST_PURCHASE_ORDER_REFERENCE_CODE_QUERY = gql`
+  query {
+    latestStockEntryReferenceNo
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private _warehouseId: number = 1;
@@ -2144,6 +2156,46 @@ export class ProductService {
             return data;
           }
         )
+      );
+  }
+
+  getLatestProductWithdrawalCode() {
+    return this.apollo
+      .watchQuery({
+        query: GET_LATEST_PRODUCT_WITHDRAWAL_CODE_QUERY,
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ latestProductWithdrawalCode: string }>) => {
+          const code = result.data.latestProductWithdrawalCode;
+          if (code) {
+            return code;
+          }
+          const errors = result.errors;
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
+      );
+  }
+
+  getLatestPurchaseOrderReferenceCode() {
+    return this.apollo
+      .watchQuery({
+        query: GET_LATEST_PURCHASE_ORDER_REFERENCE_CODE_QUERY,
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ latestStockEntryReferenceNo: string }>) => {
+          const code = result.data.latestStockEntryReferenceNo;
+          if (code) {
+            return code;
+          }
+          const errors = result.errors;
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
       );
   }
 }

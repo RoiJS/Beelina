@@ -135,6 +135,14 @@ namespace Beelina.API.Types.Query
         {
             return await productWithdrawalEntryRepository.GetProductWithdarawalEntries(productWithdrawalEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
         }
+        
+        [Authorize]
+        public async Task<string> GetLatestProductWithdrawalCode(
+            [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
+            [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            return await productWithdrawalEntryRepository.GetLastProductWithdrawalCode(httpContextAccessor.HttpContext.RequestAborted);
+        }
 
         [Authorize]
         [UsePaging(MaxPageSize = 1000, DefaultPageSize = 50, IncludeTotalCount = true)]

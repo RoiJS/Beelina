@@ -40,6 +40,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   private _warehouseProductsDatasource: Array<Product>;
   private _supplierDatasource: Array<Supplier>;
   private _productItemId: number = 0;
+  private _latestPurchaseOrderReferenceCode: string;
 
   private _subscription: Subscription = new Subscription();
 
@@ -141,6 +142,13 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
 
   async ngOnInit() {
     this._purchaseOrderId = +this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (this._purchaseOrderId === 0) {
+      // Only fetch and prefill for new purchase order
+      this._latestPurchaseOrderReferenceCode = await firstValueFrom(this.productService.getLatestPurchaseOrderReferenceCode());
+      const nextReferenceCode = this.incrementCode(this._latestPurchaseOrderReferenceCode);
+      this.purchaseOrderDetailsForm.get('referenceNo').setValue(nextReferenceCode);
+    }
 
     if (this._purchaseOrderId > 0) {
       this.purchaseOrderDetailsForm.get('supplierId').disable();
