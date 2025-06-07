@@ -12,6 +12,8 @@ import { LocalProductUnit } from 'src/app/_models/local-db/local-product-unit.mo
 import { ProductUnit } from 'src/app/_models/product-unit';
 import { ProductTransaction } from 'src/app/_models/transaction';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -44,11 +46,11 @@ export class LocalProductsDbService extends LocalBaseDbService {
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
     do {
-      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, 1000, []));
+      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, PriceStatusEnum.All, 1000, []));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localProducts: Array<LocalProduct> = allProducts.map(product => {
       const localProduct = new LocalProduct();
       localProduct.customerUserId = customerUserId;
@@ -70,7 +72,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     console.info('newProductsCount: ', newProducts.length);
   }
 
-  async getMyLocalProducts(filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
+  async getMyLocalProducts(filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
     endCursor: string;
     hasNextPage: boolean;
     products: Array<Product>;
@@ -87,21 +89,40 @@ export class LocalProductsDbService extends LocalBaseDbService {
       products: [],
       totalCount: 0
     };
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localProductsFromLocalDb = <Array<LocalProduct>>await firstValueFrom(this.localDbService.getAll('products'));
     result.totalCount = localProductsFromLocalDb.length;
 
     let myLocalProducts = localProductsFromLocalDb.filter(c => c.customerUserId == customerUserId);
 
+    // Filter based on supplier id
     if (supplierId > 0) {
       myLocalProducts = myLocalProducts.filter(c => c.supplierId == supplierId);
     }
 
+    // Filter based on stock status
+    if (stockStatus !== StockStatusEnum.All) {
+      if (stockStatus === StockStatusEnum.WithStocks) {
+        myLocalProducts = myLocalProducts.filter(c => c.stockQuantity > 0);
+      } else if (stockStatus === StockStatusEnum.WithoutStocks) {
+        myLocalProducts = myLocalProducts.filter(c => c.stockQuantity === 0);
+      }
+    }
+
+    // Filter based on price status
+    if (priceStatus !== PriceStatusEnum.All) {
+      if (priceStatus === PriceStatusEnum.WithPrice) {
+        myLocalProducts = myLocalProducts.filter(c => c.pricePerUnit > 0);
+      } else if (priceStatus === PriceStatusEnum.WithoutPrice) {
+        myLocalProducts = myLocalProducts.filter(c => c.pricePerUnit === 0);
+      }
+    }
+
     if (filterKeyword) {
-      const filterKeywords = filterKeyword.toLowerCase().split(' ');
+      const filterKeywords = filterKeyword.toLowerCase().split(',').map(k => k.trim().split(' '));
 
       myLocalProducts = myLocalProducts.filter(product =>
-        filterKeywords.every(keyword => product.name.toLowerCase().includes(keyword) || product.code.toLowerCase().includes(keyword))
+        filterKeywords.some(keywordArray => keywordArray.every(keyword => product.name.toLowerCase().includes(keyword) || product.code.toLowerCase().includes(keyword)))
       );
 
       result.totalCount = myLocalProducts.length;
@@ -169,7 +190,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
       allProductUnits.push(...result.productUnits);
     } while (result.hasNextPage);
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localProductUnits = allProductUnits.map(productUnit => {
       const localProductUnit = new LocalProductUnit();
       localProductUnit.customerUserId = customerUserId;

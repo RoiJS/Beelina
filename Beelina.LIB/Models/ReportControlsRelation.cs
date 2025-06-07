@@ -10,7 +10,8 @@ namespace Beelina.LIB.Models
         public int Order { get; set; }
         public string DefaultValue { get; set; }
         public bool AllowAllOption { get; set; } = false;
-        public BusinessModelEnum? OnlyAvailableOnBusinessModel { get; set; }
+        public string AgentTypeOptions { get; set; }
+        public string OnlyAvailableOnBusinessModel { get; set; }
         public PermissionLevelEnum? OnlyAvailableOnBusinessModelForMinimumPrivilege { get; set; }
 
         public Report Report { get; set; }

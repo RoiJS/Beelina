@@ -16,11 +16,15 @@ import { UserAccountDataSource } from '../_models/datasources/user-account.datas
 import { User } from '../_models/user.model';
 
 import { ApplySubscriptionService } from '../_services/apply-subscription.service';
+import { AuthService } from '../_services/auth.service';
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { DialogService } from '../shared/ui/dialog/dialog.service';
 import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
 import { UserAccountService } from '../_services/user-account.service';
 import { NotificationService } from '../shared/ui/notification/notification.service';
+
+import { SalesAgentTypeEnum } from '../_enum/sales-agent-type.enum';
+import { BusinessModelEnum } from '../_enum/business-model.enum';
 
 @Component({
   selector: 'app-accounts',
@@ -34,7 +38,10 @@ export class AccountsComponent extends BaseComponent implements OnInit, OnDestro
   private _subscription: Subscription = new Subscription();
 
   clientSubscriptionDetails: ClientSubscriptionDetails;
+  BusinessModelEnum = BusinessModelEnum;
+  SalesAgentTypeEnum = SalesAgentTypeEnum;
 
+  authService = inject(AuthService);
   applySubscriptionService = inject(ApplySubscriptionService);
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);

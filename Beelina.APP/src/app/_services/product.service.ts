@@ -63,6 +63,8 @@ import { ProductWithdrawalEntryResult } from '../_models/results/product-withdra
 import { ProductWarehouseStockReceiptEntryResult } from '../_models/results/product-warehouse-stock-receipt-entry-result';
 import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-entry.output';
 import { IWithdrawalEntryOutput } from '../_interfaces/outputs/iwithdrawal-entry.output';
+import { StockStatusEnum } from '../_enum/stock-status.enum';
+import { PriceStatusEnum } from '../_enum/price-status.enum';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -523,6 +525,7 @@ const GET_SALES_AGENTS_LIST = gql`
       firstName
       lastName
       username
+      salesAgentType
     }
   }
 `;
@@ -706,6 +709,18 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
   }
 `;
 
+const GET_LATEST_PRODUCT_WITHDRAWAL_CODE_QUERY = gql`
+  query {
+    latestProductWithdrawalCode
+  }
+`;
+
+const GET_LATEST_PURCHASE_ORDER_REFERENCE_CODE_QUERY = gql`
+  query {
+    latestStockEntryReferenceNo
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private _warehouseId: number = 1;
@@ -715,7 +730,7 @@ export class ProductService {
   store = inject(Store<AppStateInterface>);
   storageService = inject(StorageService);
 
-  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, limit: number, productTransactionItems: Array<ProductTransaction>) {
+  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>) {
     return this.apollo
       .watchQuery({
         query: GET_PRODUCTS_QUERY,
@@ -724,7 +739,9 @@ export class ProductService {
           filterKeyword,
           userAccountId,
           productsFilter: {
-            supplierId
+            supplierId,
+            stockStatus,
+            priceStatus
           },
           limit
         },
@@ -777,7 +794,7 @@ export class ProductService {
       );
   }
 
-  getWarehouseProducts(cursor: string, supplierId: number, filterKeyword: string, limit: number) {
+  getWarehouseProducts(cursor: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, filterKeyword: string, limit: number) {
     const warehouseId = this._warehouseId;
 
     return this.apollo
@@ -788,7 +805,9 @@ export class ProductService {
           filterKeyword,
           warehouseId,
           productsFilter: {
-            supplierId
+            supplierId,
+            stockStatus,
+            priceStatus
           },
           limit
         },
@@ -879,7 +898,9 @@ export class ProductService {
         filterKeyword: productName,
         userAccountId: +this.storageService.getString('currentSalesAgentId'),
         productsFilter: {
-          supplierId: 0
+          supplierId: 0,
+          stockStatus: StockStatusEnum.All,
+          priceStatus: PriceStatusEnum.All
         },
         limit: 50
       };
@@ -908,7 +929,9 @@ export class ProductService {
         filterKeyword: productName,
         warehouseId: 1,
         productsFilter: {
-          supplierId: 0
+          supplierId: 0,
+          stockStatus: StockStatusEnum.All,
+          priceStatus: PriceStatusEnum.All
         },
         limit: 50
       };
@@ -1795,6 +1818,7 @@ export class ProductService {
             user.middleName = currentUser.middleName;
             user.lastName = currentUser.lastName;
             user.username = currentUser.username;
+            user.salesAgentType = currentUser.salesAgentType;
             return user;
           });
 
@@ -2132,6 +2156,46 @@ export class ProductService {
             return data;
           }
         )
+      );
+  }
+
+  getLatestProductWithdrawalCode() {
+    return this.apollo
+      .watchQuery({
+        query: GET_LATEST_PRODUCT_WITHDRAWAL_CODE_QUERY,
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ latestProductWithdrawalCode: string }>) => {
+          const code = result.data.latestProductWithdrawalCode;
+          if (code) {
+            return code;
+          }
+          const errors = result.errors;
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
+      );
+  }
+
+  getLatestPurchaseOrderReferenceCode() {
+    return this.apollo
+      .watchQuery({
+        query: GET_LATEST_PURCHASE_ORDER_REFERENCE_CODE_QUERY,
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ latestStockEntryReferenceNo: string }>) => {
+          const code = result.data.latestStockEntryReferenceNo;
+          if (code) {
+            return code;
+          }
+          const errors = result.errors;
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
       );
   }
 }

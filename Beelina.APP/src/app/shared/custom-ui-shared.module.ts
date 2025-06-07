@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
@@ -51,6 +52,7 @@ import { BadgeModule } from './ui/badge/badge.module';
     MatDatepickerModule,
     MatMenuModule,
     MatRippleModule,
+    MatTooltipModule,
     NgApexchartsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),

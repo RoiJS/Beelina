@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
@@ -7,12 +7,15 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 
 import { SupplierStore } from '../../suppliers/suppliers.store';
 
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+
 @Component({
   selector: 'app-product-filter',
   templateUrl: './product-filter.component.html',
   styleUrls: ['./product-filter.component.scss']
 })
-export class ProductFilterComponent extends BaseComponent implements OnInit {
+export class ProductFilterComponent extends BaseComponent {
 
   private _productFilterForm: FormGroup;
 
@@ -22,16 +25,18 @@ export class ProductFilterComponent extends BaseComponent implements OnInit {
 
   data = inject<ProductsFilter>(MAT_BOTTOM_SHEET_DATA);
 
+  StockStatusEnum = StockStatusEnum;
+  PriceStatusEnum = PriceStatusEnum;
+
   constructor() {
     super();
     this.supplierStore.reset();
     this.supplierStore.getSuppliers();
     this._productFilterForm = this._formBuilder.group({
       supplierId: [this.data.supplierId],
+      stockStatus: [this.data.stockStatus],
+      priceStatus: [this.data.priceStatus],
     });
-  }
-
-  ngOnInit() {
   }
 
   onCancel() {
@@ -40,14 +45,20 @@ export class ProductFilterComponent extends BaseComponent implements OnInit {
 
   onReset() {
     this._bottomSheetRef.dismiss({
-      supplierId: 0
+      supplierId: 0,
+      stockStatus: StockStatusEnum.All,
+      priceStatus: PriceStatusEnum.All
     });
   }
 
   onConfirm() {
     const supplierId = this._productFilterForm.get('supplierId').value;
+    const stockStatus = this._productFilterForm.get('stockStatus').value;
+    const priceStatus = this._productFilterForm.get('priceStatus').value;
     this._bottomSheetRef.dismiss({
-      supplierId
+      supplierId,
+      stockStatus,
+      priceStatus
     });
   }
 

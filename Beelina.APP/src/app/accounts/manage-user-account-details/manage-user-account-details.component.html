@@ -81,6 +81,31 @@
                 </mat-select>
               </mat-form-field>
 
+              <!-- Only available for Sales Agents -->
+              @if (profileForm.get('permission').value === 'USER') {
+              <mat-form-field appearance="fill">
+                <mat-label>{{
+                  "PROFILE_PAGE.FORM_CONTROL_SECTION.SALES_AGENT_TYPE_CONTROL.LABEL"
+                  | translate
+                  }}:</mat-label>
+                <mat-select formControlName="salesAgentType">
+                  <mat-option [value]="'FIELD_AGENT'">
+                    {{
+                    "PROFILE_PAGE.FORM_CONTROL_SECTION.SALES_AGENT_TYPE_CONTROL.OPTIONS.FIELD_AGENT"
+                    | translate
+                    }}
+                  </mat-option>
+                  <mat-option [value]="'WAREHOUSE_AGENT'">
+                    {{
+                    "PROFILE_PAGE.FORM_CONTROL_SECTION.SALES_AGENT_TYPE_CONTROL.OPTIONS.WAREHOUSE_AGENT"
+                    | translate
+                    }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              }
+
+
               <mat-form-field appearance="fill">
                 <mat-label>{{
                   "PROFILE_PAGE.FORM_CONTROL_SECTION.USERNAME_CONTROL.LABEL"

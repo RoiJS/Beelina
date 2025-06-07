@@ -10,5 +10,6 @@ namespace Beelina.LIB.Interfaces
         Task<ProductWithdrawalEntryResult> GetProductWithdrawalEntry(int productWithdrawalEntryId, CancellationToken cancellationToken = default);
         Task<List<ProductWithdrawalEntry>> GetProductWithdarawalEntries(ProductWithdrawalFilter productWithdrawalEntryFilter, string filterKeyword = "", CancellationToken cancellationToken = default);
         Task<ProductWithdrawalEntry> GetProductWithdrawalByUniqueCode(int productWithdrawalId, string withdrawalSlipNo);
+        Task<string> GetLastProductWithdrawalCode(CancellationToken cancellationToken = default);
     }
 }

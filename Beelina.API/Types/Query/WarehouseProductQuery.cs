@@ -138,6 +138,14 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
+        public async Task<string> GetLatestStockEntryReferenceNo(
+            [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
+            [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            return await productWarehouseStockReceiptEntryRepository.GetStockEntryLatestReferenceNo(httpContextAccessor.HttpContext.RequestAborted);
+        }
+
+        [Authorize]
         [UsePaging(MaxPageSize = 1000, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]

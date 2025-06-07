@@ -125,5 +125,12 @@ namespace Beelina.LIB.BusinessLogic
 
             return productWithdrawalFromRepo;
         }
+
+        public async Task<string> GetLastProductWithdrawalCode(CancellationToken cancellationToken = default)
+        {
+            var productWithdrawalEntries = _beelinaRepository.ClientDbContext.ProductWithdrawalEntries;
+            var lastEntry = await productWithdrawalEntries.OrderByDescending(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            return lastEntry != null ? lastEntry.WithdrawalSlipNo : string.Empty;
+        }
     }
 }

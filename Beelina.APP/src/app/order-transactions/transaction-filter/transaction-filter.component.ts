@@ -4,20 +4,25 @@ import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bott
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { TransactionsFilter } from 'src/app/_models/filters/transactions.filter';
-import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
+
+import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
+import { PaymentStatusEnum } from 'src/app/_enum/payment-status.enum';
 
 @Component({
   selector: 'app-transaction-filter',
   templateUrl: './transaction-filter.component.html',
   styleUrls: ['./transaction-filter.component.scss']
 })
-export class TransactionFilterComponent extends BaseComponent implements OnInit {
+export class TransactionFilterComponent extends BaseComponent {
   private _transactionFilterForm: FormGroup;
   private _bottomSheetRef = inject(MatBottomSheetRef<TransactionFilterComponent>);
   private _formBuilder = inject(FormBuilder);
 
   data = inject<TransactionsFilter>(MAT_BOTTOM_SHEET_DATA);
+
+  PaymentStatusEnum = PaymentStatusEnum;
+  TransactionStatusEnum = TransactionStatusEnum;
 
   constructor() {
     super();
@@ -25,10 +30,8 @@ export class TransactionFilterComponent extends BaseComponent implements OnInit 
     this._transactionFilterForm = this._formBuilder.group({
       transactionStatus: [this.data.status],
       transactionDate: [transactionDate],
+      paymentStatus: [this.data.paymentStatus],
     });
-  }
-
-  ngOnInit() {
   }
 
   onCancel() {
@@ -38,16 +41,20 @@ export class TransactionFilterComponent extends BaseComponent implements OnInit 
   onReset() {
     this._bottomSheetRef.dismiss({
       transactionStatus: TransactionStatusEnum.ALL,
-      transactionDate: ''
+      transactionDate: DateFormatter.format(new Date()),
+      paymentStatus: PaymentStatusEnum.All
     });
   }
 
   onConfirm() {
     const transactionStatus = this._transactionFilterForm.get('transactionStatus').value;
     const transactionDate = this._transactionFilterForm.get('transactionDate').value;
+    const paymentStatus = this._transactionFilterForm.get('paymentStatus').value;
 
     this._bottomSheetRef.dismiss({
-      transactionStatus, transactionDate
+      transactionStatus,
+      transactionDate,
+      paymentStatus
     });
   }
 

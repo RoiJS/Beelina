@@ -10,6 +10,7 @@ export class BaseControlComponent implements OnInit {
   protected controlLabelIdentifier: string;
   protected hide: boolean;
   protected allowAllOption: boolean;
+  protected agentTypeOptions: string;
 
   constructor(protected translateService: TranslateService) { }
 
@@ -29,6 +30,10 @@ export class BaseControlComponent implements OnInit {
 
   setControlVisibility(show: boolean) {
     this.hide = !show;
+  }
+
+  setAgentTypeOptions(agentTypeOptions: string) {
+    this.agentTypeOptions = agentTypeOptions;
   }
 
   setAllowAllOption(activateAllOption: boolean) {

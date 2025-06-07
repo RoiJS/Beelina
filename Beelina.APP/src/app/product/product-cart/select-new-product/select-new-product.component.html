@@ -12,7 +12,7 @@
 
         <cdk-virtual-scroll-viewport itemSize="60" orientation="vertical" class="list-container">
           <div *cdkVirtualFor="let item of dataSource">
-            <app-product-card-item [productItem]="item" [hideHeaderOptions]="true"
+            <app-product-card-item [filterKeyword]="filterKeyword()" [productItem]="item" [hideHeaderOptions]="true"
               (selectItem)="addItemToCart($event)"></app-product-card-item>
           </div>
         </cdk-virtual-scroll-viewport>

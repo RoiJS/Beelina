@@ -70,7 +70,7 @@ namespace Beelina.LIB.BusinessLogic
 
                                          where
                                            (!r.Custom || (r.Custom && rc.ClientId == tenantId && rc != null))
-                                           && ((r.OnlyAvailableOnBusinessModel == null) || (r.OnlyAvailableOnBusinessModel != null && r.OnlyAvailableOnBusinessModel == generalSetting.BusinessModel))
+                                           && ((r.OnlyAvailableOnBusinessModel == null) || (r.OnlyAvailableOnBusinessModel != null && r.OnlyAvailableOnBusinessModel.Contains(Convert.ToInt32(generalSetting.BusinessModel).ToString())))
                                            && r.ModuleId == ModulesEnum.Distribution
                                            && r.UserMinimumModulePermission <= userRetailModulePermission.PermissionLevel
                                            && r.UserMaximumModulePermission >= userRetailModulePermission.PermissionLevel

@@ -15,6 +15,8 @@ import { isLoadingSelector, totalCountSelector } from '../store/selectors';
 
 import { LogLevelEnum } from 'src/app/_enum/log-type.enum';
 import { ModuleEnum } from 'src/app/_enum/module.enum';
+import { SalesAgentTypeEnum } from 'src/app/_enum/sales-agent-type.enum';
+import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
 import { ClientSubscriptionDetails } from 'src/app/_models/client-subscription-details.model';
 
 import { ApplySubscriptionService } from 'src/app/_services/apply-subscription.service';
@@ -72,6 +74,7 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
         lastName: ['', Validators.required],
         emailAddress: ['', [Validators.required, Validators.email]],
         permission: [null, Validators.required],
+        salesAgentType: [SalesAgentTypeEnum.None],
         username: [
           '',
           [Validators.required],
@@ -89,12 +92,26 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
         validators: [this.passwordPatternInvalid(), this.passwordMatchValidator()]
       }
     );
+
+    this._profileForm.get('permission')?.valueChanges.subscribe((value) => {
+      if (value === PermissionLevelEnum.User) {
+        this._profileForm.get('salesAgentType')?.setValue(SalesAgentTypeEnum.FieldAgent);
+      } else {
+        this._profileForm.get('salesAgentType')?.setValue(SalesAgentTypeEnum.None);
+      }
+    });
   }
 
   passwordMatchValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
       const password = control.get('newPassword');
       const confirmPassword = control.get('confirmPassword');
+
+      if (this._accountId > 0 && password.value.length === 0 && confirmPassword.value.length === 0) {
+        password.setErrors(null);
+        confirmPassword.setErrors(null);
+        return null;
+      }
 
       if (password.value !== confirmPassword.value) {
         confirmPassword.setErrors({ ...confirmPassword.errors, 'passwordMismatch': true });
@@ -112,6 +129,12 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
 
       const newPassword = control.get('newPassword');
       const confirmPassword = control.get('confirmPassword');
+
+      if (this._accountId > 0 && newPassword.value.length === 0 && confirmPassword.value.length === 0) {
+        newPassword.setErrors(null);
+        confirmPassword.setErrors(null);
+        return null;
+      }
 
       if (!pattern.test(newPassword.value)) {
         newPassword.setErrors({ ...newPassword.errors, 'pattern': true });
@@ -151,6 +174,7 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
           this._profileForm.get('emailAddress').setValue(user.emailAddress);
           this._profileForm.get('username').setValue(user.username);
           this._profileForm.get('permission').setValue(user.getModulePrivilege(ModuleEnum.Distribution).key);
+          this._profileForm.get('salesAgentType').setValue(user.salesAgentType);
         });
     }
   }
@@ -192,6 +216,7 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
         user.emailAddress = this._profileForm.get('emailAddress').value;
         user.username = this._profileForm.get('username').value;
         user.password = this._profileForm.get('newPassword').value;
+        user.salesAgentType = this._profileForm.get('permission').value === PermissionLevelEnum.User ? this._profileForm.get('salesAgentType').value : SalesAgentTypeEnum.None;
 
         if (this._accountId > 0)
           user.userPermissions = this._userDetails.userPermissions.map((p) => {

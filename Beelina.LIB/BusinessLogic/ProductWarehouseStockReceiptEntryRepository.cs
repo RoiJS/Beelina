@@ -64,7 +64,7 @@ namespace Beelina.LIB.BusinessLogic
                 StockEntryDate = productStockPerWarehouseFromRepo.StockEntryDate,
                 SupplierId = productStockPerWarehouseFromRepo.SupplierId,
                 Notes = productStockPerWarehouseFromRepo.Notes,
-                PlateNo= productStockPerWarehouseFromRepo.PlateNo,
+                PlateNo = productStockPerWarehouseFromRepo.PlateNo,
                 ProductStockWarehouseAuditsResult = productStockWarehouseAuditResults,
             };
 
@@ -141,5 +141,11 @@ namespace Beelina.LIB.BusinessLogic
             return purchaseOrerFromRepo;
         }
 
+        public async Task<string> GetStockEntryLatestReferenceNo(CancellationToken cancellationToken = default)
+        {
+            var productWarehouseStockReceiptEntries = _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries;
+            var latestEntry = await productWarehouseStockReceiptEntries.OrderByDescending(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            return latestEntry != null ? latestEntry.ReferenceNo : string.Empty;
+        }
     }
 }

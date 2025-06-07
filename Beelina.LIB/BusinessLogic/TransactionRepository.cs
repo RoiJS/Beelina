@@ -306,7 +306,9 @@ namespace Beelina.LIB.BusinessLogic
                         DateUpdated = t.DateUpdated,
                         UpdatedBy = up.PersonFullName ?? String.Empty,
                     }
-                ).ToListAsync();
+                )
+                .AsNoTracking()
+                .ToListAsync();
 
 
             transactions = (from t in transactions
@@ -364,6 +366,19 @@ namespace Beelina.LIB.BusinessLogic
                                                  })
                                                 .OrderByDescending(t => t.TransactionDate)
                                                 .ToList();
+
+
+            if (transactionsFilter is not null && transactionsFilter.PaymentStatus != PaymentStatusEnum.All)
+            {
+                if (transactionsFilter.PaymentStatus == PaymentStatusEnum.Paid)
+                {
+                    transactionsWithPaymentStatus = [.. transactionsWithPaymentStatus.Where(t => !t.HasUnpaidProductTransaction)];
+                }
+                else if (transactionsFilter.PaymentStatus == PaymentStatusEnum.Unpaid)
+                {
+                    transactionsWithPaymentStatus = [.. transactionsWithPaymentStatus.Where(t => t.HasUnpaidProductTransaction)];
+                }
+            }
 
             return transactionsWithPaymentStatus;
         }
@@ -868,7 +883,7 @@ namespace Beelina.LIB.BusinessLogic
                                 .Where(t => transactionIds.Contains(t.Id))
                                 .Includes(t => t.ProductTransactions)
                                 .ToListAsync();
-                                
+
             SetCurrentUserId(_currentUserService.CurrentUserId);
 
             transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));

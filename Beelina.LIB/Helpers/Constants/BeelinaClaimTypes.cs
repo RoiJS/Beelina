@@ -12,5 +12,6 @@
         public const string DistributionModulePrivilege = "distributionModulePrivilege";
         public const string DateCreated = "dateCreated";
         public const string BusinessModel = "businessModel";
+        public const string SalesAgentType = "salesAgentType";
     }
 }

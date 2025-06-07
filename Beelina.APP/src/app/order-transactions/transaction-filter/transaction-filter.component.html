@@ -10,23 +10,37 @@
         translate }}:</mat-label>
 
       <mat-select formControlName="transactionStatus">
-        <mat-option [value]="'ALL'">{{
+        <mat-option [value]="TransactionStatusEnum.ALL">{{
           "GENERAL_TEXTS.ALL" |translate
           }}</mat-option>
-        <mat-option [value]="'CONFIRMED'">{{
+        <mat-option [value]="TransactionStatusEnum.CONFIRMED">{{
           "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.CONFIRM_OPTION"
           | translate
           }}</mat-option>
-        <mat-option [value]="'DRAFT'">{{
+        <mat-option [value]="TransactionStatusEnum.DRAFT">{{
           "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.DRAFT_OPTION"
           | translate
           }}</mat-option>
-        <mat-option [value]="'BAD_ORDER'">{{
+        <mat-option [value]="TransactionStatusEnum.BAD_ORDER">{{
           "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.BAD_OPTION"
           | translate
           }}</mat-option>
       </mat-select>
+    </mat-form-field>
 
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.PAYMENT_STATUS_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <mat-select formControlName="paymentStatus">
+        <mat-option [value]="PaymentStatusEnum.All">{{ "GENERAL_TEXTS.ALL" | translate }}</mat-option>
+        <mat-option [value]="PaymentStatusEnum.Paid">{{
+          "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.PAYMENT_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.PAID_OPTION"
+          | translate }}</mat-option>
+        <mat-option [value]="PaymentStatusEnum.Unpaid">{{
+          "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.PAYMENT_STATUS_CONTROL.DROPDOWN_OPTION_CONTROL.UNPAID_OPTION"
+          | translate }}</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="date-picker-control">

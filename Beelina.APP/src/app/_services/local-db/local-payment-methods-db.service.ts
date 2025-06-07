@@ -20,7 +20,7 @@ export class LocalPaymentMethodsDbService extends LocalBaseDbService {
 
     if (paymentMethodsCount > 0) return;
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const result = await firstValueFrom(this.paymentMethodsService.getPaymentMethods());
     const localPaymentMethods = result.paymentMethods.map(paymentMethod => {
       const localPaymentMethod = new LocalPaymentMethod();
@@ -47,7 +47,7 @@ export class LocalPaymentMethodsDbService extends LocalBaseDbService {
       totalCount: 0
     };
 
-    const customerUserId = await this.getCustomerUser();
+    const customerUserId = await this.getCustomerUserId();
     const localPaymentMethodsFromLocalDb = <Array<LocalPaymentMethod>>await firstValueFrom(this.localDbService.getAll('paymentMethods'));
     const myLocalPaymentMethods = localPaymentMethodsFromLocalDb.filter(c => c.customerUserId == customerUserId);
 

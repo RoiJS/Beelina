@@ -115,10 +115,13 @@ namespace Beelina.LIB.Helpers.Extensions
                 return false;
 
             input = input.ToLower();
-            keywords = keywords.ToLower();
-            string[] keywordArray = keywords.Split(' ');
+            string[] keywordArray = [.. keywords.Split(',').Select(k => k.Trim().ToLower())];
 
-            return keywordArray.All(keyword => input.Contains(keyword)) || input.Contains(keywords);
+            return keywordArray.Any(keyword =>
+            {
+                string[] keywordWords = keyword.Split(' ');
+                return keywordWords.All(word => input.Contains(word));
+            });
         }
 
         public static int CalculatePrecision(this string input, string keywords)
