@@ -22,6 +22,8 @@ import { NotificationService } from '../shared/ui/notification/notification.serv
 import { StorageService } from '../_services/storage.service';
 import { TransactionService } from '../_services/transaction.service';
 
+import { PaymentStatusEnum } from '../_enum/payment-status.enum';
+
 @Component({
   selector: 'app-order-transactions',
   templateUrl: './order-transactions.component.html',
@@ -72,6 +74,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnDestr
           newTransactionsFilter.transactionDate = DateFormatter.format(new Date());
         } else {
           newTransactionsFilter.transactionDate = this.orderTransactionStore.transactionDate();
+          newTransactionsFilter.paymentStatus = this.orderTransactionStore.paymentStatus();
         }
 
         return newTransactionsFilter;
@@ -113,6 +116,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnDestr
         (data: {
           transactionStatus: TransactionStatusEnum;
           transactionDate: Date;
+          paymentStatus: PaymentStatusEnum;
         }) => {
           if (!data) return;
 
@@ -120,6 +124,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnDestr
             const newTransactionsFilter = new TransactionsFilter();
             newTransactionsFilter.transactionDate = DateFormatter.format(data.transactionDate);
             newTransactionsFilter.status = data.transactionStatus;
+            newTransactionsFilter.paymentStatus = data.paymentStatus;
             return newTransactionsFilter;
           });
 
