@@ -1465,6 +1465,13 @@
             "BAD_OPTION": "Bad Order"
           }
         },
+        "PAYMENT_STATUS_CONTROL": {
+          "LABEL": "Payment Status",
+          "DROPDOWN_OPTION_CONTROL": {
+            "PAID_OPTION": "Paid",
+            "UNPAID_OPTION": "Unpaid"
+          }
+        },
         "TRANSACTION_DATE_CONTROL": {
           "LABEL": "Date"
         }

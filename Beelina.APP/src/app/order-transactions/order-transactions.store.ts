@@ -5,14 +5,17 @@ import { IBaseStateConnection } from "../_interfaces/states/ibase-connection.sta
 import { IBaseState } from "../_interfaces/states/ibase.state";
 import { Transaction } from "../_models/transaction";
 import { TransactionService } from "../_services/transaction.service";
-import { TransactionStatusEnum } from "../_enum/transaction-status.enum";
 import { TransactionsFilter } from "../_models/filters/transactions.filter";
+
+import { PaymentStatusEnum } from "../_enum/payment-status.enum";
+import { TransactionStatusEnum } from "../_enum/transaction-status.enum";
 
 export interface IOrderTransactionState extends IBaseState, IBaseStateConnection {
   transactions: Array<Transaction>;
   totalCount: number;
   transactionStatus: TransactionStatusEnum;
   transactionDate: string;
+  paymentStatus: PaymentStatusEnum
 }
 
 export const initialState: IOrderTransactionState = {
@@ -25,7 +28,8 @@ export const initialState: IOrderTransactionState = {
   filterKeyword: '',
   hasNextPage: false,
   error: null,
-  totalCount: 0
+  totalCount: 0,
+  paymentStatus: PaymentStatusEnum.All
 };
 
 export const OrderTransactionStore = signalStore(
@@ -73,7 +77,11 @@ export const OrderTransactionStore = signalStore(
     },
 
     setTransactionFilter: (transactionFilter: TransactionsFilter) => {
-      patchState(store, { transactionStatus: transactionFilter.status, transactionDate: transactionFilter.transactionDate });
+      patchState(store, {
+        transactionStatus: transactionFilter.status,
+        transactionDate: transactionFilter.transactionDate,
+        paymentStatus: transactionFilter.paymentStatus
+      });
     },
 
     reset: () => {
@@ -85,7 +93,8 @@ export const OrderTransactionStore = signalStore(
         transactions: initialState.transactions,
         endCursor: initialState.endCursor,
         transactionDate: store.transactionDate(),
-        transactionStatus: store.transactionStatus()
+        transactionStatus: store.transactionStatus(),
+        paymentStatus: store.paymentStatus()
       });
     }
   }))
