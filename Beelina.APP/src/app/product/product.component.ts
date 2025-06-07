@@ -303,6 +303,56 @@ export class ProductComponent
     }
   }
 
+  copyProductItem(product: Product) {
+    this.selectedProduct.set(product);
+
+    const copyProduct = new Product();
+    const copyOfText = this.translateService.instant("GENERAL_TEXTS.COPY_OF");
+    copyProduct.id = 0;
+    copyProduct.name = copyOfText + ' ' + this.selectedProduct().name;
+    copyProduct.code = copyOfText + ' ' + this.selectedProduct().code;
+    copyProduct.description = this.selectedProduct().description;
+    copyProduct.stockQuantity = 0;
+    copyProduct.isTransferable = this.selectedProduct().isTransferable;
+    copyProduct.numberOfUnits = this.selectedProduct().numberOfUnits;
+    copyProduct.pricePerUnit = this.selectedProduct().pricePerUnit;
+    copyProduct.supplierId = this.selectedProduct().supplierId;
+    copyProduct.productUnit.name = this.selectedProduct().productUnit.name;
+
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.CONFIRM',
+          { name: copyProduct.name }
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.productService.updateProductInformation([copyProduct]).subscribe({
+            next: () => {
+              this.notificationService.openSuccessNotification(
+                this.translateService.instant(
+                  'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+                )
+              );
+              this.store.dispatch(ProductActions.resetProductState());
+              this.store.dispatch(ProductActions.getProductsAction());
+            },
+            error: () => {
+              this.notificationService.openErrorNotification(
+                this.translateService.instant(
+                  'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.ERROR_MESSAGE'
+                )
+              );
+            },
+          });
+        }
+      });
+  }
+
   openTextParserDialog() {
     if (this.currentUserPermission < this.getPermissionLevel(PermissionLevelEnum.Manager)) {
       this.router.navigate(['product-catalogue/text-order']);
