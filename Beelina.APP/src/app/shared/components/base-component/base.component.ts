@@ -177,6 +177,19 @@ export class BaseComponent {
     return `${prefix}<mark>${markedText}</mark>${suffix}`;
   }
 
+  incrementCode(code: string): string {
+    const match = code.match(/^(?:([A-Za-z]+)(-?)|([A-Za-z]+)_?|([A-Za-z]+))(\d+)$/);
+    if (!match) {
+      return '';
+    }
+    const prefix = match[1] || match[3] || match[4] || '';
+    const separator = match[2] || '_';
+    const number = parseInt(match[5], 10);
+    const incrementedNumber = number + 1;
+    const paddedNumber = incrementedNumber.toString().padStart(match[5].length, '0');
+    return `${prefix}${separator}${paddedNumber}`;
+  }
+
   setPasswordVisibility() {
     this._passwordVisible = !this._passwordVisible;
   }

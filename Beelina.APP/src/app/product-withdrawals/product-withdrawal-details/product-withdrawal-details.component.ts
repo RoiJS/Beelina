@@ -45,6 +45,7 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
   private _productItemId: number = 0;
   private _warehouseId: number = 1;
   private _subscription: Subscription = new Subscription();
+  private _latestProductWithdrawalCode: string;
 
   productWithdrawalDetailsForm: FormGroup;
   productWithdrawalItemsTableDatasource = new MatTableDataSource<ProductWithdrawalItemDetails>([]);
@@ -143,6 +144,13 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
 
   async ngOnInit() {
     this._productWithdrawalId = +this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (this._productWithdrawalId === 0) {
+      // Only fetch and prefill for new withdrawal
+      this._latestProductWithdrawalCode = await firstValueFrom(this.productService.getLatestProductWithdrawalCode());
+      const nextCode = this.incrementCode(this._latestProductWithdrawalCode);
+      this.productWithdrawalDetailsForm.get('withdrawalSlipNo').setValue(nextCode);
+    }
 
     if (this._productWithdrawalId > 0) {
       this.productWithdrawalDetailsForm.get('userAccountId').disable();
