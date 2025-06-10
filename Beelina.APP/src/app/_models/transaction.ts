@@ -1,4 +1,4 @@
-import { PaymenStatusEnum } from '../_enum/payment-status.enum';
+import { PaymentStatusEnum } from '../_enum/payment-status.enum';
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
@@ -26,7 +26,7 @@ export class Transaction extends Entity implements IModelNode {
   public modeOfPayment: number;
   public productTransactions: Array<ProductTransaction>;
   public hasUnpaidProductTransaction: boolean;
-  public balance: number;
+  public balance: number = 0;
   public total: number;
   public badOrderAmount: number = 0;
   public status: TransactionStatusEnum;
@@ -93,7 +93,7 @@ export class ProductTransaction extends Entity implements IModelNode {
   public quantity: number;
   public currentQuantity: number;
   public price: number;
-  public status: PaymenStatusEnum;
+  public status: PaymentStatusEnum;
   public product: Product;
   public productTransactionQuantityHistory: Array<ProductTransactionQuantityHistory>;
 
@@ -104,7 +104,7 @@ export class ProductTransaction extends Entity implements IModelNode {
   }
 
   get isPaid(): boolean {
-    return this.status === PaymenStatusEnum.Paid;
+    return this.status === PaymentStatusEnum.Paid;
   }
 
   get priceFormatted(): string {

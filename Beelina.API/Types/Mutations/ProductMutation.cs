@@ -91,6 +91,7 @@ namespace Beelina.API.Types.Mutations
 
         [Authorize]
         public async Task<Product> TransferProductStockFromOwnInventory(
+                    [Service] IUserAccountRepository<UserAccount> userAccountRepository,
                     [Service] ILogger<ProductMutation> logger,
                     [Service] IProductRepository<Product> productRepository,
                     [Service] IHttpContextAccessor httpContextAccessor,
@@ -108,8 +109,10 @@ namespace Beelina.API.Types.Mutations
             {
                 var warehouseId = 1; // Will be implemented later
                 var resultProduct = new Product();
-
-                if (productSource == ProductSourceEnum.Panel && currentUserService.CurrrentBusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
+                var userAccountFromRepo = await userAccountRepository.GetEntity(userAccountId).ToObjectAsync();
+                
+                if ((productSource == ProductSourceEnum.Panel && currentUserService.CurrrentBusinessModel == BusinessModelEnum.WarehousePanelMonitoring) ||
+                (currentUserService.CurrrentBusinessModel == BusinessModelEnum.WarehousePanelHybridMonitoring && userAccountFromRepo.SalesAgentType == SalesAgentTypeEnum.FieldAgent))
                 {
                     resultProduct = await productRepository.TransferProductStockFromOwnInventory(
                                 userAccountId,

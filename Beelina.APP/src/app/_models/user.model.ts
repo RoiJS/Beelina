@@ -5,6 +5,7 @@ import {
   PermissionLevelEnum,
   getPermissionLevelEnum,
 } from '../_enum/permission-level.enum';
+import { getSalesAgentTypeEnum as getSalesAgentType, SalesAgentTypeEnum } from '../_enum/sales-agent-type.enum';
 import { Entity } from './entity.model';
 import { UserCredentials } from './user-credentials';
 import { UserModulePermission } from './user-module-permission';
@@ -19,6 +20,7 @@ export class User extends Entity {
   public gender: GenderEnum;
   public emailAddress: string;
   public businessModel: BusinessModelEnum;
+  public salesAgentType: SalesAgentTypeEnum;
   public credentials: UserCredentials;
   public userPermissions: UserModulePermission[];
   public userSettings: UserSetting;
@@ -53,6 +55,10 @@ export class User extends Entity {
     } else {
       this.userPermissions[index].permissionLevel = permission;
     }
+  }
+
+  getSalesAgentType(salesAgentType: number): SalesAgentTypeEnum {
+    return getSalesAgentType(salesAgentType);
   }
 
   get fullname(): string {

@@ -135,6 +135,14 @@ namespace Beelina.API.Types.Query
         {
             return await productWithdrawalEntryRepository.GetProductWithdarawalEntries(productWithdrawalEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
         }
+        
+        [Authorize]
+        public async Task<string> GetLatestProductWithdrawalCode(
+            [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
+            [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            return await productWithdrawalEntryRepository.GetLastProductWithdrawalCode(httpContextAccessor.HttpContext.RequestAborted);
+        }
 
         [Authorize]
         [UsePaging(MaxPageSize = 1000, DefaultPageSize = 50, IncludeTotalCount = true)]
@@ -201,9 +209,9 @@ namespace Beelina.API.Types.Query
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public async Task<List<ProductStockAuditItem>> GetProductStockAuditItems([Service] IProductRepository<Product> productRepository, int productId, StockAuditSourceEnum stockAuditSource, int userAccountId, string? fromDate, string? toDate)
+        public async Task<List<ProductStockAuditItem>> GetProductStockAuditItems([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int productId, StockAuditSourceEnum stockAuditSource, int userAccountId, string? fromDate, string? toDate)
         {
-            return await productRepository.GetProductStockAuditItems(productId, userAccountId, stockAuditSource, fromDate, toDate);
+            return await productRepository.GetProductStockAuditItems(productId, userAccountId, stockAuditSource, fromDate, toDate, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         [Authorize]

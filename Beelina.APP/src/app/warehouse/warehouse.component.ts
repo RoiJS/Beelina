@@ -4,7 +4,7 @@ import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Router } from '@angular/router';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
@@ -26,10 +26,9 @@ import { ProductService } from 'src/app/_services/product.service';
 import * as WarehouseProductActions from './store/actions';
 import { filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
 import { ProductsFilter } from '../_models/filters/products.filter';
-import { ProductWarehouseStockReceiptEntry } from '../_models/product-warehouse-stock-receipt-entry';
-import { ProductStockWarehouseAudit } from '../_models/product-stock-warehouse-audit';
-import { StockAuditSourceEnum } from '../_enum/stock-audit-source.enum';
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
+import { StockStatusEnum } from '../_enum/stock-status.enum';
+import { PriceStatusEnum } from '../_enum/price-status.enum';
 
 @Component({
   selector: 'app-warehouse',
@@ -60,6 +59,8 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     ProductFilterComponent,
     {
       supplierId: number;
+      stockStatus: StockStatusEnum;
+      priceStatus: PriceStatusEnum;
     }
   >;
 
@@ -143,11 +144,18 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
       .afterDismissed()
       .subscribe(
         (data: {
-          supplierId: number
+          supplierId: number,
+          stockStatus: StockStatusEnum,
+          priceStatus: PriceStatusEnum
         }) => {
           if (!data) return;
 
-          this.productsFilter().supplierId = data.supplierId;
+          const productsFilter = new ProductsFilter();
+          productsFilter.supplierId = data.supplierId;
+          productsFilter.stockStatus = data.stockStatus;
+          productsFilter.priceStatus = data.priceStatus;
+          this.productsFilter.set(productsFilter);
+
           this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
           this.store.dispatch(WarehouseProductActions.setFilterProductAction({
             productsFilter: this.productsFilter()
@@ -191,101 +199,8 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
       });
   }
 
-  addProductStockQuantity(product: Product) {
-    this.selectedProduct.set(product);
-    this._dialogAddQuantityRef = this.bottomSheet.open(AddProductStockQuantityDialogComponent, {
-      data: {
-        additionalStockQuantity: 0,
-        transactionNo: '',
-        productSource: ProductSourceEnum.Warehouse
-      },
-    });
-
-    this._dialogAddQuantityRef
-      .afterDismissed()
-      .subscribe(
-        async (data: {
-          additionalStockQuantity: number;
-          transactionNo: string;
-          plateNo: string;
-        }) => {
-          if (!data || data.additionalStockQuantity === 0) return;
-
-          const checkPurchaseOrderCodeExists = await firstValueFrom(this.productService.checkPurchaseOrderCodeExists(0, data.transactionNo));
-
-          if (checkPurchaseOrderCodeExists) {
-            this.notificationService.openErrorNotification(this.translateService.instant(
-              'PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE'
-            ))
-            return;
-          }
-
-          this.dialogService.openConfirmation(
-            this.translateService.instant(
-              'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.TITLE',
-            ),
-            this.translateService.instant(
-              'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.CONFIRM',
-            )
-          ).subscribe((result: ButtonOptions) => {
-            if (result === ButtonOptions.YES) {
-
-              this.store.dispatch(
-                WarehouseProductActions.setUpdateWarehouseProductLoadingState({
-                  state: true,
-                })
-              );
-
-              const purchaseOrder = new ProductWarehouseStockReceiptEntry();
-              purchaseOrder.id = 0;
-              purchaseOrder.supplierId = this.selectedProduct().supplierId;
-              purchaseOrder.stockEntryDate = new Date();
-              purchaseOrder.referenceNo = data.transactionNo;
-              purchaseOrder.plateNo = data.plateNo;
-
-              const productStockWarehouseAudit = new ProductStockWarehouseAudit();
-              productStockWarehouseAudit.id = 0;
-              productStockWarehouseAudit.productId = this.selectedProduct().id;
-              productStockWarehouseAudit.quantity = data.additionalStockQuantity;
-              productStockWarehouseAudit.pricePerUnit = this.selectedProduct().pricePerUnit;
-              productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
-
-              purchaseOrder.productStockWarehouseAuditInputs = [productStockWarehouseAudit];
-
-              this.productService
-                .updateWarehouseStockReceiptEntries([purchaseOrder])
-                .subscribe({
-                  next: () => {
-                    this.notificationService.openSuccessNotification(this.translateService.instant(
-                      'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.SUCCESS_MESSAGE'
-                    ));
-
-                    this.store.dispatch(
-                      WarehouseProductActions.setUpdateWarehouseProductLoadingState({
-                        state: false,
-                      })
-                    );
-
-                    this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
-                    this.store.dispatch(WarehouseProductActions.setSearchWarehouseProductAction({ keyword: this.searchFieldComponent().value() }));
-                    this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
-                  },
-                  error: () => {
-                    this.notificationService.openErrorNotification(this.translateService.instant(
-                      'PRODUCTS_CATALOGUE_PAGE.ADD_PRODUCT_STOCK_QUANTITY_DIALOG.ERROR_MESSAGE'
-                    ));
-
-                    this.store.dispatch(
-                      WarehouseProductActions.setUpdateWarehouseProductLoadingState({
-                        state: false,
-                      })
-                    );
-                  }
-                });
-            }
-          })
-        }
-      );
+  addProductStockQuantity() {
+    this.router.navigate(['/purchase-orders/add']);
   }
 
   transferProductInventory(productId: number) {
@@ -308,6 +223,57 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
       this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", { productSKUMax: this.clientSubscriptionDetails.productSKUMax }));
     }
   }
+
+  copyProductItem(product: Product) {
+    this.selectedProduct.set(product);
+
+    const copyProduct = new Product();
+    const copyOfText = this.translateService.instant("GENERAL_TEXTS.COPY_OF");
+    copyProduct.id = 0;
+    copyProduct.name = copyOfText + ' ' + this.selectedProduct().name;
+    copyProduct.code = copyOfText + ' ' + this.selectedProduct().code;
+    copyProduct.description = this.selectedProduct().description;
+    copyProduct.stockQuantity = 0;
+    copyProduct.isTransferable = this.selectedProduct().isTransferable;
+    copyProduct.numberOfUnits = this.selectedProduct().numberOfUnits;
+    copyProduct.pricePerUnit = this.selectedProduct().pricePerUnit;
+    copyProduct.supplierId = this.selectedProduct().supplierId;
+    copyProduct.productUnit.name = this.selectedProduct().productUnit.name;
+
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.CONFIRM',
+          { name: copyProduct.name }
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.productService.updateWarehouseProductInformation([copyProduct]).subscribe({
+            next: () => {
+              this.notificationService.openSuccessNotification(
+                this.translateService.instant(
+                  'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+                )
+              );
+              this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
+              this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
+            },
+            error: () => {
+              this.notificationService.openErrorNotification(
+                this.translateService.instant(
+                  'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.ERROR_MESSAGE'
+                )
+              );
+            },
+          });
+        }
+      });
+  }
+
 
   productImport() {
     this.router.navigate(['warehouse-products/product-import'], { state: { productSource: ProductSourceEnum.Warehouse } });

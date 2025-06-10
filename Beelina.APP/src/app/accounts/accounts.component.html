@@ -1,7 +1,7 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false"></app-tool-bar>
 
 <app-loader-layout [busy]="$isLoading | async">
-  <div class="page-container scale-in-center-animation">
+  <div class="page-container slide-in-left-animation">
     <div class="page-container__page-divider scale-in-center-animation">
       <label>{{ "ACCOUNTS_PAGE.TITLE" | translate }}</label><br />
       <span class="page-information-description">{{
@@ -44,7 +44,21 @@
                   }
                 </span>
                 <span class="user-info__username">{{ item.username }}</span><br>
-                <span class="user-info__user-type">{{ item.userType }}</span>
+
+                @if (authService.user.value.businessModel === BusinessModelEnum.WarehousePanelHybridMonitoring && item.salesAgentType !== SalesAgentTypeEnum.None) {
+                  <span class="user-info__user-type">
+                    @if (item.salesAgentType === SalesAgentTypeEnum.FieldAgent) {
+                      {{ "SALES_AGENT_TYPE.FIELD_AGENT" | translate }}
+                    }
+
+                    @if (item.salesAgentType === SalesAgentTypeEnum.WarehouseAgent) {
+                      {{ "SALES_AGENT_TYPE.WAREHOUSE_AGENT" | translate }}
+                    }
+                  </span>
+                } @else {
+                  <span class="user-info__user-type">{{ item.userType }}</span>
+                }
+
               </div>
               <div class="user-actions">
                 <div class="user-actions__edit-button-container">

@@ -15,7 +15,7 @@ export class LocalBaseDbService {
   protected localStorageService = inject(StorageService);
   public localDbService = inject(NgxIndexedDBService);
 
-  async getCustomerUser(): Promise<number> {
+  async getCustomerUserId(): Promise<number> {
     const userId = this.authService.user.value.id;
     const company = this.localStorageService.getString('company');
 
@@ -33,6 +33,20 @@ export class LocalBaseDbService {
 
       const newCustomerUser = await firstValueFrom(this.localDbService.add('customerUsers', newLocalCustomerUser));
       return newCustomerUser.id;
+    }
+  }
+
+  async getCustomerUser(customerUserId: number): Promise<LocalCustomerUser> {
+    const company = this.localStorageService.getString('company');
+
+    const customerUsersFromLocalDb = await firstValueFrom(this.localDbService.getAll('customerUsers'));
+    const customerUsers = <Array<LocalCustomerUser>>customerUsersFromLocalDb
+      .filter((c: LocalCustomerUser) => c.id == customerUserId && c.customer == company);
+
+    if (customerUsers.length > 0) {
+      return customerUsers[0];
+    } else {
+      return new LocalCustomerUser();
     }
   }
 }

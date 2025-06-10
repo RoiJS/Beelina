@@ -39,6 +39,7 @@ const GET_REPORT_INFORMATION = gql`
           allowAllOption
           onlyAvailableOnBusinessModel
           onlyAvailableOnBusinessModelForMinimumPrivilege
+          agentTypeOptions
           reportControl {
             id
             name

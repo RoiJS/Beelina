@@ -25,6 +25,8 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 import { UniquePurchaseOrderCodeValidator } from 'src/app/_validators/unique-purchase-order-code.validator';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -38,6 +40,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   private _warehouseProductsDatasource: Array<Product>;
   private _supplierDatasource: Array<Supplier>;
   private _productItemId: number = 0;
+  private _latestPurchaseOrderReferenceCode: string;
 
   private _subscription: Subscription = new Subscription();
 
@@ -139,6 +142,13 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
 
   async ngOnInit() {
     this._purchaseOrderId = +this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (this._purchaseOrderId === 0) {
+      // Only fetch and prefill for new purchase order
+      this._latestPurchaseOrderReferenceCode = await firstValueFrom(this.productService.getLatestPurchaseOrderReferenceCode());
+      const nextReferenceCode = this.incrementCode(this._latestPurchaseOrderReferenceCode);
+      this.purchaseOrderDetailsForm.get('referenceNo').setValue(nextReferenceCode);
+    }
 
     if (this._purchaseOrderId > 0) {
       this.purchaseOrderDetailsForm.get('supplierId').disable();
@@ -323,7 +333,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     };
 
     do {
-      result = await firstValueFrom(this.productService.getWarehouseProducts(result.endCursor, supplierId, "", 1000));
+      result = await firstValueFrom(this.productService.getWarehouseProducts(result.endCursor, supplierId, StockStatusEnum.All, PriceStatusEnum.All, "", 1000));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 

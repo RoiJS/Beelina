@@ -17,6 +17,7 @@ import { NotificationService } from 'src/app/shared/ui/notification/notification
 import { TransferProductStockTypeEnum } from 'src/app/_enum/transfer-product-stock-type.enum';
 import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
 import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
+import { SalesAgentTypeEnum } from 'src/app/_enum/sales-agent-type.enum';
 
 @Component({
   selector: 'app-transfer-product-inventory',
@@ -38,6 +39,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
   private _transferProductTypeOptionsArray: Array<{ key: string; value: string }> = [];
   private _productSourceGetFunc: Array<string> = ["getProduct", "getWarehouseProduct"];
   private _businessModel: BusinessModelEnum;
+  private _salesAgentType: SalesAgentTypeEnum;
 
   private _bottomSheetRef = inject(MatBottomSheetRef<TransferProductInventoryComponent>);
   private data = inject<{ productId: number; productSource: ProductSourceEnum }>(MAT_BOTTOM_SHEET_DATA);
@@ -52,6 +54,7 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
   constructor() {
     super();
     this._businessModel = this.authService.businessModel;
+    this._salesAgentType = <SalesAgentTypeEnum>this.storageService.getString('currentSalesAgentType');
 
     this._transferProductStockForm = this.formBuilder.group({
       transferType: [TransferProductStockTypeEnum.BULK_TO_PIECE, [Validators.required]],
@@ -92,7 +95,19 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
     });
 
     this._isLoading = true;
-    this.productService[this._productSourceGetFunc[this.data.productSource]](this.data.productId)
+    let index = this.data.productSource;
+
+    if (this._businessModel === BusinessModelEnum.WarehousePanelHybridMonitoring) {
+      if (this._salesAgentType === SalesAgentTypeEnum.WarehouseAgent) {
+        index = ProductSourceEnum.Warehouse;
+      }
+
+      if (this._salesAgentType === SalesAgentTypeEnum.FieldAgent) {
+        index = ProductSourceEnum.Panel;
+      }
+    }
+
+    this.productService[this._productSourceGetFunc[index]](this.data.productId)
       .subscribe((result: ProductInformationResult) => {
         this._sourceProduct = new Product();
         this._sourceProduct.id = result.id;
