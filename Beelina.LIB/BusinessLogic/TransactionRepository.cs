@@ -255,7 +255,8 @@ namespace Beelina.LIB.BusinessLogic
             var transactionsFilter = new TransactionsFilter
             {
                 Status = status,
-                TransactionDate = transactionDate
+                TransactionDate = transactionDate,
+                PaymentStatus = PaymentStatusEnum.All
             };
             return await GetTransactions(_currentUserService.CurrentUserId, "", transactionsFilter);
         }
