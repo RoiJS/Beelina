@@ -154,12 +154,17 @@ export function migrationFactory() {
 
       store.createIndex('sendReceiptEmailAddress', 'sendReceiptEmailAddress', { unique: false });
     },
+    18: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const store = transaction.objectStore('userSettings');
+
+      store.createIndex('printReceiptFontSize', 'printReceiptFontSize', { unique: false });
+    }
   };
 }
 
 const dbConfig: DBConfig = {
   name: 'bizualLocalDb',
-  version: 17,
+  version: 18,
   objectStoresMeta: [
     {
       store: 'customerUsers',

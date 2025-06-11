@@ -1608,6 +1608,12 @@
         "ALLOW_AUTO_PRINT_RECEIPT_CONTROL": {
           "LABEL": "Auto print receipt",
           "HINT": "Activate if you want to automatically print invoice receipt via printer when registering order transaction."
+        },
+        "PRINT_RECEIPT_FONT_SIZE_CONTROL": {
+          "LABEL": "Print Receipt Font Size",
+          "HINT": "Select the font size for printed receipts",
+          "DEFAULT": "Default",
+          "COMPACT": "Compact"
         }
       },
       "SAVE_SETTINGS_DIALOG": {
