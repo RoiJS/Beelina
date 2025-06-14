@@ -1,5 +1,7 @@
-﻿using Beelina.LIB.Interfaces;
+﻿using Beelina.LIB.GraphQL.Types;
+using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Beelina.LIB.BusinessLogic
@@ -30,10 +32,29 @@ namespace Beelina.LIB.BusinessLogic
             var productStockPerPanelFromRepo = await _beelinaRepository
                                     .ClientDbContext
                                     .ProductStockPerPanels
-                                    .Where((p) => p.ProductId == productId && p.UserAccountId == userAccountId)
+                                    .Where((p) =>
+                                        p.ProductId == productId &&
+                                        p.UserAccountId == userAccountId &&
+                                        !p.IsDelete &&
+                                        p.IsActive
+                                    )
                                     .FirstOrDefaultAsync();
 
             return productStockPerPanelFromRepo;
+        }
+
+        public async Task<List<ProductStockPerPanel>> GetDeletedProductAssignmentsItems(
+            int userAccountId,
+            List<int> deletedProductAssignmentProductIds,
+            CancellationToken cancellationToken = default)
+        {
+            return await _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                .Where(p =>
+                    deletedProductAssignmentProductIds.Contains(p.ProductId) &&
+                    p.UserAccountId == userAccountId
+                )
+                .Include(p => p.ProductStockAudits)
+                .ToListAsync(cancellationToken);
         }
     }
 }

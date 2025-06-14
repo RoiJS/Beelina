@@ -95,6 +95,17 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
+        public async Task<List<ProductStockPerPanel>> UpdateProductAssignments(
+                    [Service] IProductRepository<Product> productRepository,
+                    [Service] IHttpContextAccessor httpContextAccessor,
+                    int userAccountId,
+                    List<ProductStockPerPanelInput> updateProductAssignments,
+                    List<ProductStockPerPanelInput> deletedProductAssignments)
+        {
+            return await productRepository.UpdateProductAssignments(userAccountId, updateProductAssignments, deletedProductAssignments, httpContextAccessor.HttpContext.RequestAborted);
+        }
+
+        [Authorize]
         public async Task<IProductWithdrawalEntryPayload> GetProductWithdrawalEntry(
             [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
             [Service] ILogger<ProductQuery> logger,
@@ -135,7 +146,7 @@ namespace Beelina.API.Types.Query
         {
             return await productWithdrawalEntryRepository.GetProductWithdarawalEntries(productWithdrawalEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
         }
-        
+
         [Authorize]
         public async Task<string> GetLatestProductWithdrawalCode(
             [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
@@ -246,6 +257,21 @@ namespace Beelina.API.Types.Query
         {
             var productWithdrawalFromRepo = await productWithdrawalEntryRepository.GetProductWithdrawalByUniqueCode(productWithdrawalId, withdrawalSlipNo);
             return new CheckProductWithdrawalCodeInformationResult(productWithdrawalFromRepo != null);
+        }
+
+        [Authorize]
+        [UseOffsetPaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<IEnumerable<Product>> GetProductPriceAssignments(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int userAccountId,
+            ProductsFilter productsFilter,
+            string filterKeyword = "")
+        {
+            return await productRepository.GetProductPriceAssignments(userAccountId, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)

@@ -1,4 +1,6 @@
-﻿using Beelina.LIB.Models;
+﻿using Beelina.LIB.GraphQL.Types;
+using Beelina.LIB.Models;
+using Beelina.LIB.Models.Filters;
 
 namespace Beelina.LIB.Interfaces
 {
@@ -7,5 +9,9 @@ namespace Beelina.LIB.Interfaces
     {
         Task<ProductStockPerPanel> UpdateProductStockPerPanel(ProductStockPerPanel productStockPerPanel);
         Task<ProductStockPerPanel> GetProductStockPerPanel(int productId, int userAccountId);
+        Task<List<ProductStockPerPanel>> GetDeletedProductAssignmentsItems(
+            int userAccountId,
+            List<int> deletedProductAssignmentProductIds,
+            CancellationToken cancellationToken = default);
     }
 }
