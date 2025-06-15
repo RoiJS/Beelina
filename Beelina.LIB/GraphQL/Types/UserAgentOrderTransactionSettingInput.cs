@@ -1,3 +1,5 @@
+using Beelina.LIB.Enums;
+
 namespace Beelina.LIB.GraphQL.Types
 {
     public class UserAgentOrderTransactionSettingInput
@@ -8,5 +10,6 @@ namespace Beelina.LIB.GraphQL.Types
         public string SendReceiptEmailAddress { get; set; }
         public bool AllowPrintReceipt { get; set; } = false;
         public bool AutoPrintReceipt { get; set; } = false;
+        public PrintReceiptFontSizeEnum PrintReceiptFontSize { get; set; } = PrintReceiptFontSizeEnum.Default;
     }
 }

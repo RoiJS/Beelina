@@ -82,8 +82,6 @@ BEGIN
     RETURN;
 
 END
-            
-GO
 ");
         }
 

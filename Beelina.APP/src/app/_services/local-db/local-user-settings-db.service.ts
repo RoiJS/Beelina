@@ -4,6 +4,7 @@ import { NgxIndexedDBService } from 'ngx-indexed-db';
 
 import { UserSetting } from 'src/app/_models/user-setting';
 import { UserAgentOrderTransactionSettings } from 'src/app/_models/user-agent-order-transaction-settings.model';
+import { PrintReceiptFontSizeEnum } from 'src/app/_enum/print-receipt-font-size.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class LocalUserSettingsDbService {
     if (localUserSettings && localUserSettings.length > 0) {
       return localUserSettings[0];
     }
-    return null;
+    return new UserSetting(); // This will use the default values from the model
   }
 
   async saveLocalUserSettings(userSetting: UserSetting) {
@@ -33,10 +34,10 @@ export class LocalUserSettingsDbService {
     const userSettings = await this.getLocalUserSettings();
     userSettings.allowSendReceipt = userAgentOrderTransactionSettings.allowSendReceipt;
     userSettings.allowAutoSendReceipt = userAgentOrderTransactionSettings.allowAutoSendReceipt;
-    userSettings.allowAutoSendReceipt = userAgentOrderTransactionSettings.allowAutoSendReceipt;
     userSettings.sendReceiptEmailAddress = userAgentOrderTransactionSettings.sendReceiptEmailAddress;
     userSettings.allowPrintReceipt = userAgentOrderTransactionSettings.allowPrintReceipt;
     userSettings.autoPrintReceipt = userAgentOrderTransactionSettings.autoPrintReceipt;
+    userSettings.printReceiptFontSize = userAgentOrderTransactionSettings.printReceiptFontSize || PrintReceiptFontSizeEnum.Default;
 
     this.localDbService
       .update('userSettings', userSettings)

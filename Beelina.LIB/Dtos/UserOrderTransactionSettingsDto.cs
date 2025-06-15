@@ -1,3 +1,5 @@
+using Beelina.LIB.Enums;
+
 namespace Beelina.LIB.Dtos
 {
     public class UserAgentOrderTransactionSettingsDto
@@ -7,5 +9,6 @@ namespace Beelina.LIB.Dtos
         public string SendReceiptEmailAddress { get; set; }
         public bool AllowPrintReceipt { get; set; }
         public bool AutoPrintReceipt { get; set; }
+        public PrintReceiptFontSizeEnum PrintReceiptFontSize { get; set; } = PrintReceiptFontSizeEnum.Default;
     }
 }

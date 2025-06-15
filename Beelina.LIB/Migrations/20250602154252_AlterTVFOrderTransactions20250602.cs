@@ -10,77 +10,82 @@ namespace Beelina.LIB.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"
-                -- =============================================
-                -- Author:		Roi Larrence Amatong
-                -- Create date: 2023-11-16
-                -- Description:	Return all transactions for all products
+migrationBuilder.Sql(@"
 
-                -- Modified By: Roi Larrence Amatong
-                -- Modified Date: 2025-06-02
-                -- Description: Introduced condition for Business Model 3 (#282)
-                -- =============================================
-                ALTER   FUNCTION [dbo].[TVF_OrderTransactions]
-                (	
-                    @userId INT = 0,
-                    @warehouseId INT = 1,
-                    @businessModel INT = 1
-                )
-                RETURNS @result TABLE
-                (
-                    Id INT,
-                    ProductId INT,
-                    Code NVARCHAR(50),
-                    [Name] NVARCHAR(255),
-                    TransactionDate VARCHAR(10),
-                    SoldQuantity INT
-                )
-                AS
-                BEGIN 
+-- Make sure to drop the existing function before creating a new one
+DROP FUNCTION IF EXISTS [dbo].[TVF_OrderTransactions];
+GO
 
-                    INSERT INTO @result
-                    SELECT
-                        t.Id
-                        , pt.ProductId
-                        , p.Code
-                        , p.[Name]
-                        , FORMAT(t.TransactionDate, 'yyyy-MM-dd') AS TransactionDate
-                        , SUM(pt.Quantity) as SoldQuantity
-                    FROM 
-                        Transactions t
+-- =============================================
+-- Author:		Roi Larrence Amatong
+-- Create date: 2023-11-16
+-- Description:	Return all transactions for all products
 
-                        LEFT JOIN ProductTransactions pt
-                        ON t.Id = pt.TransactionId
+-- Modified By: Roi Larrence Amatong
+-- Modified Date: 2025-06-02
+-- Description: Introduced condition for Business Model 3 (#282)
+-- =============================================
+CREATE FUNCTION [dbo].[TVF_OrderTransactions]
+(	
+    @userId INT = 0,
+    @warehouseId INT = 1,
+    @businessModel INT = 1
+)
+RETURNS @result TABLE
+(
+    Id INT,
+    ProductId INT,
+    Code NVARCHAR(50),
+    [Name] NVARCHAR(255),
+    TransactionDate VARCHAR(10),
+    SoldQuantity INT
+)
+AS
+BEGIN 
 
-                        LEFT JOIN Products p
-                        ON p.Id = pt.ProductId
+    INSERT INTO @result
+    SELECT
+        t.Id
+        , pt.ProductId
+        , p.Code
+        , p.[Name]
+        , FORMAT(t.TransactionDate, 'yyyy-MM-dd') AS TransactionDate
+        , SUM(pt.Quantity) as SoldQuantity
+    FROM 
+        Transactions t
 
-                        LEFT JOIN UserAccounts u
-                        ON u.Id = t.CreatedById
+        LEFT JOIN ProductTransactions pt
+        ON t.Id = pt.TransactionId
 
-                    WHERE 
-                        (
-                            (@businessModel = 1 AND t.CreatedById = @userId) 
-                            OR (@businessModel = 2 AND t.CreatedById = t.CreatedById) 
-                            OR (@businessModel = 3 AND t.CreatedById = t.CreatedById AND u.SalesAgentType = 2) -- Warehouse Agents
-                        )
+        LEFT JOIN Products p
+        ON p.Id = pt.ProductId
+
+        LEFT JOIN UserAccounts u
+        ON u.Id = t.CreatedById
+
+    WHERE 
+        (
+            (@businessModel = 1 AND t.CreatedById = @userId) 
+            OR (@businessModel = 2 AND t.CreatedById = t.CreatedById) 
+            OR (@businessModel = 3 AND t.CreatedById = t.CreatedById AND u.SalesAgentType = 2) -- Warehouse Agents
+        )
                         
-                        AND t.WarehouseId = @warehouseId
-                        AND t.[Status] = 2 -- Confirmed transaction
-                        AND t.IsDelete = 0
-                        AND t.IsActive = 1
+        AND t.WarehouseId = @warehouseId
+        AND t.[Status] = 2 -- Confirmed transaction
+        AND t.IsDelete = 0
+        AND t.IsActive = 1
 
-                    GROUP BY
-                        t.Id
-                        ,pt.ProductId
-                        , p.Code
-                        , p.[Name]
-                        , FORMAT(t.TransactionDate, 'yyyy-MM-dd')
+    GROUP BY
+        t.Id
+        ,pt.ProductId
+        , p.Code
+        , p.[Name]
+        , FORMAT(t.TransactionDate, 'yyyy-MM-dd')
 
-                    RETURN;
+    RETURN;
 
-                END
-            ");
+END
+");
         }
 
         /// <inheritdoc />
