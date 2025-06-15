@@ -11,6 +11,7 @@ import { AuthService } from '../auth.service';
 import { NetworkService } from '../network.service';
 import { LocalUserSettingsDbService } from '../local-db/local-user-settings-db.service';
 import { UserAgentOrderTransactionSettings } from 'src/app/_models/user-agent-order-transaction-settings.model';
+import { PrintReceiptFontSizeEnum } from 'src/app/_enum/print-receipt-font-size.enum';
 
 import { UserSetting } from 'src/app/_models/user-setting';
 
@@ -22,6 +23,7 @@ const GET_ORDER_TRANSACTION_SETTINGS = gql`
       sendReceiptEmailAddress
       allowPrintReceipt
       autoPrintReceipt
+      printReceiptFontSize
     }
   }
 `;
@@ -44,7 +46,6 @@ export class UserAgentSettingsService {
   constructor() { }
 
   getOrderTransactionsSettings(userId: number) {
-
     if (!this.networkService.isOnline.value) {
       return from(this.localUserSettingsDbService.getLocalUserSettings())
         .pipe(
@@ -55,9 +56,10 @@ export class UserAgentSettingsService {
             userAgentOrderTransactionSettings.sendReceiptEmailAddress = userSetting.sendReceiptEmailAddress;
             userAgentOrderTransactionSettings.allowPrintReceipt = userSetting.allowPrintReceipt;
             userAgentOrderTransactionSettings.autoPrintReceipt = userSetting.autoPrintReceipt;
+            userAgentOrderTransactionSettings.printReceiptFontSize = userSetting.printReceiptFontSize;
             return userAgentOrderTransactionSettings;
           })
-        );;
+        );
     }
 
     return this.apollo
@@ -84,6 +86,7 @@ export class UserAgentSettingsService {
             userAgentOrderTransactionSettings.sendReceiptEmailAddress = data.sendReceiptEmailAddress;
             userAgentOrderTransactionSettings.allowPrintReceipt = data.allowPrintReceipt;
             userAgentOrderTransactionSettings.autoPrintReceipt = data.autoPrintReceipt;
+            userAgentOrderTransactionSettings.printReceiptFontSize = data.printReceiptFontSize;
             return userAgentOrderTransactionSettings;
           }
         ),
@@ -102,6 +105,7 @@ export class UserAgentSettingsService {
       sendReceiptEmailAddress: userSettings.sendReceiptEmailAddress,
       allowPrintReceipt: userSettings.allowPrintReceipt,
       autoPrintReceipt: userSettings.autoPrintReceipt,
+      printReceiptFontSize: userSettings.printReceiptFontSize
     };
 
     return this.saveUserAgentOrderTransactionSettings(localUserSettings).subscribe((result: boolean) => result);
@@ -115,6 +119,7 @@ export class UserAgentSettingsService {
       sendReceiptEmailAddress: userAgentOrderTransactionSettings.sendReceiptEmailAddress,
       allowPrintReceipt: userAgentOrderTransactionSettings.allowPrintReceipt,
       autoPrintReceipt: userAgentOrderTransactionSettings.autoPrintReceipt,
+      printReceiptFontSize: userAgentOrderTransactionSettings.printReceiptFontSize
     };
 
     // Save local when offline mode

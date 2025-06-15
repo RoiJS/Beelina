@@ -23,6 +23,7 @@ namespace Beelina.LIB.BusinessLogic
             userAgentOrderTransactionSettingsDto.SendReceiptEmailAddress = userSettingsFromRepo.SendReceiptEmailAddress;
             userAgentOrderTransactionSettingsDto.AllowPrintReceipt = userSettingsFromRepo.AllowPrintReceipt;
             userAgentOrderTransactionSettingsDto.AutoPrintReceipt = userSettingsFromRepo.AutoPrintReceipt;
+            userAgentOrderTransactionSettingsDto.PrintReceiptFontSize = userSettingsFromRepo.PrintReceiptFontSize;
 
             return userAgentOrderTransactionSettingsDto;
         }
@@ -37,6 +38,7 @@ namespace Beelina.LIB.BusinessLogic
                 userSettingsFromRepo.SendReceiptEmailAddress = userAgentOrderTransactionSettingInput.SendReceiptEmailAddress;
                 userSettingsFromRepo.AllowPrintReceipt = userAgentOrderTransactionSettingInput.AllowPrintReceipt;
                 userSettingsFromRepo.AutoPrintReceipt = userAgentOrderTransactionSettingInput.AutoPrintReceipt;
+                userSettingsFromRepo.PrintReceiptFontSize = userAgentOrderTransactionSettingInput.PrintReceiptFontSize;
                 await userSettingsRepository.SaveChanges();
                 return true;
             }

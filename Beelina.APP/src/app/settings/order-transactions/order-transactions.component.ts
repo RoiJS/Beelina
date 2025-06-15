@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { PrintReceiptFontSizeEnum } from 'src/app/_enum/print-receipt-font-size.enum';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
@@ -29,6 +30,8 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
   userAgentSettingsService = inject(UserAgentSettingsService);
   formBuilder = inject(FormBuilder);
 
+  printReceiptFontSizeEnum = PrintReceiptFontSizeEnum;
+
   orderTransactionSettingsForm = this.formBuilder.group({
     sendReceiptForm: this.formBuilder.group({
       allowSendReceipt: [false, Validators.required],
@@ -38,6 +41,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
     printReceiptForm: this.formBuilder.group({
       allowPrintReceipt: [false, Validators.required],
       autoPrintReceipt: [false, Validators.required],
+      printReceiptFontSize: [PrintReceiptFontSizeEnum.Default, Validators.required],
     })
   });
 
@@ -48,18 +52,26 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
   ngOnInit() {
     this.userAgentSettingsService
       .getOrderTransactionsSettings(this.authService.userId)
-      .subscribe((userAgentOrderTransactionSettings: UserAgentOrderTransactionSettings) => {
-        this.orderTransactionSettingsForm.setValue({
-          sendReceiptForm: {
-            allowSendReceipt: userAgentOrderTransactionSettings.allowSendReceipt,
-            allowAutoSendReceipt: userAgentOrderTransactionSettings.allowAutoSendReceipt,
-            sendReceiptEmailAddress: userAgentOrderTransactionSettings.sendReceiptEmailAddress,
-          },
-          printReceiptForm: {
-            allowPrintReceipt: userAgentOrderTransactionSettings.allowPrintReceipt,
-            autoPrintReceipt: userAgentOrderTransactionSettings.autoPrintReceipt,
+      .subscribe({
+        next: (userAgentOrderTransactionSettings: UserAgentOrderTransactionSettings) => {
+          if (userAgentOrderTransactionSettings) {
+            this.orderTransactionSettingsForm.patchValue({
+              sendReceiptForm: {
+                allowSendReceipt: userAgentOrderTransactionSettings.allowSendReceipt,
+                allowAutoSendReceipt: userAgentOrderTransactionSettings.allowAutoSendReceipt,
+                sendReceiptEmailAddress: userAgentOrderTransactionSettings.sendReceiptEmailAddress,
+              },
+              printReceiptForm: {
+                allowPrintReceipt: userAgentOrderTransactionSettings.allowPrintReceipt,
+                autoPrintReceipt: userAgentOrderTransactionSettings.autoPrintReceipt,
+                printReceiptFontSize: userAgentOrderTransactionSettings.printReceiptFontSize || PrintReceiptFontSizeEnum.Default,
+              }
+            });
           }
-        })
+        },
+        error: (error) => {
+          console.error('Error loading settings:', error);
+        }
       });
   }
 
@@ -82,6 +94,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
       const sendReceiptEmailAddress = this.orderTransactionSettingsForm.value.sendReceiptForm.sendReceiptEmailAddress
       const allowPrintReceipt = this.orderTransactionSettingsForm.value.printReceiptForm.allowPrintReceipt;
       const autoPrintReceipt = this.orderTransactionSettingsForm.value.printReceiptForm.autoPrintReceipt;
+      const printReceiptFontSize = this.orderTransactionSettingsForm.value.printReceiptForm.printReceiptFontSize || PrintReceiptFontSizeEnum.Default;
 
       this.dialogService.openConfirmation(
         this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.TITLE"),
@@ -96,7 +109,8 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
             allowAutoSendReceipt,
             sendReceiptEmailAddress,
             allowPrintReceipt,
-            autoPrintReceipt
+            autoPrintReceipt,
+            printReceiptFontSize
           };
 
           this.userAgentSettingsService
@@ -110,7 +124,6 @@ export class OrderTransactionsComponent extends BaseComponent implements OnInit 
                     this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.SUCCESS_MESSAGE"),
                   );
                 } else {
-
                   this.notificationService.openErrorNotification(
                     this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.ERROR_MESSAGE"),
                   );
