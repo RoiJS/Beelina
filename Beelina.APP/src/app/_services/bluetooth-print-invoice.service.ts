@@ -41,21 +41,21 @@ export class BluetoothPrintInvoiceService {
       const ESC = '\x1B';
       let HEADER_FONT: string, SMALL_FONT: string, NORMAL_FONT: string;
 
-      if (fontSize === PrintReceiptFontSizeEnum.Default) {
-        // Larger font (double height and width)
-        HEADER_FONT = ESC + '!' + '\x38'; // 0x38 = double width + double height + bold
-        SMALL_FONT = ESC + '!' + '\x01';  // Smallest font
-        NORMAL_FONT = ESC + '!' + '\x00'; // Normal font
-      } else if (fontSize === PrintReceiptFontSizeEnum.Compact) {
-        // Compact font (normal size)
-        HEADER_FONT = ESC + 'M' + '\x01' + ESC + '!' + '\x38'; // 0x38 = double width + double height + bold
-        SMALL_FONT = ESC + 'M' + '\x01' + ESC + '!' + '\x01';  // Smallest font
-        NORMAL_FONT = ESC + '!' + '\x00'; // Normal font
+      if (fontSize === PrintReceiptFontSizeEnum.Compact) {
+        // Compact font (normal size with no spacing)
+        HEADER_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x38'; // No spacing + double width + double height + bold
+        SMALL_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x01';  // No spacing + smallest font
+        NORMAL_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x00'; // No spacing + normal font
+      } else if (fontSize === PrintReceiptFontSizeEnum.Default) {
+        // Default font with no spacing
+        HEADER_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x38'; // No spacing + double width + double height + bold
+        SMALL_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x01';  // No spacing + smallest font
+        NORMAL_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x00'; // No spacing + normal font
       } else {
-        // Fallback to normal
-        HEADER_FONT = ESC + '!' + '\x00';
-        SMALL_FONT = ESC + '!' + '\x01';
-        NORMAL_FONT = ESC + '!' + '\x00';
+        // Fallback to normal with no spacing
+        HEADER_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x00';
+        SMALL_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x01';
+        NORMAL_FONT = ESC + ' ' + '\x00' + ESC + '!' + '\x00';
       }
 
       // Utility function to format columns
@@ -185,4 +185,67 @@ export class BluetoothPrintInvoiceService {
     }
   }
 
+  // Keep this for testing purposes
+  async testFontSizes() {
+    try {
+      await this.bluetoothPrinterService.connect();
+
+      const ESC = '\x1B';
+      let receipt = '';
+
+      // Test different font size commands
+      receipt += '=== FONT SIZE TEST ===\n\n';
+
+      // Basic font test
+      receipt += ESC + '!' + '\x00';
+      receipt += 'Normal Font\n';
+      receipt += '1234567890\n\n';
+
+      // Try different character spacing
+      receipt += ESC + ' ' + '\x00';
+      receipt += 'No Character Spacing\n';
+      receipt += '1234567890\n\n';
+
+      receipt += ESC + ' ' + '\x01';
+      receipt += 'Character Spacing 1\n';
+      receipt += '1234567890\n\n';
+
+      receipt += ESC + ' ' + '\x02';
+      receipt += 'Character Spacing 2\n';
+      receipt += '1234567890\n\n';
+
+      // Try different font styles
+      receipt += ESC + '!' + '\x02';
+      receipt += 'Bold Font\n';
+      receipt += '1234567890\n\n';
+
+      receipt += ESC + '!' + '\x04';
+      receipt += 'Double Height\n';
+      receipt += '1234567890\n\n';
+
+      receipt += ESC + '!' + '\x08';
+      receipt += 'Double Width\n';
+      receipt += '1234567890\n\n';
+
+      // Try combining character spacing with font styles
+      receipt += ESC + ' ' + '\x01' + ESC + '!' + '\x02';
+      receipt += 'Bold with Spacing\n';
+      receipt += '1234567890\n\n';
+
+      // Reset to normal
+      receipt += ESC + '!' + '\x00' + ESC + ' ' + '\x00';
+      receipt += '=== END OF TEST ===\n\n\n\n';
+
+      await this.bluetoothPrinterService.printText(receipt);
+
+      this.notificationService.openSuccessNotification(
+        this.translateService.instant("PRINTING_RECEIPT_PAGE.NOTIFICATION_MESSAGES.PRINTING_SUCCESS_MESSAGE")
+      );
+    } catch (error) {
+      this.loggerService.logMessage(LogLevelEnum.ERROR, `${error.name}: ${error.message}`);
+      this.notificationService.openErrorNotification(
+        this.translateService.instant("PRINTING_RECEIPT_PAGE.NOTIFICATION_MESSAGES.PRINTING_ERROR_MESSAGE")
+      );
+    }
+  }
 }
