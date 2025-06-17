@@ -50,7 +50,8 @@
     "ONLINE_MESSAGE": "You are back online. You are now using bizual online mode.",
     "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode.",
     "SUBSCRIBE": "Subscribe",
-    "COPY_OF": "Copy of"
+    "COPY_OF": "Copy of",
+    "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -622,6 +623,7 @@
           "LABEL": "Stock Status",
           "HINT": "Please choose stock status",
           "OPTIONS": {
+            "NONE": "None",
             "ALL": "All",
             "WITH_STOCKS": "With Stocks",
             "WITHOUT_STOCKS": "Without Stocks"
@@ -631,6 +633,7 @@
           "LABEL": "Price Status",
           "HINT": "Please choose price status",
           "OPTIONS": {
+            "NONE": "None",
             "ALL": "All",
             "WITH_PRICE": "With Price",
             "WITHOUT_PRICE": "Without Price"
@@ -1734,6 +1737,44 @@
           }
         }
       }
+    }
+  },
+  "COPY_PRODUCT_PRICE_DIALOG": {
+    "TITLE": "Copy Price Assignments From Agent",
+    "SELECT_AGENT": "Select Agent",
+    "CONFIRM_TITLE": "Confirm Copy",
+    "CONFIRM_MESSAGE": "Copying product price assignment will overwrite existing prices. This action cannot be undone. Are you really sure you want to proceed?",
+    "SUCCESS_MESSAGE": "Product price assignments copied successfully.",
+    "ERROR_MESSAGE": "Failed to copy product price assignments."
+  },
+  "PRODUCT_PRICE_ASSIGNMENT": {
+    "TITLE": "Product Price Assignment",
+    "DESCRIPTION": "Manage product prices and assignments here.",
+    "SEARCH_TEXT_FIELD": {
+      "PLACEHOLDER": "Search product name or code..."
+    },
+    "TABLE_GRID": {
+      "COLUMN_DEFINITION": {
+        "PRODUCT_NAME_FIELD": "Product Name",
+        "PRODUCT_CODE_FIELD": "Product Code",
+        "UNIT_FIELD": "Unit",
+        "STOCK_QUANTITY_FIELD": "Stock Quantity",
+        "PRICE_FIELD": "Price",
+        "ACTIONS_FIELD": "Actions"
+      }
+    },
+    "NO_DATA": "Search products that you want to assign price to.",
+    "SAVE_CHANGES_DIALOG": {
+      "TITLE": "Save Changes",
+      "CONFIRM_MESSAGE": "Are you sure you want to save the changes?",
+      "SUCCESS_MESSAGE": "Changes saved successfully",
+      "ERROR_MESSAGE": "Failed to save changes. Please try again later."
+    },
+    "REMOVE_PRODUCT_DIALOG": {
+      "TITLE": "Remove Product",
+      "CONFIRM_MESSAGE": "Are you sure you want to remove {{name}} from price assignments?",
+      "SUCCESS_MESSAGE": "Product removed successfully",
+      "ERROR_MESSAGE": "Failed to remove product. Please try again later."
     }
   }
 }

@@ -13,5 +13,6 @@ namespace Beelina.LIB.Interfaces
             int userAccountId,
             List<int> deletedProductAssignmentProductIds,
             CancellationToken cancellationToken = default);
+        Task<List<ProductStockPerPanel>> GetProductStockPerPanelsByUserAccountId(int userAccountId, CancellationToken cancellationToken = default);
     }
 }

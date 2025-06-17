@@ -56,5 +56,13 @@ namespace Beelina.LIB.BusinessLogic
                 .Include(p => p.ProductStockAudits)
                 .ToListAsync(cancellationToken);
         }
+
+
+        public async Task<List<ProductStockPerPanel>> GetProductStockPerPanelsByUserAccountId(int userAccountId, CancellationToken cancellationToken = default)
+        {
+            return await _beelinaRepository.ClientDbContext.ProductStockPerPanels
+                .Where(p => p.UserAccountId == userAccountId && p.IsActive && !p.IsDelete)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

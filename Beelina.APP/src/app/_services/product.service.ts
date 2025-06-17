@@ -65,6 +65,8 @@ import { IStockReceiptEntryOutput } from '../_interfaces/outputs/istock-receipt-
 import { IWithdrawalEntryOutput } from '../_interfaces/outputs/iwithdrawal-entry.output';
 import { StockStatusEnum } from '../_enum/stock-status.enum';
 import { PriceStatusEnum } from '../_enum/price-status.enum';
+import { ProductsFilter } from '../_models/filters/products.filter';
+import { ProductStockPerPanel } from '../_models/product-stock-per-panel.model';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -718,6 +720,85 @@ const GET_LATEST_PRODUCT_WITHDRAWAL_CODE_QUERY = gql`
 const GET_LATEST_PURCHASE_ORDER_REFERENCE_CODE_QUERY = gql`
   query {
     latestStockEntryReferenceNo
+  }
+`;
+
+const GET_PRODUCT_PRICE_ASSIGNMENTS = gql`
+  query (
+    $userAccountId: Int!,
+    $filterKeyword: String,
+    $productsFilter: ProductsFilterInput!,
+    $skip: Int!,
+    $take: Int!,
+    $order: [ProductSortInput!]
+  ) {
+    productPriceAssignments(
+        userAccountId: $userAccountId,
+        productsFilter: $productsFilter,
+        filterKeyword: $filterKeyword,
+        order: $order,
+        skip: $skip,
+        take: $take
+    ) {
+      items {
+        id
+        name
+        code
+        description
+        stockQuantity
+        pricePerUnit
+        numberOfUnits
+        isTransferable
+        supplierId
+        productUnit {
+          id
+          name
+        }
+        supplier {
+            id
+            code
+            name
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+      totalCount
+    }
+  }
+`;
+
+const UPDATE_PRODUCT_ASSIGNMENTS_MUTATION = gql`
+  query(
+    $userAccountId: Int!,
+    $updateProductAssignments: [ProductStockPerPanelInput!]!,
+    $deletedProductAssignments: [Int!]!) {
+    updateProductPriceAssignments(
+        userAccountId:  $userAccountId,
+        updateProductAssignments: $updateProductAssignments,
+        deletedProductAssignments: $deletedProductAssignments
+        )
+        {
+            id
+            productId
+            userAccountId
+            pricePerUnit
+        }
+  }
+`;
+
+const COPY_PRODUCT_PRICE_ASSIGNMENTS = gql`
+  query($sourceUserAccountId: Int!, $destinationUserAccountId: Int!) {
+    copyProductPriceAssignments(
+      sourceUserAccountId: $sourceUserAccountId,
+      destinationUserAccountId: $destinationUserAccountId
+    ) {
+      id
+      productId
+      userAccountId
+      pricePerUnit
+    }
   }
 `;
 
@@ -2191,6 +2272,113 @@ export class ProductService {
             return code;
           }
           const errors = result.errors;
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
+      );
+  }
+
+  getProductPriceAssignments(userAccountId: number, filterKeyword: string, productsFilter: ProductsFilter, skip: number, take: number, sortField: string, sortDirection: SortOrderOptionsEnum) {
+
+    let order: any = {
+      [sortField]: sortDirection
+    };
+
+    return this.apollo
+      .watchQuery({
+        query: GET_PRODUCT_PRICE_ASSIGNMENTS,
+        variables: {
+          userAccountId,
+          filterKeyword,
+          productsFilter,
+          skip,
+          take,
+          order
+        }
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ productPriceAssignments: IBaseConnection }>) => {
+          const data = result.data.productPriceAssignments;
+          const errors = result.errors;
+          const hasNextPage = data.pageInfo.hasNextPage;
+          const totalCount = data.totalCount;
+          const priceAssignmentsDto = <Array<Product>>data.items;
+
+          const priceAssignments: Array<Product> = priceAssignmentsDto.map((p) => {
+            const product = new Product();
+            product.id = p.id;
+            product.code = p.code;
+            product.name = p.name;
+            product.stockQuantity = p.stockQuantity;
+            product.productUnit = p.productUnit;
+            product.pricePerUnit = p.pricePerUnit;
+            return product;
+          });
+
+          if (priceAssignments) {
+            return {
+              hasNextPage,
+              priceAssignments,
+              totalCount
+            };
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
+      );
+  }
+
+  updateProductPriceAssignments(modifiedProducts: Product[], deletedProductAssignments: number[]) {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+    return this.apollo
+      .mutate({
+        mutation: UPDATE_PRODUCT_ASSIGNMENTS_MUTATION,
+        variables: {
+          userAccountId,
+          updateProductAssignments: modifiedProducts.map(p => ({
+            id: p.id,
+            pricePerUnit: p.pricePerUnit
+          })),
+          deletedProductAssignments
+        }
+      })
+      .pipe(
+        map((result: MutationResult<{ updateProductAssignments: Product[] }>) => {
+          const data = result.data.updateProductAssignments;
+          if (data) {
+            return data;
+          }
+          const errors = result.errors;
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
+      );
+  }
+
+  copyProductPriceAssignments(sourceUserAccountId: number, destinationUserAccountId: number) {
+    return this.apollo
+      .watchQuery({
+        query: COPY_PRODUCT_PRICE_ASSIGNMENTS,
+        variables: {
+          sourceUserAccountId,
+          destinationUserAccountId
+        }
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ copyProductPriceAssignments: ProductStockPerPanel[] }>) => {
+          const data = result.data.copyProductPriceAssignments;
+          const errors = result.errors;
+          if (data) {
+            return data;
+          }
           if (errors && errors.length > 0) {
             throw new Error(errors[0].message);
           }

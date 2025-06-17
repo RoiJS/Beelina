@@ -22,12 +22,23 @@
       <mat-label>{{ "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.STOCK_STATUS_CONTROL.LABEL" |
         translate }}:</mat-label>
       <mat-select formControlName="stockStatus">
+
+        @if (data.defaultProductsFilter.stockStatus === StockStatusEnum.None) {
+        <mat-option [value]="StockStatusEnum.None">
+          {{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.STOCK_STATUS_CONTROL.OPTIONS.NONE"
+          | translate
+          }}
+        </mat-option>
+        }
+
         <mat-option [value]="StockStatusEnum.All">
           {{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.STOCK_STATUS_CONTROL.OPTIONS.ALL"
           | translate
           }}
         </mat-option>
+
         <mat-option [value]="StockStatusEnum.WithStocks">
           {{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.STOCK_STATUS_CONTROL.OPTIONS.WITH_STOCKS"
@@ -47,12 +58,23 @@
       <mat-label>{{ "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.LABEL" |
         translate }}:</mat-label>
       <mat-select formControlName="priceStatus">
+
+        @if (data.defaultProductsFilter.priceStatus === PriceStatusEnum.None) {
+        <mat-option [value]="PriceStatusEnum.None">
+          {{
+          "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.OPTIONS.NONE"
+          | translate
+          }}
+        </mat-option>
+        }
+
         <mat-option [value]="PriceStatusEnum.All">
           {{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.OPTIONS.ALL"
           | translate
           }}
         </mat-option>
+
         <mat-option [value]="PriceStatusEnum.WithPrice">
           {{
           "PRODUCTS_CATALOGUE_PAGE.PRODUCT_FILTER_DIALOG.FORM_CONTROL_SECTION.PRICE_STATUS_CONTROL.OPTIONS.WITH_PRICE"

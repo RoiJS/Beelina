@@ -50,10 +50,15 @@ namespace Beelina.LIB.Interfaces
             ProductsFilter productsFilter = null,
             CancellationToken cancellationToken = default);
 
-        Task<List<ProductStockPerPanel>> UpdateProductAssignments(
+        Task<List<ProductStockPerPanel>> UpdateProductPriceAssignments(
             int userAccountId,
             List<ProductStockPerPanelInput> updateProductAssignments,
-            List<ProductStockPerPanelInput> deletedProductAssignments,
+            List<int> deletedProductAssignments,
             CancellationToken cancellationToken = default);
+            
+        Task<List<ProductStockPerPanel>> CopyProductPriceAssignments(
+        int sourceUserAccountId,
+        int destinationUserAccountId,
+        CancellationToken cancellationToken = default);
     }
 }

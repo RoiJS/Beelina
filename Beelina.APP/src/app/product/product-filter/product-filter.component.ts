@@ -23,7 +23,7 @@ export class ProductFilterComponent extends BaseComponent {
   private _formBuilder = inject(FormBuilder);
   supplierStore = inject(SupplierStore);
 
-  data = inject<ProductsFilter>(MAT_BOTTOM_SHEET_DATA);
+  data = inject<{ defaultProductsFilter: ProductsFilter, currentProductsFilter: ProductsFilter }>(MAT_BOTTOM_SHEET_DATA);
 
   StockStatusEnum = StockStatusEnum;
   PriceStatusEnum = PriceStatusEnum;
@@ -33,9 +33,9 @@ export class ProductFilterComponent extends BaseComponent {
     this.supplierStore.reset();
     this.supplierStore.getSuppliers();
     this._productFilterForm = this._formBuilder.group({
-      supplierId: [this.data.supplierId],
-      stockStatus: [this.data.stockStatus],
-      priceStatus: [this.data.priceStatus],
+      supplierId: [this.data.currentProductsFilter.supplierId],
+      stockStatus: [this.data.currentProductsFilter.stockStatus],
+      priceStatus: [this.data.currentProductsFilter.priceStatus],
     });
   }
 
@@ -45,9 +45,9 @@ export class ProductFilterComponent extends BaseComponent {
 
   onReset() {
     this._bottomSheetRef.dismiss({
-      supplierId: 0,
-      stockStatus: StockStatusEnum.All,
-      priceStatus: PriceStatusEnum.All
+      supplierId: this.data.defaultProductsFilter.supplierId,
+      stockStatus: this.data.defaultProductsFilter.stockStatus,
+      priceStatus: this.data.defaultProductsFilter.priceStatus
     });
   }
 

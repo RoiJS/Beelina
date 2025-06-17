@@ -95,14 +95,14 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
-        public async Task<List<ProductStockPerPanel>> UpdateProductAssignments(
+        public async Task<List<ProductStockPerPanel>> UpdateProductPriceAssignments(
                     [Service] IProductRepository<Product> productRepository,
                     [Service] IHttpContextAccessor httpContextAccessor,
                     int userAccountId,
                     List<ProductStockPerPanelInput> updateProductAssignments,
-                    List<ProductStockPerPanelInput> deletedProductAssignments)
+                    List<int> deletedProductAssignments)
         {
-            return await productRepository.UpdateProductAssignments(userAccountId, updateProductAssignments, deletedProductAssignments, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.UpdateProductPriceAssignments(userAccountId, updateProductAssignments, deletedProductAssignments, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         [Authorize]
@@ -272,6 +272,20 @@ namespace Beelina.API.Types.Query
             string filterKeyword = "")
         {
             return await productRepository.GetProductPriceAssignments(userAccountId, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
+        }
+
+        [Authorize]
+        public async Task<List<ProductStockPerPanel>> CopyProductPriceAssignments(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int sourceUserAccountId,
+            int destinationUserAccountId)
+        {
+            return await productRepository.CopyProductPriceAssignments(
+                sourceUserAccountId,
+                destinationUserAccountId,
+                httpContextAccessor.HttpContext.RequestAborted
+            );
         }
 
         private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
