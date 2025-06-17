@@ -802,6 +802,12 @@ const COPY_PRODUCT_PRICE_ASSIGNMENTS = gql`
   }
 `;
 
+const GET_LATEST_PRODUCT_CODE_QUERY = gql`
+  query {
+    latestProductCode
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private _warehouseId: number = 1;
@@ -2379,6 +2385,26 @@ export class ProductService {
           if (data) {
             return data;
           }
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
+      );
+  }
+
+  getLatestProductCode() {
+    return this.apollo
+      .watchQuery({
+        query: GET_LATEST_PRODUCT_CODE_QUERY,
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ latestProductCode: string }>) => {
+          const code = result.data.latestProductCode;
+          if (code) {
+            return code;
+          }
+          const errors = result.errors;
           if (errors && errors.length > 0) {
             throw new Error(errors[0].message);
           }

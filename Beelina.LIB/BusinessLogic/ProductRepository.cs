@@ -1925,5 +1925,12 @@ namespace Beelina.LIB.BusinessLogic
 
       return deletedProductAssignmentsItems;
     }
+
+    public async Task<string> GetLatestProductCode(CancellationToken cancellationToken = default)
+    {
+        var products = _beelinaRepository.ClientDbContext.Products;
+        var latestProduct = await products.OrderByDescending(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+        return latestProduct != null ? latestProduct.Code : string.Empty;
+    }
   }
 }
