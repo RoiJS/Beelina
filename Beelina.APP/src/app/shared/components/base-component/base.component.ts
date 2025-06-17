@@ -183,7 +183,7 @@ export class BaseComponent {
       return '';
     }
     const prefix = match[1] || match[3] || match[4] || '';
-    const separator = match[2] || '_';
+    const separator = match[2];
     const number = parseInt(match[5], 10);
     const incrementedNumber = number + 1;
     const paddedNumber = incrementedNumber.toString().padStart(match[5].length, '0');

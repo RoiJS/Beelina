@@ -808,6 +808,12 @@ const GET_LATEST_PRODUCT_CODE_QUERY = gql`
   }
 `;
 
+const GET_LATEST_TRANSACTION_CODE_QUERY = gql`
+  query ($userAccountId: Int!) {
+    latestTransactionCode(userAccountId: $userAccountId)
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private _warehouseId: number = 1;
@@ -2401,6 +2407,31 @@ export class ProductService {
       .valueChanges.pipe(
         map((result: ApolloQueryResult<{ latestProductCode: string }>) => {
           const code = result.data.latestProductCode;
+          if (code) {
+            return code;
+          }
+          const errors = result.errors;
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+          return null;
+        })
+      );
+  }
+
+  getLatestTransactionCode() {
+    const userAccountId = +this.storageService.getString('currentSalesAgentId');
+    return this.apollo
+      .watchQuery({
+        query: GET_LATEST_TRANSACTION_CODE_QUERY,
+        variables: {
+          userAccountId
+        }
+      })
+      .valueChanges.pipe(
+        take(1),
+        map((result: ApolloQueryResult<{ latestTransactionCode: string }>) => {
+          const code = result.data.latestTransactionCode;
           if (code) {
             return code;
           }
