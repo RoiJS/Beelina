@@ -296,6 +296,15 @@ namespace Beelina.API.Types.Query
             return await productRepository.GetLatestProductCode(httpContextAccessor.HttpContext.RequestAborted);
         }
 
+        [Authorize]
+        public async Task<string> GetLatestTransactionCode(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int userAccountId)
+        {
+            return await productRepository.GetLatestTransactionCode(userAccountId, httpContextAccessor.HttpContext.RequestAborted);
+        }
+
         private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
         {
             foreach (var productStockAudit in productWithdrawalEntryInput.ProductStockAuditsInputs)

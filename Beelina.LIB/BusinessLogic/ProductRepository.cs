@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+﻿﻿using System.Security.Cryptography;
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Extensions;
@@ -1838,7 +1838,7 @@ namespace Beelina.LIB.BusinessLogic
       // Get all product price assignments for the source user
       var sourceAssignments = await _productStockPerPanelRepository
           .GetProductStockPerPanelsByUserAccountId(sourceUserAccountId, cancellationToken);
-          
+
 
       foreach (var sourceAssignment in sourceAssignments.Where(pa => pa.PricePerUnit > 0).ToList())
       {
@@ -1928,9 +1928,26 @@ namespace Beelina.LIB.BusinessLogic
 
     public async Task<string> GetLatestProductCode(CancellationToken cancellationToken = default)
     {
-        var products = _beelinaRepository.ClientDbContext.Products;
-        var latestProduct = await products.OrderByDescending(x => x.Id).FirstOrDefaultAsync(cancellationToken);
-        return latestProduct != null ? latestProduct.Code : string.Empty;
+      var latestProduct = await _beelinaRepository.ClientDbContext.Products
+          .Where(p => p.IsActive && !p.IsDelete)
+          .OrderByDescending(p => p.Id)
+          .AsNoTracking()
+          .FirstOrDefaultAsync(cancellationToken);
+      return latestProduct != null ? latestProduct.Code : string.Empty;
+    }
+
+    public async Task<string> GetLatestTransactionCode(int userAccountId, CancellationToken cancellationToken = default)
+    {
+      var transactions = _beelinaRepository.ClientDbContext.Transactions
+          .Where(t => t.CreatedById == userAccountId);
+
+      var latestTransaction = await transactions
+          .Where(t => t.IsActive && !t.IsDelete)
+          .OrderByDescending(x => x.Id)
+          .AsNoTracking()
+          .FirstOrDefaultAsync(cancellationToken);
+
+      return latestTransaction?.InvoiceNo ?? string.Empty;
     }
   }
 }
