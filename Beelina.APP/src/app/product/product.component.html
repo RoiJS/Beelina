@@ -113,6 +113,7 @@
 
   @if((currentSalesAgentId > 0 && currentUserPermission > getPermissionLevel(permissionLevelEnum.User))) {
   <app-floating-button (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
+  <app-floating-button (tapButton)="goToPriceAssignment()" [icon]="'price_change'" [bottom]="155"></app-floating-button>
   }
 
 </app-loader-layout>

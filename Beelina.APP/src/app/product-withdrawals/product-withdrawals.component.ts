@@ -21,7 +21,7 @@ import { ButtonOptions } from '../_enum/button-options.enum';
   templateUrl: './product-withdrawals.component.html',
   styleUrls: ['./product-withdrawals.component.scss']
 })
-export class ProductWithdrawalsComponent implements OnInit, AfterViewInit {
+export class ProductWithdrawalsComponent implements AfterViewInit {
   productWithdrawalEntriesStore = inject(ProductWithdrawalEntriesStore);
 
   bottomSheet = inject(MatBottomSheet);
@@ -52,8 +52,6 @@ export class ProductWithdrawalsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {
-  }
 
   ngAfterViewInit() {
     this.productWithdrawalEntriesStore.setSort(this.sort().active, <SortOrderOptionsEnum>this.sort().direction.toUpperCase());

@@ -214,6 +214,8 @@ export class ProductComponent
         .subscribe((supplierId: number) => {
           const productsFilter = new ProductsFilter();
           productsFilter.supplierId = supplierId;
+          productsFilter.stockStatus = StockStatusEnum.All;
+          productsFilter.priceStatus = PriceStatusEnum.All;
           this.productsFilter.set(productsFilter);
         })
     );
@@ -245,6 +247,10 @@ export class ProductComponent
         isLocalTransaction: !this.networkService.isOnline.value,
       }
     });
+  }
+
+  goToPriceAssignment() {
+    this.router.navigate(['product-catalogue/product-price-assignment']);
   }
 
   editProduct(id: number) {
@@ -386,8 +392,16 @@ export class ProductComponent
   }
 
   openFilter() {
+    const defaultProductsFilter = new ProductsFilter();
+    defaultProductsFilter.supplierId = 0;
+    defaultProductsFilter.stockStatus = StockStatusEnum.All;
+    defaultProductsFilter.priceStatus = PriceStatusEnum.All;
+
     this._dialogOpenFilterRef = this.bottomSheet.open(ProductFilterComponent, {
-      data: this.productsFilter()
+      data: {
+        defaultProductsFilter: defaultProductsFilter,
+        currentProductsFilter: this.productsFilter()
+      }
     });
 
     this._dialogOpenFilterRef
