@@ -11,7 +11,7 @@
     </div>
 
     <!-- Product Withdrawal General Info Panel -->
-    <div class="panel product-withdrawal-panel">
+    <div class="panel panel--full-width product-withdrawal-panel">
       <div [formGroup]="productWithdrawalDetailsForm" class="panel__details-group-panel">
         <div class="panel__body-section">
           <div class="biz-form-container">
@@ -69,7 +69,7 @@
     </div>
 
     <!-- Product Withdrawal Items Panel -->
-    <div class="panel product-withdrawal-items-panel">
+    <div class="panel panel--full-width product-withdrawal-items-panel">
       <div class="panel__details-group-panel">
 
         <div class="panel__header-section">
@@ -194,7 +194,7 @@
     </div>
 
     <!-- Product Withdrawal Buttons Panel -->
-    <div class="panel product-withdrawal-buttons-panel">
+    <div class="panel panel--full-width product-withdrawal-buttons-panel">
       <div class="panel__body-section product-withdrawal-buttons-panel__body-section">
         <button mat-raised-button color="warn" [disabled]="newProductWithdrawal"
           (click)="removeProductWithdrawal()"><mat-icon>delete_forever</mat-icon>{{ "GENERAL_TEXTS.DELETE" | translate
