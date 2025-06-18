@@ -1,7 +1,13 @@
 import { NgModule } from '@angular/core';
 import { NgxIndexedDBModule, DBConfig } from 'ngx-indexed-db';
 
-// Ahead of time compiles requires an exported function for factories
+/**
+ * Returns a mapping of IndexedDB version numbers to migration functions for updating the database schema.
+ *
+ * Each migration function performs schema changes such as creating or deleting object stores and indexes to support new features or data structures as the database version increases.
+ *
+ * @returns An object where each key is a database version number and each value is a function that applies the necessary schema changes for that version.
+ */
 export function migrationFactory() {
   // The animal table was added with version 2 but none of the existing tables or data needed
   // to be modified so a migrator for that version is not included.

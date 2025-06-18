@@ -1,4 +1,4 @@
-﻿using Beelina.LIB.Dtos;
+using Beelina.LIB.Dtos;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
@@ -14,6 +14,11 @@ namespace Beelina.LIB.BusinessLogic
     {
         private readonly IUserSettingsRepository<UserSetting> userSettingsRepository = userSettingsRepository;
 
+        /// <summary>
+        /// Retrieves the order transaction settings for a specified user.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user whose order transaction settings are to be retrieved.</param>
+        /// <returns>A <see cref="UserAgentOrderTransactionSettingsDto"/> containing the user's order transaction settings.</returns>
         public async Task<UserAgentOrderTransactionSettingsDto> GetOrderTransactionSettings(int userId)
         {
             var userAgentOrderTransactionSettingsDto = new UserAgentOrderTransactionSettingsDto();
@@ -28,6 +33,11 @@ namespace Beelina.LIB.BusinessLogic
             return userAgentOrderTransactionSettingsDto;
         }
 
+        /// <summary>
+        /// Saves the user's order transaction settings based on the provided input.
+        /// </summary>
+        /// <param name="userAgentOrderTransactionSettingInput">The input containing updated order transaction settings for the user.</param>
+        /// <returns>True if the settings were saved successfully; otherwise, false.</returns>
         public async Task<bool> SaveOrderTransactionSettings(UserAgentOrderTransactionSettingInput userAgentOrderTransactionSettingInput)
         {
             try

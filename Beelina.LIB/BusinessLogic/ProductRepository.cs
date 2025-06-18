@@ -1,4 +1,4 @@
-﻿﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Extensions;
@@ -89,6 +89,15 @@ namespace Beelina.LIB.BusinessLogic
       return productsFromRepo;
     }
 
+    /// <summary>
+    /// Retrieves a list of products for a user, including detailed stock and supplier information, filtered by product ID, keyword, and additional product filters.
+    /// </summary>
+    /// <param name="userId">The ID of the user requesting the products.</param>
+    /// <param name="productId">The specific product ID to filter by, or 0 to include all products.</param>
+    /// <param name="filterKeyWord">A keyword to filter products by name or code.</param>
+    /// <param name="productsFilter">Additional filter criteria for products, such as supplier, stock status, or price status.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A list of products matching the specified filters, enriched with stock and supplier data according to the business model and user permissions.</returns>
     public async Task<IList<Product>> GetProducts(int userId, int productId, string filterKeyWord = "", ProductsFilter productsFilter = null, CancellationToken cancellationToken = default)
     {
       var finalProductsFromRepo = new List<Product>();
@@ -1714,6 +1723,12 @@ namespace Beelina.LIB.BusinessLogic
       productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
     }
 
+    /// <summary>
+    /// Adds warehouse product stock audit items for a specific product and warehouse using business model 3 logic.
+    /// </summary>
+    /// <param name="productStockAuditItemsFromRepo">The list to which audit items will be added.</param>
+    /// <param name="productId">The ID of the product.</param>
+    /// <param name="warehouseId">The ID of the warehouse.</param>
     private async Task GetWarehouseProductStockAuditItemsModel3(List<ProductStockAuditItem> productStockAuditItemsFromRepo, int productId, int warehouseId)
     {
       var productTransactionsAuditItems = await (from t in _beelinaRepository.ClientDbContext.Transactions
@@ -1785,6 +1800,14 @@ namespace Beelina.LIB.BusinessLogic
       productStockAuditItemsFromRepo.AddRange(panelProductStockFromWithdrawals);
     }
 
+    /// <summary>
+    /// Retrieves product price assignments for a user account, filtered by keyword and product filters.
+    /// </summary>
+    /// <param name="userAccountId">The ID of the user account for which to retrieve product price assignments.</param>
+    /// <param name="filterKeyWord">A keyword to filter products by name or code. Optional.</param>
+    /// <param name="productsFilter">Additional product filter criteria. Optional.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation. Optional.</param>
+    /// <returns>A collection of products with price assignments matching the specified filters, or an empty list if no filters are active.</returns>
     public async Task<IEnumerable<Product>> GetProductPriceAssignments(
         int userAccountId,
         string filterKeyWord = "",
@@ -1801,6 +1824,14 @@ namespace Beelina.LIB.BusinessLogic
       return await GetProducts(userAccountId, 0, filterKeyWord, productsFilter, cancellationToken);
     }
 
+    /// <summary>
+    /// Updates, adds, or deletes product price assignments for a user account based on the provided lists.
+    /// </summary>
+    /// <param name="userAccountId">The ID of the user account for which price assignments are managed.</param>
+    /// <param name="updateProductAssignments">A list of product price assignments to update or add.</param>
+    /// <param name="deletedProductAssignments">A list of product assignment IDs to delete or set price to zero.</param>
+    /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+    /// <returns>A list of product stock per panel entities that were updated, added, or deleted.</returns>
     public async Task<List<ProductStockPerPanel>> UpdateProductPriceAssignments(
         int userAccountId,
         List<ProductStockPerPanelInput> updateProductAssignments,
@@ -1828,6 +1859,13 @@ namespace Beelina.LIB.BusinessLogic
       return managedProductStockPerPanels;
     }
 
+    /// <summary>
+    /// Copies all active product price assignments from a source user account to a destination user account, creating new assignments or updating existing ones as needed.
+    /// </summary>
+    /// <param name="sourceUserAccountId">The user account ID from which to copy product price assignments.</param>
+    /// <param name="destinationUserAccountId">The user account ID to which product price assignments will be copied.</param>
+    /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+    /// <returns>A list of product stock per panel assignments that were created or updated for the destination user.</returns>
     public async Task<List<ProductStockPerPanel>> CopyProductPriceAssignments(
         int sourceUserAccountId,
         int destinationUserAccountId,
@@ -1872,6 +1910,13 @@ namespace Beelina.LIB.BusinessLogic
       return affectedAssignments;
     }
 
+    /// <summary>
+    /// Adds a new or updates an existing product stock per panel entry for a user account with the specified price per unit.
+    /// </summary>
+    /// <param name="product">The product stock per panel input containing product ID and price information.</param>
+    /// <param name="userAccountId">The ID of the user account for which the assignment is managed.</param>
+    /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+    /// <returns>The added or updated <see cref="ProductStockPerPanel"/> entity.</returns>
     private async Task<ProductStockPerPanel> UpdateOrAddProductStockPerPanel(ProductStockPerPanelInput product, int userAccountId, CancellationToken cancellationToken)
     {
       var productStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(product.Id, userAccountId);
@@ -1893,6 +1938,13 @@ namespace Beelina.LIB.BusinessLogic
       return productStockPerPanel;
     }
 
+    /// <summary>
+    /// Processes deleted product assignments for a user by setting the price per unit to zero for assignments with stock audits and force deleting those without stock audits.
+    /// </summary>
+    /// <param name="userAccountId">The ID of the user whose product assignments are being deleted.</param>
+    /// <param name="deletedProductAssignments">A list of product assignment IDs to be deleted.</param>
+    /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+    /// <returns>A list of product stock per panel entities that were processed for deletion.</returns>
     private async Task<List<ProductStockPerPanel>> HandleDeletedProductAssignments(
         int userAccountId,
         List<int> deletedProductAssignments,
@@ -1926,6 +1978,11 @@ namespace Beelina.LIB.BusinessLogic
       return deletedProductAssignmentsItems;
     }
 
+    /// <summary>
+    /// Retrieves the code of the most recently added active, non-deleted product.
+    /// </summary>
+    /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+    /// <returns>The latest product code, or an empty string if no product is found.</returns>
     public async Task<string> GetLatestProductCode(CancellationToken cancellationToken = default)
     {
       var latestProduct = await _beelinaRepository.ClientDbContext.Products
@@ -1936,6 +1993,12 @@ namespace Beelina.LIB.BusinessLogic
       return latestProduct != null ? latestProduct.Code : string.Empty;
     }
 
+    /// <summary>
+    /// Retrieves the invoice number of the most recent active, non-deleted transaction created by the specified user.
+    /// </summary>
+    /// <param name="userAccountId">The ID of the user whose transactions are queried.</param>
+    /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+    /// <returns>The invoice number of the latest transaction, or an empty string if none exist.</returns>
     public async Task<string> GetLatestTransactionCode(int userAccountId, CancellationToken cancellationToken = default)
     {
       var transactions = _beelinaRepository.ClientDbContext.Transactions
