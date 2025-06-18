@@ -25,7 +25,7 @@
       (onClear)="onClear()" (onFilter)="openFilter()">
     </app-search-field>
 
-    <div class="panel product-price-assignment-panel">
+    <div class="panel panel--full-width product-price-assignment-panel">
       <div class="panel__details-group-panel">
         <div class="panel__body-section">
 
@@ -104,7 +104,7 @@
       </div>
     </div>
 
-    <div class="panel product-price-assignment-buttons-panel">
+    <div class="panel panel--full-width product-price-assignment-buttons-panel">
       <div class="panel__body-section product-price-assignment-buttons-panel__body-section">
         <button mat-raised-button color="primary" (click)="saveChanges()"
           [disabled]="modifiedProducts().size === 0 && removedProducts().size === 0 || productPriceAssignmentsStore.isLoading()">
