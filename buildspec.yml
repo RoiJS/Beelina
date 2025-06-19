@@ -5,20 +5,25 @@ phases:
     runtime-versions:
       dotnet: 8.0
     commands:
-      - echo Restoring NuGet packages...
+      - echo "Installing dependencies..."
       - dotnet restore Beelina.API/Beelina.API.csproj
 
   build:
     commands:
-      - echo Building the project...
+      - echo "Building the application..."
       - dotnet build Beelina.API/Beelina.API.csproj --configuration Release --no-restore
 
   post_build:
     commands:
-      - echo Publishing the project...
+      - echo "Publishing the application..."
       - dotnet publish Beelina.API/Beelina.API.csproj --configuration Release --output ./publish --no-build
+      - echo "Creating Procfile..."
+      - echo "web: dotnet Beelina.API.dll" > ./publish/Procfile
+      - echo "Zipping published output..."
+      - cd publish
+      - zip -r ../BeelinaAPI.zip .
+      - cd ..
 
 artifacts:
-  base-directory: publish
   files:
-    - '**/*'
+    - BeelinaAPI.zip
