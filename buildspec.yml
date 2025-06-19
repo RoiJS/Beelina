@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 8.0 # Change to your .NET version if different
+      dotnet: 8.0
     commands:
       - echo Restoring NuGet packages...
       - dotnet restore Beelina.API/Beelina.API.csproj
@@ -17,11 +17,8 @@ phases:
     commands:
       - echo Publishing the project...
       - dotnet publish Beelina.API/Beelina.API.csproj --configuration Release --output ./publish --no-build
-      - echo Zipping the published output...
-      - cd publish
-      - zip -r ../BeelinaAPI.zip .
-      - cd ..
 
 artifacts:
+  base-directory: publish
   files:
-    - BeelinaAPI.zip
+    - '**/*'
