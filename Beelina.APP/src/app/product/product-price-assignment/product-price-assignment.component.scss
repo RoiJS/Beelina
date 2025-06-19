@@ -1,0 +1,87 @@
+@import "../../../app-variables";
+
+// Panel styles are already defined in styles.scss under .page-container .panel
+// Only keeping component-specific overrides if needed
+.product-price-assignment-panel {
+   margin-bottom: 2em;
+
+  .mat-mdc-row:hover .mat-mdc-cell {
+    background-color: $primary;
+    cursor: pointer;
+    color: $white;
+  }
+}
+
+// Table styles
+.mat-mdc-table {
+  width: 100%;
+
+  .mat-mdc-header-cell {
+    font-weight: 600;
+  }
+
+  .mat-column-name {
+    width: 30%;
+    padding-right: 16px;
+  }
+
+  .mat-column-code {
+    width: 15%;
+    padding-right: 16px;
+  }
+
+  .mat-column-unit {
+    width: 15%;
+    padding-right: 16px;
+  }
+
+  .mat-column-stockQuantity {
+    width: 15%;
+    padding-right: 16px;
+  }
+
+  .mat-column-pricePerUnit {
+    width: 15%;
+    padding-right: 16px;
+  }
+
+  .mat-column-actions {
+    width: 10%;
+    text-align: center;
+  }
+
+  .mat-mdc-cell {
+    padding: 0 16px;
+  }
+}
+
+// Delete icon styles
+.delete-icon {
+  cursor: pointer;
+  text-align: right;
+  width: 100%;
+}
+
+// No data container styles
+.no-data-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: var(--text-color-secondary);
+}
+
+.product-price-assignment-buttons-panel {
+  padding: 1em;
+
+  &__body-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1em;
+    padding: 0;
+    width: 100%;
+  }
+}
+
+// Slide-in animation is already defined in styles.scss
+// No need to redefine it here

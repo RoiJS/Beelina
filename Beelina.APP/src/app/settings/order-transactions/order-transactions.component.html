@@ -12,7 +12,7 @@
         }}</span>
     </div>
 
-    <div class="order-transaction-settings-panel panel">
+    <div class="panel panel--full-width order-transaction-settings-panel">
       <div [formGroup]="orderTransactionSettingsForm" class="panel__details-group-panel">
         <div class="panel__body-section" formGroupName="sendReceiptForm">
           <div class="order-transaction-settings-panel__allowSendReceipt mat-form-slide-toggle-container">
@@ -78,6 +78,27 @@
               | translate
               }}</span>
           </div>
+          <br>
+          <mat-form-field appearance="fill">
+            <mat-label>{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.PRINT_RECEIPT_FONT_SIZE_CONTROL.LABEL"
+              | translate
+              }}:</mat-label>
+            <mat-select formControlName="printReceiptFontSize">
+              <mat-option [value]="printReceiptFontSizeEnum.Default">{{
+                "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.PRINT_RECEIPT_FONT_SIZE_CONTROL.DEFAULT"
+                | translate
+                }}</mat-option>
+              <mat-option [value]="printReceiptFontSizeEnum.Compact">{{
+                "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.PRINT_RECEIPT_FONT_SIZE_CONTROL.COMPACT"
+                | translate
+                }}</mat-option>
+            </mat-select>
+            <mat-hint>{{
+              "SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.FORM_CONTROL_SECTION.PRINT_RECEIPT_FONT_SIZE_CONTROL.HINT"
+              | translate
+              }}</mat-hint>
+          </mat-form-field>
           }
         </div>
       </div>

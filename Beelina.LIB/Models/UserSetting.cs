@@ -1,3 +1,5 @@
+using Beelina.LIB.Enums;
+
 namespace Beelina.LIB.Models
 {
     public class UserSetting
@@ -12,5 +14,6 @@ namespace Beelina.LIB.Models
         public string SendReceiptEmailAddress { get; set; }
         public bool AllowPrintReceipt { get; set; }
         public bool AutoPrintReceipt { get; set; }
+        public PrintReceiptFontSizeEnum PrintReceiptFontSize { get; set; } = PrintReceiptFontSizeEnum.Default;
     }
 }

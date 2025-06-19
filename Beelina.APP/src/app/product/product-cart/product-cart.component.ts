@@ -3,7 +3,7 @@ import { Component, computed, inject, OnDestroy, OnInit, signal, viewChild } fro
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { select, Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
@@ -196,7 +196,6 @@ export class ProductCartComponent
     this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
     this.userSettings = await this.localUserSettingsDbService.getLocalUserSettings();
 
-    // console.log('isLocalTransaction()', this.isLocalTransaction());
     if (this._transactionId() > 0) {
       this.store.dispatch(
         ProductTransactionActions.getProductTransactions({
@@ -296,6 +295,16 @@ export class ProductCartComponent
             this._orderForm
               .get('invoiceNo')
               .setValue(this.transaction().invoiceNo);
+
+            // If the transaction is new, get the latest transaction code and increment it
+            if (this._transactionId() === 0) {
+              const latestTransactionCode = await firstValueFrom(this.productService.getLatestTransactionCode());
+              if (latestTransactionCode) {
+                const nextCode = this.incrementCode(latestTransactionCode);
+                this._orderForm.get('invoiceNo').setValue(nextCode);
+              }
+            }
+
             this._discountForm
               .get('discount')
               .setValue(this.transaction().discount || 0);

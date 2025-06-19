@@ -11,7 +11,7 @@
     </div>
 
     <!-- Purchase Order General Info Panel -->
-    <div class="panel purchase-order-panel">
+    <div class="panel panel--full-width purchase-order-panel">
       <div [formGroup]="purchaseOrderDetailsForm" class="panel__details-group-panel">
         <div class="panel__body-section">
           <div class="biz-form-container">
@@ -76,7 +76,7 @@
     </div>
 
     <!-- Purchase Order Items Panel -->
-    <div class="panel purchase-order-items-panel">
+    <div class="panel panel--full-width purchase-order-items-panel">
       <div class="panel__details-group-panel">
 
         <div class="panel__header-section">
@@ -194,7 +194,7 @@
     </div>
 
     <!-- Purchase Order Buttons Panel -->
-    <div class="panel purchase-order-buttons-panel">
+    <div class="panel panel--full-width purchase-order-buttons-panel">
       <div class="panel__body-section purchase-order-buttons-panel__body-section">
         <button mat-raised-button color="warn" [disabled]="newPurchaseOrder"
           (click)="removePurchaseOrder()"><mat-icon>delete_forever</mat-icon>{{ "GENERAL_TEXTS.DELETE" | translate

@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+﻿﻿using System.Security.Cryptography;
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Extensions;
@@ -16,7 +16,7 @@ namespace Beelina.LIB.BusinessLogic
   {
     private readonly ILogger<ProductRepository> _logger;
     private readonly IProductStockPerPanelRepository<ProductStockPerPanel> _productStockPerPanelRepository;
-    private IProductStockPerWarehouseRepository<ProductStockPerWarehouse> _productStockPerWarehouseRepository;
+    private readonly IProductStockPerWarehouseRepository<ProductStockPerWarehouse> _productStockPerWarehouseRepository;
     private readonly IProductUnitRepository<ProductUnit> _productUnitRepository;
     private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
     private readonly ISubscriptionRepository<ClientSubscription> _subscriptionRepository;
@@ -176,7 +176,7 @@ namespace Beelina.LIB.BusinessLogic
         // Business Model 1: Warehouse Panel Monitoring
         if (generalSetting.BusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
         {
-          return await GetProductStocksFromPanelForBusinessModel1(filteredProductsFromRepo, userId, cancellationToken);
+          finalProductsFromRepo = await GetProductStocksFromPanelForBusinessModel1(filteredProductsFromRepo, userId, cancellationToken);
         }
 
         // Business Model 2: Warehouse Monitoring
@@ -1783,6 +1783,171 @@ namespace Beelina.LIB.BusinessLogic
 
       productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
       productStockAuditItemsFromRepo.AddRange(panelProductStockFromWithdrawals);
+    }
+
+    public async Task<IEnumerable<Product>> GetProductPriceAssignments(
+        int userAccountId,
+        string filterKeyWord = "",
+        ProductsFilter productsFilter = null,
+        CancellationToken cancellationToken = default)
+    {
+
+      // If no filter keyword is provided and the products filter is not active, return an empty list.
+      if (String.IsNullOrEmpty(filterKeyWord) && !productsFilter.IsActive())
+      {
+        return [];
+      }
+
+      return await GetProducts(userAccountId, 0, filterKeyWord, productsFilter, cancellationToken);
+    }
+
+    public async Task<List<ProductStockPerPanel>> UpdateProductPriceAssignments(
+        int userAccountId,
+        List<ProductStockPerPanelInput> updateProductAssignments,
+        List<int> deletedProductAssignments,
+        CancellationToken cancellationToken = default)
+    {
+      var managedProductStockPerPanels = new List<ProductStockPerPanel>();
+
+      // Handle update/add logic
+      foreach (var product in updateProductAssignments)
+      {
+        var productStockPerPanel = await UpdateOrAddProductStockPerPanel(product, userAccountId, cancellationToken);
+        managedProductStockPerPanels.Add(productStockPerPanel);
+      }
+
+      // Handle delete logic
+      if (deletedProductAssignments.Count > 0)
+      {
+        var deletedItems = await HandleDeletedProductAssignments(userAccountId, deletedProductAssignments, cancellationToken);
+        managedProductStockPerPanels.AddRange(deletedItems);
+      }
+
+      await _productStockPerPanelRepository.SaveChanges(cancellationToken);
+
+      return managedProductStockPerPanels;
+    }
+
+    public async Task<List<ProductStockPerPanel>> CopyProductPriceAssignments(
+        int sourceUserAccountId,
+        int destinationUserAccountId,
+        CancellationToken cancellationToken = default)
+    {
+      var affectedAssignments = new List<ProductStockPerPanel>();
+
+      // Get all product price assignments for the source user
+      var sourceAssignments = await _productStockPerPanelRepository
+          .GetProductStockPerPanelsByUserAccountId(sourceUserAccountId, cancellationToken);
+
+
+      foreach (var sourceAssignment in sourceAssignments.Where(pa => pa.PricePerUnit > 0).ToList())
+      {
+        // Check if the destination user already has this product assignment
+        var destAssignment = await _productStockPerPanelRepository
+            .GetProductStockPerPanel(sourceAssignment.ProductId, destinationUserAccountId);
+
+        if (destAssignment == null)
+        {
+          // Create new assignment for destination user
+          destAssignment = new ProductStockPerPanel
+          {
+            ProductId = sourceAssignment.ProductId,
+            UserAccountId = destinationUserAccountId,
+            PricePerUnit = sourceAssignment.PricePerUnit,
+            IsActive = true
+          };
+          await _productStockPerPanelRepository.AddEntity(destAssignment);
+        }
+        else
+        {
+          // Update price for existing assignment
+          destAssignment.PricePerUnit = sourceAssignment.PricePerUnit;
+        }
+
+        affectedAssignments.Add(destAssignment);
+      }
+
+      await _productStockPerPanelRepository.SaveChanges(cancellationToken);
+
+      return affectedAssignments;
+    }
+
+    private async Task<ProductStockPerPanel> UpdateOrAddProductStockPerPanel(ProductStockPerPanelInput product, int userAccountId, CancellationToken cancellationToken)
+    {
+      var productStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(product.Id, userAccountId);
+      if (productStockPerPanel == null)
+      {
+        productStockPerPanel = new ProductStockPerPanel
+        {
+          ProductId = product.Id,
+          UserAccountId = userAccountId,
+          PricePerUnit = product.PricePerUnit,
+          IsActive = true
+        };
+        await _productStockPerPanelRepository.AddEntity(productStockPerPanel);
+      }
+      else
+      {
+        productStockPerPanel.PricePerUnit = product.PricePerUnit;
+      }
+      return productStockPerPanel;
+    }
+
+    private async Task<List<ProductStockPerPanel>> HandleDeletedProductAssignments(
+        int userAccountId,
+        List<int> deletedProductAssignments,
+        CancellationToken cancellationToken)
+    {
+      var deletedProductAssignmentsItems = await _productStockPerPanelRepository
+          .GetDeletedProductAssignmentsItems(
+              userAccountId,
+              deletedProductAssignments,
+              cancellationToken
+          );
+
+      // Handle deleted product assignments with stock audits. Set price per unit to 0.
+      var deletedProductAssignmentsWithStockAudits = deletedProductAssignmentsItems
+          .Where(p => p.ProductStockAudits.Count > 0)
+          .ToList();
+      deletedProductAssignmentsWithStockAudits.ForEach(p =>
+      {
+        p.PricePerUnit = 0;
+      });
+
+      // Handle deleted product assignments without stock audits. Force delete items.
+      var deletedProductAssignmentsWithoutStockAudits = deletedProductAssignmentsItems
+          .Where(p => p.ProductStockAudits.Count == 0)
+          .ToList();
+      if (deletedProductAssignmentsWithoutStockAudits.Count > 0)
+      {
+        _productStockPerPanelRepository.DeleteMultipleEntities(deletedProductAssignmentsWithoutStockAudits, true);
+      }
+
+      return deletedProductAssignmentsItems;
+    }
+
+    public async Task<string> GetLatestProductCode(CancellationToken cancellationToken = default)
+    {
+      var latestProduct = await _beelinaRepository.ClientDbContext.Products
+          .Where(p => p.IsActive && !p.IsDelete)
+          .OrderByDescending(p => p.Id)
+          .AsNoTracking()
+          .FirstOrDefaultAsync(cancellationToken);
+      return latestProduct != null ? latestProduct.Code : string.Empty;
+    }
+
+    public async Task<string> GetLatestTransactionCode(int userAccountId, CancellationToken cancellationToken = default)
+    {
+      var transactions = _beelinaRepository.ClientDbContext.Transactions
+          .Where(t => t.CreatedById == userAccountId);
+
+      var latestTransaction = await transactions
+          .Where(t => t.IsActive && !t.IsDelete)
+          .OrderByDescending(x => x.Id)
+          .AsNoTracking()
+          .FirstOrDefaultAsync(cancellationToken);
+
+      return latestTransaction?.InvoiceNo ?? string.Empty;
     }
   }
 }

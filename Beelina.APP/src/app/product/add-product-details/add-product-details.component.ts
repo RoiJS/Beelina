@@ -34,13 +34,14 @@ import { ProductStockWarehouseAudit } from 'src/app/_models/product-stock-wareho
 import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
 import { ProductWithdrawalEntry } from 'src/app/_models/product-withdrawal-entry';
 import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-add-product-details',
   templateUrl: './add-product-details.component.html',
   styleUrls: ['./add-product-details.component.scss'],
 })
-export class AddProductDetailsComponent implements OnInit {
+export class AddProductDetailsComponent extends BaseComponent implements OnInit {
   private _dialogRef: MatBottomSheetRef<
     AddProductStockQuantityDialogComponent,
     {
@@ -57,7 +58,6 @@ export class AddProductDetailsComponent implements OnInit {
   private _productSourceUpdateFunc: Array<string> = ["updateProductInformation", "updateWarehouseProductInformation"];
   private _productSourceRedirectUrl: Array<string> = ['/product-catalogue', "/warehouse-products"];
   private _updateProductSubscription: Subscription;
-  $isLoading: Observable<boolean>;
 
   bottomSheet = inject(MatBottomSheet);
   store = inject(Store<AppStateInterface>);
@@ -75,6 +75,7 @@ export class AddProductDetailsComponent implements OnInit {
   suppliers = computed(() => this.supplierStore.suppliers());
 
   constructor() {
+    super();
     const state = <any>this.router.getCurrentNavigation().extras.state;
     this._productSource = <ProductSourceEnum>state.productSource;
 
@@ -110,7 +111,14 @@ export class AddProductDetailsComponent implements OnInit {
     this.supplierStore.getAllSuppliers();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Get the latest product code and prefill it
+    const latestProductCode = await firstValueFrom(this.productService.getLatestProductCode());
+    if (latestProductCode) {
+      const nextCode = this.incrementCode(latestProductCode);
+      this._productForm.get('code').setValue(nextCode);
+    }
+
     this.store.dispatch(ProductUnitActions.resetProductUnitsActionError());
     this.store.dispatch(ProductUnitActions.getProductUnitsAction());
 

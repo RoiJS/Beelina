@@ -160,13 +160,26 @@ body {
   .panel {
     box-sizing: border-box;
     width: 100%;
-    height: auto;
+    height: 100%;
+    overflow: auto;
     background-color: $white;
     border-radius: 10px;
     padding-top: 5px;
     padding-left: 10px;
     padding-right: 10px;
     box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.1);
+
+    @media (min-width: 1024px) {
+      width: 80%;
+    }
+
+    @media (min-width: 1440px) {
+      width: 50%;
+    }
+
+    &--full-width {
+      width: 100%;
+    }
 
     &__details-group-panel {
       margin-bottom: 20px;

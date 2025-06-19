@@ -44,5 +44,24 @@ namespace Beelina.LIB.Interfaces
             CancellationToken cancellationToken);
 
         Task<MapExtractedProductResult> MapProductImport(ExtractProductResult productImportResult, IList<Product> warehouseProductsFromRepo);
+        Task<IEnumerable<Product>> GetProductPriceAssignments(
+            int userAccountId,
+            string filterKeyWord = "",
+            ProductsFilter productsFilter = null,
+            CancellationToken cancellationToken = default);
+
+        Task<List<ProductStockPerPanel>> UpdateProductPriceAssignments(
+            int userAccountId,
+            List<ProductStockPerPanelInput> updateProductAssignments,
+            List<int> deletedProductAssignments,
+            CancellationToken cancellationToken = default);
+            
+        Task<List<ProductStockPerPanel>> CopyProductPriceAssignments(
+        int sourceUserAccountId,
+        int destinationUserAccountId,
+        CancellationToken cancellationToken = default);
+
+        Task<string> GetLatestProductCode(CancellationToken cancellationToken = default);
+        Task<string> GetLatestTransactionCode(int userAccountId, CancellationToken cancellationToken = default);
     }
 }

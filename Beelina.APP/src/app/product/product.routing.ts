@@ -57,4 +57,11 @@ export const routes: Routes = [
         (m) => m.ProductCartModule
       ),
   },
+  {
+    path: 'product-price-assignment',
+    loadChildren: () =>
+      import('./product-price-assignment/product-price-assignment.module').then(
+        (m) => m.ProductPriceAssignmentModule
+      ),
+  },
 ];

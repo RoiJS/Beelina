@@ -1,0 +1,119 @@
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
+  <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="openCopyPriceAssignmentDialog()">
+      <mat-icon>list</mat-icon>
+      {{ 'GENERAL_TEXTS.COPY_PRODUCT_PRICE_ASSIGNMENTS' | translate }}
+    </button>
+  </mat-menu>
+</app-tool-bar>
+
+<app-loader-layout [busy]="productPriceAssignmentsStore.isLoading()">
+  <div class="page-container slide-in-left-animation">
+
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ "PRODUCT_PRICE_ASSIGNMENT.TITLE" | translate }}</label><br />
+      <span class="page-information-description">
+        {{ "PRODUCT_PRICE_ASSIGNMENT.DESCRIPTION" | translate }}
+      </span>
+    </div>
+
+    <!-- Search and Filter -->
+    <app-search-field [filter]="true"
+      [placeHolderTextIdentifier]="'PRODUCT_PRICE_ASSIGNMENT.SEARCH_TEXT_FIELD.PLACEHOLDER'"
+      [filterActive]="productsFilter()?.isActive && productsFilter()?.isActive()" (onSearch)="onSearch($event)"
+      (onClear)="onClear()" (onFilter)="openFilter()">
+    </app-search-field>
+
+    <div class="panel panel--full-width product-price-assignment-panel">
+      <div class="panel__details-group-panel">
+        <div class="panel__body-section">
+
+          @if(dataSource().length > 0) {
+          <table mat-table [dataSource]="dataSource()" class="biz-form-container" matSort matSortActive="name"
+            matSortDisableClear matSortDirection="desc" (matSortChange)="onSortChange($event)">
+
+            <!-- Product Name Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell mat-sort-header *matHeaderCellDef>{{
+                'PRODUCT_PRICE_ASSIGNMENT.TABLE_GRID.COLUMN_DEFINITION.PRODUCT_NAME_FIELD' | translate
+                }}</mat-header-cell>
+              <mat-cell *matCellDef="let element">{{ element.name }}</mat-cell>
+            </ng-container>
+
+            <!-- Product Code Column -->
+            <ng-container matColumnDef="code">
+              <mat-header-cell mat-sort-header *matHeaderCellDef>{{
+                'PRODUCT_PRICE_ASSIGNMENT.TABLE_GRID.COLUMN_DEFINITION.PRODUCT_CODE_FIELD' | translate
+                }}</mat-header-cell>
+              <mat-cell *matCellDef="let element">{{ element.code }}</mat-cell>
+            </ng-container>
+
+            <!-- Unit Column -->
+            <ng-container matColumnDef="unit">
+              <mat-header-cell mat-sort-header *matHeaderCellDef>{{
+                'PRODUCT_PRICE_ASSIGNMENT.TABLE_GRID.COLUMN_DEFINITION.UNIT_FIELD' |
+                translate }}</mat-header-cell>
+              <mat-cell *matCellDef="let element">{{ element.productUnit?.name }}</mat-cell>
+            </ng-container>
+
+            <!-- Stock Quantity Column -->
+            <ng-container matColumnDef="stockQuantity">
+              <mat-header-cell mat-sort-header *matHeaderCellDef>{{
+                'PRODUCT_PRICE_ASSIGNMENT.TABLE_GRID.COLUMN_DEFINITION.STOCK_QUANTITY_FIELD' | translate
+                }}</mat-header-cell>
+              <mat-cell *matCellDef="let element">{{ element.stockQuantity }}</mat-cell>
+            </ng-container>
+
+            <!-- Price Per Unit Column with Always-Editable Input -->
+            <ng-container matColumnDef="pricePerUnit">
+              <mat-header-cell mat-sort-header *matHeaderCellDef>{{
+                'PRODUCT_PRICE_ASSIGNMENT.TABLE_GRID.COLUMN_DEFINITION.PRICE_FIELD'
+                |
+                translate }}</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div class="biz-form-container__form-control">
+                  <input type="number" [(ngModel)]="element.pricePerUnit" (ngModelChange)="onPriceChange(element)" />
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-icon class="delete-icon" (click)="removeProduct(element)">highlight_off</mat-icon>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </table>
+
+          <mat-paginator [pageSize]="10" [length]="productPriceAssignmentsStore.totalCount()"
+            [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons (page)="onPageChange($event)">
+          </mat-paginator>
+
+          } @else {
+          <div class="no-data-container" *ngIf="!productPriceAssignmentsStore.isLoading() && dataSource().length === 0">
+            <p>{{ 'PRODUCT_PRICE_ASSIGNMENT.NO_DATA' | translate }}</p>
+          </div>
+          }
+
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel--full-width product-price-assignment-buttons-panel">
+      <div class="panel__body-section product-price-assignment-buttons-panel__body-section">
+        <button mat-raised-button color="primary" (click)="saveChanges()"
+          [disabled]="modifiedProducts().size === 0 && removedProducts().size === 0 || productPriceAssignmentsStore.isLoading()">
+          <mat-icon>save</mat-icon>
+          {{ 'GENERAL_TEXTS.SAVE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+</app-loader-layout>
