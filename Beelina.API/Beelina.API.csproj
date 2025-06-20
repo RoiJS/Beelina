@@ -3,7 +3,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <OutputName>Beelina.API</OutputName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
