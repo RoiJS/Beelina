@@ -10,7 +10,7 @@ phases:
 
   build:
     commands:
-      - echo "Building the project..."
+      - echo "Building the project...."
       - dotnet build Beelina.API/Beelina.API.csproj --configuration Release --no-restore
 
   post_build:
