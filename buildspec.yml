@@ -16,12 +16,7 @@ phases:
   post_build:
     commands:
       - echo "Publishing as self-contained (linux-x64)..."
-      - dotnet publish Beelina.API/Beelina.API.csproj \
-          --configuration Release \
-          --runtime linux-x64 \
-          --self-contained true \
-          -p:PublishTrimmed=false \
-          --output ./publish
+      - dotnet publish Beelina.API/Beelina.API.csproj --configuration Release --runtime linux-x64 --self-contained true --output ./publish -p:PublishTrimmed=false -p:AssemblyName=Beelina.API
 
       - echo "Creating Procfile to match binary name..."
       - echo "web:./Beelina.API" > ./publish/Procfile
