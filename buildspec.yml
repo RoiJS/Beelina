@@ -21,7 +21,6 @@ phases:
           --runtime linux-x64 \
           --self-contained true \
           -p:PublishTrimmed=false \
-          -p:AssemblyName=Beelina.API \
           --output ./publish
 
       - echo "Creating Procfile to match binary name..."
