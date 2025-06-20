@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       dotnet: 8.0
     commands:
-      - echo "Restoring packages..."
+      - echo "Restoring packages...."
       - dotnet restore Beelina.API/Beelina.API.csproj
 
   build:
@@ -15,20 +15,18 @@ phases:
 
   post_build:
     commands:
-      - echo "Publishing as self-contained (linux-x64)..."
-      - dotnet publish Beelina.API/Beelina.API.csproj --configuration Release --runtime linux-x64 --self-contained true --output ./publish -p:PublishTrimmed=false -p:AssemblyName=Beelina.API
-
-      - echo "Creating Procfile to match binary name..."
-      - echo "web:./Beelina.API" > ./publish/Procfile
-
-      - echo "Making binary executable..."
-      - chmod +x ./publish/Beelina.API
-
-      - echo "Verifying expected files..."
+      - echo "Publishing as self-contained for linux-x64..."
+      - dotnet publish Beelina.API/Beelina.API.csproj --configuration Release --runtime linux-x64 --self-contained true --output ./publish -p:PublishTrimmed=false
+      - echo "Creating Procfile..."
+      - echo "web:./BeelinaAPI" | tee ./publish/Procfile
+      - echo "Setting execute permissions on binary..."
+      - chmod +x ./publish/BeelinaAPI
+      - echo "Verifying contents..."
       - ls -lh ./publish
-
-      - echo "Zipping published files..."
-      - cd publish && zip -r ../BeelinaAPI.zip . && cd ..
+      - echo "Zipping published output for Elastic Beanstalk..."
+      - cd publish
+      - zip -r ../BeelinaAPI.zip .
+      - cd ..
 
 artifacts:
   files:
