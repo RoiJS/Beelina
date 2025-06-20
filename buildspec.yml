@@ -18,7 +18,7 @@ phases:
       - echo "Publishing as self-contained for linux-x64..."
       - dotnet publish Beelina.API/Beelina.API.csproj --configuration Release --runtime linux-x64 --self-contained true --output ./publish -p:PublishTrimmed=false
       - echo "Creating Procfile..."
-      - echo "web:./BeelinaAPI" | tee ./publish/Procfile
+      - echo "web:./Beelina.API" | tee ./publish/Procfile
       - echo "Setting execute permissions on binary..."
       - chmod +x ./publish/Beelina.API
       - echo "Zipping published output for Elastic Beanstalk..."
