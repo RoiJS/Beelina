@@ -25,7 +25,7 @@ phases:
           --output ./publish
 
       - echo "Creating Procfile to match binary name..."
-      - echo "web: ./Beelina.API" > ./publish/Procfile
+      - echo "web:./Beelina.API" > ./publish/Procfile
 
       - echo "Making binary executable..."
       - chmod +x ./publish/Beelina.API
