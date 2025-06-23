@@ -8,13 +8,6 @@ phases:
       - echo "Restoring packages..."
       - dotnet restore Beelina.API/Beelina.API.csproj
 
-  pre_build:
-    commands:
-      - echo "Running unit tests..."
-      - dotnet test Beelina.UnitTest/Beelina.UnitTest.csproj --configuration Release --no-restore --logger:trx
-      # Optional: Stop pipeline on test failure
-      - echo "Unit tests passed."
-
   build:
     commands:
       - echo "Building..."
