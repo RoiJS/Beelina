@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       dotnet: 8.0
     commands:
-      - echo "Restoring packages....."
+      - echo "Restoring packages..."
       - dotnet restore Beelina.API/Beelina.API.csproj
 
   build:
