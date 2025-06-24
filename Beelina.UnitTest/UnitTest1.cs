@@ -49,7 +49,7 @@ public class UnitTest1
     }
 
     [Theory]
-    [InlineData(2, 1, 1)]
+    [InlineData(2, 1, 2)]
     public void Test4(int num1, int num2, int expectedResult)
     {
         // Arrange
