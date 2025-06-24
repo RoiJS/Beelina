@@ -62,4 +62,19 @@ public class UnitTest1
         // Assert
         Assert.Equal(result, expectedResult);
     }
+
+    [Theory]
+    [InlineData(2, 1, 0)]
+    public void Test5(int num1, int num2, int expectedResult)
+    {
+        // Arrange
+        var varNum1 = num1;
+        var varNum2 = num2;
+
+        // Act
+        var result = varNum1 % varNum2;
+
+        // Assert
+        Assert.Equal(result, expectedResult);
+    }
 }
