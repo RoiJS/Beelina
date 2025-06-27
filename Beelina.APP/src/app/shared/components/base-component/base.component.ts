@@ -178,7 +178,13 @@ export class BaseComponent {
   }
 
   incrementCode(code: string): string {
+
+    if (!code) {
+      return '';
+    }
+
     const match = code.match(/^(?:([A-Za-z]+)(-?)|([A-Za-z]+)_?|([A-Za-z]+))(\d+)$/);
+
     if (!match) {
       return '';
     }
