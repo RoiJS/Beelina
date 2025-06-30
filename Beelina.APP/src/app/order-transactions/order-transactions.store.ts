@@ -41,6 +41,7 @@ export const OrderTransactionStore = signalStore(
 
       const transactionsFilter = new TransactionsFilter();
       transactionsFilter.status = store.transactionStatus();
+      transactionsFilter.paymentStatus = store.paymentStatus();
       transactionsFilter.transactionDate = store.transactionDate();
 
       if (store.filterKeyword() || transactionsFilter.isActive()) {
