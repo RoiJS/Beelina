@@ -103,6 +103,7 @@ export class ProfileComponent extends BaseComponent {
       user.emailAddress = this._profileForm.get('emailAddress').value;
       user.username = this._profileForm.get('username').value;
       user.password = this._profileForm.get('newPassword').value;
+      user.salesAgentType = this._userDetails.salesAgentType;
 
       user.userPermissions = this._userDetails.userPermissions.map((p) => {
         return <UserModulePermission>{
