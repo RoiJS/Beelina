@@ -85,7 +85,8 @@
     <app-list-container [templateType]="emptyEntityTemplateEnum.PRODUCTS" [count]="dataSource()?.itemCount">
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container product-list">
         <div *cdkVirtualFor="let item of dataSource()">
-          <app-product-card-item [allowCopyItem]="true" [hideHeaderOptions]="!networkService.isOnline.value"
+          <app-product-card-item [allowCopyItem]="currentUserPermission >
+                getPermissionLevel(permissionLevelEnum.User)" [hideHeaderOptions]="!networkService.isOnline.value"
             [productItem]="item" [filterKeyword]="filterKeyword()" [hideDeductionCounterIcon]="currentUserPermission >
             getPermissionLevel(permissionLevelEnum.User)" [allowManageItem]="
               currentUserPermission >
