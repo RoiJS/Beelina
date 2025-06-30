@@ -16,6 +16,7 @@ namespace Beelina.LIB.BusinessLogic
     {
         private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
         private readonly IProductTransactionRepository<ProductTransaction> _productTransactionRepository;
+        private readonly IPaymentRepository<Payment> _paymentRepository;
         private IOptions<EmailServerSettings> _emailServerSettings { get; }
         private readonly IOptions<AppHostInfo> _appHostInfo;
         private readonly IOptions<ApplicationSettings> _appSettings;
@@ -32,7 +33,8 @@ namespace Beelina.LIB.BusinessLogic
             IOptions<ApplicationSettings> appSettings,
             ICurrentUserService currentUserService,
             IUserSettingsRepository<UserSetting> userSettingRepository,
-            IGeneralSettingRepository<GeneralSetting> generalSettingsRepository
+            IGeneralSettingRepository<GeneralSetting> generalSettingsRepository,
+            IPaymentRepository<Payment> paymentRepository
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
@@ -44,6 +46,7 @@ namespace Beelina.LIB.BusinessLogic
             _productTransactionRepository = productTransactionRepository;
             _userAccountRepository = userAccountRepository;
             _generalSettingsRepository = generalSettingsRepository;
+            _paymentRepository = paymentRepository;
         }
 
         public async Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate)
@@ -880,16 +883,13 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<List<Transaction>> MarkTransactionsAsPaid(List<int> transactionIds, bool paid)
         {
-            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
-                                .Where(t => transactionIds.Contains(t.Id))
-                                .Includes(t => t.ProductTransactions)
-                                .ToListAsync();
-
             SetCurrentUserId(_currentUserService.CurrentUserId);
 
-            transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));
+            // Mark Product Transactions as Paid
+            var transactionsFromRepo = await MarkProductTransactionsAsPaid(transactionIds, paid);
 
-            await SaveChanges();
+            // Add Auto Payment for Transactions
+            await AddAutoPaymentForTransactions(transactionIds, paid);
 
             return transactionsFromRepo;
         }
@@ -1052,6 +1052,52 @@ namespace Beelina.LIB.BusinessLogic
             {
                 return false;
             }
+        }
+
+        private async Task<List<Transaction>> AddAutoPaymentForTransactions(List<int> transactionIds, bool paid)
+        {
+            var updatedTransactions = new List<Transaction>();
+
+            if (paid)
+            {
+                foreach (var transactionId in transactionIds)
+                {
+                    // Use repository method to get transaction with all necessary fields
+                    var transactionFromRepo = await GetTransaction(transactionId);
+                    var transaction = transactionFromRepo.Transaction;
+
+                    if (transaction != null && transaction.Balance > 0)
+                    {
+                        var payment = new Payment
+                        {
+                            TransactionId = transaction.Id,
+                            Amount = transaction.Balance,
+                            PaymentDate = DateTime.UtcNow,
+                            Notes = "Auto payment. Marked as paid by administrator."
+                        };
+
+                        await _paymentRepository.RegisterPayment(payment);
+                    }
+
+                    updatedTransactions.Add(transaction);
+                }
+            }
+
+            return updatedTransactions;
+        }
+
+        private async Task<List<Transaction>> MarkProductTransactionsAsPaid(List<int> transactionIds, bool paid)
+        {
+            var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
+                                .Where(t => transactionIds.Contains(t.Id))
+                                .Includes(t => t.ProductTransactions)
+                                .ToListAsync();
+
+            transactionsFromRepo.ForEach(t => t.ProductTransactions.ForEach(p => p.Status = !paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid));
+
+            await SaveChanges();
+
+            return transactionsFromRepo;
         }
 
         private string GenerateInvoiceReceiptEmailContent(string transactionNo, string company, string salesAgent)
