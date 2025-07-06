@@ -1,4 +1,4 @@
-<app-tool-bar [title]="transaction?.store?.name">
+<app-tool-bar [title]="transaction?.store?.name || ''">
 
   @if(userService.userSetting().allowOrderPayments) {
   <button mat-icon-button class="toolbar-option" (click)="goToPaymentHistory()">
