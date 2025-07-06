@@ -17,6 +17,7 @@ import { ProductDataSource } from 'src/app/_models/datasources/product.datasourc
 import { AddToCartProductComponent } from '../../add-to-cart-product/add-to-cart-product.component';
 import { ProductsFilter } from 'src/app/_models/filters/products.filter';
 import { SearchFieldComponent } from 'src/app/shared/ui/search-field/search-field.component';
+import { LocalProductsDbService } from 'src/app/_services/local-db/local-products-db.service';
 
 @Component({
   selector: 'app-select-new-product',
@@ -39,6 +40,7 @@ export class SelectNewProductComponent implements AfterViewInit, OnDestroy {
 
   data = inject<{ productTransactions: Array<ProductTransaction> }>(MAT_BOTTOM_SHEET_DATA);
   store = inject(Store<AppStateInterface>);
+  localDbProductsService = inject(LocalProductsDbService);
 
   searchFieldComponent = viewChild(SearchFieldComponent);
 
@@ -74,6 +76,7 @@ export class SelectNewProductComponent implements AfterViewInit, OnDestroy {
   }
 
   onSearch(filterKeyword: string) {
+    this.localDbProductsService.reset();
     this._store.dispatch(ProductActions.resetProductState());
     this._store.dispatch(
       ProductActions.setSearchProductAction({ keyword: filterKeyword })
