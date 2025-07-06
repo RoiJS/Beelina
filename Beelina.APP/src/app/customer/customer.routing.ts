@@ -21,4 +21,11 @@ export const routes: Routes = [
         (m) => m.EditCustomerModule
       ),
   },
+  {
+    path: ':storeId/transactions',
+    loadChildren: () =>
+      import('./store-transaction-history/store-transaction-history.module').then(
+        (m) => m.StoreTransactionHistoryModule
+      ),
+  },
 ];

@@ -51,7 +51,8 @@
     "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode.",
     "SUBSCRIBE": "Subscribe",
     "COPY_OF": "Copy of",
-    "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments"
+    "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments",
+    "TRANSACTION_HISTORY": "Transaction History"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -345,6 +346,10 @@
       "SUCCESS_MESSAGE": "New customer has been saved!",
       "ERROR_MESSAGE": "Saving new customer failed. Please again later."
     }
+  },
+  "CUSTOMER_TRANSACTION_HISTORY_PAGE": {
+    "TITLE": "Customer Transaction History",
+    "DESCRIPTION": "This is where customer transaction history can be viewed. Only confirmed orders are available here."
   },
   "PRODUCT_CART_PAGE": {
     "TITLE": "Order Summary",

@@ -65,6 +65,10 @@ export class CustomerComponent
     this.store.dispatch(BarangaysActions.resetBarangayState());
   }
 
+  goToTransactionHistory(id: number) {
+    this.router.navigate([`customer-accounts/${this._barangay}/${id}/transactions`]);
+  }
+
   openDetails(id: number) {
     this.router.navigate([`customer-accounts/${this._barangay}/${id}`]);
   }

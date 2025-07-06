@@ -16,6 +16,7 @@ export interface IOrderTransactionState extends IBaseState, IBaseStateConnection
   transactionStatus: TransactionStatusEnum;
   transactionDate: string;
   paymentStatus: PaymentStatusEnum
+  storeId: number;
 }
 
 export const initialState: IOrderTransactionState = {
@@ -29,7 +30,8 @@ export const initialState: IOrderTransactionState = {
   hasNextPage: false,
   error: null,
   totalCount: 0,
-  paymentStatus: PaymentStatusEnum.All
+  paymentStatus: PaymentStatusEnum.All,
+  storeId: 0
 };
 
 export const OrderTransactionStore = signalStore(
@@ -43,6 +45,7 @@ export const OrderTransactionStore = signalStore(
       transactionsFilter.status = store.transactionStatus();
       transactionsFilter.paymentStatus = store.paymentStatus();
       transactionsFilter.transactionDate = store.transactionDate();
+      transactionsFilter.storeId = store.storeId();
 
       if (store.filterKeyword() || transactionsFilter.isActive()) {
         return transactionService.getTransactions(store.endCursor(), store.filterKeyword(), transactionsFilter).subscribe({
@@ -81,7 +84,8 @@ export const OrderTransactionStore = signalStore(
       patchState(store, {
         transactionStatus: transactionFilter.status,
         transactionDate: transactionFilter.transactionDate,
-        paymentStatus: transactionFilter.paymentStatus
+        paymentStatus: transactionFilter.paymentStatus,
+        storeId: transactionFilter.storeId
       });
     },
 

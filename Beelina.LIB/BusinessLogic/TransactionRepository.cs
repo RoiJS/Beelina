@@ -259,7 +259,8 @@ namespace Beelina.LIB.BusinessLogic
             {
                 Status = status,
                 TransactionDate = transactionDate,
-                PaymentStatus = PaymentStatusEnum.All
+                PaymentStatus = PaymentStatusEnum.All,
+                StoreId = 0 // Assuming we want to get transactions for all stores
             };
             return await GetTransactions(_currentUserService.CurrentUserId, "", transactionsFilter);
         }
@@ -291,7 +292,10 @@ namespace Beelina.LIB.BusinessLogic
                     where
                         (transactionsFilter.Status == TransactionStatusEnum.All || (transactionsFilter.Status != TransactionStatusEnum.All && t.Status == transactionsFilter.Status))
                         && (userId == 0 || (userId > 0 && t.CreatedById == userId))
-                        && (transactionsFilter == null || (transactionsFilter != null && ((String.IsNullOrEmpty(transactionsFilter.TransactionDate) || (!String.IsNullOrEmpty(transactionsFilter.TransactionDate) && t.TransactionDate == Convert.ToDateTime(transactionsFilter.TransactionDate))))))
+                        && (transactionsFilter == null ||
+                            (transactionsFilter != null && (
+                                    (String.IsNullOrEmpty(transactionsFilter.TransactionDate) || (!String.IsNullOrEmpty(transactionsFilter.TransactionDate) && t.TransactionDate == Convert.ToDateTime(transactionsFilter.TransactionDate))) &&
+                                    (transactionsFilter.StoreId == 0 || s.Id == transactionsFilter.StoreId))))
                         && !t.IsDelete
                         && t.IsActive
 

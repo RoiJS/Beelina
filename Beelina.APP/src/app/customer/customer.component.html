@@ -17,18 +17,23 @@
         <div *cdkVirtualFor="let item of dataSource">
           <div matRipple class="list-container__item-section">
             <div class="list-container__icon-section list-container__icon-section--right-space"
-              (click)="openDetails(item.id)">
+              (click)="goToTransactionHistory(item.id)">
               <div class="list-container__icon-section--icon-container">
                 <mat-icon>store</mat-icon>
               </div>
             </div>
-            <div class="list-container__details-section" (click)="openDetails(item.id)">
+            <div class="list-container__details-section" (click)="goToTransactionHistory(item.id)">
               <label class="main-label">{{ item.name }}</label>
               <label>{{ item.address }}</label>
             </div>
             <div class="list-container__options-section">
               <mat-icon matRipple class="option" [matMenuTriggerFor]="menu">more_vert</mat-icon>
               <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="goToTransactionHistory(item.id)">
+                  <mat-icon>history</mat-icon>
+                  {{ "GENERAL_TEXTS.TRANSACTION_HISTORY" | translate }}
+                </button>
+
                 <button mat-menu-item (click)="openDetails(item.id)">
                   <mat-icon>border_color</mat-icon>
                   {{ "GENERAL_TEXTS.EDIT" | translate }}
