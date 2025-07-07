@@ -100,6 +100,8 @@ export class ProductCartComponent
   private _dialogRef: MatBottomSheetRef<AgreementConfirmationComponent>;
   private _dialogPrintOptionRef: MatBottomSheetRef<PrintOptionDialogComponent>;
 
+  private FORM_STORAGE_KEY = 'productCartForm';
+
   barangayOptions = signal<Array<Barangay>>([]);
   dateUpdated = signal<string>('');
   updatedBy = signal<string>('');
@@ -305,29 +307,41 @@ export class ProductCartComponent
               }
             }
 
-            this._discountForm
-              .get('discount')
-              .setValue(this.transaction().discount || 0);
-            this._orderForm
-              .get('barangay')
-              .setValue(this.transaction().store.barangay.name);
-            this._orderForm.get('name').setValue(this.transaction().store.name);
-            this._selectedCustomer.set(this.transaction().store);
-            this._orderForm
-              .get('address')
-              .setValue(this.transaction().store.address);
-            this._orderForm
-              .get('paymentMethod')
-              .setValue(this.transaction().modeOfPayment);
-            this._orderForm
-              .get('transactionDate')
-              .setValue(this.transaction().transactionDate || new Date());
-            this._orderForm
-              .get('dueDate')
-              .setValue(this.transaction().dueDate || new Date());
-            this._orderForm
-              .get('paid')
-              .setValue(!this.transaction().hasUnpaidProductTransaction);
+            if (this._transactionId() === 0) {
+
+              this.restoreFormStateFromStorage();
+              this._subscription.add(this._orderForm.valueChanges.subscribe(() => {
+                this.saveFormStateToStorage();
+              }));
+              this._subscription.add(this._discountForm.valueChanges.subscribe(() => {
+                this.saveFormStateToStorage();
+              }));
+
+            } else {
+              this._discountForm
+                .get('discount')
+                .setValue(this.transaction().discount || 0);
+              this._orderForm
+                .get('barangay')
+                .setValue(this.transaction().store.barangay.name);
+              this._orderForm.get('name').setValue(this.transaction().store.name);
+              this._selectedCustomer.set(this.transaction().store);
+              this._orderForm
+                .get('address')
+                .setValue(this.transaction().store.address);
+              this._orderForm
+                .get('paymentMethod')
+                .setValue(this.transaction().modeOfPayment);
+              this._orderForm
+                .get('transactionDate')
+                .setValue(this.transaction().transactionDate || new Date());
+              this._orderForm
+                .get('dueDate')
+                .setValue(this.transaction().dueDate || new Date());
+              this._orderForm
+                .get('paid')
+                .setValue(!this.transaction().hasUnpaidProductTransaction);
+            }
           }
         })
     );
@@ -393,6 +407,7 @@ export class ProductCartComponent
             })
           );
           this.storageService.remove('productTransactions');
+          this.clearFormStateFromStorage();
           this.store.dispatch(
             ProductTransactionActions.resetProductTransactionState()
           );
@@ -919,6 +934,47 @@ export class ProductCartComponent
     this.store.dispatch(ProductTransactionActions.resetTransactionState());
   }
 
+  private saveFormStateToStorage() {
+    if (this._transactionId() !== 0) return;
+    const formState = {
+      invoiceNo: this._orderForm.get('invoiceNo').value,
+      barangay: this._orderForm.get('barangay').value,
+      name: this._orderForm.get('name').value,
+      address: this._orderForm.get('address').value,
+      paymentMethod: this._orderForm.get('paymentMethod').value,
+      transactionDate: this._orderForm.get('transactionDate').value,
+      dueDate: this._orderForm.get('dueDate').value,
+      paid: this._orderForm.get('paid').value,
+      discount: this._discountForm.get('discount').value,
+    };
+    this.storageService.storeString(this.FORM_STORAGE_KEY, JSON.stringify(formState));
+  }
+
+  private restoreFormStateFromStorage() {
+    if (this._transactionId() !== 0) return;
+    if (!this.storageService.hasKey(this.FORM_STORAGE_KEY)) return;
+    try {
+      const formState = JSON.parse(this.storageService.getString(this.FORM_STORAGE_KEY));
+      if (formState) {
+        this._orderForm.get('invoiceNo').setValue(formState.invoiceNo || '');
+        this._orderForm.get('barangay').setValue(formState.barangay || '');
+        this._orderForm.get('name').setValue(formState.name || '');
+        this._orderForm.get('address').setValue(formState.address || '');
+        this._orderForm.get('paymentMethod').setValue(formState.paymentMethod || 0);
+        this._orderForm.get('transactionDate').setValue(formState.transactionDate ? new Date(formState.transactionDate) : new Date());
+        this._orderForm.get('dueDate').setValue(formState.dueDate ? new Date(formState.dueDate) : new Date());
+        this._orderForm.get('paid').setValue(formState.paid || false);
+        this._discountForm.get('discount').setValue(formState.discount || 0);
+      }
+    } catch (e) {
+      // ignore parse errors
+    }
+  }
+
+  private clearFormStateFromStorage() {
+    this.storageService.remove(this.FORM_STORAGE_KEY);
+  }
+
   private saveDraftOrderToServer(transaction: TransactionDto) {
     this._subscription.add(
       this.transactionService
@@ -936,6 +992,7 @@ export class ProductCartComponent
                 state: false,
               })
             );
+            this.clearFormStateFromStorage();
             this.checkAutoPrintReceipt(id);
           },
 
@@ -965,6 +1022,7 @@ export class ProductCartComponent
                 state: false,
               })
             );
+            this.clearFormStateFromStorage();
             this.checkAutoPrintReceipt(id);
           },
 
@@ -991,7 +1049,7 @@ export class ProductCartComponent
           state: false,
         })
       );
-
+      this.clearFormStateFromStorage();
       this.checkAutoPrintReceipt(id);
     });
   }
@@ -1007,7 +1065,7 @@ export class ProductCartComponent
           state: false,
         })
       );
-
+      this.clearFormStateFromStorage();
       this.checkAutoPrintReceipt(id);
     });
   }
@@ -1049,7 +1107,7 @@ export class ProductCartComponent
           );
           this.sendOrderReceiptEmailNotification(id);
           this.sendInvoiceEmailNotification(id);
-
+          this.clearFormStateFromStorage();
           this.checkAutoPrintReceipt(id);
         },
 
@@ -1112,6 +1170,7 @@ export class ProductCartComponent
 
   private resetProductTransactions() {
     this.storageService.remove('productTransactions');
+    this.clearFormStateFromStorage();
     this.store.dispatch(
       ProductTransactionActions.resetProductTransactionState()
     );

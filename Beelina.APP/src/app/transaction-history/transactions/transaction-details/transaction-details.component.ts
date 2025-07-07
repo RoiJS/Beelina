@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Store, select } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
@@ -16,11 +16,14 @@ import { AuthService } from 'src/app/_services/auth.service';
 import { BluetoothPrintInvoiceService } from 'src/app/_services/bluetooth-print-invoice.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { InvoicePrintService } from 'src/app/_services/print/invoice-print.service';
+import { NetworkService } from 'src/app/_services/network.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { UserAccountService } from 'src/app/_services/user-account.service';
 import {
   TransactionService,
 } from 'src/app/_services/transaction.service';
+import { StorageService } from 'src/app/_services/storage.service';
+import { ProductService } from 'src/app/_services/product.service';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { LoaderLayoutComponent } from 'src/app/shared/ui/loader-layout/loader-layout.component';
@@ -57,9 +60,12 @@ export class TransactionDetailsComponent
   private invoicePrintService = inject(InvoicePrintService);
   private router = inject(Router);
   private notificationService = inject(NotificationService);
+  private networkService = inject(NetworkService);
   private transactionService = inject(TransactionService);
   private translateService = inject(TranslateService);
   private store = inject(Store<AppStateInterface>);
+  private storageService = inject(StorageService);
+  private productService = inject(ProductService);
 
   userService = inject(UserAccountService);
 
@@ -219,6 +225,42 @@ export class TransactionDetailsComponent
             });
         }
       );
+  }
+
+  async createAsNewOrder() {
+    if (!this._transaction) return;
+    let nextInvoiceNo = this._transaction.invoiceNo;
+    try {
+      const latestTransactionCode = await firstValueFrom(this.productService.getLatestTransactionCode());
+      if (latestTransactionCode) {
+        nextInvoiceNo = this.incrementCode(latestTransactionCode);
+      }
+    } catch (e) {
+      console.warn('Failed to get latest transaction code:', e);
+    }
+
+    // Prepare productCartForm data
+    const formState = {
+      invoiceNo: nextInvoiceNo,
+      barangay: this._transaction.store?.barangay?.name || '',
+      name: this._transaction.store?.name || '',
+      address: this._transaction.store?.address || '',
+      paymentMethod: this._transaction.modeOfPayment || 0,
+      transactionDate: this._transaction.transactionDate ? new Date(this._transaction.transactionDate) : new Date(),
+      dueDate: this._transaction.dueDate ? new Date(this._transaction.dueDate) : new Date(),
+      paid: !this._transaction.hasUnpaidProductTransaction,
+      discount: this._transaction.discount || 0,
+    };
+    // Store form state
+    this.storageService.storeString('productCartForm', JSON.stringify(formState));
+    // Store product transactions
+    this.storageService.storeString('productTransactions', JSON.stringify(this._transaction.productTransactions || []));
+    // Redirect to product cart as new order
+    this.router.navigate([`product-catalogue/product-cart`], {
+      state: {
+        isLocalTransaction: !this.networkService.isOnline.value,
+      }
+    });
   }
 
   get transactionForm(): FormGroup {

@@ -52,7 +52,8 @@
     "SUBSCRIBE": "Subscribe",
     "COPY_OF": "Copy of",
     "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments",
-    "TRANSACTION_HISTORY": "Transaction History"
+    "TRANSACTION_HISTORY": "Transaction History",
+    "CREATE_AS_NEW_ORDER": "Create as New Order"
   },
   "MAIN_MENU": {
     "SALES": "Sales",

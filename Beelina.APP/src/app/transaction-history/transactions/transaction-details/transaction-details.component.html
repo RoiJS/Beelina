@@ -187,6 +187,12 @@
           </button>
           <br>
 
+          <button mat-raised-button color="warn" (click)="createAsNewOrder()">
+            <mat-icon>add_circle_outline</mat-icon>
+            {{ "GENERAL_TEXTS.CREATE_AS_NEW_ORDER" | translate }}
+          </button>
+          <br>
+
           <button mat-raised-button color="primary" (click)="saveTransaction()">
             <mat-icon>save</mat-icon>
             {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
