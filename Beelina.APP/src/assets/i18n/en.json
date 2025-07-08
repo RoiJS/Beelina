@@ -52,7 +52,8 @@
     "SUBSCRIBE": "Subscribe",
     "COPY_OF": "Copy of",
     "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments",
-    "TRANSACTION_HISTORY": "Transaction History"
+    "TRANSACTION_HISTORY": "Transaction History",
+    "CREATE_AS_NEW_ORDER": "Create as New Order"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -407,6 +408,10 @@
           "LABEL_3": "Note that the transaction details cannot be changed once it is confirmed."
         }
       }
+    },
+    "ACTIVE_ORDER_OVERWRITE_DIALOG": {
+      "TITLE": "Active Order Detected",
+      "CONFIRM": "There is an active order in the cart. Creating a new order will overwrite the current order details. Do you want to proceed?"
     },
     "PRINT_OPTION_DIALOG": {
       "TITLE": "Print option",
