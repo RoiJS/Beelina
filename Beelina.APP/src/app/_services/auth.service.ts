@@ -266,6 +266,7 @@ export class AuthService {
     this.storageService.remove("textOrder");
     this.storageService.remove("textInventories");
     this.storageService.remove("textInventoriesList");
+    this.storageService.remove("productCartForm");
 
     this.store.dispatch(LoginActions.resetLoginCredentials());
     this.store.dispatch(ProductTransactionActions.resetProductTransactionState());

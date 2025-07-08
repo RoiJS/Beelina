@@ -51,7 +51,9 @@
     "OFFLINE_MESSAGE": "No connection detected. You are currently using bizual offline mode.",
     "SUBSCRIBE": "Subscribe",
     "COPY_OF": "Copy of",
-    "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments"
+    "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments",
+    "TRANSACTION_HISTORY": "Transaction History",
+    "CREATE_AS_NEW_ORDER": "Create as New Order"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -346,6 +348,10 @@
       "ERROR_MESSAGE": "Saving new customer failed. Please again later."
     }
   },
+  "CUSTOMER_TRANSACTION_HISTORY_PAGE": {
+    "TITLE": "Customer Transaction History",
+    "DESCRIPTION": "This is where customer transaction history can be viewed. Only confirmed orders are available here."
+  },
   "PRODUCT_CART_PAGE": {
     "TITLE": "Order Summary",
     "FORM_CONTROL_SECTION": {
@@ -402,6 +408,10 @@
           "LABEL_3": "Note that the transaction details cannot be changed once it is confirmed."
         }
       }
+    },
+    "ACTIVE_ORDER_OVERWRITE_DIALOG": {
+      "TITLE": "Active Order Detected",
+      "CONFIRM": "There is an active order in the cart. Creating a new order will overwrite the current order details. Do you want to proceed?"
     },
     "PRINT_OPTION_DIALOG": {
       "TITLE": "Print option",
@@ -939,7 +949,7 @@
   "SIDE_DRAWER_SECTION": {
     "FOOTER": {
       "VERSION": "Version",
-      "COPYRIGHT": "Copyright 2024.",
+      "COPYRIGHT": "Copyright 2025.",
       "ALL_RIGHTS_RESERVED": "All rights reserved"
     }
   },

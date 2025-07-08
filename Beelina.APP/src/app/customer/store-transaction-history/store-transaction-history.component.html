@@ -1,0 +1,32 @@
+<app-tool-bar [title]="'CUSTOMER_TRANSACTION_HISTORY_PAGE.TITLE' | translate"></app-tool-bar>
+<app-loader-layout [busy]="orderTransactionStore.isLoading()">
+  <div class="page-container slide-in-left-animation">
+
+    <div class="page-container__page-divider scale-in-center-animation">
+      <label>{{ 'CUSTOMER_TRANSACTION_HISTORY_PAGE.TITLE' | translate }}</label><br />
+      <span class="page-information-description">{{
+        "CUSTOMER_TRANSACTION_HISTORY_PAGE.DESCRIPTION" | translate
+        }}</span>
+    </div>
+    <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS" [count]="dataSource.itemCount">
+
+      <cdk-virtual-scroll-viewport itemSize="10" class="list-container transactions-list">
+        <div *cdkVirtualFor="let item of dataSource">
+          <div matRipple
+            class="transaction-date list-container__item-section list-container__item-section--justify-content-space-between list-container__item-section--align-items-center"
+            (click)="goToTransaction(item)">
+            <div class="list-container__item-section--check-box-item-section">
+              <span># {{ item.invoiceNo }}</span>
+            </div>
+
+            <div>
+              <mat-icon>keyboard_arrow_right</mat-icon>
+            </div>
+
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+
+    </app-list-container>
+  </div>
+</app-loader-layout>

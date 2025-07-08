@@ -1,4 +1,4 @@
-<app-tool-bar [title]="transaction?.store?.name">
+<app-tool-bar [title]="transaction?.store?.name || ''">
 
   @if(userService.userSetting().allowOrderPayments) {
   <button mat-icon-button class="toolbar-option" (click)="goToPaymentHistory()">
@@ -151,6 +151,16 @@
         </div>
         <div class="panel__footer-section transaction-details-panel__footer-section">
 
+          <button mat-raised-button color="primary" (click)="saveTransaction()">
+            <mat-icon>save</mat-icon>
+            {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
+          </button>
+
+          <button mat-raised-button color="warn" (click)="createAsNewOrder()">
+            <mat-icon>add_circle_outline</mat-icon>
+            {{ "GENERAL_TEXTS.CREATE_AS_NEW_ORDER" | translate }}
+          </button>
+
           @if(userService.userSetting().allowOrderPayments) {
           @if (transaction?.balance > 0) {
           <button mat-raised-button color="default" (click)="registerPayment()">
@@ -158,7 +168,6 @@
             {{"PRODUCT_CART_PAGE.FORM_CONTROL_SECTION.BUTTON_OPTIONS.REGISTER_PAYMENT"
             | translate}}
           </button>
-          <br>
           }
           }
 
@@ -169,7 +178,6 @@
             <mat-icon>check_circle_outline</mat-icon>
             {{ "GENERAL_TEXTS.MARK_AS_PAID" | translate }}
           </button>
-          <br>
           }
           }
 
@@ -178,19 +186,13 @@
             <mat-icon>email</mat-icon>
             {{ "GENERAL_TEXTS.SEND_VIA_EMAIL" | translate }}
           </button>
-          <br>
           }
 
           <button mat-raised-button color="default" (click)="print()">
             <mat-icon>print</mat-icon>
             {{ "GENERAL_TEXTS.PRINT" | translate }}
           </button>
-          <br>
 
-          <button mat-raised-button color="primary" (click)="saveTransaction()">
-            <mat-icon>save</mat-icon>
-            {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
-          </button>
         </div>
       </div>
     </div>
