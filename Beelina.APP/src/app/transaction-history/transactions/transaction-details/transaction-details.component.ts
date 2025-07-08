@@ -229,9 +229,23 @@ export class TransactionDetailsComponent
 
   async createAsNewOrder() {
     if (!this._transaction) return;
+    // Check for active order in cart
+    const productCartForm = JSON.parse(this.storageService.getString('productCartForm'));
+    const productTransactions = JSON.parse(this.storageService.getString('productTransactions'));
+    const hasActiveOrder = productCartForm?.length > 0 || productTransactions?.length > 0;
+    if (hasActiveOrder) {
+      const title = this.translateService.instant('PRODUCT_CART_PAGE.ACTIVE_ORDER_OVERWRITE_DIALOG.TITLE');
+      const message = this.translateService.instant('PRODUCT_CART_PAGE.ACTIVE_ORDER_OVERWRITE_DIALOG.CONFIRM');
+      const result = await new Promise<ButtonOptions>(resolve => {
+        this.dialogService.openConfirmation(title, message).subscribe(resolve);
+      });
+      if (result !== ButtonOptions.YES) {
+        return;
+      }
+    }
     let nextInvoiceNo = this._transaction.invoiceNo;
     try {
-      const latestTransactionCode = await firstValueFrom(this.productService.getLatestTransactionCode());
+      const latestTransactionCode = await this.productService.getLatestTransactionCode().toPromise();
       if (latestTransactionCode) {
         nextInvoiceNo = this.incrementCode(latestTransactionCode);
       }

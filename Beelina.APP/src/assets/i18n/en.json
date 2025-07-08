@@ -409,6 +409,10 @@
         }
       }
     },
+    "ACTIVE_ORDER_OVERWRITE_DIALOG": {
+      "TITLE": "Active Order Detected",
+      "CONFIRM": "There is an active order in the cart. Creating a new order will overwrite the current order details. Do you want to proceed?"
+    },
     "PRINT_OPTION_DIALOG": {
       "TITLE": "Print option",
       "CONFIRM": "Choose to which entity you want to print this invoice for.",
