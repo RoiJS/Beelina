@@ -56,6 +56,7 @@ export class ProductTransactionsEffects {
       ofType(ProductTransactionActions.getProductTransactions),
       switchMap((action: { transactionId: number, isLocalTransaction: boolean }) => {
 
+        // Get Local order
         if (action.isLocalTransaction) {
           return from(this.localOrdersDbService.getMyLocalOrders(TransactionStatusEnum.ALL, [action.transactionId]))
             .pipe(
@@ -68,18 +69,72 @@ export class ProductTransactionsEffects {
             );
         }
 
-        return this.transactionService
-          .getTransaction(action.transactionId)
-          .pipe(
-            map((transaction: Transaction) => {
-              return ProductTransactionActions.initializeTransactionDetails({
-                transaction,
-              });
+        // Get order from server
+        if (action.transactionId > 0) {
+          return this.transactionService
+            .getTransaction(action.transactionId)
+            .pipe(
+              map((transaction: Transaction) => {
+                return ProductTransactionActions.initializeTransactionDetails({
+                  transaction,
+                });
+              })
+            );
+        } else {
+
+          // Get order from local storage
+          let formState = null;
+          try {
+            formState = JSON.parse(this.storageService.getString('productCartForm'));
+          } catch (e) {
+            console.error('Failed to parse productCartForm from local storage:', e);
+          }
+          const transaction = new Transaction();
+
+          if (formState) {
+            transaction.id = 0;
+            transaction.badOrderAmount = 0;
+            transaction.invoiceNo = formState.invoiceNo;
+            transaction.discount = formState.discount;
+            transaction.transactionDate = formState.transactionDate ? new Date(formState.transactionDate) : new Date();
+            transaction.dueDate = formState.dueDate ? new Date(formState.dueDate) : new Date();
+            transaction.storeId = formState.storeId;
+            transaction.store = formState.store;
+            transaction.modeOfPayment = formState.modeOfPayment;
+          }
+
+          let productTransactions: Array<ProductTransaction> = [];
+          try {
+            const parsed = JSON.parse(this.storageService.getString('productTransactions'));
+            if (parsed) {
+              productTransactions = <Array<ProductTransaction>>parsed;
+            }
+          } catch (e) {
+            console.error('Failed to parse productTransactions from local storage:', e);
+            productTransactions = [];
+          }
+
+          if (productTransactions && productTransactions.length > 0) {
+            transaction.productTransactions = productTransactions.map((p) => {
+              const productTransaction = new ProductTransaction();
+              productTransaction.id = p.id;
+              productTransaction.code = p.code;
+              productTransaction.productId = p.productId;
+              productTransaction.productName = p.productName;
+              productTransaction.price = p.price;
+              productTransaction.quantity = p.quantity;
+              productTransaction.currentQuantity = p.currentQuantity;
+              return productTransaction;
+            });
+          }
+
+          return of(
+            ProductTransactionActions.initializeTransactionDetails({
+              transaction,
             })
-          );
+          )
+        }
       })
     )
   );
-
-
 }
