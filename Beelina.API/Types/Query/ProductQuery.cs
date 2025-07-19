@@ -42,49 +42,19 @@ namespace Beelina.API.Types.Query
         [Authorize]
         public async Task<List<ProductWithdrawalEntry>> UpdateProductWithdrawalEntries(
                     [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
-                    [Service] IProductRepository<Product> productRepository,
                     [Service] IHttpContextAccessor httpContextAccessor,
                     [Service] ICurrentUserService currentUserService,
-                    [Service] IMapper mapper,
                     [Service] ILogger<ProductQuery> logger,
                     List<ProductWithdrawalEntryInput> productWithdrawalEntryInputs
                 )
         {
-            var updatedEntries = new List<ProductWithdrawalEntry>();
             productWithdrawalEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
             try
             {
-                foreach (var input in productWithdrawalEntryInputs)
-                {
-                    var withdrawalEntryFromRepo = await productWithdrawalEntryRepository
-                                                .GetEntity(input.Id)
-                                                .Includes(s => s.ProductStockAudits)
-                                                .ToObjectAsync();
-
-                    await SetProductStockPanels(input, productRepository, httpContextAccessor.HttpContext.RequestAborted);
-
-                    if (withdrawalEntryFromRepo is null)
-                    {
-                        var newStockEntry = mapper.Map<ProductWithdrawalEntry>(input);
-                        var newStockEntryItems = mapper.Map<List<ProductStockAudit>>(input.ProductStockAuditsInputs);
-
-                        newStockEntry.ProductStockAudits = newStockEntryItems;
-
-                        await productWithdrawalEntryRepository.AddEntity(newStockEntry);
-                        updatedEntries.Add(newStockEntry);
-                    }
-                    else
-                    {
-                        mapper.Map(input, withdrawalEntryFromRepo);
-                        withdrawalEntryFromRepo.ProductStockAudits = mapper.MapEntities<ProductStockAuditInput, ProductStockAudit>(input.ProductStockAuditsInputs, withdrawalEntryFromRepo.ProductStockAudits);
-                        updatedEntries.Add(withdrawalEntryFromRepo);
-                    }
-                }
-
-                await productWithdrawalEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
-
-                return updatedEntries;
+                return await productWithdrawalEntryRepository.UpdateProductWithdrawalEntriesWithBusinessLogic(
+                    productWithdrawalEntryInputs,
+                    httpContextAccessor.HttpContext.RequestAborted);
             }
             catch (Exception ex)
             {
@@ -168,6 +138,7 @@ namespace Beelina.API.Types.Query
         {
             return await productRepository.GetProducts(userAccountId, 0, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
         }
+
 
         [Authorize]
         public async Task<IProductPayload> GetProduct(

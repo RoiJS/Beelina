@@ -88,9 +88,9 @@ namespace Beelina.LIB.Helpers.Services
 
                 smtpClient.Send(mail);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
             finally
             {

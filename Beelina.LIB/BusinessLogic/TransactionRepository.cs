@@ -1,19 +1,23 @@
 ﻿using System.Text;
 using Beelina.LIB.Enums;
+using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Helpers.Classes;
 using Beelina.LIB.Helpers.Extensions;
 using Beelina.LIB.Helpers.Services;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
 using Beelina.LIB.Models.Filters;
+using Beelina.LIB.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Beelina.LIB.BusinessLogic
 {
     public class TransactionRepository
         : BaseRepository<Transaction>, ITransactionRepository<Transaction>
     {
+        private readonly ILogger<TransactionRepository> _logger;
         private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
         private readonly IProductTransactionRepository<ProductTransaction> _productTransactionRepository;
         private readonly IPaymentRepository<Payment> _paymentRepository;
@@ -34,10 +38,12 @@ namespace Beelina.LIB.BusinessLogic
             ICurrentUserService currentUserService,
             IUserSettingsRepository<UserSetting> userSettingRepository,
             IGeneralSettingRepository<GeneralSetting> generalSettingsRepository,
-            IPaymentRepository<Payment> paymentRepository
+            IPaymentRepository<Payment> paymentRepository,
+            ILogger<TransactionRepository> logger
         )
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
+            _logger = logger;
             _appHostInfo = appHostInfo;
             _appSettings = appSettings;
             _currentUserService = currentUserService;
@@ -506,6 +512,194 @@ namespace Beelina.LIB.BusinessLogic
             }
 
             return transaction;
+        }
+
+        public async Task<Transaction> RegisterTransaction(Transaction transaction, List<int> deletedProductTransactionIds, CancellationToken cancellationToken = default)
+        {
+            if (transaction.Id <= 0)
+                await AddEntity(transaction);
+            else
+            {
+                if (deletedProductTransactionIds.Count > 0)
+                {
+                    await _productTransactionRepository.DeleteProductTransactionsByIds(deletedProductTransactionIds, cancellationToken);
+                }
+
+                await SaveChanges(cancellationToken);
+            }
+
+            return transaction;
+        }
+
+        public async Task<Transaction> RegisterTransactionWithBusinessLogic(TransactionInput transactionInput, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                _logger.LogInformation("Start Transaction - Register Transaction");
+                _logger.LogInformation("=================================================================================");
+
+                // Get existing transaction or create new one
+                var transactionFromRepo = (await GetTransaction(transactionInput.Id)).Transaction;
+
+                if (transactionFromRepo == null)
+                {
+                    transactionFromRepo = MapTransactionInputToEntity(transactionInput);
+
+                    _logger.LogInformation("Part 1 - Creating new Transaction... {@transactionInput}", transactionInput);
+                }
+                else
+                {
+                    MapTransactionInputToExistingEntity(transactionInput, transactionFromRepo);
+
+                    _logger.LogInformation("Part 1 - Updating existing Transaction... {@transactionInput}", transactionInput);
+                }
+
+                // Process product transactions
+                var updatedProductTransactions = MapProductTransactionInputsToEntities(transactionInput.ProductTransactionInputs);
+
+                _logger.LogInformation("Part 2 - Setting up product transactions history...");
+
+                // Set up product transaction quantity histories
+                updatedProductTransactions.ForEach(t =>
+                {
+                    var productQuantityHistories = new List<ProductTransactionQuantityHistory>();
+
+                    if (t.Id > 0)
+                    {
+                        productQuantityHistories = transactionFromRepo
+                                .ProductTransactions
+                                .Where(pt => pt.ProductId == t.ProductId)
+                                .Select(pt => pt.ProductTransactionQuantityHistory)
+                                .First();
+
+                        var productTransactionFromInput = transactionInput
+                                .ProductTransactionInputs
+                                .Where(pt => pt.ProductId == t.ProductId)
+                                .First();
+
+                        if (productTransactionFromInput.CurrentQuantity != productTransactionFromInput.Quantity)
+                        {
+                            productQuantityHistories.Add(new ProductTransactionQuantityHistory
+                            {
+                                ProductTransactionId = t.Id,
+                                Quantity = productTransactionFromInput.CurrentQuantity
+                            });
+                        }
+                    }
+
+                    t.Status = !transactionInput.Paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+
+                    if (productQuantityHistories.Count > 0)
+                    {
+                        t.ProductTransactionQuantityHistory = productQuantityHistories;
+                    }
+                });
+
+                _logger.LogInformation("Part 3 - Checking deleted product transactions...");
+
+                // Check for deleted product transactions
+                var deletedProductTransactions = transactionFromRepo.ProductTransactions
+                    .Where(ptRepo => !transactionInput.ProductTransactionInputs.Any(ptInput => ptInput.Id == ptRepo.Id))
+                    .ToList();
+
+                // Get IDs of deleted product transactions to avoid tracking issues
+                var deletedProductTransactionIds = deletedProductTransactions.Select(pt => pt.Id).ToList();
+
+                transactionFromRepo.ProductTransactions = updatedProductTransactions;
+
+                // Register automatic payment if transaction is paid and confirmed
+                if (transactionInput.Paid &&
+                  transactionInput.Status == TransactionStatusEnum.Confirmed &&
+                  transactionFromRepo.Payments.Count == 0)
+                {
+                    _logger.LogInformation("Part 4 - Auto-payment registration...");
+
+                    var newPayment = new Payment
+                    {
+                        Amount = transactionFromRepo.NetTotal,
+                        PaymentDate = transactionFromRepo.TransactionDate
+                                    .AddHours(DateTime.Now.Hour)
+                                    .AddMinutes(DateTime.Now.Minute)
+                                    .AddSeconds(DateTime.Now.Second),
+                        Notes = "Automatic Payment Registration"
+                    };
+                    transactionFromRepo.Payments.Add(newPayment);
+                }
+
+                // Save the transaction
+                await RegisterTransaction(transactionFromRepo, deletedProductTransactionIds, cancellationToken);
+
+                if (transactionInput.Id > 0)
+                {
+                    _logger.LogInformation("Successfully update transaction. Params: {@params}", new
+                    {
+                        transactionInput
+                    });
+                }
+                else
+                {
+                    _logger.LogInformation("Successfully register transaction. Params: {@params}", new
+                    {
+                        transactionInput
+                    });
+                }
+
+                _logger.LogInformation("End of transaction");
+                _logger.LogInformation("=================================================================================");
+
+                return transactionFromRepo;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to register/update transaction. Params: {@params}", new
+                {
+                    transactionInput
+                });
+                _logger.LogInformation("=================================================================================");
+
+                throw new InvalidOperationException("Failed to register/update transaction.", ex);
+            }
+        }
+
+        private static Transaction MapTransactionInputToEntity(TransactionInput input)
+        {
+            return new Transaction
+            {
+                Id = input.Id,
+                InvoiceNo = input.InvoiceNo,
+                TransactionDate = DateTime.TryParse(input.TransactionDate, out var transactionDate) ? transactionDate : DateTime.Now,
+                Status = input.Status,
+                ModeOfPayment = input.ModeOfPayment,
+                Discount = input.Discount,
+                StoreId = input.StoreId,
+                DueDate = DateTime.TryParse(input.DueDate, out var dueDate) ? dueDate : DateTime.Now,
+                IsActive = true,
+                IsDelete = false
+            };
+        }
+
+        private static void MapTransactionInputToExistingEntity(TransactionInput input, Transaction existing)
+        {
+            existing.InvoiceNo = input.InvoiceNo;
+            existing.TransactionDate = DateTime.TryParse(input.TransactionDate, out var transactionDate) ? transactionDate : DateTime.Now;
+            existing.DueDate = DateTime.TryParse(input.DueDate, out var dueDate) ? dueDate : DateTime.Now;
+            existing.Status = input.Status;
+            existing.ModeOfPayment = input.ModeOfPayment;
+            existing.Discount = input.Discount;
+            existing.StoreId = input.StoreId;
+        }
+
+        private static List<ProductTransaction> MapProductTransactionInputsToEntities(List<ProductTransactionInput> inputs)
+        {
+            return [.. inputs.Select(input => new ProductTransaction
+            {
+                Id = input.Id,
+                ProductId = input.ProductId,
+                Price = input.Price,
+                Quantity = input.Quantity,
+                IsActive = true,
+                IsDelete = false
+            })];
         }
 
         public async Task<double> GetBadOrderAmount(string transactionNo, int storeId, int? userId)
@@ -1052,7 +1246,7 @@ namespace Beelina.LIB.BusinessLogic
                     );
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
@@ -1118,6 +1312,158 @@ namespace Beelina.LIB.BusinessLogic
             template = template.Replace("#salesAgent", salesAgent);
 
             return template;
+        }
+
+        public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateMultipleTransactionsProductQuantities(
+            List<int> transactionIds,
+            int userAccountId,
+            IProductRepository<Product> productRepository,
+            CancellationToken cancellationToken = default)
+        {
+            var transactions = await GetTransactions(transactionIds);
+            var transactionInputs = MapTransactionsToInputs(transactions);
+
+            return await ValidateProductTransactionsQuantities(transactionInputs, userAccountId, productRepository, cancellationToken);
+        }
+
+        public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductTransactionsQuantities(
+            List<TransactionInput> transactionInputs,
+            int userAccountId,
+            IProductRepository<Product> productRepository,
+            CancellationToken cancellationToken = default)
+        {
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(cancellationToken);
+            }
+
+            var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, cancellationToken);
+
+            List<ProductTransactionOverallQuantities> allProductTransactionOverallQuantities = [];
+            List<ProductTransactionOverallQuantities> invalidProductTransactionOverallQuantities = [];
+
+            // Calculate overall quantities per product across all transactions
+            foreach (TransactionInput transactionInput in transactionInputs)
+            {
+                foreach (ProductTransactionInput productTransaction in transactionInput.ProductTransactionInputs)
+                {
+                    var productTransactionOverallQuantities = allProductTransactionOverallQuantities
+                        .FirstOrDefault(p => p.ProductId == productTransaction.ProductId);
+
+                    if (productTransactionOverallQuantities is null)
+                    {
+                        allProductTransactionOverallQuantities.Add(new ProductTransactionOverallQuantities
+                        {
+                            ProductId = productTransaction.ProductId,
+                            OverallQuantity = productTransaction.Quantity,
+                            ProductTransactionOverallQuantitiesTransactions = [new ProductTransactionOverallQuantitiesTransaction
+                            {
+                                TransactionId = transactionInput.Id,
+                                TransactionCode = transactionInput.InvoiceNo
+                            }]
+                        });
+                    }
+                    else
+                    {
+                        productTransactionOverallQuantities.OverallQuantity += productTransaction.Quantity;
+                        productTransactionOverallQuantities.ProductTransactionOverallQuantitiesTransactions.Add(new ProductTransactionOverallQuantitiesTransaction
+                        {
+                            TransactionId = transactionInput.Id,
+                            TransactionCode = transactionInput.InvoiceNo
+                        });
+                    }
+                }
+            }
+
+            // Identify products with insufficient stock
+            foreach (var productTransactionOverallQuantity in allProductTransactionOverallQuantities)
+            {
+                var product = productsFromRepo.FirstOrDefault(p => p.Id == productTransactionOverallQuantity.ProductId);
+
+                if (product is not null && product.StockQuantity < productTransactionOverallQuantity.OverallQuantity)
+                {
+                    productTransactionOverallQuantity.ProductCode = product.Code;
+                    productTransactionOverallQuantity.ProductName = product.Name;
+                    productTransactionOverallQuantity.CurrentQuantity = product.StockQuantity;
+                    invalidProductTransactionOverallQuantities.Add(productTransactionOverallQuantity);
+                }
+            }
+
+            // Group invalid products by transaction
+            List<InvalidProductTransactionOverallQuantitiesTransaction> invalidProductTransactions = [];
+
+            foreach (var invalid in invalidProductTransactionOverallQuantities)
+            {
+                foreach (var transaction in invalid.ProductTransactionOverallQuantitiesTransactions)
+                {
+                    var invalidProductTransaction = invalidProductTransactions
+                        .FirstOrDefault(i => i.TransactionId == transaction.TransactionId);
+
+                    if (invalidProductTransaction is null)
+                    {
+                        var invalidPT = new InvalidProductTransactionOverallQuantitiesTransaction
+                        {
+                            TransactionId = transaction.TransactionId,
+                            TransactionCode = transaction.TransactionCode
+                        };
+                        invalidPT.InvalidProductTransactionOverallQuantities.Add(new InvalidProductTransactionOverallQuantities
+                        {
+                            ProductId = invalid.ProductId,
+                            ProductCode = invalid.ProductCode,
+                            ProductName = invalid.ProductName,
+                            CurrentQuantity = invalid.CurrentQuantity,
+                            OverallQuantity = invalid.OverallQuantity,
+                        });
+
+                        invalidProductTransactions.Add(invalidPT);
+                    }
+                    else
+                    {
+                        invalidProductTransaction.InvalidProductTransactionOverallQuantities.Add(
+                            new InvalidProductTransactionOverallQuantities
+                            {
+                                ProductId = invalid.ProductId,
+                                ProductCode = invalid.ProductCode,
+                                ProductName = invalid.ProductName,
+                                CurrentQuantity = invalid.CurrentQuantity,
+                                OverallQuantity = invalid.OverallQuantity
+                            }
+                        );
+                    }
+                }
+            }
+
+            return invalidProductTransactions;
+        }
+
+        private List<TransactionInput> MapTransactionsToInputs(List<Transaction> transactions)
+        {
+            var transactionInputs = new List<TransactionInput>();
+
+            foreach (var transaction in transactions)
+            {
+                var transactionInput = new TransactionInput
+                {
+                    Id = transaction.Id,
+                    InvoiceNo = transaction.InvoiceNo,
+                    ProductTransactionInputs = new List<ProductTransactionInput>()
+                };
+
+                foreach (var productTransaction in transaction.ProductTransactions)
+                {
+                    transactionInput.ProductTransactionInputs.Add(new ProductTransactionInput
+                    {
+                        Id = productTransaction.Id,
+                        ProductId = productTransaction.ProductId,
+                        Quantity = productTransaction.Quantity
+                    });
+                }
+
+                transactionInputs.Add(transactionInput);
+            }
+
+            return transactionInputs;
         }
     }
 }
