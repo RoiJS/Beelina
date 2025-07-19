@@ -1,4 +1,5 @@
 ﻿using Beelina.LIB.GraphQL.Results;
+using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Models;
 using Beelina.LIB.Models.Filters;
 
@@ -11,5 +12,8 @@ namespace Beelina.LIB.Interfaces
         Task<List<ProductWithdrawalEntry>> GetProductWithdarawalEntries(ProductWithdrawalFilter productWithdrawalEntryFilter, string filterKeyword = "", CancellationToken cancellationToken = default);
         Task<ProductWithdrawalEntry> GetProductWithdrawalByUniqueCode(int productWithdrawalId, string withdrawalSlipNo);
         Task<string> GetLastProductWithdrawalCode(CancellationToken cancellationToken = default);
+        Task<List<ProductWithdrawalEntry>> UpdateProductWithdrawalEntriesWithBusinessLogic(
+            List<ProductWithdrawalEntryInput> productWithdrawalEntryInputs,
+            CancellationToken cancellationToken = default);
     }
 }

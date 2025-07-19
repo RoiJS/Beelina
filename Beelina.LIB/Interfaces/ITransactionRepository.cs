@@ -1,6 +1,8 @@
 ﻿using Beelina.LIB.Enums;
+using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Models;
 using Beelina.LIB.Models.Filters;
+using Beelina.LIB.Dtos;
 
 namespace Beelina.LIB.Interfaces
 {
@@ -10,6 +12,8 @@ namespace Beelina.LIB.Interfaces
         Task<List<CustomerSale>> GetTopCustomerSales(int storeId, string fromDate, string toDate);
         Task<List<CustomerSaleProduct>> GetTopCustomerSaleProducts(int storeId);
         Task<Transaction> RegisterTransaction(Transaction transaction, List<ProductTransaction> deletedProductTransactions, CancellationToken cancellationToken = default);
+        Task<Transaction> RegisterTransaction(Transaction transaction, List<int> deletedProductTransactionIds, CancellationToken cancellationToken = default);
+        Task<Transaction> RegisterTransactionWithBusinessLogic(TransactionInput transactionInput, CancellationToken cancellationToken = default);
         Task<TransactionDetails> GetTransaction(int transactionId);
         Task<List<Transaction>> GetTransactions(List<int> transactionIds);
         Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null);
@@ -24,5 +28,15 @@ namespace Beelina.LIB.Interfaces
         Task<List<Transaction>> MarkTransactionsAsPaid(List<int> transactionIds, bool paid);
         Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status);
         Task<bool> SendInvoiceTransaction(int userId, int transactionId, IFile file);
+        Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateMultipleTransactionsProductQuantities(
+            List<int> transactionIds, 
+            int userAccountId, 
+            IProductRepository<Product> productRepository,
+            CancellationToken cancellationToken = default);
+        Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductTransactionsQuantities(
+            List<TransactionInput> transactionInputs, 
+            int userAccountId, 
+            IProductRepository<Product> productRepository,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -41,6 +41,19 @@ namespace Beelina.LIB.BusinessLogic
             await SaveChanges(cancellationToken);
         }
 
+        public async Task DeleteProductTransactionsByIds(List<int> productTransactionIds, CancellationToken cancellationToken = default)
+        {
+            if (productTransactionIds == null || !productTransactionIds.Any())
+                return;
+
+            var productTransactionsToDelete = await _beelinaRepository.ClientDbContext.ProductTransactions
+                .Where(pt => productTransactionIds.Contains(pt.Id))
+                .ToListAsync(cancellationToken);
+
+            DeleteMultipleEntities(productTransactionsToDelete, true);
+            await SaveChanges(cancellationToken);
+        }
+
         public async Task<List<TransactionTopProduct>> GetTopSellingProducts(int userId, string fromDate = "", string toDate = "")
         {
             var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);

@@ -6,6 +6,7 @@ using Beelina.LIB.Helpers.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Beelina.LIB.GraphQL.Results;
+using Beelina.LIB.GraphQL.Types;
 
 namespace Beelina.LIB.BusinessLogic
 {
@@ -13,11 +14,16 @@ namespace Beelina.LIB.BusinessLogic
         : BaseRepository<ProductWarehouseStockReceiptEntry>, IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry>
     {
         private readonly IOptions<ApplicationSettings> _appSettings;
+        private readonly IProductRepository<Product> _productRepository;
 
-        public ProductWarehouseStockReceiptEntryRepository(IBeelinaRepository<ProductWarehouseStockReceiptEntry> beelinaRepository, IOptions<ApplicationSettings> appSettings)
+        public ProductWarehouseStockReceiptEntryRepository(
+            IBeelinaRepository<ProductWarehouseStockReceiptEntry> beelinaRepository,
+            IOptions<ApplicationSettings> appSettings,
+            IProductRepository<Product> productRepository)
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
         {
             _appSettings = appSettings;
+            _productRepository = productRepository;
         }
 
         public async Task<ProductWarehouseStockReceiptEntry> UpdateProductWarehouseStockReceiptEntry(ProductWarehouseStockReceiptEntry productWarehouseStockReceiptEntry)
@@ -146,6 +152,153 @@ namespace Beelina.LIB.BusinessLogic
             var productWarehouseStockReceiptEntries = _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries;
             var latestEntry = await productWarehouseStockReceiptEntries.OrderByDescending(x => x.Id).FirstOrDefaultAsync(cancellationToken);
             return latestEntry != null ? latestEntry.ReferenceNo : string.Empty;
+        }
+
+        public async Task<List<ProductWarehouseStockReceiptEntry>> UpdateProductWarehouseStockReceiptEntriesBatch(List<ProductWarehouseStockReceiptEntryInput> productWarehouseStockReceiptEntryInputs, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var updatedEntries = new List<ProductWarehouseStockReceiptEntry>();
+            var warehouseId = 1; // Default warehouse ID
+
+            foreach (var input in productWarehouseStockReceiptEntryInputs)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var stockEntryFromRepo = await _beelinaRepository
+                                            .GetEntity(input.Id)
+                                            .Includes(s => s.ProductStockWarehouseAudits)
+                                            .ToObjectAsync();
+
+                await SetProductStockWarehouses(input, warehouseId, _productRepository, cancellationToken);
+
+                if (stockEntryFromRepo is null)
+                {
+                    var newStockEntry = MapInputToEntity(input);
+                    var newStockEntryItems = MapAuditInputsToEntities(input.ProductStockWarehouseAuditInputs, 0);
+
+                    newStockEntry.ProductStockWarehouseAudits = newStockEntryItems;
+
+                    await AddEntity(newStockEntry);
+                    updatedEntries.Add(newStockEntry);
+                }
+                else
+                {
+                    MapInputToEntity(input, stockEntryFromRepo);
+                    stockEntryFromRepo.ProductStockWarehouseAudits = MapAuditEntities(input.ProductStockWarehouseAuditInputs, stockEntryFromRepo.ProductStockWarehouseAudits, stockEntryFromRepo.Id);
+                    updatedEntries.Add(stockEntryFromRepo);
+                }
+            }
+
+            await SaveChanges(cancellationToken);
+            return updatedEntries;
+        }
+
+        private static ProductWarehouseStockReceiptEntry MapInputToEntity(ProductWarehouseStockReceiptEntryInput input)
+        {
+            return new ProductWarehouseStockReceiptEntry
+            {
+                Id = input.Id,
+                SupplierId = input.SupplierId,
+                StockEntryDate = DateTime.TryParse(input.StockEntryDate, out var stockEntryDate) ? stockEntryDate : DateTime.Now,
+                ReferenceNo = input.ReferenceNo,
+                PlateNo = input.PlateNo,
+                WarehouseId = input.WarehouseId,
+                Notes = input.Notes,
+                IsActive = true,
+                IsDelete = false,
+                DateCreated = DateTime.Now,
+                DateUpdated = DateTime.Now
+            };
+        }
+
+        private static void MapInputToEntity(ProductWarehouseStockReceiptEntryInput input, ProductWarehouseStockReceiptEntry entity)
+        {
+            entity.SupplierId = input.SupplierId;
+            entity.StockEntryDate = DateTime.TryParse(input.StockEntryDate, out var stockEntryDate) ? stockEntryDate : entity.StockEntryDate;
+            entity.ReferenceNo = input.ReferenceNo;
+            entity.PlateNo = input.PlateNo;
+            entity.WarehouseId = input.WarehouseId;
+            entity.Notes = input.Notes;
+            entity.DateUpdated = DateTime.Now;
+        }
+
+        private static List<ProductStockWarehouseAudit> MapAuditInputsToEntities(List<ProductStockWarehouseAuditInput> inputs, int parentId = 0)
+        {
+            return [.. inputs.Select(input => new ProductStockWarehouseAudit
+            {
+                Id = input.Id,
+                ProductStockPerWarehouseId = input.ProductStockPerWarehouseId,
+                ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : 0, // Will be set later for new entries
+                Quantity = input.Quantity,
+                StockAuditSource = input.StockAuditSource,
+                IsActive = true,
+                IsDelete = false,
+                DateCreated = DateTime.Now,
+                DateUpdated = DateTime.Now
+            })];
+        }
+
+        private static List<ProductStockWarehouseAudit> MapAuditEntities(List<ProductStockWarehouseAuditInput> inputs, List<ProductStockWarehouseAudit> existingEntities, int parentId = 0)
+        {
+            var updatedEntities = new List<ProductStockWarehouseAudit>();
+
+            foreach (var input in inputs)
+            {
+                var existingEntity = existingEntities.FirstOrDefault(e => e.Id == input.Id);
+                if (existingEntity != null)
+                {
+                    // Update existing entity
+                    existingEntity.ProductStockPerWarehouseId = input.ProductStockPerWarehouseId;
+                    existingEntity.ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : input.ProductWarehouseStockReceiptEntryId;
+                    existingEntity.Quantity = input.Quantity;
+                    existingEntity.StockAuditSource = input.StockAuditSource;
+                    existingEntity.DateUpdated = DateTime.Now;
+                    updatedEntities.Add(existingEntity);
+                }
+                else
+                {
+                    // Add new entity
+                    var newEntity = new ProductStockWarehouseAudit
+                    {
+                        Id = input.Id,
+                        ProductStockPerWarehouseId = input.ProductStockPerWarehouseId,
+                        ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : input.ProductWarehouseStockReceiptEntryId,
+                        Quantity = input.Quantity,
+                        StockAuditSource = input.StockAuditSource,
+                        IsActive = true,
+                        IsDelete = false,
+                        DateCreated = DateTime.Now,
+                        DateUpdated = DateTime.Now
+                    };
+                    updatedEntities.Add(newEntity);
+                }
+            }
+
+            var finalEntities = updatedEntities.Where(x => existingEntities.Exists(y => y.Id == x.Id) || x.Id == 0).ToList();
+
+            return finalEntities;
+        }
+
+        private static async Task SetProductStockWarehouses(ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput, int warehouseId, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
+        {
+            foreach (var productStockWarehouseAudit in productWarehouseStockReceiptEntryInput.ProductStockWarehouseAuditInputs)
+            {
+                var product = new Product
+                {
+                    Id = productStockWarehouseAudit.ProductId
+                };
+
+                var productInput = new ProductInput
+                {
+                    Id = productStockWarehouseAudit.ProductId,
+                    PricePerUnit = productStockWarehouseAudit.PricePerUnit
+                };
+
+                var productStockPerWarehouse = await productRepository.ManageProductStockPerWarehouse(product, productInput, warehouseId, cancellationToken);
+
+                productStockWarehouseAudit.ProductStockPerWarehouseId = productStockPerWarehouse.Id;
+            }
         }
     }
 }
