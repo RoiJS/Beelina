@@ -3,6 +3,7 @@ import { firstValueFrom, of, switchMap } from 'rxjs';
 
 import { SortOrderOptionsEnum } from 'src/app/_enum/sort-order-options.enum';
 import { TransactionStatusEnum } from 'src/app/_enum/transaction-status.enum';
+import { PaymentStatusEnum } from 'src/app/_enum/payment-status.enum';
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 
 import { LocalProductTransaction } from 'src/app/_models/local-db/local-product-transaction.model';
@@ -218,7 +219,7 @@ export class LocalOrdersDbService extends LocalBaseDbService {
     }
   }
 
-  async getMyLocalOrderDates(status: TransactionStatusEnum, limit: number, sortOrder: SortOrderOptionsEnum, fromDate: string, toDate: string) {
+  async getMyLocalOrderDates(status: TransactionStatusEnum, limit: number, sortOrder: SortOrderOptionsEnum, fromDate: string, toDate: string, paymentStatus?: PaymentStatusEnum) {
     const customerUserId = await this.getCustomerUserId();
     const userId = this.authService.user.value.id;
     const localOrders = <Array<LocalTransaction>>await firstValueFrom(this.localDbService.getAll('transactions'));

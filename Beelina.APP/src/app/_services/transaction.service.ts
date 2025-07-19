@@ -11,6 +11,7 @@ import { Product } from '../_models/product';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
 
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
+import { PaymentStatusEnum } from '../_enum/payment-status.enum';
 
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
@@ -87,6 +88,7 @@ const GET_TRANSACTION_DATES = gql`
     $transactionStatus: TransactionStatusEnum!
     $fromDate: String
     $toDate: String,
+    $paymentStatus: PaymentStatusEnum,
     $limit: Int!
   ) {
     transactionDates(
@@ -95,6 +97,7 @@ const GET_TRANSACTION_DATES = gql`
       transactionStatus: $transactionStatus
       fromDate: $fromDate
       toDate: $toDate,
+      paymentStatus: $paymentStatus,
       first: $limit
     ) {
       edges {
@@ -937,7 +940,7 @@ export class TransactionService {
       );
   }
 
-  getTransactioDates(transactionStatus: TransactionStatusEnum, cursor: string, limit: number, sortOrder: SortOrderOptionsEnum, fromDate: string, toDate: string) {
+  getTransactioDates(transactionStatus: TransactionStatusEnum, cursor: string, limit: number, sortOrder: SortOrderOptionsEnum, fromDate: string, toDate: string, paymentStatus?: PaymentStatusEnum) {
 
     return this.apollo
       .watchQuery({
@@ -949,6 +952,7 @@ export class TransactionService {
           transactionStatus,
           fromDate,
           toDate,
+          paymentStatus,
         },
       })
       .valueChanges.pipe(
