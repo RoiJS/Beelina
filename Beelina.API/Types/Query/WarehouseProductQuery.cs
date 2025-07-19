@@ -42,48 +42,21 @@ namespace Beelina.API.Types.Query
         [Authorize]
         public async Task<List<ProductWarehouseStockReceiptEntry>> UpdateWarehouseStockReceiptEntries(
             [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
-            [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor,
             [Service] ICurrentUserService currentUserService,
-            [Service] IMapper mapper,
             [Service] ILogger<WarehouseProductQuery> logger,
             List<ProductWarehouseStockReceiptEntryInput> productWarehouseStockReceiptEntryInputs
         )
         {
-            var updatedEntries = new List<ProductWarehouseStockReceiptEntry>();
             productWarehouseStockReceiptEntryRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
             try
             {
-                var warehouseId = 1; // Default
-
-                foreach (var input in productWarehouseStockReceiptEntryInputs)
-                {
-                    var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository
-                                                .GetEntity(input.Id)
-                                                .Includes(s => s.ProductStockWarehouseAudits)
-                                                .ToObjectAsync();
-
-                    await SetProductStockWarehouses(input, warehouseId, productRepository, httpContextAccessor.HttpContext.RequestAborted);
-
-                    if (stockEntryFromRepo is null)
-                    {
-                        var newStockEntry = mapper.Map<ProductWarehouseStockReceiptEntry>(input);
-                        var newStockEntryItems = mapper.Map<List<ProductStockWarehouseAudit>>(input.ProductStockWarehouseAuditInputs);
-
-                        newStockEntry.ProductStockWarehouseAudits = newStockEntryItems;
-
-                        await productWarehouseStockReceiptEntryRepository.AddEntity(newStockEntry);
-                        updatedEntries.Add(newStockEntry);
-                    }
-                    else
-                    {
-                        mapper.Map(input, stockEntryFromRepo);
-                        stockEntryFromRepo.ProductStockWarehouseAudits = mapper.MapEntities<ProductStockWarehouseAuditInput, ProductStockWarehouseAudit>(input.ProductStockWarehouseAuditInputs, stockEntryFromRepo.ProductStockWarehouseAudits);
-                        updatedEntries.Add(stockEntryFromRepo);
-                    }
-                }
-                await productWarehouseStockReceiptEntryRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+                var updatedEntries = await productWarehouseStockReceiptEntryRepository
+                    .UpdateProductWarehouseStockReceiptEntriesBatch(
+                        productWarehouseStockReceiptEntryInputs,
+                        httpContextAccessor.HttpContext.RequestAborted
+                    );
 
                 return updatedEntries;
             }

@@ -131,7 +131,7 @@ namespace Beelina.LIB.BusinessLogic
                 }
 
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }

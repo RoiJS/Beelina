@@ -20,14 +20,12 @@ namespace Beelina.LIB.BusinessLogic
     private readonly IProductUnitRepository<ProductUnit> _productUnitRepository;
     private readonly IUserAccountRepository<UserAccount> _userAccountRepository;
     private readonly ISubscriptionRepository<ClientSubscription> _subscriptionRepository;
-    private readonly IGeneralSettingRepository<GeneralSetting> _generalSettingRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public ProductRepository(IBeelinaRepository<Product> beelinaRepository,
         ILogger<ProductRepository> logger,
         IProductStockPerPanelRepository<ProductStockPerPanel> productStockPerPanelRepository,
         IProductStockPerWarehouseRepository<ProductStockPerWarehouse> productStockPerWarehouseRepository,
-        IProductStockAuditRepository<ProductStockAudit> productStockAuditRepository,
         IProductUnitRepository<ProductUnit> productUnitRepository,
         IUserAccountRepository<UserAccount> userAccountRepository,
         ISubscriptionRepository<ClientSubscription> subscriptionRepository,
@@ -404,7 +402,7 @@ namespace Beelina.LIB.BusinessLogic
     public async Task<List<Product>> CreateOrUpdatePanelProducts(int userAccountId, int warehouseId, List<ProductInput> productInputs, CancellationToken cancellationToken = default)
     {
       // Begin a transaction
-      var productsFromRepo = new List<Product>();
+      var managedProducts = new List<Product>();
       var counter = 0;
       using var transaction = _beelinaRepository.ClientDbContext.Database.BeginTransaction();
       try
@@ -462,6 +460,8 @@ namespace Beelina.LIB.BusinessLogic
           _logger.LogInformation("Part 4 -  Product Stock Per Panel Information saving...");
           var productStockPerPanelFromRepo = await ManageProductStockPerPanel(productFromRepo, productInput, userAccountId, cancellationToken);
 
+          managedProducts.Add(productFromRepo);
+
           // Commit transaction if all operations succeeded
           if (counter == (productInputs.Count - 1))
           {
@@ -484,7 +484,7 @@ namespace Beelina.LIB.BusinessLogic
         throw;
       }
 
-      return productsFromRepo;
+      return managedProducts;
     }
 
     public async Task<List<Product>> CreateOrUpdateWarehouseProducts(int warehouseId, List<ProductInput> productInputs, CancellationToken cancellationToken = default)

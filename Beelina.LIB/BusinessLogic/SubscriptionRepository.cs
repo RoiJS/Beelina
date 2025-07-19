@@ -385,6 +385,7 @@ namespace Beelina.LIB.BusinessLogic
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to send admin email notification for subscription request. RequestId: {RequestId}, ClientId: {ClientId}, SubscriptionFeatureId: {SubscriptionFeatureId}", id, clientId, subscriptionFeatureId);
                 return false;
             }
         }
@@ -415,6 +416,7 @@ namespace Beelina.LIB.BusinessLogic
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to send company email notification for subscription request. RequestNo: {RequestNo}", requestNo);
                 return false;
             }
         }

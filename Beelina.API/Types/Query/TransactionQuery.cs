@@ -19,10 +19,8 @@ namespace Beelina.API.Types.Query
 		  [Service] ITransactionRepository<Transaction> transactionRepository,
 		  [Service] ICurrentUserService currentUserService,
 		  [Service] IHttpContextAccessor httpContextAccessor,
-		  [Service] IMapper mapper,
 		  TransactionInput transactionInput)
 		{
-
 			try
 			{
 				logger.LogInformation("Start Transaction - Register Transaction");
@@ -30,86 +28,9 @@ namespace Beelina.API.Types.Query
 
 				transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
-				var transactionFromRepo = (await transactionRepository.GetTransaction(transactionInput.Id)).Transaction;
-
-				if (transactionFromRepo == null)
-				{
-					transactionFromRepo = mapper.Map<Transaction>(transactionInput);
-
-					logger.LogInformation("Part 1 - Creating new Transaction... {@transactionInput}", transactionInput);
-				}
-				else
-				{
-					mapper.Map(transactionInput, transactionFromRepo);
-
-					logger.LogInformation("Part 1 - Updating existing Transaction... {@transactionInput}", transactionInput);
-				}
-
-				var updatedProductTransactions = mapper.Map<List<ProductTransaction>>(transactionInput.ProductTransactionInputs);
-
-				logger.LogInformation("Part 2 - Setting up product transactions history...");
-
-				updatedProductTransactions.ForEach(t =>
-				{
-					var productQuantityHistories = new List<ProductTransactionQuantityHistory>();
-
-					if (t.Id > 0)
-					{
-						productQuantityHistories = transactionFromRepo
-								.ProductTransactions
-								.Where(pt => pt.ProductId == t.ProductId)
-								.Select(pt => pt.ProductTransactionQuantityHistory)
-								.First();
-
-						var productTransactionFromInput = transactionInput
-								.ProductTransactionInputs
-								.Where(pt => pt.ProductId == t.ProductId)
-								.First();
-
-						if (productTransactionFromInput.CurrentQuantity != productTransactionFromInput.Quantity)
-						{
-							productQuantityHistories.Add(new ProductTransactionQuantityHistory
-							{
-								ProductTransactionId = t.Id,
-								Quantity = productTransactionFromInput.CurrentQuantity
-							});
-						}
-					}
-
-					t.Status = !transactionInput.Paid ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
-
-					if (productQuantityHistories.Count > 0)
-					{
-						t.ProductTransactionQuantityHistory = productQuantityHistories;
-					}
-				});
-
-				logger.LogInformation("Part 3 - Checking deleted product transactions...");
-
-				var deletedProductTransactions = transactionFromRepo.ProductTransactions
-					.Where(ptRepo => !transactionInput.ProductTransactionInputs.Any(ptInput => ptInput.Id == ptRepo.Id))
-					.ToList();
-
-				transactionFromRepo.ProductTransactions = updatedProductTransactions;
-
-				// Register Payment
-				if (transactionInput.Paid &&
-				  transactionInput.Status == TransactionStatusEnum.Confirmed &&
-				  transactionFromRepo.Payments.Count == 0)
-				{
-					logger.LogInformation("Part 4 - Auto-payment registration...");
-
-					var newPayment = new Payment();
-					newPayment.Amount = transactionFromRepo.NetTotal;
-					newPayment.PaymentDate = transactionFromRepo.TransactionDate
-								.AddHours(DateTime.Now.Hour)
-								.AddMinutes(DateTime.Now.Minute)
-								.AddSeconds(DateTime.Now.Second);
-					newPayment.Notes = "Automatic Payment Registration";
-					transactionFromRepo.Payments.Add(newPayment);
-				}
-
-				await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
+				var result = await transactionRepository.RegisterTransactionWithBusinessLogic(
+					transactionInput, 
+					httpContextAccessor.HttpContext.RequestAborted);
 
 				if (transactionInput.Id > 0)
 				{
@@ -129,7 +50,7 @@ namespace Beelina.API.Types.Query
 				logger.LogInformation("End of transaction");
 				logger.LogInformation("=================================================================================");
 
-				return transactionFromRepo;
+				return result;
 			}
 			catch (Exception ex)
 			{
@@ -141,7 +62,6 @@ namespace Beelina.API.Types.Query
 
 				throw new Exception($"Failed to register/update transaction. {ex.Message}");
 			}
-
 		}
 
 		[Authorize]
@@ -358,131 +278,30 @@ namespace Beelina.API.Types.Query
 		  [Service] IProductRepository<Product> productRepository,
 		  [Service] ITransactionRepository<Transaction> transactionRepository,
 		  [Service] IHttpContextAccessor httpContextAccessor,
-		  [Service] IMapper mapper,
 		  List<int> transactionIds,
 		  int userAccountId
 		)
 		{
-			var transactions = await transactionRepository.GetTransactions(transactionIds);
-			var transactionInputs = mapper.Map<List<TransactionInput>>(transactions);
-			transactionInputs.ForEach(transactionInput =>
-			{
-				var transaction = transactions.Where(t => t.Id == transactionInput.Id).FirstOrDefault();
-				if (transaction is not null)
-				{
-					transactionInput.ProductTransactionInputs = mapper.Map<List<ProductTransactionInput>>(transaction.ProductTransactions);
-				}
-			});
-
-			var invalidProductTransactionOverallQuantities = await ValidateProductionTransactionsQuantities(
-															  productRepository,
-															  httpContextAccessor,
-															  transactionInputs,
-															  userAccountId
-															);
-
-			return invalidProductTransactionOverallQuantities;
+			return await transactionRepository.ValidateMultipleTransactionsProductQuantities(
+				transactionIds, 
+				userAccountId, 
+				productRepository,
+				httpContextAccessor.HttpContext.RequestAborted);
 		}
 
 		[Authorize]
 		public async Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductionTransactionsQuantities(
 				[Service] IProductRepository<Product> productRepository,
+				[Service] ITransactionRepository<Transaction> transactionRepository,
 				[Service] IHttpContextAccessor httpContextAccessor,
 				List<TransactionInput> transactionInputs,
 				int userAccountId)
 		{
-			var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-			var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
-
-			List<ProductTransactionOverallQuantities> allProductTransactionOverallQuantities = [];
-			List<ProductTransactionOverallQuantities> invalidProductTransactionOverallQuantities = [];
-
-			foreach (TransactionInput transactionInput in transactionInputs)
-			{
-				foreach (ProductTransactionInput productTransaction in transactionInput.ProductTransactionInputs)
-				{
-					var productTransactionOverallQuantities = allProductTransactionOverallQuantities.Where(p => p.ProductId == productTransaction.ProductId).FirstOrDefault();
-
-					if (productTransactionOverallQuantities is null)
-					{
-						allProductTransactionOverallQuantities.Add(new ProductTransactionOverallQuantities
-						{
-							ProductId = productTransaction.ProductId,
-							OverallQuantity = productTransaction.Quantity,
-							ProductTransactionOverallQuantitiesTransactions = [new ProductTransactionOverallQuantitiesTransaction { TransactionId = transactionInput.Id, TransactionCode = transactionInput.InvoiceNo }]
-						});
-					}
-					else
-					{
-						productTransactionOverallQuantities.OverallQuantity += productTransaction.Quantity;
-						productTransactionOverallQuantities.ProductTransactionOverallQuantitiesTransactions.Add(new ProductTransactionOverallQuantitiesTransaction
-						{
-							TransactionId = transactionInput.Id,
-							TransactionCode = transactionInput.InvoiceNo
-						});
-					}
-				}
-			}
-
-			foreach (var productTransactionOverallQuantity in allProductTransactionOverallQuantities)
-			{
-				var product = productsFromRepo.Where(p => p.Id == productTransactionOverallQuantity.ProductId).FirstOrDefault();
-
-				if (product is not null)
-				{
-					if (product.Id == productTransactionOverallQuantity.ProductId && product.StockQuantity < productTransactionOverallQuantity.OverallQuantity)
-					{
-						productTransactionOverallQuantity.ProductCode = product.Code;
-						productTransactionOverallQuantity.ProductName = product.Name;
-						productTransactionOverallQuantity.CurrentQuantity = product.StockQuantity;
-						invalidProductTransactionOverallQuantities.Add(productTransactionOverallQuantity);
-					}
-				}
-			}
-
-			List<InvalidProductTransactionOverallQuantitiesTransaction> invalidProductTransactions = [];
-
-			foreach (var invalid in invalidProductTransactionOverallQuantities)
-			{
-				foreach (var transaction in invalid.ProductTransactionOverallQuantitiesTransactions)
-				{
-					var invalidProductTransaction = invalidProductTransactions.Where(i => i.TransactionId == transaction.TransactionId).FirstOrDefault();
-
-					if (invalidProductTransaction is null)
-					{
-						var invalidPT = new InvalidProductTransactionOverallQuantitiesTransaction
-						{
-							TransactionId = transaction.TransactionId,
-							TransactionCode = transaction.TransactionCode
-						};
-						invalidPT.InvalidProductTransactionOverallQuantities.Add(new InvalidProductTransactionOverallQuantities
-						{
-							ProductId = invalid.ProductId,
-							ProductCode = invalid.ProductCode,
-							ProductName = invalid.ProductName,
-							CurrentQuantity = invalid.CurrentQuantity,
-							OverallQuantity = invalid.OverallQuantity,
-						});
-
-						invalidProductTransactions.Add(invalidPT);
-					}
-					else
-					{
-						invalidProductTransaction.InvalidProductTransactionOverallQuantities.Add(
-						  new InvalidProductTransactionOverallQuantities
-						  {
-							  ProductId = invalid.ProductId,
-							  ProductCode = invalid.ProductCode,
-							  ProductName = invalid.ProductName,
-							  CurrentQuantity = invalid.CurrentQuantity,
-							  OverallQuantity = invalid.OverallQuantity
-						  }
-						);
-					}
-				}
-			}
-
-			return invalidProductTransactions;
+			return await transactionRepository.ValidateProductTransactionsQuantities(
+				transactionInputs, 
+				userAccountId, 
+				productRepository,
+				httpContextAccessor.HttpContext.RequestAborted);
 		}
 
 		[Authorize]
