@@ -63,7 +63,6 @@
 
           </mat-list>
 
-          @if(isDraftTransaction() || isAdmin()) {
           <div class="product-transaction-list-container__button-section">
             <button mat-raised-button color="primary" (click)="addINewtemToCart()">
               {{
@@ -72,7 +71,6 @@
               }}
             </button>
           </div>
-          }
 
           @if(productTransactions().length > 0) {
           @if (isAdmin()) {

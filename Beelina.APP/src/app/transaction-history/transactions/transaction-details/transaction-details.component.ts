@@ -256,19 +256,25 @@ export class TransactionDetailsComponent
     // Prepare productCartForm data
     const formState = {
       invoiceNo: nextInvoiceNo,
-      barangay: this._transaction.store?.barangay?.name || '',
-      name: this._transaction.store?.name || '',
-      address: this._transaction.store?.address || '',
-      paymentMethod: this._transaction.modeOfPayment || 0,
-      transactionDate: this._transaction.transactionDate ? new Date(this._transaction.transactionDate) : new Date(),
-      dueDate: this._transaction.dueDate ? new Date(this._transaction.dueDate) : new Date(),
-      paid: !this._transaction.hasUnpaidProductTransaction,
       discount: this._transaction.discount || 0,
+      transactionDate: new Date(),
+      dueDate: new Date(),
+      storeId: this._transaction.store.id,
+      store:  this._transaction.store,
+      modeOfPayment: this._transaction.modeOfPayment || 0,
     };
     // Store form state
     this.storageService.storeString('productCartForm', JSON.stringify(formState));
     // Store product transactions
-    this.storageService.storeString('productTransactions', JSON.stringify(this._transaction.productTransactions || []));
+    this.storageService.storeString(
+      'productTransactions',
+      JSON.stringify(
+        (this._transaction.productTransactions || []).map((pt, idx) => ({
+          ...pt,
+          id: -(idx + 1)
+        }))
+      )
+    );
     // Redirect to product cart as new order
     this.router.navigate([`product-catalogue/product-cart`], {
       state: {
