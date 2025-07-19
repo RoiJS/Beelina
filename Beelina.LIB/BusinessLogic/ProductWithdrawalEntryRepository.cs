@@ -178,8 +178,9 @@ namespace Beelina.LIB.BusinessLogic
                 await transaction.CommitAsync(cancellationToken);
                 return updatedEntries;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while updating product withdrawal entries.");
                 await transaction.RollbackAsync(cancellationToken);
                 throw;
             }
