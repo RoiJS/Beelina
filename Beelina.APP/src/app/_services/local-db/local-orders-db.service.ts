@@ -261,11 +261,31 @@ export class LocalOrdersDbService extends LocalBaseDbService {
     let transactionDates = localOrderDates.map((orderDate) => {
       const transactionDateInformation = new TransactionDateInformation();
       transactionDateInformation.transactionDate = new Date(orderDate);
-      transactionDateInformation.numberOfUnPaidTransactions = 0;
-      transactionDateInformation.allTransactionsPaid = true;
+      
+      // Calculate payment status for this date
+      const ordersForDate = localDraftOrders.filter(order => 
+        DateFormatter.format(new Date(order.transactionDate)) === DateFormatter.format(new Date(orderDate))
+      );
+      
+      const unpaidOrders = ordersForDate.filter(order => !order.paid);
+      transactionDateInformation.numberOfUnPaidTransactions = unpaidOrders.length;
+      transactionDateInformation.allTransactionsPaid = unpaidOrders.length === 0;
       transactionDateInformation.isLocal = true;
+      
       return transactionDateInformation;
     });
+
+    // Apply payment status filtering if specified
+    if (paymentStatus && paymentStatus !== PaymentStatusEnum.All) {
+      transactionDates = transactionDates.filter(td => {
+        if (paymentStatus === PaymentStatusEnum.Paid) {
+          return td.allTransactionsPaid === true;
+        } else if (paymentStatus === PaymentStatusEnum.Unpaid) {
+          return td.allTransactionsPaid === false;
+        }
+        return true;
+      });
+    }
 
     result.transactionDates = transactionDates;
     this.pageNumber++;

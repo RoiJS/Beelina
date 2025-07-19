@@ -979,11 +979,24 @@ export class TransactionService {
               })
             );
 
-            if (transactionDates) {
+            // Apply client-side filtering for payment status if backend doesn't support it
+            let filteredTransactionDates = transactionDates;
+            if (paymentStatus && paymentStatus !== PaymentStatusEnum.All) {
+              filteredTransactionDates = transactionDates.filter(td => {
+                if (paymentStatus === PaymentStatusEnum.Paid) {
+                  return td.allTransactionsPaid === true;
+                } else if (paymentStatus === PaymentStatusEnum.Unpaid) {
+                  return td.allTransactionsPaid === false;
+                }
+                return true;
+              });
+            }
+
+            if (filteredTransactionDates) {
               return {
                 endCursor,
                 hasNextPage,
-                transactionDates,
+                transactionDates: filteredTransactionDates,
               };
             }
 
