@@ -672,6 +672,7 @@ namespace Beelina.LIB.BusinessLogic
                 ModeOfPayment = input.ModeOfPayment,
                 Discount = input.Discount,
                 StoreId = input.StoreId,
+                DueDate = DateTime.TryParse(input.DueDate, out var dueDate) ? dueDate : DateTime.Now,
                 IsActive = true,
                 IsDelete = false
             };
@@ -681,6 +682,7 @@ namespace Beelina.LIB.BusinessLogic
         {
             existing.InvoiceNo = input.InvoiceNo;
             existing.TransactionDate = DateTime.TryParse(input.TransactionDate, out var transactionDate) ? transactionDate : DateTime.Now;
+            existing.DueDate = DateTime.TryParse(input.DueDate, out var dueDate) ? dueDate : DateTime.Now;
             existing.Status = input.Status;
             existing.ModeOfPayment = input.ModeOfPayment;
             existing.Discount = input.Discount;
