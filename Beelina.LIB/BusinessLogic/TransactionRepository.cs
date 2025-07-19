@@ -657,7 +657,7 @@ namespace Beelina.LIB.BusinessLogic
                 });
                 _logger.LogInformation("=================================================================================");
 
-                throw new Exception($"Failed to register/update transaction. {ex.Message}");
+                throw new InvalidOperationException("Failed to register/update transaction.", ex);
             }
         }
 
