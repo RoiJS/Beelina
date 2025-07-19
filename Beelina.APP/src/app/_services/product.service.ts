@@ -214,6 +214,7 @@ const GET_PRODUCT_WITHDRAWAL_ENTRY_RECEIPT = gql`
           withdrawalSlipNo
           stockEntryDate
           userAccountId
+          notes
           productWithdrawalAuditsResult {
               id
               productId
