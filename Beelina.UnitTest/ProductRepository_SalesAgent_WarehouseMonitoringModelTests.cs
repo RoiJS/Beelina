@@ -201,7 +201,7 @@ namespace Beelina.UnitTest
             var filterKeyWord = "";
             var productFilter = new ProductsFilter
             {
-                SupplierId = 0, // Filter by Supplier 1
+                SupplierId = 0, // No supplier filter
                 StockStatus = ProductStockStatusEnum.WithoutStocks,
                 PriceStatus = ProductPriceStatusEnum.None
             };
