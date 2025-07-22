@@ -29,7 +29,7 @@ export class ReportSettingsComponent extends BaseComponent implements OnInit {
 
   constructor() {
     super();
-   }
+  }
 
   ngOnInit() {
     this.reportService.getReportNotificationEmailAddress()
@@ -43,8 +43,8 @@ export class ReportSettingsComponent extends BaseComponent implements OnInit {
     if (this.reportSettingsForm.valid) {
 
       this.dialogService.openConfirmation(
-        this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.TITLE"),
-        this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.CONFIRM"),
+        this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.TITLE"),
+        this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.CONFIRM"),
       ).subscribe((result: ButtonOptions) => {
         if (result === ButtonOptions.YES) {
           this._isLoading = true;
@@ -52,11 +52,11 @@ export class ReportSettingsComponent extends BaseComponent implements OnInit {
             .updateReportNotificationEmailAddress(this.reportSettingsForm.value.emailAddress)
             .subscribe({
               next: () => {
-                this.notificationService.openSuccessNotification(this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.SUCCESS_MESSAGE"));
+                this.notificationService.openSuccessNotification(this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.SUCCESS_MESSAGE"));
                 this._isLoading = false;
               },
               error: () => {
-                this.notificationService.openErrorNotification(this.translateService.instant("SETTINGS_PAGE.SAVE_SETTINGS_DIALOG.ERROR_MESSAGE"));
+                this.notificationService.openErrorNotification(this.translateService.instant("SETTINGS_PAGE.ORDER_TRANSACTION_SETTINGS_SUBPAGE.SAVE_SETTINGS_DIALOG.ERROR_MESSAGE"));
                 this._isLoading = false;
               }
             });

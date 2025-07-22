@@ -27,6 +27,8 @@ import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { Subscription } from 'rxjs';
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { AuthService } from 'src/app/_services/auth.service';
+import { BusinessModelEnum } from 'src/app/_enum/business-model.enum';
 
 @Component({
   selector: 'app-manage-user-account-details',
@@ -43,8 +45,10 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
   private _totalUserAccountCount = signal<number>(0);
   private _subscription: Subscription = new Subscription();
 
+  businessModel: BusinessModelEnum;
   clientSubscriptionDetails: ClientSubscriptionDetails;
 
+  authService = inject(AuthService);
   activatedRoute = inject(ActivatedRoute);
   applySubscriptionService = inject(ApplySubscriptionService);
   bottomSheet = inject(MatBottomSheet);
@@ -66,6 +70,7 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
     this._personalInformationLabelText = this.translateService.instant('MANAGE_ACCOUNT_PAGE.TAB_SECTIONS.PERSONAL_INFORMATION');
     this._accountInformationLabelText = this.translateService.instant('MANAGE_ACCOUNT_PAGE.TAB_SECTIONS.ACCOUNT_INFORMATION');
     this.applySubscriptionService.setBottomSheet(this.bottomSheet);
+    this.businessModel = this.authService.businessModel;
 
     this._profileForm = this.formBuilder.group(
       {
@@ -292,5 +297,9 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
 
   get personalInformationLabelText(): string {
     return this._personalInformationLabelText;
+  }
+
+  get businessModelHybridMonitoring(): boolean {
+    return this.businessModel === BusinessModelEnum.WarehousePanelHybridMonitoring;
   }
 }

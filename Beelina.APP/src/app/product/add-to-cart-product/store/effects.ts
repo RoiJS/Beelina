@@ -56,30 +56,32 @@ export class ProductTransactionsEffects {
       ofType(ProductTransactionActions.getProductTransactions),
       switchMap((action: { transactionId: number, isLocalTransaction: boolean }) => {
 
-        // Get Local order
-        if (action.isLocalTransaction) {
-          return from(this.localOrdersDbService.getMyLocalOrders(TransactionStatusEnum.ALL, [action.transactionId]))
-            .pipe(
-              map((transactions: Array<Transaction>) => {
-                const transaction = transactions[0];
-                return ProductTransactionActions.initializeTransactionDetails({
-                  transaction,
-                });
-              })
-            );
-        }
-
-        // Get order from server
         if (action.transactionId > 0) {
-          return this.transactionService
-            .getTransaction(action.transactionId)
-            .pipe(
-              map((transaction: Transaction) => {
-                return ProductTransactionActions.initializeTransactionDetails({
-                  transaction,
-                });
-              })
-            );
+          // Get existing Local order
+          if (action.isLocalTransaction) {
+            return from(this.localOrdersDbService.getMyLocalOrders(TransactionStatusEnum.ALL, [action.transactionId]))
+              .pipe(
+                map((transactions: Array<Transaction>) => {
+                  const transaction = transactions[0];
+                  return ProductTransactionActions.initializeTransactionDetails({
+                    transaction,
+                  });
+                })
+              );
+          } else {
+
+            // Get order from server
+            return this.transactionService
+              .getTransaction(action.transactionId)
+              .pipe(
+                map((transaction: Transaction) => {
+                  return ProductTransactionActions.initializeTransactionDetails({
+                    transaction,
+                  });
+                })
+              );
+          }
+
         } else {
 
           // Get order from local storage

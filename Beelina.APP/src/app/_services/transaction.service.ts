@@ -566,7 +566,7 @@ export class TransactionService {
       dueDate: transaction.dueDate,
       productTransactionInputs: transaction.productTransactions.map((p) => {
         const productTransaction: IProductTransactionInput = {
-          id: p.id <= 0 ? 0 : p.id,
+          id: (p.id <= 0 || transaction.id <= 0) ? 0 : p.id,
           productId: p.productId,
           quantity: p.quantity,
           price: p.price,

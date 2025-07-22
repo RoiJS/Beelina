@@ -18,6 +18,8 @@ import { AddToCartProductComponent } from '../../add-to-cart-product/add-to-cart
 import { ProductsFilter } from 'src/app/_models/filters/products.filter';
 import { SearchFieldComponent } from 'src/app/shared/ui/search-field/search-field.component';
 import { LocalProductsDbService } from 'src/app/_services/local-db/local-products-db.service';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
 
 @Component({
   selector: 'app-select-new-product',
@@ -45,11 +47,16 @@ export class SelectNewProductComponent implements AfterViewInit, OnDestroy {
   searchFieldComponent = viewChild(SearchFieldComponent);
 
   constructor() {
-    this._productTransactions = this.data.productTransactions;
 
+    const defaultFilter = new ProductsFilter();
+    defaultFilter.supplierId = 0;
+    defaultFilter.stockStatus = StockStatusEnum.All;
+    defaultFilter.priceStatus = PriceStatusEnum.All;
+
+    this._productTransactions = this.data.productTransactions;
     this._store.dispatch(ProductActions.resetProductState());
     this._store.dispatch(ProductActions.setSearchProductAction({ keyword: '' }));
-    this._store.dispatch(ProductActions.setFilterProductAction({ productsFilter: new ProductsFilter() }));
+    this._store.dispatch(ProductActions.setFilterProductAction({ productsFilter: defaultFilter }));
     this._dataSource = new ProductDataSource(this._store);
 
     this.$isLoading = this._store.pipe(select(isLoadingSelector));

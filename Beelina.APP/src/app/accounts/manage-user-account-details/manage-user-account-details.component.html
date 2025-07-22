@@ -82,7 +82,7 @@
               </mat-form-field>
 
               <!-- Only available for Sales Agents -->
-              @if (profileForm.get('permission').value === 'USER') {
+              @if (profileForm.get('permission').value === 'USER' && businessModelHybridMonitoring) {
               <mat-form-field appearance="fill">
                 <mat-label>{{
                   "PROFILE_PAGE.FORM_CONTROL_SECTION.SALES_AGENT_TYPE_CONTROL.LABEL"

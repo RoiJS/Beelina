@@ -55,15 +55,16 @@ export class LocalOrdersDbService extends LocalBaseDbService {
       transaction.hasUnpaidProductTransaction = localOrder.paid;
       transaction.isLocal = true;
 
-      const store = await this.localCustomerStoresDbService.getMyLocalCustomerStores([localOrder.storeId]);
+      const store = await this.localCustomerStoresDbService.getMyLocalCustomerStore(localOrder.storeId);
       transaction.storeId = localOrder.storeId;
-      transaction.store = store[0];
+      transaction.store = store;
 
       const productTransactions = <Array<LocalProductTransaction>>await firstValueFrom(this.localDbService.getAll('productTransactions'));
       const localProductTransactions = productTransactions.filter(c => c.customerUserId == customerUserId && c.transactionId == localOrder.id);
 
       transaction.productTransactions = await Promise.all(localProductTransactions.map(async (localProductTransaction) => {
         const productTransaction = new ProductTransaction();
+        productTransaction.id = localProductTransaction.id;
         productTransaction.code = localProductTransaction.code;
         productTransaction.productId = localProductTransaction.productId;
         productTransaction.productName = localProductTransaction.productName;
@@ -90,6 +91,35 @@ export class LocalOrdersDbService extends LocalBaseDbService {
     }));
 
     return transactions;
+  }
+
+  async getLatestLocalTransactionNumber(): Promise<string | ''> {
+    const customerUserId = await this.getCustomerUserId();
+    const userId = this.authService.user.value.id;
+    const localOrders = <Array<LocalTransaction>>await firstValueFrom(this.localDbService.getAll('transactions'));
+    const myLocalOrders = localOrders.filter(c => c.customerUserId == customerUserId && c.createdById === userId);
+
+    if (myLocalOrders.length === 0) {
+      return '';
+    }
+
+    // Filter out empty or null invoice numbers and sort by invoice number descending
+    const validInvoiceNumbers = myLocalOrders
+      .filter(order => order.invoiceNo && order.invoiceNo.trim() !== '')
+      .map(order => order.invoiceNo)
+      .sort((a, b) => {
+        // Extract numeric part for comparison
+        const numA = this.extractNumericPart(a);
+        const numB = this.extractNumericPart(b);
+        return numB - numA; // Descending order
+      });
+
+    return validInvoiceNumbers.length > 0 ? validInvoiceNumbers[0] : '';
+  }
+
+  private extractNumericPart(code: string): number {
+    const match = code.match(/(\d+)$/);
+    return match ? parseInt(match[1], 10) : 0;
   }
 
   async hasLocalOrders(status: TransactionStatusEnum) {

@@ -125,7 +125,7 @@ export class ProductCartComponent
   bluetoothPrintInvoiceService = inject(BluetoothPrintInvoiceService);
   localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
   localUserSettingsDbService = inject(LocalUserSettingsDbService);
-  localDraftOrdersDbService = inject(LocalOrdersDbService);
+  localOrdersDbService = inject(LocalOrdersDbService);
   loggerService = inject(LogMessageService);
   notificationService = inject(NotificationService);
   networkService = inject(NetworkService);
@@ -198,6 +198,7 @@ export class ProductCartComponent
     this.clientSubscriptionDetails = await this.localClientSubscriptionDbService.getLocalClientSubsription();
     this.userSettings = await this.localUserSettingsDbService.getLocalUserSettings();
 
+    // Get transaction details
     this.store.dispatch(
       ProductTransactionActions.getProductTransactions({
         transactionId: this._transactionId(),
@@ -294,7 +295,14 @@ export class ProductCartComponent
 
             // If the transaction is new, get the latest transaction code and increment it
             if (this._transactionId() === 0) {
-              const latestTransactionCode = await firstValueFrom(this.productService.getLatestTransactionCode());
+              let latestTransactionCode = '';
+
+              if (this.networkService.isOnline.value) {
+                latestTransactionCode = await firstValueFrom(this.productService.getLatestTransactionCode());
+              } else {
+                latestTransactionCode = await this.localOrdersDbService.getLatestLocalTransactionNumber();
+              }
+
               if (latestTransactionCode) {
                 const nextCode = this.incrementCode(latestTransactionCode);
                 this._orderForm.get('invoiceNo').setValue(nextCode);
@@ -516,8 +524,8 @@ export class ProductCartComponent
             );
             transaction.productTransactions = this.productTransactions();
 
-            await this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
-            await this.localDraftOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.DRAFT, [this._transactionId()]);
+            await this.localOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
+            await this.localOrdersDbService.saveLocalOrdersToServer(TransactionStatusEnum.DRAFT, [this._transactionId()]);
 
             this.notificationService.openSuccessNotification(this.translateService.instant(
               "DRAFT_TRANSACTIONS_PAGE.SYNC_OFFLINE_ORDER_DIALOG.SUCCESS_MESSAGE"
@@ -1018,7 +1026,7 @@ export class ProductCartComponent
   }
 
   private async saveLocalDraftOrder(transaction: TransactionDto) {
-    const result = await this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
+    const result = await this.localOrdersDbService.saveLocalOrder(TransactionStatusEnum.DRAFT, transaction);
     result.subscribe((id: number) => {
       this.notificationService.openSuccessNotification(this._saveDraftSuccessMessage());
       this.store.dispatch(
@@ -1032,7 +1040,7 @@ export class ProductCartComponent
   }
 
   private async saveLocalBadOrder(transaction: TransactionDto) {
-    const result = await this.localDraftOrdersDbService.saveLocalOrder(TransactionStatusEnum.BAD_ORDER, transaction);
+    const result = await this.localOrdersDbService.saveLocalOrder(TransactionStatusEnum.BAD_ORDER, transaction);
     result.subscribe((id: number) => {
       this.notificationService.openSuccessNotification(this.translateService.instant(
         'PRODUCT_CART_PAGE.SAVE_NEW_BAD_ORDER_DIALOG.SUCCESS_MESSAGE'
