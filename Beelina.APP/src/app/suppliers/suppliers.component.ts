@@ -12,6 +12,7 @@ import { NotificationService } from '../shared/ui/notification/notification.serv
 import { SupplierService } from '../_services/supplier.service';
 import { SupplierStore } from './suppliers.store';
 import { SuppliersDataSource } from '../_models/datasources/suppliers.datasource';
+import { ButtonOptions } from '../_enum/button-options.enum';
 
 @Component({
   selector: 'app-suppliers',
@@ -67,25 +68,25 @@ export class SuppliersComponent extends BaseComponent implements OnInit, OnDestr
     this.dialogService
       .openConfirmation(
         this.translateService.instant(
-          'SUPPLIERS_PAGE.DELETE_SUPPLIERS_DIALOG.TITLE'
+          'SUPPLIERS_PAGE.DELETE_SUPPLIER_DIALOG.TITLE'
         ),
         this.translateService.instant(
-          'SUPPLIERS_PAGE.DELETE_SUPPLIERS_DIALOG.CONFIRM'
+          'SUPPLIERS_PAGE.DELETE_SUPPLIER_DIALOG.CONFIRM'
         )
       )
-      .subscribe((result) => {
-        if (result) {
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
           this.supplierService.deleteSuppliers([id]).subscribe({
             complete: () => {
               this.notificationService.openSuccessNotification(this.translateService.instant(
-                'SUPPLIERS_PAGE.DELETE_SUPPLIERS_DIALOG.SUCCESS_MESSAGE'
+                'SUPPLIERS_PAGE.DELETE_SUPPLIER_DIALOG.SUCCESS_MESSAGE'
               ));
               this.supplierStore.resetList();
               this.supplierStore.getSuppliers();
             },
             error: (err) => {
               this.notificationService.openErrorNotification(this.translateService.instant(
-                'SUPPLIERS_PAGE.DELETE_SUPPLIERS_DIALOG.ERROR_MESSAGE'
+                'SUPPLIERS_PAGE.DELETE_SUPPLIER_DIALOG.ERROR_MESSAGE'
               ));
             },
           });

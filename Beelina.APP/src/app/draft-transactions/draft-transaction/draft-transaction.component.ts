@@ -202,12 +202,15 @@ export class DraftTransactionComponent
           .afterDismissed()
           .subscribe((result: {
             selectedItems: Array<number>,
-            confirm: boolean
+            confirm: boolean,
+            markAsPaid: boolean
           }) => {
             if (result && result.confirm) {
               this._isLoading = true;
+
               this.transactionService
-                .setTransactionsStatus(result.selectedItems, TransactionStatusEnum.CONFIRMED).subscribe({
+                .setTransactionsStatus(result.selectedItems, TransactionStatusEnum.CONFIRMED, result.markAsPaid).subscribe({
+
                   next: () => {
                     this.notificationService.openSuccessNotification(
                       this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE")

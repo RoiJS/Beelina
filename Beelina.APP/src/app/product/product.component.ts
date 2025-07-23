@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, inject, signal, viewChild 
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Subscription, take, combineLatest } from 'rxjs';
 
 import {
   MatBottomSheet,
@@ -54,6 +54,14 @@ import { ClientSubscriptionDetails } from '../_models/client-subscription-detail
 import { LocalClientSubscriptionDbService } from '../_services/local-db/local-client-subscription-db.service';
 import { StockStatusEnum } from '../_enum/stock-status.enum';
 import { PriceStatusEnum } from '../_enum/price-status.enum';
+
+import {
+  endCursorSelector as endCursorProductSelector,
+  filterKeywordSelector as filterKeywordProductSelector,
+  priceStatusSelector,
+  stockStatusSelector,
+  supplierIdSelector as supplierIdProductSelector,
+} from '../product/store/selectors';
 
 @Component({
   selector: 'app-product',
@@ -194,6 +202,7 @@ export class ProductComponent
   override ngOnDestroy() {
     this._subscription.unsubscribe();
     this.store.dispatch(ProductActions.getProductsCancelAction());
+    this.store.dispatch(ProductActions.resetProductState());
     this._transferInventoryDialogRef = null;
     this._dialogOpenFilterRef = null;
     this._dialogAddQuantityRef = null;
@@ -212,11 +221,21 @@ export class ProductComponent
     this._subscription.add(
       this.store.pipe(select(supplierIdSelector))
         .subscribe((supplierId: number) => {
-          const productsFilter = new ProductsFilter();
-          productsFilter.supplierId = supplierId;
-          productsFilter.stockStatus = StockStatusEnum.All;
-          productsFilter.priceStatus = PriceStatusEnum.All;
-          this.productsFilter.set(productsFilter);
+
+          this._subscription.add(
+            combineLatest([
+              this.store.select(supplierIdProductSelector),
+              this.store.select(stockStatusSelector),
+              this.store.select(priceStatusSelector)
+            ]).pipe(take(1))
+            .subscribe(([currentSupplierId, currentStockStatus, currentPriceStatus]) => {
+              const productsFilter = new ProductsFilter();
+              productsFilter.supplierId = currentSupplierId;
+              productsFilter.stockStatus = currentStockStatus;
+              productsFilter.priceStatus = currentPriceStatus;
+              this.productsFilter.set(productsFilter);
+            })
+          );
         })
     );
 
@@ -392,10 +411,14 @@ export class ProductComponent
   }
 
   openFilter() {
+    let supplierId = 0,
+      stockStatus = StockStatusEnum.All,
+      priceStatus = PriceStatusEnum.All;
+
     const defaultProductsFilter = new ProductsFilter();
-    defaultProductsFilter.supplierId = 0;
-    defaultProductsFilter.stockStatus = StockStatusEnum.All;
-    defaultProductsFilter.priceStatus = PriceStatusEnum.All;
+    defaultProductsFilter.supplierId = supplierId;
+    defaultProductsFilter.stockStatus = stockStatus;
+    defaultProductsFilter.priceStatus = priceStatus;
 
     this._dialogOpenFilterRef = this.bottomSheet.open(ProductFilterComponent, {
       data: {

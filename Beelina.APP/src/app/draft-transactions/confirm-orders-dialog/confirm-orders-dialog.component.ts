@@ -14,6 +14,7 @@ export class ConfirmOrdersDialogComponent implements OnInit {
   private _bottomSheetRef = inject(MatBottomSheetRef<ConfirmOrdersDialogComponent>);
   translateService = inject(TranslateService);
   confirmationMessage = signal<string>("");
+  markAsPaid: boolean = false;
   data = inject<{
     selectedItems: Array<number>;
     productsWithInsufficientQuantities: Array<InvalidProductTransactionOverallQuantitiesTransactions>
@@ -46,6 +47,7 @@ export class ConfirmOrdersDialogComponent implements OnInit {
     this._bottomSheetRef.dismiss({
       selectedItems,
       confirm: true,
+      markAsPaid: this.markAsPaid
     });
   }
 

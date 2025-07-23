@@ -29,6 +29,15 @@
     </div>
     }
 
+    <br>
+    @if (data.productsWithInsufficientQuantities.length === 0) {
+    <div class="confirmation-options">
+      <mat-slide-toggle [(ngModel)]="markAsPaid" color="primary" class="mark-as-paid-toggle">
+        {{ 'DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.MARK_AS_PAID_OPTION' | translate }}
+      </mat-slide-toggle>
+    </div>
+    }
+
   </div>
 
   <div class="dialog-form-container__footer">

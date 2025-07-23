@@ -53,28 +53,60 @@ export class LocalCustomerStoresDbService extends LocalBaseDbService {
     }
 
     const customerStores = await Promise.all(myLocalCustomers.map(async (lcs: LocalCustomerStore) => {
-      const customerStore = new CustomerStore();
-      customerStore.id = lcs.customerId;
-      customerStore.name = lcs.name;
-      customerStore.address = lcs.address;
-
-      const paymentMethod = new PaymentMethod();
-      paymentMethod.id = lcs.paymentMethodId;
-      customerStore.paymentMethod = paymentMethod;
-
-      const localCustomerAccount = await this.getLocalCustomerAccount(lcs.barangayId);
-      const customerUser = await this.getCustomerUser(customerUserId);
-
-      const barangay = new Barangay();
-      barangay.id = localCustomerAccount.barangayId;
-      barangay.name = localCustomerAccount.name;
-      barangay.userAccountId = customerUser.userId;
-      customerStore.barangay = barangay;
-
-      return customerStore;
+      return await this.buildCustomerStore(lcs, customerUserId);
     }));
 
     return customerStores;
+  }
+
+  async getMyLocalCustomerStore(storeId: number): Promise<CustomerStore | null> {
+    const customerUserId = await this.getCustomerUserId();
+
+    // NOTE: For some reason the logic is slower when in offline mode. There is a slight improvement when using getByIndex instead of getAllByIndex but
+    // the trade-off is that there is a chance that the local customer store with the same customer id from other user accounts will be returned.
+    // This is not a problem for now since the customer user id is unique per user account.
+
+    // const localCustomerStoresFromLocalDb = <Array<LocalCustomerStore>>await firstValueFrom(this.localDbService.getAll('customers'));
+    // const myLocalCustomer = localCustomerStoresFromLocalDb.find(c => c.customerUserId == customerUserId && c.customerId === storeId);
+
+    const potentialCustomer = <LocalCustomerStore>await firstValueFrom(
+      this.localDbService.getByIndex('customers', 'customerId', storeId)
+    );
+
+    // Verify this customer belongs to the current user
+    if (!potentialCustomer || potentialCustomer.customerUserId !== customerUserId) {
+      return null;
+    }
+
+    const myLocalCustomer = potentialCustomer;
+
+    if (!myLocalCustomer) {
+      return null;
+    }
+
+    return await this.buildCustomerStore(myLocalCustomer, customerUserId);
+  }
+
+  private async buildCustomerStore(lcs: LocalCustomerStore, customerUserId: number): Promise<CustomerStore> {
+    const customerStore = new CustomerStore();
+    customerStore.id = lcs.customerId;
+    customerStore.name = lcs.name;
+    customerStore.address = lcs.address;
+
+    const paymentMethod = new PaymentMethod();
+    paymentMethod.id = lcs.paymentMethodId;
+    customerStore.paymentMethod = paymentMethod;
+
+    const localCustomerAccount = await this.getLocalCustomerAccount(lcs.barangayId);
+    const customerUser = await this.getCustomerUser(customerUserId);
+
+    const barangay = new Barangay();
+    barangay.id = localCustomerAccount.barangayId;
+    barangay.name = localCustomerAccount.name;
+    barangay.userAccountId = customerUser.userId;
+    customerStore.barangay = barangay;
+
+    return customerStore;
   }
 
   async manageLocalCustomerStore(customerStore: CustomerStore) {
