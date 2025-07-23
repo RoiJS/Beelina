@@ -127,15 +127,15 @@ namespace Beelina.API.Types.Mutations
             [Service] ICurrentUserService currentUserService,
             [Service] IHttpContextAccessor httpContextAccessor,
             List<int> transactionIds,
-            TransactionStatusEnum status)
+            TransactionStatusEnum status,
+            bool markAsPaid)
         {
             var result = true;
 
             try
             {
                 transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-                await transactionRepository.SetTransactionsStatus(transactionIds, status);
-
+                await transactionRepository.SetTransactionsStatus(transactionIds, status, markAsPaid);
                 await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
 
                 logger.LogInformation("Successfully set transactions status . Params: {@params}", new

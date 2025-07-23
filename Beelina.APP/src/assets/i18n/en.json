@@ -798,7 +798,8 @@
       "ALL_VALID_MESSAGE": "All selected order(s) have are valid and with sufficient product quantities. Note: This action cannot be undone. Would you like to continue?",
       "SOME_INVALID_MESSAGE": "There are {0} selected order(s) which have product(s) that have insufficient quantity. Would you like to continue for the other valid order(s)? Note: This action cannot be undone.",
       "SUCCESS_MESSAGE": "Selected order(s) have been successfully confirmed!",
-      "ERROR_MESSAGE": "Failed to confirm selected order(s). Please try again later."
+      "ERROR_MESSAGE": "Failed to confirm selected order(s). Please try again later.",
+      "MARK_AS_PAID_OPTION": "Do you want to mark the order(s) as paid as well?"
     },
     "CONFIRM_MULTIPLE_ORDERS_DIALOG": {
       "ERROR_MESSAGE": "There are offline orders selected. Please select online orders only to proceed."

@@ -1092,7 +1092,7 @@ namespace Beelina.LIB.BusinessLogic
             return transactionsFromRepo;
         }
 
-        public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status)
+        public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid)
         {
             var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
                                 .Where(t => transactionIds.Contains(t.Id))
@@ -1101,9 +1101,35 @@ namespace Beelina.LIB.BusinessLogic
 
             SetCurrentUserId(_currentUserService.CurrentUserId);
 
+            // Update status for all transactions
             transactionsFromRepo.ForEach(t => t.Status = status);
 
-            await SaveChanges();
+            if (markAsPaid)
+            {
+                foreach (var transaction in transactionsFromRepo)
+                {
+                    // Get up-to-date transaction details to access computed Balance
+                    var transactionDetails = await GetTransaction(transaction.Id);
+                    var currentTransaction = transactionDetails.Transaction;
+
+                    if (currentTransaction != null && currentTransaction.Balance > 0)
+                    {
+                        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(_appSettings.Value.GeneralSettings.TimeZone);
+                        var paymentDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+
+                        var payment = new Payment
+                        {
+                            TransactionId = currentTransaction.Id,
+                            Amount = currentTransaction.Balance,
+                            PaymentDate = paymentDate,
+                            Notes = "Auto payment. Marked as paid by status update."
+                        };
+                        await _paymentRepository.RegisterPayment(payment);
+                    }
+
+                    transaction.ProductTransactions?.ForEach(pt => pt.Status = PaymentStatusEnum.Paid);
+                }
+            }
 
             return transactionsFromRepo;
         }

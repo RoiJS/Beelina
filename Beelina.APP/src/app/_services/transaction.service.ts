@@ -65,8 +65,8 @@ mutation($transactionIds: [Int!]!) {
 `;
 
 const SET_TRANSACTION_STATUS = gql`
-mutation($transactionIds: [Int!]!, $status: TransactionStatusEnum!) {
-  setTransactionsStatus(input: { transactionIds: $transactionIds, status: $status }) {
+mutation($transactionIds: [Int!]!, $status: TransactionStatusEnum!, $markAsPaid: Boolean!) {
+  setTransactionsStatus(input: { transactionIds: $transactionIds, status: $status, markAsPaid: $markAsPaid }) {
     boolean
   }
 }
@@ -686,13 +686,14 @@ export class TransactionService {
       );
   }
 
-  setTransactionsStatus(transactionIds: Array<number>, status: TransactionStatusEnum) {
+  setTransactionsStatus(transactionIds: Array<number>, status: TransactionStatusEnum, markAsPaid: boolean = false) {
     return this.apollo
       .mutate({
         mutation: SET_TRANSACTION_STATUS,
         variables: {
           transactionIds,
-          status
+          status,
+          markAsPaid
         },
       })
       .pipe(

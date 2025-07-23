@@ -12,14 +12,18 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { DraftTransactionComponent } from './draft-transaction.component';
 import { ConfirmOrdersDialogComponent } from '../confirm-orders-dialog/confirm-orders-dialog.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     CustomUISharedModule,
+    FormsModule,
     MatCheckboxModule,
     MatIconModule,
     MatRippleModule,
     MatMenuModule,
+    MatSlideToggleModule,
     ScrollingModule,
     MatBottomSheetModule,
     RouterModule.forChild([
