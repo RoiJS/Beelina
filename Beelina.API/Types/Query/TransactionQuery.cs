@@ -143,9 +143,9 @@ namespace Beelina.API.Types.Query
 						var newPayment = new Payment();
 						newPayment.Amount = transactionFromRepo.NetTotal;
 						newPayment.PaymentDate = transactionFromRepo.TransactionDate
-									.AddHours(DateTime.Now.Hour)
-									.AddMinutes(DateTime.Now.Minute)
-									.AddSeconds(DateTime.Now.Second);
+									.AddHours(DateTime.UtcNow.Hour)
+									.AddMinutes(DateTime.UtcNow.Minute)
+									.AddSeconds(DateTime.UtcNow.Second);
 						newPayment.Notes = "Automatic Payment Registration";
 						transactionFromRepo.Payments.Add(newPayment);
 					}

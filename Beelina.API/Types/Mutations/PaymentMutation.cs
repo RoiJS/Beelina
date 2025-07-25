@@ -25,9 +25,9 @@ namespace Beelina.API.Types.Mutations
                     Notes = paymentInput.Notes,
                     Amount = paymentInput.Amount,
                     PaymentDate = Convert.ToDateTime(paymentInput.PaymentDate)
-                        .AddHours(DateTime.Now.Hour)
-                        .AddMinutes(DateTime.Now.Minute)
-                        .AddSeconds(DateTime.Now.Second)
+                        .AddHours(DateTime.UtcNow.Hour)
+                        .AddMinutes(DateTime.UtcNow.Minute)
+                        .AddSeconds(DateTime.UtcNow.Second)
                 };
 
                 await paymentRepository.RegisterPayment(payment);
