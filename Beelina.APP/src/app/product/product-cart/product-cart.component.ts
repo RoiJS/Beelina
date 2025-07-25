@@ -202,7 +202,7 @@ export class ProductCartComponent
     this.store.dispatch(
       ProductTransactionActions.getProductTransactions({
         transactionId: this._transactionId(),
-        isLocalTransaction: this.isLocalTransaction(),
+        isLocalTransaction: this.isLocalTransaction() || !this.networkService.isOnline.value,
       })
     );
 
