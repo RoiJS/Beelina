@@ -1092,114 +1092,40 @@ namespace Beelina.LIB.BusinessLogic
             return transactionsFromRepo;
         }
 
-        // public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid)
-        // {
-        //     var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
-        //                 .AsNoTracking() // Add this to prevent tracking conflicts
-        //                 .Where(t => transactionIds.Contains(t.Id))
-        //                 .Include(t => t.ProductTransactions)
-        //                 .ToListAsync();
-
-        //     SetCurrentUserId(_currentUserService.CurrentUserId);
-
-        //     // Now attach and update the entities properly
-        //     foreach (var transaction in transactionsFromRepo)
-        //     {
-        //         // Attach the transaction to the context
-        //         var trackedTransaction = _beelinaRepository.ClientDbContext.Transactions.Update(transaction);
-
-        //         // Update status
-        //         trackedTransaction.Entity.Status = status;
-
-        //         if (markAsPaid)
-        //         {
-        //             // Get up-to-date transaction details to access computed Balance
-        //             var transactionDetails = await GetTransaction(transaction.Id);
-        //             var currentTransaction = transactionDetails.Transaction;
-
-        //             if (currentTransaction != null && currentTransaction.Balance > 0)
-        //             {
-        //                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(_appSettings.Value.GeneralSettings.TimeZone);
-        //                 var paymentDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
-
-        //                 var payment = new Payment
-        //                 {
-        //                     TransactionId = currentTransaction.Id,
-        //                     Amount = currentTransaction.Balance,
-        //                     PaymentDate = paymentDate,
-        //                     Notes = "Auto payment. Marked as paid by status update."
-        //                 };
-        //                 await _paymentRepository.RegisterPayment(payment);
-        //             }
-
-        //             // Update product transaction status
-        //             if (trackedTransaction.Entity.ProductTransactions != null)
-        //             {
-        //                 trackedTransaction.Entity.ProductTransactions.ToList().ForEach(pt =>
-        //                 {
-        //                     pt.Status = PaymentStatusEnum.Paid;
-        //                 });
-        //             }
-        //         }
-        //     }
-
-
-        //     // Save all changes at once
-        //     await SaveChanges();
-
-        //     return transactionsFromRepo;
-        // }
-
         public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid)
         {
-            SetCurrentUserId(_currentUserService.CurrentUserId);
-
-            // Clear the change tracker to avoid any existing tracking conflicts
-            _beelinaRepository.ClientDbContext.ChangeTracker.Clear();
-
-            // Update transactions directly
             var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
                                 .Where(t => transactionIds.Contains(t.Id))
+                                .Includes(t => t.ProductTransactions)
                                 .ToListAsync();
 
-            foreach (var transaction in transactionsFromRepo)
-            {
-                transaction.Status = status;
-            }
+            SetCurrentUserId(_currentUserService.CurrentUserId);
+
+            // Update status for all transactions
+            transactionsFromRepo.ForEach(t => t.Status = status);
 
             if (markAsPaid)
             {
-                // Update product transactions status
-                var productTransactions = await _beelinaRepository.ClientDbContext.ProductTransactions
-                                    .Where(pt => transactionIds.Contains(pt.TransactionId))
-                                    .ToListAsync();
-
-                foreach (var pt in productTransactions)
-                {
-                    pt.Status = PaymentStatusEnum.Paid;
-                }
-
-                // Handle payments - use raw SQL to avoid tracking issues
-                foreach (var transactionId in transactionIds)
+                foreach (var transaction in transactionsFromRepo)
                 {
                     // Get up-to-date transaction details to access computed Balance
-                    var transactionDetails = await GetTransaction(transactionId, false);
+                    var transactionDetails = await GetTransaction(transaction.Id, false);
                     var currentTransaction = transactionDetails.Transaction;
 
                     if (currentTransaction != null && currentTransaction.Balance > 0)
                     {
-                        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(_appSettings.Value.GeneralSettings.TimeZone);
-                        var paymentDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
-
                         var payment = new Payment
                         {
                             TransactionId = currentTransaction.Id,
                             Amount = currentTransaction.Balance,
-                            PaymentDate = paymentDate,
+                            PaymentDate = DateTime.Now,
+                            
                             Notes = "Auto payment. Marked as paid by status update."
                         };
                         await _paymentRepository.RegisterPayment(payment);
                     }
+
+                    transaction.ProductTransactions?.ForEach(pt => pt.Status = PaymentStatusEnum.Paid);
                 }
             }
 
