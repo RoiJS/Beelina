@@ -37,11 +37,28 @@ namespace Beelina.API.Types.Query
         [Authorize]
         public async Task<GenerateReportResult> GenerateReport(
                     [Service] IReportRepository<Report> reportRepository,
+                    [Service] ILogger<ReportsQuery> logger,
                     int reportId,
                     GenerateReportOptionEnum generateReportOption,
                     List<ControlValues> controlValues)
         {
-            return await reportRepository.GenerateReport(reportId, generateReportOption, controlValues);
+            var reportResult = new GenerateReportResult();
+
+            try
+            {
+                reportResult = await reportRepository.GenerateReport(reportId, generateReportOption, controlValues);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to generate report. Params: {@params}", new
+                {
+                    reportId,
+                    generateReportOption,
+                    controlValues
+                });
+            }
+
+            return reportResult;
         }
 
         [Authorize]
