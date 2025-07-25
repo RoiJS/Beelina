@@ -708,7 +708,7 @@ export class TransactionService {
               return payload;
             }
 
-            return null;
+            throw new Error("Failed to set transactions status.");
           }
         ),
         catchError((error) => {

@@ -14,7 +14,7 @@ namespace Beelina.LIB.Interfaces
         Task<Transaction> RegisterTransaction(Transaction transaction, List<ProductTransaction> deletedProductTransactions, CancellationToken cancellationToken = default);
         Task<Transaction> RegisterTransaction(Transaction transaction, List<int> deletedProductTransactionIds, CancellationToken cancellationToken = default);
         Task<Transaction> RegisterTransactionWithBusinessLogic(TransactionInput transactionInput, CancellationToken cancellationToken = default);
-        Task<TransactionDetails> GetTransaction(int transactionId);
+        Task<TransactionDetails> GetTransaction(int transactionId, bool includeProductDetails = true);
         Task<List<Transaction>> GetTransactions(List<int> transactionIds);
         Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null);
         Task<bool> SendTransactionEmailReceipt(int transactionId);
