@@ -74,7 +74,9 @@ namespace Beelina.LIB.Helpers.Extensions
         /// <returns></returns>
         public static DateTime ConvertToTimeZone(this DateTime dateTime, string timezoneId)
         {
-            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dateTime.ToUniversalTime(), timezoneId);
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
+            var utcDateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
         }
 
         /// <summary>

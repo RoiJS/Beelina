@@ -1118,7 +1118,7 @@ namespace Beelina.LIB.BusinessLogic
                         {
                             TransactionId = currentTransaction.Id,
                             Amount = currentTransaction.Balance,
-                            PaymentDate = DateTime.Now,
+                            PaymentDate = DateTime.UtcNow,
                             
                             Notes = "Auto payment. Marked as paid by status update."
                         };
