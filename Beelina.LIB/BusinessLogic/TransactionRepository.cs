@@ -467,7 +467,7 @@ namespace Beelina.LIB.BusinessLogic
             return transactionHistoryDates.ToList();
         }
 
-        public async Task<TransactionDetails> GetTransaction(int transactionId)
+        public async Task<TransactionDetails> GetTransaction(int transactionId, bool includeProductDetails = true)
         {
             var badOrdersAmount = 0.0;
             var transactionFromRepo = await GetEntity(transactionId)
@@ -492,7 +492,7 @@ namespace Beelina.LIB.BusinessLogic
             }
 
             transactionFromRepo.BadOrderAmount = badOrdersAmount;
-            transactionFromRepo.ProductTransactions = await _productTransactionRepository.GetProductTransactions(transactionId);
+            transactionFromRepo.ProductTransactions = await _productTransactionRepository.GetProductTransactions(transactionId, includeProductDetails);
 
             return new TransactionDetails { Transaction = transactionFromRepo, BadOrderAmount = badOrdersAmount };
         }
@@ -1109,19 +1109,17 @@ namespace Beelina.LIB.BusinessLogic
                 foreach (var transaction in transactionsFromRepo)
                 {
                     // Get up-to-date transaction details to access computed Balance
-                    var transactionDetails = await GetTransaction(transaction.Id);
+                    var transactionDetails = await GetTransaction(transaction.Id, false);
                     var currentTransaction = transactionDetails.Transaction;
 
                     if (currentTransaction != null && currentTransaction.Balance > 0)
                     {
-                        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(_appSettings.Value.GeneralSettings.TimeZone);
-                        var paymentDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
-
                         var payment = new Payment
                         {
                             TransactionId = currentTransaction.Id,
                             Amount = currentTransaction.Balance,
-                            PaymentDate = paymentDate,
+                            PaymentDate = DateTime.Now,
+                            
                             Notes = "Auto payment. Marked as paid by status update."
                         };
                         await _paymentRepository.RegisterPayment(payment);

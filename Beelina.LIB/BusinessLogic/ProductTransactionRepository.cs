@@ -22,16 +22,29 @@ namespace Beelina.LIB.BusinessLogic
             _userAccountRepository = userAccountRepository;
         }
 
-        public async Task<List<ProductTransaction>> GetProductTransactions(int transactionId)
+        public async Task<List<ProductTransaction>> GetProductTransactions(int transactionId, bool includeProductDetails = true)
         {
-            var productTransactionsFromRepo = await _beelinaRepository.ClientDbContext
-                                                .ProductTransactions
-                                                .Where(p => p.TransactionId == transactionId)
-                                                .Include(p => p.Product)
-                                                .Include(p => p.Product.ProductUnit)
-                                                .Include(p => p.ProductTransactionQuantityHistory)
-                                                .AsNoTracking()
-                                                .ToListAsync();
+            var productTransactionsFromRepo = new List<ProductTransaction>();
+
+            if (includeProductDetails)
+            {
+                productTransactionsFromRepo = await _beelinaRepository.ClientDbContext
+                    .ProductTransactions
+                    .Where(p => p.TransactionId == transactionId)
+                    .Include(p => p.Product)
+                    .Include(p => p.Product.ProductUnit)
+                    .Include(p => p.ProductTransactionQuantityHistory)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            else
+            {
+                productTransactionsFromRepo = await _beelinaRepository.ClientDbContext
+                    .ProductTransactions
+                    .Where(p => p.TransactionId == transactionId)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
             return productTransactionsFromRepo;
         }
 

@@ -220,8 +220,8 @@ export class DraftTransactionComponent
                     this.ngOnInit();
                   },
 
-
                   error: () => {
+                    this._isLoading = false;
                     this.notificationService.openErrorNotification(
                       this.translateService.instant("DRAFT_TRANSACTIONS_PAGE.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE")
                     );
