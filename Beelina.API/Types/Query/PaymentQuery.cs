@@ -12,7 +12,7 @@ namespace Beelina.API.Types.Query
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public async Task<List<Payment>> GetPayments([Service] IPaymentRepository<Payment> paymentRepository, int transactionId)
+        public async Task<List<PaymentDetails>> GetPayments([Service] IPaymentRepository<Payment> paymentRepository, int transactionId)
         {
             return await paymentRepository.GetPaymentsByTransaction(transactionId);
         }

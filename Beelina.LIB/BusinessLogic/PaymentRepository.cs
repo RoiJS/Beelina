@@ -12,19 +12,20 @@ namespace Beelina.LIB.BusinessLogic
     {
         private readonly IOptions<ApplicationSettings> _appSettings = appSettings;
 
-        public async Task<List<Payment>> GetPaymentsByTransaction(int transactionId)
+        public async Task<List<PaymentDetails>> GetPaymentsByTransaction(int transactionId)
         {
             var payments = await _beelinaRepository.ClientDbContext.Payments
                             .Where(t => t.TransactionId == transactionId)
-                            .Select(t => new Payment
+                            .Select(t => new PaymentDetails
                             {
                                 Id = t.Id,
                                 TransactionId = t.TransactionId,
                                 Amount = t.Amount,
                                 Notes = t.Notes,
-                                PaymentDate = t.PaymentDate.ConvertUtcToTimeZoneOffset(_appSettings.Value.GeneralSettings.TimeZone).DateTime
+                                PaymentDate = t.PaymentDate.ConvertUtcToTimeZoneOffset(_appSettings.Value.GeneralSettings.TimeZone)
                             })
                             .ToListAsync();
+
             return payments;
         }
 

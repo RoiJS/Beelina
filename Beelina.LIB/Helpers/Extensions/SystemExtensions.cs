@@ -96,7 +96,7 @@ namespace Beelina.LIB.Helpers.Extensions
             return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
         }
 
-        public static DateTimeOffset ConvertUtcToTimeZoneOffset(this DateTime dateTime, string timeZoneId)
+        public static string ConvertUtcToTimeZoneOffset(this DateTime dateTime, string timeZoneId)
         {
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
 
@@ -108,8 +108,7 @@ namespace Beelina.LIB.Helpers.Extensions
                 _ => dateTime
             };
 
-            var local = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
-            return new DateTimeOffset(local, timeZone.BaseUtcOffset);
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone).ToString("yyyy-MM-ddTHH:mm:sszzz");
         }
 
         /// <summary>
