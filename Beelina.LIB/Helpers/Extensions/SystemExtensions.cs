@@ -96,24 +96,22 @@ namespace Beelina.LIB.Helpers.Extensions
             return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
         }
 
-        public static DateTime ConvertUtcToLocalDateTime(this DateTime dateTime, string timeZoneId)
+        public static string ConvertUtcToLocalDateTime(this DateTime dateTime, string timeZoneId)
         {
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
 
             var utcDateTime = dateTime.Kind switch
             {
-                DateTimeKind.Utc => dateTime,
-                DateTimeKind.Local => dateTime.ToUniversalTime(),
-                DateTimeKind.Unspecified => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
-                _ => dateTime
+            DateTimeKind.Utc => dateTime,
+            DateTimeKind.Local => dateTime.ToUniversalTime(),
+            DateTimeKind.Unspecified => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
+            _ => dateTime
             };
 
             var localTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
-            return DateTime.SpecifyKind(localTime, DateTimeKind.Unspecified); // no offset
+            return localTime.ToString("yyyy-MM-dd HH:mm:ss"); // returns string without offset
         }
-
-
-
+        
         /// <summary>
         /// Convert date and time based on the local timezone id
         /// </summary>
