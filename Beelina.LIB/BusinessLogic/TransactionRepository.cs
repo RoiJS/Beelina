@@ -614,13 +614,20 @@ namespace Beelina.LIB.BusinessLogic
                 {
                     _logger.LogInformation("Part 4 - Auto-payment registration...");
 
+
+                    var dateOnly = transactionFromRepo.TransactionDate.Date;
+                    var currentUtcTime = DateTime.UtcNow.TimeOfDay;
+                    var paymentDateTime = dateOnly.Add(currentUtcTime);
+
                     var newPayment = new Payment
                     {
                         Amount = transactionFromRepo.NetTotal,
-                        PaymentDate = transactionFromRepo.TransactionDate
-                                    .AddHours(DateTime.Now.Hour)
-                                    .AddMinutes(DateTime.Now.Minute)
-                                    .AddSeconds(DateTime.Now.Second),
+                        // PaymentDate = transactionFromRepo.TransactionDate
+                        //             .AddHours(DateTime.Now.Hour)
+                        //             .AddMinutes(DateTime.Now.Minute)
+                        //             .AddSeconds(DateTime.Now.Second),
+
+                        PaymentDate = paymentDateTime,
                         Notes = "Automatic Payment Registration"
                     };
                     transactionFromRepo.Payments.Add(newPayment);
@@ -1118,7 +1125,7 @@ namespace Beelina.LIB.BusinessLogic
                         {
                             TransactionId = currentTransaction.Id,
                             Amount = currentTransaction.Balance,
-                            PaymentDate = DateTime.Now,
+                            PaymentDate = DateTime.UtcNow,
                             Notes = "Auto payment. Marked as paid by status update."
                         };
                         await _paymentRepository.RegisterPayment(payment);

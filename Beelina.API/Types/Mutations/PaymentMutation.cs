@@ -19,15 +19,21 @@ namespace Beelina.API.Types.Mutations
             {
                 paymentRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
+                var dateOnly = DateTime.Parse(paymentInput.PaymentDate).Date;
+                var currentUtcTime = DateTime.UtcNow.TimeOfDay;
+                var paymentDateTime = dateOnly.Add(currentUtcTime);
+
                 var payment = new Payment
                 {
                     TransactionId = paymentInput.TransactionId,
                     Notes = paymentInput.Notes,
                     Amount = paymentInput.Amount,
-                    PaymentDate = Convert.ToDateTime(paymentInput.PaymentDate)
-                        .AddHours(DateTime.UtcNow.Hour)
-                        .AddMinutes(DateTime.UtcNow.Minute)
-                        .AddSeconds(DateTime.UtcNow.Second)
+                    // PaymentDate = Convert.ToDateTime(paymentInput.PaymentDate)
+                    //     .AddHours(DateTime.UtcNow.Hour)
+                    //     .AddMinutes(DateTime.UtcNow.Minute)
+                    //     .AddSeconds(DateTime.UtcNow.Second)
+
+                    PaymentDate = paymentDateTime
                 };
 
                 await paymentRepository.RegisterPayment(payment);
