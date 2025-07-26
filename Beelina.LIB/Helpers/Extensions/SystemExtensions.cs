@@ -72,31 +72,7 @@ namespace Beelina.LIB.Helpers.Extensions
         /// <param name="dateTime"></param>
         /// <param name="timezoneId"></param>
         /// <returns></returns>
-        // public static DateTime ConvertToTimeZone(this DateTime dateTime, string timezoneId)
-        // {
-        //     var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
-        //     // var utcDateTime = dateTime.Kind == DateTimeKind.Utc
-        //     //     ? dateTime
-        //     //     : dateTime.ToUniversalTime();
-        //     return TimeZoneInfo.ConvertTimeFromUtc(dateTime, timeZone);
-        // }
-
-        public static DateTime ConvertToTimeZone(this DateTime dateTime, string timezoneId)
-        {
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
-
-            var utcDateTime = dateTime.Kind switch
-            {
-                DateTimeKind.Utc => dateTime,
-                DateTimeKind.Unspecified => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
-                DateTimeKind.Local => dateTime.ToUniversalTime(),
-                _ => dateTime
-            };
-
-            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
-        }
-
-        public static string ConvertUtcToLocalDateTime(this DateTime dateTime, string timeZoneId)
+        public static string ConvertToTimeZone(this DateTime dateTime, string timeZoneId)
         {
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
 
@@ -111,7 +87,7 @@ namespace Beelina.LIB.Helpers.Extensions
             var localTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
             return localTime.ToString("yyyy-MM-dd HH:mm:ss"); // returns string without offset
         }
-        
+
         /// <summary>
         /// Convert date and time based on the local timezone id
         /// </summary>

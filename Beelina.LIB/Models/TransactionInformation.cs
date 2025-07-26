@@ -14,16 +14,18 @@ namespace Beelina.LIB.Models
         public string BarangayName { get; set; }
         public DateTime TransactionDate { get; set; }
         public bool HasUnpaidProductTransaction { get; set; }
-        public DateTime DetailsDateUpdated { get; set; }
+        public string DetailsDateUpdated { get; set; }
         public string DetailsUpdatedBy { get; set; }
-        public DateTime OrderItemsDateUpdated { get; set; }
+        public string OrderItemsDateUpdated { get; set; }
         public string OrderItemsUpdatedBy { get; set; }
 
         public DateTime FinalDateUpdated
         {
             get
             {
-                return DetailsDateUpdated > OrderItemsDateUpdated ? DetailsDateUpdated : OrderItemsDateUpdated;
+                DateTime detailsDate = DateTime.TryParse(DetailsDateUpdated, out var dDate) ? dDate : DateTime.MinValue;
+                DateTime orderItemsDate = DateTime.TryParse(OrderItemsDateUpdated, out var oDate) ? oDate : DateTime.MinValue;
+                return detailsDate > orderItemsDate ? detailsDate : orderItemsDate;
             }
         }
     }

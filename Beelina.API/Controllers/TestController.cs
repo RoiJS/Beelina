@@ -51,7 +51,7 @@ namespace Beelina.API.Controllers
         [HttpGet("getCurrentDateTimeURL")]
         public IActionResult GetCurrentDateTime()
         {
-            var currentDateTime = DateTime.Now.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone);
+            var currentDateTime = Convert.ToDateTime(DateTime.Now.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone));
             // var currentDateTime = new DateTime(2021, 04, 24, 15, 20, 38).ToUniversalTime();
             // currentDateTime = currentDateTime.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone);
             return Ok(String.Format("{0} {1}", currentDateTime.ToLongDateString(), currentDateTime.ToLongTimeString()));
@@ -70,7 +70,7 @@ namespace Beelina.API.Controllers
                 return BadRequest("Invalid date time format.");
             }
 
-            var convertedDateTime = inputDateTime.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone);
+            var convertedDateTime = Convert.ToDateTime(inputDateTime.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone));
             return Ok(string.Format("{0} {1}", convertedDateTime.ToLongDateString(), convertedDateTime.ToLongTimeString()));
         }
 
