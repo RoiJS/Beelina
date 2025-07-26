@@ -75,10 +75,10 @@ namespace Beelina.LIB.Helpers.Extensions
         public static DateTime ConvertToTimeZone(this DateTime dateTime, string timezoneId)
         {
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
-            var utcDateTime = dateTime.Kind == DateTimeKind.Utc
-                ? dateTime
-                : dateTime.ToUniversalTime();
-            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZone);
+            // var utcDateTime = dateTime.Kind == DateTimeKind.Utc
+            //     ? dateTime
+            //     : dateTime.ToUniversalTime();
+            return TimeZoneInfo.ConvertTimeFromUtc(dateTime, timeZone);
         }
 
         /// <summary>

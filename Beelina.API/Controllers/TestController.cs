@@ -57,6 +57,23 @@ namespace Beelina.API.Controllers
             return Ok(String.Format("{0} {1}", currentDateTime.ToLongDateString(), currentDateTime.ToLongTimeString()));
         }
 
+        [HttpGet("convertDateTimeURL")]
+        public IActionResult ConvertDateTime([FromQuery] string dateTimeString)
+        {
+            if (string.IsNullOrEmpty(dateTimeString))
+            {
+                return BadRequest("Query parameter 'dateTimeString' is required.");
+            }
+
+            if (!DateTime.TryParse(dateTimeString, out var inputDateTime))
+            {
+                return BadRequest("Invalid date time format.");
+            }
+
+            var convertedDateTime = inputDateTime.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone);
+            return Ok(string.Format("{0} {1}", convertedDateTime.ToLongDateString(), convertedDateTime.ToLongTimeString()));
+        }
+
         [HttpGet("testThrowErroLog")]
 
         public void TestThrowErroLog()
