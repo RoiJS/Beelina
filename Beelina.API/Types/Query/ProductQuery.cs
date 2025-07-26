@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
@@ -39,6 +39,11 @@ namespace Beelina.API.Types.Query
             }
         }
 
+        /// <summary>
+        /// Updates or creates product withdrawal entries and their associated stock audits based on the provided input list.
+        /// </summary>
+        /// <param name="productWithdrawalEntryInputs">A list of product withdrawal entry inputs to update or create.</param>
+        /// <returns>A list of updated or newly created product withdrawal entries.</returns>
         [Authorize]
         public async Task<List<ProductWithdrawalEntry>> UpdateProductWithdrawalEntries(
                     [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
@@ -64,6 +69,13 @@ namespace Beelina.API.Types.Query
             }
         }
 
+        /// <summary>
+        /// Updates product price assignments for a user account, applying changes and deletions as specified.
+        /// </summary>
+        /// <param name="userAccountId">The ID of the user account for which to update price assignments.</param>
+        /// <param name="updateProductAssignments">A list of product price assignments to update or add.</param>
+        /// <param name="deletedProductAssignments">A list of product price assignment IDs to delete.</param>
+        /// <returns>The updated list of product price assignments.</returns>
         [Authorize]
         public async Task<List<ProductStockPerPanel>> UpdateProductPriceAssignments(
                     [Service] IProductRepository<Product> productRepository,
@@ -75,6 +87,11 @@ namespace Beelina.API.Types.Query
             return await productRepository.UpdateProductPriceAssignments(userAccountId, updateProductAssignments, deletedProductAssignments, httpContextAccessor.HttpContext.RequestAborted);
         }
 
+        /// <summary>
+        /// Retrieves a product withdrawal entry by its ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the product withdrawal entry.</param>
+        /// <returns>The product withdrawal entry if found; otherwise, a <see cref="ProductWithdrawalEntryNotExistsError"/>.</returns>
         [Authorize]
         public async Task<IProductWithdrawalEntryPayload> GetProductWithdrawalEntry(
             [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
@@ -102,6 +119,12 @@ namespace Beelina.API.Types.Query
             }
         }
 
+        /// <summary>
+        /// Retrieves a paged, filtered, sorted, and projected list of product withdrawal entries based on the specified filter and optional keyword.
+        /// </summary>
+        /// <param name="productWithdrawalEntryFilter">Criteria for filtering product withdrawal entries.</param>
+        /// <param name="filterKeyword">Optional keyword for additional filtering.</param>
+        /// <returns>A list of product withdrawal entries matching the filter and keyword.</returns>
         [Authorize]
         [UseOffsetPaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
@@ -117,6 +140,10 @@ namespace Beelina.API.Types.Query
             return await productWithdrawalEntryRepository.GetProductWithdarawalEntries(productWithdrawalEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
         }
 
+        /// <summary>
+        /// Retrieves the latest product withdrawal code from the repository.
+        /// </summary>
+        /// <returns>The most recent product withdrawal code as a string.</returns>
         [Authorize]
         public async Task<string> GetLatestProductWithdrawalCode(
             [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
@@ -220,6 +247,12 @@ namespace Beelina.API.Types.Query
             return inventoryTotalValue;
         }
 
+        /// <summary>
+        /// Checks whether a product withdrawal code exists for the specified withdrawal ID and slip number.
+        /// </summary>
+        /// <param name="productWithdrawalId">The ID of the product withdrawal entry to check.</param>
+        /// <param name="withdrawalSlipNo">The withdrawal slip number to verify.</param>
+        /// <returns>A result indicating whether the product withdrawal code exists.</returns>
         [Authorize]
         public async Task<IProductWithdrawalPayload> CheckProductWithdrawalCode(
             [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
@@ -230,6 +263,13 @@ namespace Beelina.API.Types.Query
             return new CheckProductWithdrawalCodeInformationResult(productWithdrawalFromRepo != null);
         }
 
+        /// <summary>
+        /// Retrieves a paged, filtered, sorted, and projected list of product price assignments for a specified user account, with optional keyword filtering.
+        /// </summary>
+        /// <param name="userAccountId">The ID of the user account whose product price assignments are to be retrieved.</param>
+        /// <param name="productsFilter">Filter criteria for the product price assignments.</param>
+        /// <param name="filterKeyword">An optional keyword to further filter the product price assignments.</param>
+        /// <returns>An enumerable collection of product price assignments matching the specified criteria.</returns>
         [Authorize]
         [UseOffsetPaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
         [UseProjection]
@@ -245,6 +285,12 @@ namespace Beelina.API.Types.Query
             return await productRepository.GetProductPriceAssignments(userAccountId, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
         }
 
+        /// <summary>
+        /// Copies product price assignments from a source user account to a destination user account.
+        /// </summary>
+        /// <param name="sourceUserAccountId">The ID of the user account to copy assignments from.</param>
+        /// <param name="destinationUserAccountId">The ID of the user account to copy assignments to.</param>
+        /// <returns>A list of product stock per panel assignments copied to the destination user account.</returns>
         [Authorize]
         public async Task<List<ProductStockPerPanel>> CopyProductPriceAssignments(
             [Service] IProductRepository<Product> productRepository,
@@ -259,6 +305,10 @@ namespace Beelina.API.Types.Query
             );
         }
 
+        /// <summary>
+        /// Retrieves the latest product code from the product repository.
+        /// </summary>
+        /// <returns>The most recent product code as a string.</returns>
         [Authorize]
         public async Task<string> GetLatestProductCode(
             [Service] IProductRepository<Product> productRepository,
@@ -267,6 +317,11 @@ namespace Beelina.API.Types.Query
             return await productRepository.GetLatestProductCode(httpContextAccessor.HttpContext.RequestAborted);
         }
 
+        /// <summary>
+        /// Retrieves the latest transaction code for the specified user account.
+        /// </summary>
+        /// <param name="userAccountId">The ID of the user account for which to retrieve the latest transaction code.</param>
+        /// <returns>The latest transaction code as a string.</returns>
         [Authorize]
         public async Task<string> GetLatestTransactionCode(
             [Service] IProductRepository<Product> productRepository,
@@ -276,6 +331,9 @@ namespace Beelina.API.Types.Query
             return await productRepository.GetLatestTransactionCode(userAccountId, httpContextAccessor.HttpContext.RequestAborted);
         }
 
+        /// <summary>
+        /// Updates the ProductStockPerPanelId for each product stock audit input in a product withdrawal entry by managing stock per panel through the product repository.
+        /// </summary>
         private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
         {
             foreach (var productStockAudit in productWithdrawalEntryInput.ProductStockAuditsInputs)
