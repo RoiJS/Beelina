@@ -22,7 +22,7 @@ namespace Beelina.LIB.BusinessLogic
                                 TransactionId = t.TransactionId,
                                 Amount = t.Amount,
                                 Notes = t.Notes,
-                                PaymentDate = t.PaymentDate.ConvertUtcToTimeZoneOffset(_appSettings.Value.GeneralSettings.TimeZone)
+                                PaymentDate = t.PaymentDate.ConvertUtcToLocalDateTime(_appSettings.Value.GeneralSettings.TimeZone)
                             })
                             .ToListAsync();
 

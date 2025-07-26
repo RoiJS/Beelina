@@ -7,6 +7,6 @@ namespace Beelina.LIB.Models
         public int TransactionId { get; set; }
         public string Notes { get; set; }
         public double Amount { get; set; }
-        public string PaymentDate { get; set; }
+        public DateTimeOffset PaymentDate { get; set; }
     }
 }
