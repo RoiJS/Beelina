@@ -27,59 +27,8 @@
     <ProjectReference Include="..\Beelina.LIB\Beelina.LIB.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Templates\EmailTemplates\EmailNotificationClientDatabaseCreation.html">
+    <Content Include="Templates\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\EmailTemplates\EmailNotificationDemoDatabaseCreation.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\EmailTemplates\EmailNotificationRemoveExpiredRefreshTokens.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\EmailTemplates\EmailNotificationReportGeneration.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\EmailTemplates\EmailNotificationOrderTransactionReceipt.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\EmailTemplates\EmailNotificationSendInvoiceTransaction.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\EmailTemplates\EmailNotificationRequestAdminSubscription.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\EmailTemplates\EmailNotificationRequestCompanySubscription.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportsTemplates\DailySummarizeTransactionsReport_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\DailyDetailedTransactionsReport_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\DailySummarizeTransactionsReport_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\EndingInventoryPerProductReportAgent_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\EndingInventoryPerProductReportAdmin_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\SalesPerCustomerReport_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\ProductWithdrawalReport_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\ProductWithdrawalReport2_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\SalesAgentCollectionSummaryReport_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\ReportTemplates\CustomerCollectionSummaryReport_Template.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 </Project>
