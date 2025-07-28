@@ -12,7 +12,7 @@ namespace Beelina.LIB.DbContexts
         /// </summary>
         public void GenerateEntityUpdateDateAndUpdatedById(List<EntityEntry> entries, int? currentUserId)
         {
-            var currentDateTime = DateTime.Now;
+            var currentDateTime = DateTime.UtcNow;
             // get a list of all Modified entries which implement the IUpdatable interface
             var updatedEntries = GetEntityEntries(EntityState.Modified, entries);
 
@@ -42,7 +42,7 @@ namespace Beelina.LIB.DbContexts
         /// </summary>
         public void GenerateEntityCreatedDateAndCreatedById(List<EntityEntry> entries, int? currentUserId)
         {
-            var currentDateTime = DateTime.Now;
+            var currentDateTime = DateTime.UtcNow;
             // get a list of all Added entries which implement the IUpdatable interface
             var addedEntries = GetEntityEntries(EntityState.Added, entries);
 

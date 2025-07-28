@@ -97,7 +97,7 @@ namespace Beelina.LIB.BusinessLogic
             }
             else
             {
-                entity.DateDeleted = DateTime.Now;
+                entity.DateDeleted = DateTime.UtcNow;
                 entity.IsDelete = true;
 
                 if (entity is IUserActionTracker)
@@ -123,7 +123,7 @@ namespace Beelina.LIB.BusinessLogic
             {
                 foreach (var entity in entities)
                 {
-                    entity.DateDeleted = DateTime.Now;
+                    entity.DateDeleted = DateTime.UtcNow;
                     entity.IsDelete = true;
 
                     if (entity is IUserActionTracker)
@@ -140,7 +140,7 @@ namespace Beelina.LIB.BusinessLogic
         public void SetEntityStatus(TEntity entity, bool status)
         {
             entity.IsActive = status;
-            entity.DateDeactivated = status ? DateTime.MinValue : DateTime.Now;
+            entity.DateDeactivated = status ? DateTime.MinValue : DateTime.UtcNow;
 
             if (entity is IUserActionTracker)
                 ((IUserActionTracker)entity).DeactivatedById = (status ? null as int? : _currentUserId);
@@ -161,7 +161,7 @@ namespace Beelina.LIB.BusinessLogic
                 // otherwise, reset the value with the 
                 // minimum value of class datetime
                 if (status == false)
-                    entity.DateDeactivated = DateTime.Now;
+                    entity.DateDeactivated = DateTime.UtcNow;
                 else
                     entity.DateDeactivated = DateTime.MinValue;
 
