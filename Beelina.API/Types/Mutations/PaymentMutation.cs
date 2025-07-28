@@ -28,11 +28,6 @@ namespace Beelina.API.Types.Mutations
                     TransactionId = paymentInput.TransactionId,
                     Notes = paymentInput.Notes,
                     Amount = paymentInput.Amount,
-                    // PaymentDate = Convert.ToDateTime(paymentInput.PaymentDate)
-                    //     .AddHours(DateTime.UtcNow.Hour)
-                    //     .AddMinutes(DateTime.UtcNow.Minute)
-                    //     .AddSeconds(DateTime.UtcNow.Second)
-
                     PaymentDate = paymentDateTime
                 };
 

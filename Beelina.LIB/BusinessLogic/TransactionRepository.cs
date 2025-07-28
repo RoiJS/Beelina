@@ -622,11 +622,6 @@ namespace Beelina.LIB.BusinessLogic
                     var newPayment = new Payment
                     {
                         Amount = transactionFromRepo.NetTotal,
-                        // PaymentDate = transactionFromRepo.TransactionDate
-                        //             .AddHours(DateTime.Now.Hour)
-                        //             .AddMinutes(DateTime.Now.Minute)
-                        //             .AddSeconds(DateTime.Now.Second),
-
                         PaymentDate = paymentDateTime,
                         Notes = "Automatic Payment Registration"
                     };
