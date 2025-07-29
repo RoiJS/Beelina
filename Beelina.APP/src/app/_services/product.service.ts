@@ -2356,7 +2356,7 @@ export class ProductService {
           userAccountId,
           updateProductAssignments: modifiedProducts.map(p => ({
             id: p.id,
-            pricePerUnit: p.pricePerUnit
+            pricePerUnit: p.pricePerUnit || 0,
           })),
           deletedProductAssignments
         }
