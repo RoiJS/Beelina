@@ -1359,6 +1359,8 @@ namespace Beelina.LIB.BusinessLogic
                                                           && ppa.StockAuditSource == StockAuditSourceEnum.FromWithdrawal
                                                           && !pp.IsDelete
                                                           && pp.IsActive
+                                                          && !ppa.IsDelete
+                                                          && ppa.IsActive
 
                                                     select new
                                                     {
