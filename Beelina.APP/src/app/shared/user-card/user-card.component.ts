@@ -42,7 +42,7 @@ export class UserCardComponent extends SharedComponent implements OnInit {
 
     this.router.navigate(['/profile']);
     if (this.isHandset) {
-      this.uiService.toggleDrawer();
+      this.uiService.toggleDrawer(false);
     }
   }
 
