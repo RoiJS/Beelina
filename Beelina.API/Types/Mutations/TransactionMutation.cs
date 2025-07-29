@@ -135,8 +135,7 @@ namespace Beelina.API.Types.Mutations
             try
             {
                 transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-                await transactionRepository.SetTransactionsStatus(transactionIds, status, markAsPaid);
-                await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+                await transactionRepository.SetTransactionsStatus(transactionIds, status, markAsPaid, httpContextAccessor.HttpContext.RequestAborted);
 
                 logger.LogInformation("Successfully set transactions status . Params: {@params}", new
                 {

@@ -1094,7 +1094,7 @@ namespace Beelina.LIB.BusinessLogic
             return transactionsFromRepo;
         }
 
-        public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid)
+        public async Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid, CancellationToken cancellationToken = default)
         {
             var transactionsFromRepo = await _beelinaRepository.ClientDbContext.Transactions
                                 .Where(t => transactionIds.Contains(t.Id))
@@ -1129,6 +1129,8 @@ namespace Beelina.LIB.BusinessLogic
                     transaction.ProductTransactions?.ForEach(pt => pt.Status = PaymentStatusEnum.Paid);
                 }
             }
+
+            await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
 
             return transactionsFromRepo;
         }

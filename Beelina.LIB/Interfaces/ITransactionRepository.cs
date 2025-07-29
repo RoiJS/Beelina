@@ -26,7 +26,7 @@ namespace Beelina.LIB.Interfaces
         Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate);
         Task DeleteOrderTransactions(List<int> transactionIds);
         Task<List<Transaction>> MarkTransactionsAsPaid(List<int> transactionIds, bool paid);
-        Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid);
+        Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid, CancellationToken cancellationToken = default);
         Task<bool> SendInvoiceTransaction(int userId, int transactionId, IFile file);
         Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateMultipleTransactionsProductQuantities(
             List<int> transactionIds, 
