@@ -105,6 +105,7 @@ Beelina.APP is an Angular-based SPA (Single Page Application) serving as the mai
 - Follow Angular style guide and best practices that is available on the current Angular version
 - Use NgRx store for state management for new modules specially when dealing with lists of data
 - When new text is added, update the i18n files in `src/app/i18n/en.json`. Make sure to use the correct key format and avoid hardcoding text in components and if there is already a key available, use that key instead of creating a new one.
+- Update `app-version.service.ts` with the new version number (eg. For bug fixes, use `1.0.1` or `1.0.2`, for new features, use `1.1.0` or `1.2.0`, and for breaking changes, use `2.0.0` or `3.0.0`)
 - Use Apollo Angular for GraphQL queries and mutations
 - Use Angular Material for UI components
 - Introduce unit tests for new features and critical components
