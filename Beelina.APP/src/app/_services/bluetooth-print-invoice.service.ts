@@ -89,7 +89,7 @@ export class BluetoothPrintInvoiceService {
         // Sales Agent Section
         if (transaction.createdBy && typeof transaction.createdBy === 'object') {
           receipt += formatColumn('Sales Agent:', 25) +
-            formatColumn(transaction.createdBy.fullname, 20, 'right') + '\n';
+            formatColumn(`${transaction.createdBy.firstName} ${transaction.createdBy.lastName.substring(0, 1)}.`, 20, 'right') + '\n';
         }
 
         // Customer Information Section
@@ -97,8 +97,8 @@ export class BluetoothPrintInvoiceService {
           receipt += formatColumn('Customer:', 25) +
             formatColumn(transaction.store.name, 20, 'right') + '\n';
           if (transaction.store.address && transaction.barangay && transaction.barangay.name) {
-            const customerAddress = `${transaction.store.address} (${transaction.barangay.name})`;
-            const wrappedAddress = wrapText(customerAddress, 20);
+            const customerName = `${transaction.store.name} (${transaction.barangay.name})`;
+            const wrappedAddress = wrapText(customerName, 20);
             wrappedAddress.forEach((line, index) => {
               receipt += formatColumn(index === 0 ? 'Address:' : '', 25) +
                 formatColumn(line, 20, 'right') + '\n';
@@ -156,7 +156,7 @@ export class BluetoothPrintInvoiceService {
         // Sales Agent Section
         if (transaction.createdBy && typeof transaction.createdBy === 'object') {
           receipt += formatColumn('Sales Agent:', 22) +
-            formatColumn(transaction.createdBy.fullname, 10, 'right') + '\n';
+            formatColumn(`${transaction.createdBy.firstName} ${transaction.createdBy.lastName.substring(0, 1)}.`, 10, 'right') + '\n';
         }
 
         // Customer Information Section
@@ -164,8 +164,8 @@ export class BluetoothPrintInvoiceService {
           receipt += formatColumn('Customer:', 22) +
             formatColumn(transaction.store.name, 10, 'right') + '\n';
           if (transaction.store.address && transaction.barangay && transaction.barangay.name) {
-            const customerAddress = `${transaction.store.address} (${transaction.barangay.name})`;
-            const wrappedAddress = wrapText(customerAddress, 10);
+            const customerName = `${transaction.store.name}`;
+            const wrappedAddress = wrapText(customerName, 10);
             wrappedAddress.forEach((line, index) => {
               receipt += formatColumn(index === 0 ? 'Address:' : '', 22) +
                 formatColumn(line, 10, 'right') + '\n';

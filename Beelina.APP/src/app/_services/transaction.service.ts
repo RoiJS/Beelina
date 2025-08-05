@@ -184,6 +184,11 @@ const GET_TRANSACTION = gql`
         total
         balance
         modeOfPayment
+        createdBy {
+            id
+            firstName
+            lastName
+        }
         store {
           id
           name
@@ -902,6 +907,14 @@ export class TransactionService {
             transaction.hasUnpaidProductTransaction =
               transactionFromRepo.transaction.hasUnpaidProductTransaction;
             transaction.status = transactionFromRepo.transaction.status;
+
+            const createdBy = new User();
+            const createdByFromRepo = <User>transactionFromRepo.transaction.createdBy;
+            createdBy.id = createdByFromRepo.id;
+            createdBy.firstName = createdByFromRepo.firstName;
+            createdBy.lastName = createdByFromRepo.lastName;
+
+            transaction.createdBy = createdBy;
 
             transaction.productTransactions =
               transactionFromRepo.transaction.productTransactions.map((pt) => {
