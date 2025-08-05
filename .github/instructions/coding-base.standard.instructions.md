@@ -16,11 +16,11 @@ applyTo: "**"
 
 ## Beelina Frontend
 
-See `coding-frontend-standard.instructions.md` for frontend coding standards.
+See `coding-frontend.standard.instructions.md` for frontend coding standards.
 
 ## Beelina Backend
 
-See `coding-backend-standard.instructions.md` for backend coding standards.
+See `coding-backend.standard.instructions.md` for backend coding standards.
 
 ## Beelina Unit Tests
 
