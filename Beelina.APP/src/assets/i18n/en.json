@@ -689,6 +689,18 @@
       "CONFIRM": "Are you sure you want to copy the selected product?",
       "SUCCESS_MESSAGE": "Product has been successfully copied!",
       "ERROR_MESSAGE": "Failed to copy product. Please try again later."
+    },
+    "RESET_PRODUCT_STOCKS_DIALOG": {
+      "TITLE": "Reset Product Stocks",
+      "CONFIRM": "Are you sure you want to reset all product stocks for the selected sales agent? This action will set all product quantities to zero and cannot be undone.",
+      "SUCCESS_MESSAGE": "Product stocks have been successfully reset to zero.",
+      "FAILURE_MESSAGE": "Failed to reset product stocks. The operation could not be completed.",
+      "ERROR_MESSAGE": "An error occurred while resetting product stocks"
+    },
+    "FLOATING_BUTTON_OPTIONS": {
+      "RESET_STOCKS": "Reset Stocks",
+      "ADD_PRODUCT": "Add Product",
+      "ASSIGN_PRODUCT_PRICE": "Assign Product Price"
     }
   },
   "ADD_TO_CART_PAGE": {
@@ -1548,7 +1560,8 @@
         "MOVED_FROM_OTHER_PRODUCT_INVENTORY": "Moved From Other Product Inventory",
         "MOVED_TO_OTHER_PRODUCT_INVENTORY": "Moved To Other Product Inventory",
         "ORDER_TRANSACTION": "Order Transaction",
-        "ORDER_FROM_SUPPLIER": "Order From Supplier"
+        "ORDER_FROM_SUPPLIER": "Order From Supplier",
+        "RESET_PRODUCT_STOCK": "Reset Product Stock"
       },
       "SOURCE_LABEL": "Source",
       "QUANTITY_LABEL": "Quantity",

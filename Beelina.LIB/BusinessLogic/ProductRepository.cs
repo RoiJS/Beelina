@@ -829,7 +829,6 @@ namespace Beelina.LIB.BusinessLogic
                                                    .AsNoTracking()
                                                    .ToListAsync(cancellationToken);
 
-
         productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
 
         if (stockAuditSource != StockAuditSourceEnum.None)
@@ -1956,8 +1955,10 @@ namespace Beelina.LIB.BusinessLogic
     {
       try
       {
+        SetCurrentUserId(currentUserId);
+
         // Get all products for the sales agent using the GetProducts function to get accurate stock quantities
-        var products = await GetProducts(salesAgentId, 0, "", null, cancellationToken);
+        var products = await GetProducts(salesAgentId, 0, "", new ProductsFilter { StockStatus = ProductStockStatusEnum.WithStocks }, cancellationToken);
 
         var productStockAuditsToAdd = new List<ProductStockAudit>();
 

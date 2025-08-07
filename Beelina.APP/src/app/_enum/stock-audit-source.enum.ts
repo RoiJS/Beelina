@@ -5,4 +5,5 @@ export enum StockAuditSourceEnum {
   MovedToOtherProductInventory = 'MOVED_TO_OTHER_PRODUCT_INVENTORY',
   OrderTransaction = 'ORDER_TRANSACTION',
   OrderFromSupplier = 'ORDER_FROM_SUPPLIER',
+  ResetProductStock = 'RESET_PRODUCT_STOCK',
 }
