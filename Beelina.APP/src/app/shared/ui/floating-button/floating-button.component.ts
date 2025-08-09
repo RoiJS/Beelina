@@ -24,7 +24,6 @@ export class FloatingButtonComponent {
     if (!this.tooltip()) {
       return '';
     }
-    console.log(this.translateService.instant(this.tooltip()));
     return this.translateService.instant(this.tooltip());
   }
 }
