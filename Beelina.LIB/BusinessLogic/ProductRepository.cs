@@ -829,7 +829,6 @@ namespace Beelina.LIB.BusinessLogic
                                                    .AsNoTracking()
                                                    .ToListAsync(cancellationToken);
 
-
         productStockAuditItemsFromRepo.AddRange(productTransactionsAuditItems);
 
         if (stockAuditSource != StockAuditSourceEnum.None)
@@ -1950,6 +1949,59 @@ namespace Beelina.LIB.BusinessLogic
           .FirstOrDefaultAsync(cancellationToken);
 
       return latestTransaction?.InvoiceNo ?? string.Empty;
+    }
+
+    public async Task<bool> ResetSalesAgentProductStocks(int salesAgentId, int currentUserId, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        SetCurrentUserId(currentUserId);
+
+        // Get all products for the sales agent using the GetProducts function to get accurate stock quantities
+        var products = await GetProducts(salesAgentId, 0, "", new ProductsFilter { StockStatus = ProductStockStatusEnum.WithStocks }, cancellationToken);
+
+        var productStockAuditsToAdd = new List<ProductStockAudit>();
+
+        foreach (var product in products)
+        {
+          if (product.StockQuantity > 0)
+          {
+            // Get the actual ProductStockPerPanel record to update
+            var productStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(product.Id, salesAgentId);
+            if (productStockPerPanel != null)
+            {
+              // Create product stock audit entry with negative quantity to reset stock to zero
+              var productStockAudit = new ProductStockAudit
+              {
+                ProductStockPerPanelId = productStockPerPanel.Id,
+                ProductWithdrawalEntryId = 1, // Default value as specified
+                Quantity = -product.StockQuantity, // Negative to reduce stock to zero
+                StockAuditSource = StockAuditSourceEnum.ResetProductStock,
+              };
+
+              productStockAuditsToAdd.Add(productStockAudit);
+            }
+          }
+        }
+
+        // Add all product stock audit entries
+        if (productStockAuditsToAdd.Count != 0)
+        {
+          await _beelinaRepository.ClientDbContext.ProductStockAudits.AddRangeAsync(productStockAuditsToAdd, cancellationToken);
+
+          // Save all changes
+          await _beelinaRepository.ClientDbContext.SaveChangesAsync(cancellationToken);
+
+          _logger.LogInformation("Successfully reset sales agent product stocks. SalesAgentId: {SalesAgentId}, CurrentUserId: {CurrentUserId}, Count: {Count}", salesAgentId, currentUserId, productStockAuditsToAdd.Count);
+        }
+
+        return true;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Failed to reset sales agent product stocks. SalesAgentId: {SalesAgentId}, CurrentUserId: {CurrentUserId}", salesAgentId, currentUserId);
+        return false;
+      }
     }
   }
 }

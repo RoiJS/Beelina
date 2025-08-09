@@ -15,7 +15,6 @@ namespace Beelina.LIB.BusinessLogic
         {
         }
 
-
         public async Task<ProductStockPerPanel> UpdateProductStockPerPanel(ProductStockPerPanel productStockPerPanel)
         {
             if (productStockPerPanel.Id == 0)
@@ -25,7 +24,6 @@ namespace Beelina.LIB.BusinessLogic
 
             return productStockPerPanel;
         }
-
 
         public async Task<ProductStockPerPanel> GetProductStockPerPanel(int productId, int userAccountId)
         {
@@ -56,7 +54,6 @@ namespace Beelina.LIB.BusinessLogic
                 .Include(p => p.ProductStockAudits)
                 .ToListAsync(cancellationToken);
         }
-
 
         public async Task<List<ProductStockPerPanel>> GetProductStockPerPanelsByUserAccountId(int userAccountId, CancellationToken cancellationToken = default)
         {

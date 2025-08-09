@@ -113,8 +113,15 @@
   </div>
 
   @if((currentSalesAgentId > 0 && currentUserPermission > getPermissionLevel(permissionLevelEnum.User))) {
-  <app-floating-button (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
-  <app-floating-button (tapButton)="goToPriceAssignment()" [icon]="'price_change'" [bottom]="155"></app-floating-button>
+  <app-floating-button [tooltip]="'PRODUCTS_CATALOGUE_PAGE.FLOATING_BUTTON_OPTIONS.ADD_PRODUCT'"
+    (tapButton)="addProduct()" [icon]="'add'"></app-floating-button>
+  <app-floating-button [tooltip]="'PRODUCTS_CATALOGUE_PAGE.FLOATING_BUTTON_OPTIONS.ASSIGN_PRODUCT_PRICE'"
+    (tapButton)="goToPriceAssignment()" [icon]="'price_change'" [bottom]="155"></app-floating-button>
+
+  @if(currentUserPermission === getPermissionLevel(permissionLevelEnum.Manager)) {
+  <app-floating-button [tooltip]="'PRODUCTS_CATALOGUE_PAGE.FLOATING_BUTTON_OPTIONS.RESET_STOCKS'"
+    (tapButton)="resetSalesAgentProductStocks()" [icon]="'restore'" [bottom]="220"></app-floating-button>
+  }
   }
 
 </app-loader-layout>

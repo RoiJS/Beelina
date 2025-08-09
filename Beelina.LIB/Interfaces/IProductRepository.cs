@@ -63,5 +63,6 @@ namespace Beelina.LIB.Interfaces
 
         Task<string> GetLatestProductCode(CancellationToken cancellationToken = default);
         Task<string> GetLatestTransactionCode(int userAccountId, CancellationToken cancellationToken = default);
+        Task<bool> ResetSalesAgentProductStocks(int salesAgentId, int currentUserId, CancellationToken cancellationToken = default);
     }
 }

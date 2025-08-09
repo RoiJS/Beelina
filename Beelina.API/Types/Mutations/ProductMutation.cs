@@ -205,5 +205,27 @@ namespace Beelina.API.Types.Mutations
                 throw new ExtractProductFileException(ex.Message);
             }
         }
+
+        [Authorize]
+        [Error(typeof(ProductErrorFactory))]
+        public async Task<bool> ResetSalesAgentProductStocks(
+            [Service] ILogger<ProductMutation> logger,
+            [Service] IProductRepository<Product> productRepository,
+            [Service] ICurrentUserService currentUserService,
+            int salesAgentId)
+        {
+            var result = await productRepository.ResetSalesAgentProductStocks(salesAgentId, currentUserService.CurrentUserId);
+
+            if (result)
+            {
+                logger.LogInformation("Successfully reset sales agent product stocks. Params: salesAgentId = {salesAgentId}", salesAgentId);
+            }
+            else
+            {
+                logger.LogError("Failed to reset sales agent product stocks. Params: salesAgentId = {salesAgentId}", salesAgentId);
+            }
+
+            return result;
+        }
     }
 }
