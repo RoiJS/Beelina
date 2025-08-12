@@ -17,6 +17,7 @@ namespace Beelina.LIB.Interfaces
         Task<TransactionDetails> GetTransaction(int transactionId, bool includeProductDetails = true);
         Task<List<Transaction>> GetTransactions(List<int> transactionIds);
         Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null);
+        Task<List<TransactionInformation>> GetTransactionsByInvoiceNo(int salesAgentId, string invoiceSearchTerm = "");
         Task<bool> SendTransactionEmailReceipt(int transactionId);
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);
         Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);

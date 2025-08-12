@@ -29,6 +29,18 @@ export class TransactionTypeDropdownControlComponent extends BaseControlComponen
   override ngOnInit() {
   }
 
+  override validate(): boolean {
+    // If the transaction type control is disabled, consider it valid
+    const transactionTypeControl = this._form.get('transactionType');
+    if (transactionTypeControl?.disabled) {
+      return true;
+    }
+
+    // Otherwise, perform normal validation
+    this._form.markAllAsTouched();
+    return this._form.valid;
+  }
+
   get form(): FormGroup {
     return this._form;
   }

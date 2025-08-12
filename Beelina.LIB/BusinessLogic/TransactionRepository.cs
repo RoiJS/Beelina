@@ -397,6 +397,25 @@ namespace Beelina.LIB.BusinessLogic
             return transactionsWithPaymentStatus;
         }
 
+        public async Task<List<TransactionInformation>> GetTransactionsByInvoiceNo(int salesAgentId, string invoiceSearchTerm = "")
+        {
+            // Create default filter to search all transaction statuses and payment statuses
+            var transactionsFilter = new TransactionsFilter
+            {
+                Status = TransactionStatusEnum.All,
+                PaymentStatus = PaymentStatusEnum.All,
+                StoreId = 0
+            };
+            // Reuse the existing search, then constrain strictly by invoice number.
+            var results = await GetTransactions(salesAgentId, invoiceSearchTerm, transactionsFilter);
+
+            if (!string.IsNullOrWhiteSpace(invoiceSearchTerm))
+            {
+                results = [.. results.Where(t => (t.InvoiceNo ?? string.Empty).IsMatchAnyKeywords(invoiceSearchTerm))];
+            }
+            return results;
+        }
+
         public async Task<List<Transaction>> GetTransactions(List<int> transactionIds)
         {
             var transactions = await _beelinaRepository.ClientDbContext.Transactions

@@ -1056,11 +1056,18 @@
       "CUSTOMER_DROPDOWN_CONTROL": {
         "LABEL": "Store"
       },
+      "INVOICE_NO_AUTOCOMPLETE_CONTROL": {
+        "LABEL": "Invoice Number"
+      },
       "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
         "LABEL": "Order Transaction Type",
         "CONFIRM_OPTION": "Confirm",
         "DRAFT_OPTION": "Draft",
         "BAD_OPTION": "Bad Order"
+      },
+      "FORM_CONTROL_ERRORS": {
+        "REQUIRED_FIELD": "This field is required",
+        "INVALID_INVOICE_SELECTION": "Please select a valid invoice number from the available options"
       }
     },
     "BUTTON_OPTIONS": {

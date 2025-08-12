@@ -32,6 +32,13 @@ export class DatePickerComponent
   }
 
   override validate(): boolean {
+    // If the date control is disabled, consider it valid
+    const dateControl = this._form.get('date');
+    if (dateControl?.disabled) {
+      return true;
+    }
+
+    // Otherwise, perform normal validation
     this._form.markAllAsTouched();
     return this._form.valid;
   }

@@ -1,0 +1,27 @@
+<div [ngClass]="{ 'no-display': hide }" [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label>{{ controLabel }}:</mat-label>
+    <input
+      type="text"
+      [placeholder]="'GENERAL_TEXTS.ALL' | translate"
+      aria-label="Invoice Number"
+      matInput
+      formControlName="invoiceNo"
+      [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayTransaction">
+      @for (transaction of filteredTransactions$ | async; track transaction.id) {
+        <mat-option [value]="transaction">
+          <span>{{ transaction.invoiceNo }}</span>
+          <small class="transaction-details">
+            - {{ transaction.store?.name || 'Unknown Store' }}
+            ({{ transaction.transactionDate | date:'shortDate' }})
+          </small>
+        </mat-option>
+      }
+    </mat-autocomplete>
+
+    @if (isInvalidSelection) {
+      <mat-error>{{ validationErrorMessage }}</mat-error>
+    }
+  </mat-form-field>
+</div>

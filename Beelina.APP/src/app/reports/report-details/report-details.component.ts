@@ -97,12 +97,15 @@ export class ReportDetailsComponent
               this.attachComponentDynamically(componentId, componentName, controlLabelIdentifier, show, relation.allowAllOption, relation.agentTypeOptions);
             }
           );
+
+          // Setup interactions between controls
+          this.setupControlInteractions();
         });
     }, 0);
   }
 
   /**
-   * Attaches a report cotrol component dynamically to the ViewContainerRef.
+   * Attaches a report control component dynamically to the ViewContainerRef.
    *
    * @param {number} id - The ID of the component.
    * @param {string} componentName - The name of the component.
@@ -126,10 +129,21 @@ export class ReportDetailsComponent
     componentRefInstance.setAllowAllOption(allowAllOption);
     componentRefInstance.setAgentTypeOptions(agentTypeOptions);
 
-    this.controlComponents.push({
+    const controlComponent = {
       id: id,
       name: componentName,
       componentInstance: componentRefInstance,
+    };
+
+    this.controlComponents.push(controlComponent);
+  }
+
+  private setupControlInteractions() {
+    // Pass other controls reference to all controls
+    this.controlComponents.forEach(control => {
+      if (control.componentInstance.setOtherControls) {
+        control.componentInstance.setOtherControls(this.controlComponents);
+      }
     });
   }
 

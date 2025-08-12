@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { ProductService } from 'src/app/_services/product.service';
@@ -14,10 +15,11 @@ import { getSalesAgentTypeEnumNumeric } from 'src/app/_enum/sales-agent-type.enu
   templateUrl: './sales-agent-dropdown-control.component.html',
   styleUrls: ['./sales-agent-dropdown-control.component.scss']
 })
-export class SalesAgentDropdownControlComponent extends BaseControlComponent implements OnInit {
+export class SalesAgentDropdownControlComponent extends BaseControlComponent implements OnInit, OnDestroy {
 
   private _form: FormGroup;
   private _salesAgents: User[];
+  private _destroy$ = new Subject<void>();
 
   private authService = inject(AuthService);
   private formBuilder = inject(FormBuilder);
@@ -39,6 +41,33 @@ export class SalesAgentDropdownControlComponent extends BaseControlComponent imp
   }
 
   override ngOnInit() {
+    // Listen for sales agent selection changes
+    this._form.get('salesAgent')?.valueChanges.pipe(
+      takeUntil(this._destroy$)
+    ).subscribe((selectedSalesAgentId: number) => {
+      if (selectedSalesAgentId) {
+        this.updateInvoiceNumberControlSalesAgent(selectedSalesAgentId);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
+  private updateInvoiceNumberControlSalesAgent(salesAgentId: number) {
+    // Find the invoice number autocomplete control
+    const invoiceNoControl = this.otherControls.find(control =>
+      control.name === 'InvoiceNoAutocompleteControl'
+    );
+
+    if (invoiceNoControl && invoiceNoControl.componentInstance) {
+      // Update the sales agent ID in the invoice number control
+      if (invoiceNoControl.componentInstance.setSalesAgentId) {
+        invoiceNoControl.componentInstance.setSalesAgentId(salesAgentId);
+      }
+    }
   }
 
   override value(value: any) {
