@@ -11,15 +11,6 @@ namespace Beelina.LIB.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 migrationBuilder.Sql(@"
-/****** Object:  StoredProcedure [dbo].[Report_Customers_Daily_Transactions]    Script Date: 8/12/2025 7:39:37 PM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-
-
 -- =============================================
 -- Author:		Roi Larrence Amatong
 -- Create date: 2024-06-28
@@ -27,7 +18,7 @@ GO
 -- =============================================
 -- EXEC Report_Customers_Daily_Transactions @date='2025-08-09', @orderType='1', @invoiceNo = '', @salesAgentId='3', @userId='3'
 -- EXEC Report_Customers_Daily_Transactions @date=NULL, @orderType=NULL, @invoiceNo = 'T2025072425', @salesAgentId='3', @userId='3'
-ALTER   PROCEDURE [dbo].[Report_Customers_Daily_Transactions]
+ALTER PROCEDURE [dbo].[Report_Customers_Daily_Transactions]
 	@date VARCHAR(10) = NULL
 	, @invoiceNo AS NVARCHAR(MAX) = NULL
 	, @salesAgentId AS INT = 0
@@ -150,8 +141,6 @@ BEGIN
 		@FinalOrdersTable
 
 END
-
-GO
 ");
         }
 
