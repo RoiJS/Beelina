@@ -192,6 +192,16 @@ namespace Beelina.API.Types.Query
 		}
 
 		[Authorize]
+		[UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+		[UseProjection]
+		[UseFiltering]
+		[UseSorting]
+		public async Task<List<TransactionInformation>> GetTransactionsByInvoiceNo([Service] ITransactionRepository<Transaction> transactionRepository, int salesAgentId, string invoiceSearchTerm = "")
+		{
+			return await transactionRepository.GetTransactionsByInvoiceNo(salesAgentId, invoiceSearchTerm);
+		}
+
+		[Authorize]
 		[UsePaging(MaxPageSize = 100, DefaultPageSize = 100)]
 		[UseProjection]
 		[UseFiltering]

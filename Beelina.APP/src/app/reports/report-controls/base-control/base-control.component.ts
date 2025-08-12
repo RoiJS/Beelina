@@ -11,7 +11,7 @@ export class BaseControlComponent implements OnInit {
   protected hide: boolean;
   protected allowAllOption: boolean;
   protected agentTypeOptions: string;
-
+  protected otherControls: Array<any> = [];// Array of other report controls that this control may interact.
   constructor(protected translateService: TranslateService) { }
 
   ngOnInit() { }
@@ -38,6 +38,10 @@ export class BaseControlComponent implements OnInit {
 
   setAllowAllOption(activateAllOption: boolean) {
     this.allowAllOption = activateAllOption;
+  }
+
+  setOtherControls(controls: Array<any>) {
+    this.otherControls = controls;
   }
 
   get controLabel(): string {

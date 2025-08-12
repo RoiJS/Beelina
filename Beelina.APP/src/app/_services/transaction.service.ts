@@ -156,6 +156,40 @@ const GET_TRANSACTIONS_QUERY = gql`
   }
 `;
 
+const GET_TRANSACTIONS_BY_SALES_AGENT_AND_INVOICE_QUERY = gql`
+  query($invoiceSearchTerm: String, $salesAgentId: Int!, $first: Int, $after: String) {
+  transactionsByInvoiceNo(
+    invoiceSearchTerm: $invoiceSearchTerm,
+    salesAgentId: $salesAgentId,
+    first: $first,
+    after: $after
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    nodes {
+      id,
+      storeId
+      invoiceNo
+      createdBy
+      detailsUpdatedBy
+      detailsDateUpdated
+      orderItemsDateUpdated
+      finalDateUpdated
+      status
+      transactionDate,
+      hasUnpaidProductTransaction,
+      barangayName
+      storeName
+    }
+  }
+}
+`;
+
 const GET_APPROVED_TRANSACTIONS_BY_DATE = gql`
   query ($transactionDate: String!, $status: TransactionStatusEnum!) {
     transactionsByDate(transactionDate: $transactionDate, status: $status) {
@@ -826,6 +860,72 @@ export class TransactionService {
               transaction.orderItemsDateUpdated = t.orderItemsDateUpdated;
               transaction.finalDateUpdated = t.finalDateUpdated;
               transaction.createdById = t.createdById;
+              transaction.status = t.status;
+              transaction.transactionDate = t.transactionDate;
+              transaction.store.name = t.storeName;
+              transaction.barangay.name = t.barangayName;
+              transaction.hasUnpaidProductTransaction =
+                t.hasUnpaidProductTransaction;
+              return transaction;
+            });
+
+            if (transactions) {
+              return {
+                endCursor,
+                hasNextPage,
+                transactions,
+                totalCount
+              };
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
+  getTransactionsByInvoiceNo(
+    salesAgentId: number,
+    invoiceSearchTerm: string = "",
+    cursor: string = null,
+    limit: number = 50
+  ) {
+    return this.apollo
+      .watchQuery({
+        query: GET_TRANSACTIONS_BY_SALES_AGENT_AND_INVOICE_QUERY,
+        variables: {
+          salesAgentId,
+          invoiceSearchTerm,
+          first: limit,
+          after: cursor
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              transactionsByInvoiceNo: IBaseConnection;
+            }>
+          ) => {
+            const data = result.data.transactionsByInvoiceNo;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+            const totalCount = data.totalCount;
+            const transactionsDto = <Array<TransactionInformation>>data.nodes;
+
+            const transactions = transactionsDto.map((t) => {
+              const transaction = new Transaction();
+              transaction.id = t.id;
+              transaction.invoiceNo = t.invoiceNo;
+              transaction.storeId = t.storeId;
+              transaction.createdBy = t.createdBy;
+              transaction.detailsUpdatedBy = t.detailsUpdatedBy;
+              transaction.detailsDateUpdated = t.detailsDateUpdated;
+              transaction.orderItemsDateUpdated = t.orderItemsDateUpdated;
+              transaction.finalDateUpdated = t.finalDateUpdated;
               transaction.status = t.status;
               transaction.transactionDate = t.transactionDate;
               transaction.store.name = t.storeName;

@@ -6,6 +6,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CommonModule } from '@angular/common';
 
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
@@ -17,6 +18,7 @@ import { SalesAgentDropdownControlComponent } from '../report-controls/sales-age
 import { SortOrderControlComponent } from '../report-controls/sort-order-control/sort-order-control.component';
 import { TransactionTypeDropdownControlComponent } from '../report-controls/transaction-type-dropdown-control/transaction-type-dropdown-control.component';
 import { CustomerDropdownControlComponent } from '../report-controls/customer-dropdown-control/customer-dropdown-control.component';
+import { InvoiceNoAutocompleteControlComponent } from '../report-controls/invoice-no-autocomplete-control/invoice-no-autocomplete-control.component';
 
 @NgModule({
   imports: [
@@ -27,6 +29,7 @@ import { CustomerDropdownControlComponent } from '../report-controls/customer-dr
     MatInputModule,
     ReactiveFormsModule,
     MatSelectModule,
+    MatAutocompleteModule,
     RouterModule.forChild([{ path: '', component: ReportDetailsComponent }]),
     TranslateModule.forChild(),
   ],
@@ -39,6 +42,7 @@ import { CustomerDropdownControlComponent } from '../report-controls/customer-dr
     SalesAgentDropdownControlComponent,
     CustomerDropdownControlComponent,
     TransactionTypeDropdownControlComponent,
+    InvoiceNoAutocompleteControlComponent,
   ],
 })
 export class ReportDetailsModule { }
