@@ -83,7 +83,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ClientSubscription", b =>
@@ -133,7 +133,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("SubscriptionFeatureId");
 
-                    b.ToTable("ClientSubscriptions");
+                    b.ToTable("ClientSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.DashboardModule", b =>
@@ -167,7 +167,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("DashboardModules");
+                    b.ToTable("DashboardModules", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.DashboardModuleWidget", b =>
@@ -206,7 +206,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("DashboardModuleId");
 
-                    b.ToTable("DashboardModuleWidgets");
+                    b.ToTable("DashboardModuleWidgets", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GeneralInformation", b =>
@@ -240,7 +240,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeneralInformations");
+                    b.ToTable("GeneralInformations", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.GlobalErrorLog", b =>
@@ -285,7 +285,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("GlobalErrorLogs");
+                    b.ToTable("GlobalErrorLogs", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Report", b =>
@@ -346,7 +346,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Reports", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControl", b =>
@@ -389,7 +389,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportControls");
+                    b.ToTable("ReportControls", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportControlsRelation", b =>
@@ -448,7 +448,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportControlsRelations");
+                    b.ToTable("ReportControlsRelations", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportCustomerCustom", b =>
@@ -489,7 +489,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportCustomerCustoms");
+                    b.ToTable("ReportCustomerCustoms", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ReportParameter", b =>
@@ -532,7 +532,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
                     b.HasIndex("ReportControlId")
                         .IsUnique();
 
-                    b.ToTable("ReportParameters");
+                    b.ToTable("ReportParameters", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Subscription", b =>
@@ -569,7 +569,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeature", b =>
@@ -650,7 +650,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("SubscriptionFeatures");
+                    b.ToTable("SubscriptionFeatures", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeatureAvailableReport", b =>
@@ -691,7 +691,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("SubscriptionFeatureId");
 
-                    b.ToTable("SubscriptionFeatureAvailableReports");
+                    b.ToTable("SubscriptionFeatureAvailableReports", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionFeatureHideDashboardWidget", b =>
@@ -732,7 +732,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("SubscriptionFeatureId");
 
-                    b.ToTable("SubscriptionFeatureHideDashboardWidgets");
+                    b.ToTable("SubscriptionFeatureHideDashboardWidgets", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionPriceVersion", b =>
@@ -777,7 +777,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("SubscriptionFeatureId");
 
-                    b.ToTable("SubscriptionPriceVersions");
+                    b.ToTable("SubscriptionPriceVersions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionRegisterUserAddonPriceVersion", b =>
@@ -822,7 +822,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("SubscriptionFeatureId");
 
-                    b.ToTable("SubscriptionRegisterUserAddonPriceVersion");
+                    b.ToTable("SubscriptionRegisterUserAddonPriceVersion", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.SubscriptionReportAddonPriceVersion", b =>
@@ -867,7 +867,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
 
                     b.HasIndex("SubscriptionFeatureId");
 
-                    b.ToTable("SubscriptionReportAddonPriceVersions");
+                    b.ToTable("SubscriptionReportAddonPriceVersions", (string)null);
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.ClientSubscription", b =>
