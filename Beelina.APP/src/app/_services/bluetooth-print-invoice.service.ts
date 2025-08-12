@@ -85,6 +85,27 @@ export class BluetoothPrintInvoiceService {
           formatColumn(transaction.invoiceNo, 20, 'right') + '\n';
         receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.TRANSACTION_DATE"), 25) +
           formatColumn(DateFormatter.format(transaction.transactionDate), 20, 'right') + '\n';
+
+        // Sales Agent Section
+        if (transaction.createdBy && typeof transaction.createdBy === 'object') {
+          receipt += formatColumn('Sales Agent:', 25) +
+            formatColumn(`${transaction.createdBy.firstName} ${transaction.createdBy.lastName.substring(0, 1)}.`, 20, 'right') + '\n';
+        }
+
+        // Customer Information Section
+        if (transaction.store && transaction.store.name) {
+          receipt += formatColumn('Customer:', 25) +
+            formatColumn(transaction.store.name, 20, 'right') + '\n';
+          if (transaction.store.address && transaction.barangay && transaction.barangay.name) {
+            const customerName = `${transaction.store.name} (${transaction.barangay.name})`;
+            const wrappedAddress = wrapText(customerName, 20);
+            wrappedAddress.forEach((line, index) => {
+              receipt += formatColumn(index === 0 ? 'Address:' : '', 25) +
+                formatColumn(line, 20, 'right') + '\n';
+            });
+          }
+        }
+
         receipt += '================================================\n\n';
 
         // Table Header
@@ -131,6 +152,27 @@ export class BluetoothPrintInvoiceService {
           formatColumn(transaction.invoiceNo, 10, 'right') + '\n';
         receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.TRANSACTION_DATE"), 22) +
           formatColumn(DateFormatter.format(transaction.transactionDate), 10, 'right') + '\n';
+
+        // Sales Agent Section
+        if (transaction.createdBy && typeof transaction.createdBy === 'object') {
+          receipt += formatColumn('Sales Agent:', 22) +
+            formatColumn(`${transaction.createdBy.firstName} ${transaction.createdBy.lastName.substring(0, 1)}.`, 10, 'right') + '\n';
+        }
+
+        // Customer Information Section
+        if (transaction.store && transaction.store.name) {
+          receipt += formatColumn('Customer:', 22) +
+            formatColumn(transaction.store.name, 10, 'right') + '\n';
+          if (transaction.store.address && transaction.barangay && transaction.barangay.name) {
+            const customerName = `${transaction.store.name}`;
+            const wrappedAddress = wrapText(customerName, 10);
+            wrappedAddress.forEach((line, index) => {
+              receipt += formatColumn(index === 0 ? 'Address:' : '', 22) +
+                formatColumn(line, 10, 'right') + '\n';
+            });
+          }
+        }
+
         receipt += '================================\n';
 
         // Table Header

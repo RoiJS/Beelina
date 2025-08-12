@@ -412,6 +412,20 @@ const DELETE_PRODUCT = gql`
   }
 `;
 
+const RESET_SALES_AGENT_PRODUCT_STOCKS = gql`
+  mutation ($salesAgentId: Int!) {
+    resetSalesAgentProductStocks(input: { salesAgentId: $salesAgentId }) {
+      boolean
+      errors {
+        __typename
+        ... on BaseError {
+          message
+        }
+      }
+    }
+  }
+`;
+
 const CHECK_PRODUCT_CODE = gql`
   query ($productId: Int!, $productCode: String!) {
     checkProductCode(productId: $productId, productCode: $productCode) {
@@ -2441,6 +2455,33 @@ export class ProductService {
             throw new Error(errors[0].message);
           }
           return null;
+        })
+      );
+  }
+
+  resetSalesAgentProductStocks(salesAgentId: number) {
+    return this.apollo
+      .mutate({
+        mutation: RESET_SALES_AGENT_PRODUCT_STOCKS,
+        variables: {
+          salesAgentId,
+        },
+      })
+      .pipe(
+        map((result: MutationResult<{ resetSalesAgentProductStocks: { boolean: boolean, errors: any[] } }>) => {
+          const output = result.data.resetSalesAgentProductStocks;
+          const success = output.boolean;
+          const errors = output.errors;
+
+          if (success !== undefined) {
+            return success;
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return false;
         })
       );
   }

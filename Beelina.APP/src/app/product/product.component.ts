@@ -491,6 +491,50 @@ export class ProductComponent
     })
   }
 
+  resetSalesAgentProductStocks() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.RESET_PRODUCT_STOCKS_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'PRODUCTS_CATALOGUE_PAGE.RESET_PRODUCT_STOCKS_DIALOG.CONFIRM'
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.productService.resetSalesAgentProductStocks(this.currentSalesAgentId).subscribe({
+            next: (success: boolean) => {
+              if (success) {
+                this.notificationService.openSuccessNotification(
+                  this.translateService.instant(
+                    'PRODUCTS_CATALOGUE_PAGE.RESET_PRODUCT_STOCKS_DIALOG.SUCCESS_MESSAGE'
+                  )
+                );
+                // Refresh the product list to show updated stock quantities
+                this.store.dispatch(ProductActions.resetProductState());
+                this.store.dispatch(ProductActions.getProductsAction());
+                this.calculateTotalInventoryValue();
+              } else {
+                this.notificationService.openErrorNotification(
+                  this.translateService.instant(
+                    'PRODUCTS_CATALOGUE_PAGE.RESET_PRODUCT_STOCKS_DIALOG.FAILURE_MESSAGE'
+                  )
+                );
+              }
+            },
+            error: (error) => {
+              this.notificationService.openErrorNotification(
+                this.translateService.instant(
+                  'PRODUCTS_CATALOGUE_PAGE.RESET_PRODUCT_STOCKS_DIALOG.ERROR_MESSAGE'
+                ) + ': ' + error.message
+              );
+            }
+          });
+        }
+      });
+  }
+
   addProductStockQuantity() {
     this.router.navigate(['/purchase-orders']);
   }

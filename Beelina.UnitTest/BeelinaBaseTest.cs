@@ -89,7 +89,6 @@ public class BeelinaBaseTest
         context.ProductStockPerPanels.RemoveRange(context.ProductStockPerPanels);
         context.ProductStockPerWarehouse.RemoveRange(context.ProductStockPerWarehouse);
         context.UserPermission.RemoveRange(context.UserPermission);
-        
         // Clear parent entities
         context.Transactions.RemoveRange(context.Transactions);
         context.Products.RemoveRange(context.Products);
@@ -102,6 +101,7 @@ public class BeelinaBaseTest
         context.Warehouses.RemoveRange(context.Warehouses);
         context.Suppliers.RemoveRange(context.Suppliers);
         context.ProductUnits.RemoveRange(context.ProductUnits);
+        context.GeneralSettings.RemoveRange(context.GeneralSettings);
         context.SaveChanges();
     }
 

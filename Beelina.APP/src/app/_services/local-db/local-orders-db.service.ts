@@ -10,6 +10,7 @@ import { LocalTransaction } from 'src/app/_models/local-db/local-transaction.mod
 import { Product } from 'src/app/_models/product';
 import { ProductTransaction, Transaction } from 'src/app/_models/transaction';
 import { TransactionDateInformation, TransactionDto, TransactionService } from '../transaction.service';
+import { User } from 'src/app/_models/user.model';
 
 import { LocalBaseDbService } from './local-base-db.service';
 import { LocalCustomerStoresDbService } from './local-customer-stores-db.service';
@@ -58,6 +59,12 @@ export class LocalOrdersDbService extends LocalBaseDbService {
       const store = await this.localCustomerStoresDbService.getMyLocalCustomerStore(localOrder.storeId);
       transaction.storeId = localOrder.storeId;
       transaction.store = store;
+
+      const createdBy = new User();
+      createdBy.id = userId;
+      createdBy.firstName = this.authService.user.value.firstName;
+      createdBy.lastName = this.authService.user.value.lastName;
+      transaction.createdBy = createdBy;
 
       const productTransactions = <Array<LocalProductTransaction>>await firstValueFrom(this.localDbService.getAll('productTransactions'));
       const localProductTransactions = productTransactions.filter(c => c.customerUserId == customerUserId && c.transactionId == localOrder.id);
