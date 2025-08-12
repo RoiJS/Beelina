@@ -61,6 +61,8 @@ BEGIN
 
 		WHERE
 			t.CreatedById = @salesAgentId
+			AND t.IsDelete = 0
+			AND t.IsActive = 1
 			AND (@invoiceNo IS NULL OR @invoiceNo = '' OR t.[InvoiceNo] LIKE '%' + @invoiceNo + '%')
 	)
 	
