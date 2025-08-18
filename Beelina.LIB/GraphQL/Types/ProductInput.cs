@@ -1,4 +1,6 @@
-﻿namespace Beelina.LIB.GraphQL.Types
+﻿using System;
+
+namespace Beelina.LIB.GraphQL.Types
 {
     public class ProductInput
     {
@@ -13,6 +15,10 @@
         public bool IsTransferable { get; set; }
         public int NumberOfUnits { get; set; }
         public int SupplierId { get; set; }
+        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
+        public bool Parent { get; set; }
+        public int? ProductParentGroupId { get; set; }
         public ProductUnitInput ProductUnitInput { get; set; }
     }
 }

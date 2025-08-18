@@ -23,6 +23,8 @@ import { StorageService } from 'src/app/_services/storage.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
 
 @Component({
   selector: 'app-text-order',
@@ -91,8 +93,14 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
           this._productList = productList;
         });
     } else {
+      const productsFilter = new ProductsFilter();
+      productsFilter.supplierId = 0;
+      productsFilter.stockStatus = StockStatusEnum.All;
+      productsFilter.priceStatus = PriceStatusEnum.All;
+      productsFilter.activeStatus = ProductActiveStatusEnum.ActiveOnly;
+
       this.localProductsDbService
-        .getMyLocalProducts('', 0, StockStatusEnum.All, PriceStatusEnum.All, 0, [])
+        .getMyLocalProducts('', productsFilter, 0, [])
         .then((data) => {
           this._productList = data.products;
         });
@@ -113,16 +121,23 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
         .getProductDetailList(this.authService.userId)
         .subscribe((productList: Array<Product>) => {
           this.notificationService.openSuccessNotification(this.translateService.instant(
-            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_SUCCESS_MESSAGE'
           ));
           this._productList = productList;
         });
     } else {
+
+      const productsFilter = new ProductsFilter();
+      productsFilter.supplierId = 0;
+      productsFilter.stockStatus = StockStatusEnum.All;
+      productsFilter.priceStatus = PriceStatusEnum.All;
+      productsFilter.activeStatus = ProductActiveStatusEnum.ActiveOnly;
+
       this.localProductsDbService
-        .getMyLocalProducts('', 0, StockStatusEnum.All, PriceStatusEnum.All, 0, [])
+        .getMyLocalProducts('', productsFilter, 0, [])
         .then((data) => {
           this.notificationService.openSuccessNotification(this.translateService.instant(
-            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_SUCCESS_MESSAGE'
           ));
           this._productList = data.products;
         });

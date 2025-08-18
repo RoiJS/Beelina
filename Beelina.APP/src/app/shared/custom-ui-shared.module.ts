@@ -12,29 +12,30 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
-
 import { MatListModule } from '@angular/material/list';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { LongPressDirective } from '../_directives/long-press.directive';
 import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
 import { SalesChartViewComponent } from '../admin-dashboard/home/sales-chart-view/sales-chart-view.component';
 import { SalesPerAgentViewComponent } from '../admin-dashboard/home/sales-per-agent-view/sales-per-agent-view.component';
+import { CopyProductConfirmationComponent } from '../product/copy-product-confirmation/copy-product-confirmation.component';
 import { ProductCardItemComponent } from '../product/product-card-item/product-card-item.component';
 import { TextInputAutocompleteContainerComponent } from './text-input-autocomplete/text-input-autocomplete-container.component';
 import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/text-input-autocomplete-menu.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
+import { BadgeModule } from './ui/badge/badge.module';
+import { BannerModule } from './ui/banner/banner.module';
 import { DialogModule } from './ui/dialog/dialog.module';
-import { PlaceholderEntitiesComponent } from './ui/placeholder-entities/placeholder-entities.component';
 import { FilterAndSortComponent } from './ui/filter-and-sort/filter-and-sort.component';
 import { FloatingButtonComponent } from './ui/floating-button/floating-button.component';
 import { ListContainerComponent } from './ui/list-container/list-container.component';
 import { LoaderLayoutComponent } from './ui/loader-layout/loader-layout.component';
 import { NotificationModule } from './ui/notification/notification.module';
+import { PlaceholderEntitiesComponent } from './ui/placeholder-entities/placeholder-entities.component';
 import { SearchFieldComponent } from './ui/search-field/search-field.component';
 import { TransactionDateOptionMenuComponent } from './ui/transaction-date-option-menu/transaction-date-option-menu.component';
 import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/transaction-option-menu.component';
-import { BannerModule } from './ui/banner/banner.module';
-import { BadgeModule } from './ui/badge/badge.module';
 
 @NgModule({
   imports: [
@@ -54,6 +55,7 @@ import { BadgeModule } from './ui/badge/badge.module';
     MatRippleModule,
     MatTooltipModule,
     NgApexchartsModule,
+    MatSlideToggleModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
   ],
@@ -73,7 +75,8 @@ import { BadgeModule } from './ui/badge/badge.module';
     LongPressDirective,
     TextInputAutocompleteMenuComponent,
     SalesChartViewComponent,
-    SalesPerAgentViewComponent
+    SalesPerAgentViewComponent,
+    CopyProductConfirmationComponent
   ],
   exports: [
     FilterAndSortComponent,
@@ -96,7 +99,8 @@ import { BadgeModule } from './ui/badge/badge.module';
     TextInputAutocompleteMenuComponent,
     SalesChartViewComponent,
     SalesPerAgentViewComponent,
-    NgApexchartsModule
+    NgApexchartsModule,
+    CopyProductConfirmationComponent
   ],
 })
 export class CustomUISharedModule { }

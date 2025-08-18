@@ -14,6 +14,8 @@ import { ProductTransaction } from 'src/app/_models/transaction';
 import { ProductInformationResult } from 'src/app/_models/results/product-information-result';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -45,8 +47,14 @@ export class LocalProductsDbService extends LocalBaseDbService {
 
     const userAccountId = +this.storageService.getString('currentSalesAgentId');
 
+    const productsFilter = new ProductsFilter();
+    productsFilter.supplierId = 0;
+    productsFilter.stockStatus = StockStatusEnum.All;
+    productsFilter.priceStatus = PriceStatusEnum.All;
+    productsFilter.activeStatus = ProductActiveStatusEnum.IncludeInactive;
+
     do {
-      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, PriceStatusEnum.All, 1000, []));
+      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", productsFilter, 1000, []));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 
@@ -65,6 +73,10 @@ export class LocalProductsDbService extends LocalBaseDbService {
       localProduct.isTransferable = product.isTransferable;
       localProduct.numberOfUnits = product.numberOfUnits;
       localProduct.productUnitId = product.productUnit.id;
+      localProduct.validFrom = product.validFrom;
+      localProduct.validTo = product.validTo;
+      localProduct.parent = product.parent;
+      localProduct.productParentGroupId = product.productParentGroupId;
       return localProduct;
     });
 
@@ -72,7 +84,7 @@ export class LocalProductsDbService extends LocalBaseDbService {
     console.info('newProductsCount: ', newProducts.length);
   }
 
-  async getMyLocalProducts(filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
+  async getMyLocalProducts(filterKeyword: string, productsFilter: ProductsFilter, limit: number, productTransactionItems: Array<ProductTransaction>): Promise<{
     endCursor: string;
     hasNextPage: boolean;
     products: Array<Product>;
@@ -96,26 +108,52 @@ export class LocalProductsDbService extends LocalBaseDbService {
     let myLocalProducts = localProductsFromLocalDb.filter(c => c.customerUserId == customerUserId);
 
     // Filter based on supplier id
-    if (supplierId > 0) {
-      myLocalProducts = myLocalProducts.filter(c => c.supplierId == supplierId);
+    if (productsFilter.supplierId > 0) {
+      myLocalProducts = myLocalProducts.filter(c => c.supplierId == productsFilter.supplierId);
     }
 
     // Filter based on stock status
-    if (stockStatus !== StockStatusEnum.All) {
-      if (stockStatus === StockStatusEnum.WithStocks) {
+    if (productsFilter.stockStatus !== StockStatusEnum.All) {
+      if (productsFilter.stockStatus === StockStatusEnum.WithStocks) {
         myLocalProducts = myLocalProducts.filter(c => c.stockQuantity > 0);
-      } else if (stockStatus === StockStatusEnum.WithoutStocks) {
+      } else if (productsFilter.stockStatus === StockStatusEnum.WithoutStocks) {
         myLocalProducts = myLocalProducts.filter(c => c.stockQuantity === 0);
       }
     }
 
     // Filter based on price status
-    if (priceStatus !== PriceStatusEnum.All) {
-      if (priceStatus === PriceStatusEnum.WithPrice) {
+    if (productsFilter.priceStatus !== PriceStatusEnum.All) {
+      if (productsFilter.priceStatus === PriceStatusEnum.WithPrice) {
         myLocalProducts = myLocalProducts.filter(c => c.pricePerUnit > 0);
-      } else if (priceStatus === PriceStatusEnum.WithoutPrice) {
+      } else if (productsFilter.priceStatus === PriceStatusEnum.WithoutPrice) {
         myLocalProducts = myLocalProducts.filter(c => c.pricePerUnit === 0);
       }
+    }
+
+    // Filter based on active status
+    if (productsFilter.activeStatus === ProductActiveStatusEnum.ActiveOnly) {
+      myLocalProducts = myLocalProducts.filter(c => {
+        if (!c.validFrom) {
+          return false;
+        }
+
+        const now = new Date();
+        const validFromDate = new Date(c.validFrom);
+        const validToDate = c.validTo ? new Date(c.validTo) : null;
+
+        // Set time to start/end of day for proper comparison
+        now.setHours(0, 0, 0, 0);
+        validFromDate.setHours(0, 0, 0, 0);
+
+        if (validToDate) {
+          validToDate.setHours(23, 59, 59, 999);
+        }
+
+        // Product is active if:
+        // 1. validFrom date has passed (validFrom <= now)
+        // 2. validTo is null OR validTo date hasn't passed yet (validTo >= now)
+        return validFromDate <= now && (!validToDate || validToDate >= now);
+      });
     }
 
     if (filterKeyword) {
@@ -148,11 +186,14 @@ export class LocalProductsDbService extends LocalBaseDbService {
       product.price = localProduct.price;
       product.isTransferable = localProduct.isTransferable;
       product.numberOfUnits = localProduct.numberOfUnits;
+      product.validFrom = localProduct.validFrom;
+      product.validTo = localProduct.validTo;
+      product.parent = localProduct.parent;
+      product.productParentGroupId = localProduct.productParentGroupId;
       product.deductedStock =
         -productTransactionItems.find(
           (pt) => pt.productId === localProduct.productId
-        )?.quantity | 0;
-
+        )?.quantity || 0;
       const localProductUnit = await this.getLocalProductUnit(localProduct.productUnitId);
       const productUnit = new ProductUnit();
       productUnit.id = localProductUnit.productUnitId;
@@ -182,9 +223,8 @@ export class LocalProductsDbService extends LocalBaseDbService {
       productUnits: [],
     };
 
-    const productUnitsCouht = <number>await firstValueFrom(this.localDbService.count('products'));
-    if (productUnitsCouht > 0) return;
-
+    const productUnitsCount = <number>await firstValueFrom(this.localDbService.count('productUnits'));
+    if (productUnitsCount > 0) return;
     do {
       result = await firstValueFrom(this.productUnitService.getProductUnits(result.endCursor, 1000));
       allProductUnits.push(...result.productUnits);
@@ -217,6 +257,10 @@ export class LocalProductsDbService extends LocalBaseDbService {
     productInformationResult.price = localProduct.price;
     productInformationResult.isTransferable = localProduct.isTransferable;
     productInformationResult.numberOfUnits = localProduct.numberOfUnits;
+    productInformationResult.validFrom = localProduct.validFrom;
+    productInformationResult.validTo = localProduct.validTo;
+    productInformationResult.parent = localProduct.parent;
+    productInformationResult.productParentGroupId = localProduct.productParentGroupId;
 
     const localProductUnit = await this.getLocalProductUnit(localProduct.productUnitId);
     const productUnit = new ProductUnit();
@@ -242,6 +286,10 @@ export class LocalProductsDbService extends LocalBaseDbService {
     productInformationResult.price = localProduct.price;
     productInformationResult.isTransferable = localProduct.isTransferable;
     productInformationResult.numberOfUnits = localProduct.numberOfUnits;
+    productInformationResult.validFrom = localProduct.validFrom;
+    productInformationResult.validTo = localProduct.validTo;
+    productInformationResult.parent = localProduct.parent;
+    productInformationResult.productParentGroupId = localProduct.productParentGroupId;
 
     const localProductUnit = await this.getLocalProductUnit(localProduct.productUnitId);
     const productUnit = new ProductUnit();

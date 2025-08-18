@@ -20,6 +20,7 @@ import { ProductsFilter } from '../../_models/filters/products.filter';
 import { ProductPriceAssignmentsStore } from './product-price-assignments.store';
 import { ProductFilterComponent } from '../product-filter/product-filter.component';
 import { CopyPriceAssignmentDialogComponent } from './copy-price-assignment-dialog.component';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
 
 @Component({
   selector: 'app-product-price-assignment',
@@ -49,10 +50,9 @@ export class ProductPriceAssignmentComponent implements AfterViewInit {
       supplierId: number;
       stockStatus: StockStatusEnum;
       priceStatus: PriceStatusEnum;
+      activeStatus: ProductActiveStatusEnum;
     }
-  >;
-
-  constructor() {
+  >;  constructor() {
     effect(() => {
       const assignments = this.productPriceAssignmentsStore.productAssignments();
       this.dataSource.set(assignments);
@@ -107,6 +107,7 @@ export class ProductPriceAssignmentComponent implements AfterViewInit {
     defaultProductsFilter.supplierId = 0;
     defaultProductsFilter.stockStatus = StockStatusEnum.None;
     defaultProductsFilter.priceStatus = PriceStatusEnum.None;
+    defaultProductsFilter.activeStatus = ProductActiveStatusEnum.ActiveOnly;
 
     this._dialogOpenFilterRef = this.bottomSheet.open(ProductFilterComponent, {
       data: {
@@ -121,7 +122,8 @@ export class ProductPriceAssignmentComponent implements AfterViewInit {
         (data: {
           supplierId: number,
           stockStatus: StockStatusEnum,
-          priceStatus: PriceStatusEnum
+          priceStatus: PriceStatusEnum,
+          activeStatus: ProductActiveStatusEnum
         }) => {
           if (!data) return;
 
@@ -129,6 +131,7 @@ export class ProductPriceAssignmentComponent implements AfterViewInit {
           productsFilter.supplierId = data.supplierId;
           productsFilter.stockStatus = data.stockStatus;
           productsFilter.priceStatus = data.priceStatus;
+          productsFilter.activeStatus = data.activeStatus;
           this.productsFilter.set(productsFilter);
 
           this.productPriceAssignmentsStore.reset();

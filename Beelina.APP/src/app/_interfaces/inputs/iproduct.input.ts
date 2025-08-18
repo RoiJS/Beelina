@@ -13,4 +13,8 @@ export interface IProductInput {
   isTransferable: boolean;
   numberOfUnits: number;
   productUnitInput: IProductUnitInput;
+  validFrom?: Date;
+  validTo?: Date;
+  parent?: boolean;
+  productParentGroupId?: number;
 }

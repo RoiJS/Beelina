@@ -91,6 +91,13 @@
                   (ngModelChange)="onProductChange($event, element, i)">
                   <ng-template ng-label-tmp let-item="item">
                     {{ item.productUnit.name }} - {{ item.name }}
+                    <span *ngIf="!item.isCurrentlyActive" class="inactive-badge">{{ 'GENERAL_TEXTS.INACTIVE' | translate }}</span>
+                  </ng-template>
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="product-option">
+                      <span class="product-name">{{ item.productUnit.name }} - {{ item.name }}</span>
+                      <span *ngIf="!item.isCurrentlyActive" class="inactive-badge">{{ 'GENERAL_TEXTS.INACTIVE' | translate }}</span>
+                    </div>
                   </ng-template>
                 </ng-select>
 
@@ -177,7 +184,8 @@
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"
+                     [ngClass]="{'product-row--inactive': !isProductActive(row)}"></mat-row>
             <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
           </mat-table>
 

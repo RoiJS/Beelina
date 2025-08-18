@@ -30,6 +30,8 @@ import { UniqueProductWithdrawalCodeValidator } from 'src/app/_validators/unique
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
 
 @Component({
   selector: 'app-product-withdrawal-details',
@@ -332,7 +334,11 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
                 this.router.navigate([`product-withdrawals`]);
               },
               error: () => {
-                this.notificationService.openSuccessNotification(this.translateService.instant("PRODUCT_WITHDRAWAL_DETAILS_PAGE.DELETE_PRODUCT_WITHDRAWAL_ITEMS_DIALOG.ERROR_MESSAGE"));
+                this.notificationService.openErrorNotification(
+                  this.translateService.instant(
+                    "PRODUCT_WITHDRAWAL_DETAILS_PAGE.DELETE_PRODUCT_WITHDRAWAL_ITEMS_DIALOG.ERROR_MESSAGE"
+                  )
+                );
               }
             })
         }
@@ -353,8 +359,14 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
       totalCount: 0
     };
 
+    const productsFilter = new ProductsFilter();
+    productsFilter.supplierId = 0;
+    productsFilter.stockStatus = StockStatusEnum.All;
+    productsFilter.priceStatus = PriceStatusEnum.All;
+    productsFilter.activeStatus = ProductActiveStatusEnum.IncludeInactive;
+
     do {
-      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", 0, StockStatusEnum.All, PriceStatusEnum.All, 1000, []));
+      result = await firstValueFrom(this.productService.getProducts(userAccountId, result.endCursor, "", productsFilter, 1000, []));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 
@@ -365,6 +377,15 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
     const allSalesAgents = await firstValueFrom(this.productService.getSalesAgentsList());
     const fieldSalesAgents = allSalesAgents.filter(s => s.salesAgentType === SalesAgentTypeEnum.FieldAgent); // Only field sales agents
     return fieldSalesAgents;
+  }
+
+  isProductActive(row: ProductWithdrawalItemDetails): boolean {
+    if (!row.productId || !this._panelProductsDatasource) {
+      return true; // Default to active if no product selected or data not loaded
+    }
+
+    const product = this._panelProductsDatasource.find(p => p.id === row.productId);
+    return product ? product.isCurrentlyActive : true;
   }
 
   get panelProductsDatasource() {

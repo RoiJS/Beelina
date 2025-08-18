@@ -5,6 +5,7 @@ import { catchError, from, map, of, switchMap, take, takeUntil, tap } from 'rxjs
 import { Store } from '@ngrx/store';
 
 import {
+  activeStatusSelector,
   endCursorSelector as endCursorProductSelector,
   filterKeywordSelector as filterKeywordProductSelector,
   priceStatusSelector,
@@ -27,6 +28,8 @@ import * as ProductActions from './actions';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
 
 @Injectable()
 export class ProductEffects {
@@ -49,6 +52,7 @@ export class ProductEffects {
           supplierId = 0,
           stockStatus = StockStatusEnum.All,
           priceStatus = PriceStatusEnum.All,
+          activeStatus = ProductActiveStatusEnum.ActiveOnly,
           limit = 50,
           productTransactionItems = Array<ProductTransaction>();
 
@@ -92,12 +96,23 @@ export class ProductEffects {
             (currentPriceStatus) => (priceStatus = currentPriceStatus)
           );
 
+        this.store
+          .select(activeStatusSelector)
+          .pipe(take(1))
+          .subscribe(
+            (currentActiveStatus) => (activeStatus = currentActiveStatus)
+          );
+
+        const productsFilter = new ProductsFilter();
+        productsFilter.supplierId = supplierId;
+        productsFilter.stockStatus = stockStatus;
+        productsFilter.priceStatus = priceStatus;
+        productsFilter.activeStatus = activeStatus;
+
         if (!this.networkService.isOnline.value) {
           return from(this.localProductsDbService.getMyLocalProducts(
             filterKeyword,
-            supplierId,
-            stockStatus,
-            priceStatus,
+            productsFilter,
             limit,
             productTransactionItems
           )).pipe(
@@ -123,9 +138,7 @@ export class ProductEffects {
           userAccountId,
           cursor,
           filterKeyword,
-          supplierId,
-          stockStatus,
-          priceStatus,
+          productsFilter,
           limit,
           productTransactionItems
         ).pipe(

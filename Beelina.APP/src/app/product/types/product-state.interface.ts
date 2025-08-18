@@ -1,4 +1,5 @@
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
 import { IBaseStateConnection } from 'src/app/_interfaces/states/ibase-connection.state';
@@ -16,4 +17,5 @@ export interface IProductState extends IBaseState, IBaseStateConnection {
   supplierId: number;
   stockStatus: StockStatusEnum;
   priceStatus: PriceStatusEnum;
+  activeStatus: ProductActiveStatusEnum;
 }

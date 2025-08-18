@@ -1,3 +1,5 @@
+using System;
+
 namespace Beelina.LIB.Models
 {
     public class FilteredProduct
@@ -18,5 +20,9 @@ namespace Beelina.LIB.Models
         public Supplier Supplier { get; set; }
         public bool IsTransferable { get; set; }
         public bool IsLinkedToSalesAgent { get; set; }
+        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
+        public bool Parent { get; set; }
+        public int? ProductParentGroupId { get; set; }
     }
 }

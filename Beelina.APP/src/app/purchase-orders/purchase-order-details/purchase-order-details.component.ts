@@ -27,6 +27,8 @@ import { UniquePurchaseOrderCodeValidator } from 'src/app/_validators/unique-pur
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -332,8 +334,14 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
       totalCount: 0
     };
 
+    const productsFilter = new ProductsFilter();
+    productsFilter.supplierId = supplierId;
+    productsFilter.stockStatus = StockStatusEnum.All;
+    productsFilter.priceStatus = PriceStatusEnum.All;
+    productsFilter.activeStatus = ProductActiveStatusEnum.IncludeInactive;
+
     do {
-      result = await firstValueFrom(this.productService.getWarehouseProducts(result.endCursor, supplierId, StockStatusEnum.All, PriceStatusEnum.All, "", 1000));
+      result = await firstValueFrom(this.productService.getWarehouseProducts(result.endCursor, productsFilter, "", 1000));
       allProducts.push(...result.products);
     } while (result.hasNextPage);
 
@@ -342,6 +350,15 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
 
   private async initSupplierDatasource() {
     return await firstValueFrom(this.supplierService.getAllSuppliers());
+  }
+
+  isProductActive(row: PurchaseOrderItemDetails): boolean {
+    if (!row.productId || !this._warehouseProductsDatasource) {
+      return true; // Default to active if no product selected or data not loaded
+    }
+
+    const product = this._warehouseProductsDatasource.find(p => p.id === row.productId);
+    return product ? product.isCurrentlyActive : true;
   }
 
   get warehouseProductsDatasource() {

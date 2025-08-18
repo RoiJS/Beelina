@@ -17,4 +17,8 @@ export class ProductInformationResult
   public isTransferable: boolean;
   public numberOfUnits: number;
   public productUnit: ProductUnit;
+  public validFrom?: Date;
+  public validTo?: Date;
+  public parent?: boolean;
+  public productParentGroupId?: number;
 }

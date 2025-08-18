@@ -14,93 +14,155 @@
             }}</label>
         </div>
         <div class="panel__body-section">
-          <mat-form-field appearance="fill">
-            <mat-label>{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.CODE_CONTROL.LABEL"
-              | translate
-              }}:</mat-label>
-            <input matInput type="text" formControlName="code" />
-            @if(productForm.get('code').hasError('productAlreadyExists')) {
-            <mat-error>
-              {{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.CODE_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
-              | translate
-              }}
-            </mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
-              | translate
-              }}:</mat-label>
-            <input matInput type="text" formControlName="name" />
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.DESCRIPTION_CONTROL.LABEL"
-              | translate
-              }}:</mat-label>
-            <input matInput type="text" formControlName="description" />
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
-              | translate
-              }}:</mat-label>
+          <mat-tab-group mat-stretch-tabs="true" mat-align-tabs="start" animationDuration="0ms">
+            <mat-tab [label]="productInformationLabelText">
+              <div class="product-details-form">
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.CODE_CONTROL.LABEL"
+                    | translate
+                    }}:</mat-label>
+                  <input matInput type="text" formControlName="code" />
+                  @if(productForm.get('code').hasError('productAlreadyExists')) {
+                  <mat-error>
+                    {{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.CODE_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                    | translate
+                    }}
+                  </mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.NAME_CONTROL.LABEL"
+                    | translate
+                    }}:</mat-label>
+                  <input matInput type="text" formControlName="name" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.DESCRIPTION_CONTROL.LABEL"
+                    | translate
+                    }}:</mat-label>
+                  <input matInput type="text" formControlName="description" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
+                    | translate
+                    }}:</mat-label>
 
-            <mat-select formControlName="supplierId">
-              @for(supplier of suppliers(); track supplier.id) {
-              <mat-option [value]="supplier.id">{{ supplier.code }}: {{ supplier.name}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          @if (productSource !== 0) {
-          <div class="product-detail-panel__stock-quantity-control">
-            <label class="stock-quantity-label">{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
-              | translate
-              }}: <span class="stock-quantity-value">{{
-                productForm.get("stockQuantity").value }}</span></label>
-            <button mat-raised-button color="primary" (click)="editStockQuantity()"> {{ "GENERAL_TEXTS.EDIT" | translate
-              }}</button>
-          </div>
-          }
-          <mat-form-field appearance="fill">
-            <mat-label>{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRICE_PER_UNIT_CONTROL.LABEL"
-              | translate
-              }}:</mat-label>
-            <input matInput type="number" formControlName="pricePerUnit" />
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.UNIT_CONTROL.LABEL"
-              | translate
-              }}:</mat-label>
-            <input type="text" aria-label="Number" matInput formControlName="productUnit" [matAutocomplete]="auto" />
+                  <mat-select formControlName="supplierId">
+                    @for(supplier of suppliers(); track supplier.id) {
+                    <mat-option [value]="supplier.id">{{ supplier.code }}: {{ supplier.name}}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                @if (productSource !== 0) {
+                <div class="product-detail-panel__stock-quantity-control">
+                  <label class="stock-quantity-label">{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.STOCK_QUANTITY_CONTROL.LABEL"
+                    | translate
+                    }}: <span class="stock-quantity-value">{{
+                      productForm.get("stockQuantity").value }}</span></label>
+                  <button mat-raised-button color="primary" (click)="editStockQuantity()"> {{ "GENERAL_TEXTS.EDIT" |
+                    translate
+                    }}</button>
+                </div>
+                }
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRICE_PER_UNIT_CONTROL.LABEL"
+                    | translate
+                    }}:</mat-label>
+                  <input matInput type="number" formControlName="pricePerUnit" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.UNIT_CONTROL.LABEL"
+                    | translate
+                    }}:</mat-label>
+                  <input type="text" aria-label="Number" matInput formControlName="productUnit"
+                    [matAutocomplete]="auto" />
 
-            <mat-autocomplete #auto="matAutocomplete">
-              @for(option of productUnitFilterOptions | async; track option.id) {
-              <mat-option [value]="option.name">
-                {{ option.name }}
-              </mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
-          <div class="product-detail-panel__transferrable">
-            <mat-slide-toggle formControlName="isTransferable">{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.TRANSFERRABLE_CONTROL.LABEL"
-              | translate
-              }}</mat-slide-toggle>
-          </div>
-          <mat-form-field appearance="fill">
-            <mat-label>{{
-              "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.NUMBER_OF_UNITS_CONTROL.LABEL"
-              | translate
-              }}:</mat-label>
-            <input matInput type="number" formControlName="numberOfUnits" />
-          </mat-form-field>
+                  <mat-autocomplete #auto="matAutocomplete">
+                    @for(option of productUnitFilterOptions | async; track option.id) {
+                    <mat-option [value]="option.name">
+                      {{ option.name }}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+                <div class="product-detail-panel__transferrable">
+                  <mat-slide-toggle formControlName="isTransferable">{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.TRANSFERRABLE_CONTROL.LABEL"
+                    | translate
+                    }}</mat-slide-toggle>
+                </div>
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.NUMBER_OF_UNITS_CONTROL.LABEL"
+                    | translate
+                    }}:</mat-label>
+                  <input matInput type="number" formControlName="numberOfUnits" />
+                </mat-form-field>
+              </div>
+            </mat-tab>
+
+            <mat-tab [label]="productConnectionLabelText">
+              <div class="product-details-form">
+                <div class="product-detail-panel__parent-product">
+                  <mat-slide-toggle formControlName="parent">{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.IS_PARENT_PRODUCT_CONTROL.LABEL"
+                    | translate
+                    }}</mat-slide-toggle>
+                </div>
+                <br>
+
+                @if (!productForm.get('parent')?.value) {
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRODUCT_PARENT_GROUP_CONTROL.LABEL"
+                    | translate
+                    }}</mat-label>
+                  <input type="text" matInput formControlName="productParentGroupDisplay"
+                    [matAutocomplete]="parentProductAuto" />
+                  <mat-autocomplete #parentProductAuto="matAutocomplete" [displayWith]="displayParentProduct">
+                    @for(option of parentProductFilterOptions | async; track option.id) {
+                    <mat-option [value]="option">
+                      {{ displayParentProduct(option) }}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+                }
+              </div>
+            </mat-tab>
+
+            <mat-tab [label]="productValidityLabelText">
+              <div class="product-details-form">
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.VALID_FROM_CONTROL.LABEL"
+                    | translate
+                    }}</mat-label>
+                  <input matInput [matDatepicker]="validFromPicker" formControlName="validFrom" />
+                  <mat-datepicker-toggle matIconSuffix [for]="validFromPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #validFromPicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>{{
+                    "ADD_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.VALID_TO_CONTROL.LABEL"
+                    | translate
+                    }}</mat-label>
+                  <input matInput [matDatepicker]="validToPicker" formControlName="validTo" [min]="productForm.get('validFrom')?.value" />
+                  <mat-datepicker-toggle matIconSuffix [for]="validToPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #validToPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
         </div>
       </div>
     </div>
