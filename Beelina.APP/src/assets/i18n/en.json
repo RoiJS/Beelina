@@ -1576,8 +1576,11 @@
             "UNPAID_OPTION": "Unpaid"
           }
         },
-        "TRANSACTION_DATE_CONTROL": {
-          "LABEL": "Date"
+        "DATE_FROM_CONTROL": {
+          "LABEL": "Date From"
+        },
+        "DATE_TO_CONTROL": {
+          "LABEL": "Date To"
         }
       }
     },
