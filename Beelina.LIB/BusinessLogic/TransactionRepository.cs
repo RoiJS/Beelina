@@ -264,7 +264,8 @@ namespace Beelina.LIB.BusinessLogic
             var transactionsFilter = new TransactionsFilter
             {
                 Status = status,
-                TransactionDate = transactionDate,
+                DateFrom = transactionDate,
+                DateTo = transactionDate,
                 PaymentStatus = PaymentStatusEnum.All,
                 StoreId = 0 // Assuming we want to get transactions for all stores
             };
@@ -296,11 +297,12 @@ namespace Beelina.LIB.BusinessLogic
                     on s.BarangayId equals b.Id
 
                     where
-                        (transactionsFilter.Status == TransactionStatusEnum.All || (transactionsFilter.Status != TransactionStatusEnum.All && t.Status == transactionsFilter.Status))
+                        (transactionsFilter == null || transactionsFilter.Status == TransactionStatusEnum.All || (transactionsFilter.Status != TransactionStatusEnum.All && t.Status == transactionsFilter.Status))
                         && (userId == 0 || (userId > 0 && t.CreatedById == userId))
                         && (transactionsFilter == null ||
                             (transactionsFilter != null && (
-                                    (String.IsNullOrEmpty(transactionsFilter.TransactionDate) || (!String.IsNullOrEmpty(transactionsFilter.TransactionDate) && t.TransactionDate == Convert.ToDateTime(transactionsFilter.TransactionDate))) &&
+                                    (String.IsNullOrEmpty(transactionsFilter.DateFrom) || (!String.IsNullOrEmpty(transactionsFilter.DateFrom) && t.TransactionDate >= Convert.ToDateTime(transactionsFilter.DateFrom))) &&
+                                    (String.IsNullOrEmpty(transactionsFilter.DateTo) || (!String.IsNullOrEmpty(transactionsFilter.DateTo) && t.TransactionDate <= Convert.ToDateTime(transactionsFilter.DateTo))) &&
                                     (transactionsFilter.StoreId == 0 || s.Id == transactionsFilter.StoreId))))
                         && !t.IsDelete
                         && t.IsActive
@@ -318,7 +320,7 @@ namespace Beelina.LIB.BusinessLogic
                         TransactionDate = t.TransactionDate,
                         ProductTransaction = pt,
                         DateUpdated = t.DateUpdated,
-                        UpdatedBy = up.PersonFullName ?? String.Empty,
+                        UpdatedBy = up != null ? (up.PersonFullName ?? String.Empty) : String.Empty,
                     }
                 )
                 .AsNoTracking()

@@ -45,12 +45,22 @@
 
     <mat-form-field appearance="fill" class="date-picker-control">
       <mat-label>{{
-        "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.TRANSACTION_DATE_CONTROL.LABEL" |
+        "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.DATE_FROM_CONTROL.LABEL" |
         translate }}:</mat-label>
-      <input matInput [matDatepicker]="transactiondate" formControlName="transactionDate" />
+      <input matInput [matDatepicker]="dateFrom" formControlName="dateFrom" />
       <mat-hint>MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="transactiondate"></mat-datepicker-toggle>
-      <mat-datepicker #transactiondate></mat-datepicker>
+      <mat-datepicker-toggle matIconSuffix [for]="dateFrom"></mat-datepicker-toggle>
+      <mat-datepicker #dateFrom></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="date-picker-control">
+      <mat-label>{{
+        "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.DATE_TO_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <input matInput [matDatepicker]="dateTo" formControlName="dateTo" />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="dateTo"></mat-datepicker-toggle>
+      <mat-datepicker #dateTo></mat-datepicker>
     </mat-form-field>
 
   </div>
