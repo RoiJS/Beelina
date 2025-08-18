@@ -1,4 +1,4 @@
-<div matRipple class="product-item list-container__card-item">
+<div matRipple class="product-item list-container__card-item" [ngClass]="{'product-item--inactive': !productItem()?.isCurrentlyActive}">
 
   @if (!hideHeader()) {
   <div class="list-container__card-item-header product-item__header">
@@ -12,6 +12,11 @@
       @if (productItem()?.isLinkedToSalesAgent && allowManageItem()) {
       <app-badge class="product-linked-icon" [type]="bannerTypeEnum.SUCCESS"
         [textIdentifier]="'GENERAL_TEXTS.LINKED'"></app-badge>
+      }
+
+      @if (!productItem()?.isCurrentlyActive) {
+      <app-badge class="product-inactive-icon" [type]="bannerTypeEnum.WARNING"
+        [textIdentifier]="'GENERAL_TEXTS.INACTIVE'"></app-badge>
       }
 
       <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
@@ -61,9 +66,13 @@
   <div (click)="addItemToCart(productItem().id)" class="product-item__body-container">
 
     @if (!hideImage()) {
-    <div class="list-container__card-item-body product-item__body">
-      <img [src]="getProductPhoto(productItem?.name)" />
-    </div>
+      <div class="list-container__card-item-body product-item__body">
+        <img
+          [src]="getProductPhoto(productItem()?.name)"
+          [attr.alt]="productItem()?.name"
+          loading="lazy"
+        />
+      </div>    
     }
 
     <div class="list-container__card-item-footer product-item__footer">

@@ -15,6 +15,10 @@ export class LocalProduct implements ILocalEntity {
   public isTransferable: boolean;
   public numberOfUnits: number;
   public productUnitId: number;
+  public validFrom?: Date;
+  public validTo?: Date;
+  public parent?: boolean;
+  public productParentGroupId?: number;
 
   constructor() {
   }

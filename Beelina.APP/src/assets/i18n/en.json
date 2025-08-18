@@ -482,6 +482,11 @@
   },
   "ADD_PRODUCT_DETAILS_PAGE": {
     "TITLE": "Add Product",
+    "TAB_SECTIONS": {
+      "PRODUCT_INFORMATION": "Product Information",
+      "PRODUCT_CONNECTION": "Product Connection",
+      "PRODUCT_VALIDITY": "Product Validity"
+    },
     "FORM_CONTROL_SECTION": {
       "HEADER_TITLE": "Add New Product",
       "NAME_CONTROL": {
@@ -526,6 +531,19 @@
       },
       "NUMBER_OF_UNITS_CONTROL": {
         "LABEL": "Quantity per unit"
+      },
+      "VALID_FROM_CONTROL": {
+        "LABEL": "Valid From"
+      },
+      "VALID_TO_CONTROL": {
+        "LABEL": "Valid To"
+      },
+      "IS_PARENT_PRODUCT_CONTROL": {
+        "LABEL": "Is Parent Product"
+      },
+      "PRODUCT_PARENT_GROUP_CONTROL": {
+        "LABEL": "Product Parent Group",
+        "PLACEHOLDER": "Please select a parent product"
       }
     },
     "SAVE_NEW_PRODUCT_DIALOG": {
@@ -537,6 +555,15 @@
   },
   "EDIT_PRODUCT_DETAILS_PAGE": {
     "TITLE": "Edit Product",
+    "TAB_SECTIONS": {
+      "PRODUCT_INFORMATION": "Product Information",
+      "PRODUCT_CONNECTION": "Product Connection",
+      "PRODUCT_VALIDITY": "Product Validity"
+    },
+    "MORE_OPTIONS": {
+      "VIEW_STOCK_AUDIT": "View stock audit",
+      "ASSIGN_PRODUCT": "Assign product"
+    },
     "FORM_CONTROL_SECTION": {
       "HEADER_TITLE": "Edit New Product",
       "NAME_CONTROL": {
@@ -581,6 +608,20 @@
       },
       "NUMBER_OF_UNITS_CONTROL": {
         "LABEL": "Quantity per unit"
+      },
+      "VALID_FROM_CONTROL": {
+        "LABEL": "Valid From"
+      },
+      "VALID_TO_CONTROL": {
+        "LABEL": "Valid To"
+      },
+      "IS_PARENT_PRODUCT_CONTROL": {
+        "LABEL": "Is Parent Product",
+        "DISABLED_TOOLTIP": "Cannot modify parent status because this product is linked to other products"
+      },
+      "PRODUCT_PARENT_GROUP_CONTROL": {
+        "LABEL": "Product Parent Group",
+        "PLACEHOLDER": "Please select a parent product"
       }
     },
     "EDIT_PRODUCT_DIALOG": {
@@ -648,12 +689,20 @@
             "WITH_PRICE": "With Price",
             "WITHOUT_PRICE": "Without Price"
           }
+        },
+        "ACTIVE_STATUS_CONTROL": {
+          "LABEL": "Active Status",
+          "HINT": "Please choose active status",
+          "OPTIONS": {
+            "ACTIVE_ONLY": "Active Only",
+            "INCLUDE_INACTIVE": "Include Inactive"
+          }
         }
       }
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
-      "REFRESH_PRODUCT_LIST_ERROR_MESSAGE": "Product List has been refreshed."
+      "REFRESH_PRODUCT_LIST_SUCCESS_MESSAGE": "Product List has been refreshed."
     },
     "SYNC_PRODUCTS_DIALOG": {
       "SYNCING_NOTIFICATION_MESSAGE": "Syncing products..",
@@ -689,6 +738,20 @@
       "CONFIRM": "Are you sure you want to copy the selected product?",
       "SUCCESS_MESSAGE": "Product has been successfully copied!",
       "ERROR_MESSAGE": "Failed to copy product. Please try again later."
+    },
+    "COPY_PRODUCT_CONFIRMATION_DIALOG": {
+      "TITLE": "Copy Product Confirmation",
+      "DESCRIPTION_1": "You are about to create a copy of \"{{productName}}\".",
+      "DESCRIPTION_2": "Are you sure you want to proceed?",
+      "FORM_CONTROL_SECTION": {
+        "CONFIRMATION_CHECKBOX_CONTROL": {
+          "LABEL": "I confirm that I want to create a copy of this product"
+        },
+        "SET_VALID_TO_DATE_CONTROL": {
+          "LABEL": "Automatically set valid-to date on the original product",
+          "HINT": "This will mark the original product as expired (valid until yesterday) and the new copy will be valid from today forward."
+        }
+      }
     },
     "RESET_PRODUCT_STOCKS_DIALOG": {
       "TITLE": "Reset Product Stocks",
@@ -1807,5 +1870,31 @@
       "SUCCESS_MESSAGE": "Product removed successfully",
       "ERROR_MESSAGE": "Failed to remove product. Please try again later."
     }
+  },
+  "SALES_AGENT_SELECTOR_DIALOG": {
+    "DEFAULT_TITLE": "Select Sales Agents",
+    "SEARCH_PLACEHOLDER": "Search sales agents...",
+    "SELECT_ALL": "Select All",
+    "NO_AGENTS_FOUND": "No sales agents found",
+    "LOADING": "Loading sales agents...",
+    "SELECTED_COUNT": "{{count}} agent(s) selected",
+    "SELECTED_SINGLE": "{{name}} selected",
+    "CONFIRM_BUTTON": "Confirm Selection",
+    "ERROR_LOADING_AGENTS": "Failed to load sales agents. Please try again."
+  },
+  "ASSIGN_PRODUCT_DIALOG": {
+    "TITLE": "Assign Product to Sales Agents",
+    "SUBTITLE": "Select the sales agents you want to assign this product to",
+    "SEARCH_PLACEHOLDER": "Search sales agents...",
+    "SELECT_ALL": "Select All",
+    "NO_AGENTS_FOUND": "No sales agents found",
+    "LOADING": "Loading sales agents...",
+    "SELECTED_COUNT": "{{count}} agent(s) selected",
+    "ASSIGN_BUTTON": "Assign Product",
+    "ERROR_LOADING_AGENTS": "Failed to load sales agents. Please try again.",
+    "CONFIRM_TITLE": "Confirm Product Assignment",
+    "CONFIRM_MESSAGE": "Are you sure you want to assign '{{productName}}' to {{agentCount}} sales agent(s)?",
+    "SUCCESS_MESSAGE": "Product successfully assigned to {{count}} sales agent(s)",
+    "ERROR_MESSAGE": "Failed to assign product to sales agents. Please try again."
   }
 }

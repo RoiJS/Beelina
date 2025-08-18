@@ -13,6 +13,11 @@ namespace Beelina.LIB.Models
         public float PricePerUnit { get; set; }
         public bool IsTransferable { get; set; }
         public int NumberOfUnits { get; set; }
+        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
+        public bool Parent { get; set; }
+        public int? ProductParentGroupId { get; set; }
+        public virtual Product ProductParentGroup { get; set; }
 
         [NotMapped]
         public bool IsLinkedToSalesAgent { get; set; }
@@ -24,6 +29,16 @@ namespace Beelina.LIB.Models
             get
             {
                 return Math.Round(PricePerUnit, 2);
+            }
+        }
+
+        [NotMapped]
+        public bool IsCurrentlyActive
+        {
+            get
+            {
+                DateTime now = DateTime.UtcNow.Date;
+                return ValidFrom <= now && (!ValidTo.HasValue || ValidTo > now);
             }
         }
 

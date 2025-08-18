@@ -67,6 +67,8 @@ import { StockStatusEnum } from '../_enum/stock-status.enum';
 import { PriceStatusEnum } from '../_enum/price-status.enum';
 import { ProductsFilter } from '../_models/filters/products.filter';
 import { ProductStockPerPanel } from '../_models/product-stock-per-panel.model';
+import { IProductStockPerPanelOutput } from '../_interfaces/outputs/iproduct-stock-per-panel.output';
+import { IProductStockPerPanelPayload } from '../_interfaces/payloads/iproduct-stock-per-panel.payload';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -95,6 +97,10 @@ const GET_PRODUCTS_QUERY = gql`
         isTransferable
         supplierId
         isLinkedToSalesAgent
+        validFrom
+        validTo
+        productParentGroupId
+        parent
         productUnit {
           id
           name
@@ -131,6 +137,10 @@ const GET_WAREHOUSE_PRODUCTS_QUERY = gql`
         numberOfUnits
         isTransferable
         supplierId
+        validFrom
+        validTo
+        productParentGroupId
+        parent
         productUnit {
           id
           name
@@ -164,6 +174,10 @@ const GET_PRODUCT_STORE = gql`
         numberOfUnits
         isTransferable
         supplierId
+        validFrom
+        validTo
+        productParentGroupId
+        parent
         productUnit {
           name
         }
@@ -312,6 +326,10 @@ const GET_WAREHOUSE_PRODUCT_STORE = gql`
         numberOfUnits
         isTransferable
         supplierId
+        validFrom
+        validTo
+        productParentGroupId
+        parent
         productUnit {
           name
         }
@@ -765,6 +783,10 @@ const GET_PRODUCT_PRICE_ASSIGNMENTS = gql`
         numberOfUnits
         isTransferable
         supplierId
+        validFrom
+        validTo
+        productParentGroupId
+        parent
         productUnit {
           id
           name
@@ -829,6 +851,44 @@ const GET_LATEST_TRANSACTION_CODE_QUERY = gql`
   }
 `;
 
+const GET_PARENT_PRODUCTS_QUERY = gql`
+  query($filterKeyword: String!, $first: Int, $after: String) {
+    parentProducts(filterKeyword: $filterKeyword, first: $first, after: $after) {
+      nodes {
+        id
+        name
+        code
+        description
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const HAS_LINKED_PRODUCTS_QUERY = gql`
+  query($productId: Int!) {
+    hasLinkedProducts(productId: $productId)
+  }
+`;
+
+const ASSIGN_PRODUCT_TO_SALES_AGENTS = gql`
+  mutation($productId: Int!, $salesAgentIds: [Int!]!, $warehouseId: Int!) {
+    assignProductToSalesAgents(input: { productId: $productId, salesAgentIds: $salesAgentIds, warehouseId: $warehouseId }) {
+      productStockPerPanel {
+        productId
+        userAccountId
+        pricePerUnit
+      }
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private _warehouseId: number = 1;
@@ -838,7 +898,7 @@ export class ProductService {
   store = inject(Store<AppStateInterface>);
   storageService = inject(StorageService);
 
-  getProducts(userAccountId: number, cursor: string, filterKeyword: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, limit: number, productTransactionItems: Array<ProductTransaction>) {
+  getProducts(userAccountId: number, cursor: string, filterKeyword: string, productsFilter: ProductsFilter, limit: number, productTransactionItems: Array<ProductTransaction>) {
     return this.apollo
       .watchQuery({
         query: GET_PRODUCTS_QUERY,
@@ -846,11 +906,7 @@ export class ProductService {
           cursor,
           filterKeyword,
           userAccountId,
-          productsFilter: {
-            supplierId,
-            stockStatus,
-            priceStatus
-          },
+          productsFilter,
           limit
         },
       })
@@ -877,6 +933,10 @@ export class ProductService {
             product.numberOfUnits = productDto.numberOfUnits;
             product.productUnit = productDto.productUnit;
             product.isLinkedToSalesAgent = productDto.isLinkedToSalesAgent;
+            product.validFrom = productDto.validFrom;
+            product.validTo = productDto.validTo;
+            product.productParentGroupId = productDto.productParentGroupId;
+            product.parent = productDto.parent;
             product.deductedStock =
               -productTransactionItems.find(
                 (pt) => pt.productId === productDto.id
@@ -902,7 +962,7 @@ export class ProductService {
       );
   }
 
-  getWarehouseProducts(cursor: string, supplierId: number, stockStatus: StockStatusEnum, priceStatus: PriceStatusEnum, filterKeyword: string, limit: number) {
+  getWarehouseProducts(cursor: string, productsFilter: ProductsFilter, filterKeyword: string, limit: number) {
     const warehouseId = this._warehouseId;
 
     return this.apollo
@@ -912,11 +972,7 @@ export class ProductService {
           cursor,
           filterKeyword,
           warehouseId,
-          productsFilter: {
-            supplierId,
-            stockStatus,
-            priceStatus
-          },
+          productsFilter,
           limit
         },
       })
@@ -943,6 +999,10 @@ export class ProductService {
             product.productUnit = productDto.productUnit;
             product.supplierId = productDto.supplierId;
             product.isLinkedToSalesAgent = false;
+            product.validFrom = productDto.validFrom;
+            product.validTo = productDto.validTo;
+            product.productParentGroupId = productDto.productParentGroupId;
+            product.parent = productDto.parent;
             return product;
           });
 
@@ -981,6 +1041,10 @@ export class ProductService {
         product.isTransferable = productDto.isTransferable;
         product.numberOfUnits = productDto.numberOfUnits;
         product.productUnit = productDto.productUnit;
+        product.validFrom = productDto.validFrom;
+        product.validTo = productDto.validTo;
+        product.productParentGroupId = productDto.productParentGroupId;
+        product.parent = productDto.parent;
         return product;
       });
 
@@ -1339,6 +1403,11 @@ export class ProductService {
         isTransferable: product.isTransferable,
         numberOfUnits: product.numberOfUnits,
         withdrawalSlipNo: product.withdrawalSlipNo,
+        plateNo: product.plateNo,
+        validFrom: product.validFrom,
+        validTo: product.validTo,
+        parent: product.parent,
+        productParentGroupId: product.productParentGroupId,
         productUnitInput: {
           id: product.productUnit.id,
           name: product.productUnit.name,
@@ -1386,6 +1455,10 @@ export class ProductService {
         numberOfUnits: product.numberOfUnits,
         withdrawalSlipNo: product.withdrawalSlipNo,
         plateNo: product.plateNo,
+        validFrom: product.validFrom,
+        validTo: product.validTo,
+        parent: product.parent,
+        productParentGroupId: product.productParentGroupId,
         productUnitInput: {
           id: product.productUnit.id,
           name: product.productUnit.name,
@@ -2341,6 +2414,10 @@ export class ProductService {
             product.stockQuantity = p.stockQuantity;
             product.productUnit = p.productUnit;
             product.pricePerUnit = p.pricePerUnit;
+            product.validFrom = p.validFrom;
+            product.validTo = p.validTo;
+            product.productParentGroupId = p.productParentGroupId;
+            product.parent = p.parent;
             return product;
           });
 
@@ -2482,6 +2559,88 @@ export class ProductService {
           }
 
           return false;
+        })
+      );
+  }
+
+  getParentProducts(filterKeyword: string = '', first: number = 50, after?: string) {
+    return this.apollo
+      .watchQuery({
+        query: GET_PARENT_PRODUCTS_QUERY,
+        variables: {
+          filterKeyword,
+          first,
+          after
+        }
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ parentProducts: IBaseConnection }>) => {
+          const parentProductsData = result.data.parentProducts;
+          const productsDto = <Array<Product>>parentProductsData.nodes;
+
+          const products: Array<Product> = productsDto.map((productDto) => {
+            const product = new Product();
+            product.id = productDto.id;
+            product.code = productDto.code;
+            product.name = productDto.name;
+            product.description = productDto.description;
+            return product;
+          });
+
+          // Return both products and pagination info
+          return products;
+        })
+      );
+  }
+
+  hasLinkedProducts(productId: number) {
+    return this.apollo
+      .watchQuery({
+        query: HAS_LINKED_PRODUCTS_QUERY,
+        variables: {
+          productId
+        }
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ hasLinkedProducts: boolean }>) => {
+          return result.data.hasLinkedProducts;
+        })
+      );
+  }
+
+  assignProductToSalesAgents(productId: number, salesAgentIds: number[], warehouseId: number = 1) {
+    return this.apollo
+      .mutate({
+        mutation: ASSIGN_PRODUCT_TO_SALES_AGENTS,
+        variables: {
+          productId,
+          salesAgentIds,
+          warehouseId
+        }
+      })
+      .pipe(
+        map((result: MutationResult<{ assignProductToSalesAgents: IProductStockPerPanelOutput }>) => {
+          const data = result.data?.assignProductToSalesAgents;
+          const errors = result.errors;
+
+          if (data && data.productStockPerPanel.length > 0) {
+            // Return the assignment data as received from the API
+            return data.productStockPerPanel.map((assignment: IProductStockPerPanelPayload) => <ProductStockPerPanel>({
+              productId: assignment.productId,
+              userAccountId: assignment.userAccountId,
+              pricePerUnit: assignment.pricePerUnit
+            }));
+          }
+
+          if (errors && errors.length > 0) {
+            const errorMessage = errors.map(e => e.message).join(', ');
+            throw new Error(errorMessage);
+          }
+
+          return [];
+        }),
+        catchError((error) => {
+          throw new Error(error.message || 'Failed to assign product to sales agents');
         })
       );
   }

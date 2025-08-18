@@ -203,6 +203,19 @@ namespace Beelina.API.Types.Query
         }
 
         [Authorize]
+        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<Product>> GetParentProducts(
+            [Service] IProductRepository<Product> productRepository, 
+            [Service] IHttpContextAccessor httpContextAccessor,
+            string filterKeyword = "")
+        {
+            return await productRepository.GetParentProducts(filterKeyword, httpContextAccessor.HttpContext?.RequestAborted ?? default);
+        }
+
+        [Authorize]
         public async Task<IProductPayload> CheckProductCode([Service] IProductRepository<Product> productRepository, int productId, string productCode)
         {
             var productFromRepo = await productRepository.GetProductByUniqueCode(productId, productCode);
@@ -274,6 +287,15 @@ namespace Beelina.API.Types.Query
             int userAccountId)
         {
             return await productRepository.GetLatestTransactionCode(userAccountId, httpContextAccessor.HttpContext.RequestAborted);
+        }
+
+        [Authorize]
+        public async Task<bool> HasLinkedProducts(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int productId)
+        {
+            return await productRepository.HasLinkedProducts(productId, httpContextAccessor.HttpContext.RequestAborted);
         }
 
         private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)

@@ -4,10 +4,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -26,6 +28,8 @@ import { AddProductDetailsComponent } from './add-product-details.component';
     MatBottomSheetModule,
     MatAutocompleteModule,
     MatSlideToggleModule,
+    MatTabsModule,
+    MatDatepickerModule,
     ReactiveFormsModule,
     AddProductStockQuantityDialogModule,
     RouterModule.forChild([

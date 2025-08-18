@@ -128,6 +128,10 @@ namespace Beelina.LIB.BusinessLogic
                                         && (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Manager ||
                                           ((userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User || userRetailModulePermission.PermissionLevel == PermissionLevelEnum.Administrator) && pp != null))
                                         && (productsFilter == null || (productsFilter != null && ((productsFilter.SupplierId == 0) || (productsFilter.SupplierId > 0 && p.SupplierId == productsFilter.SupplierId))))
+                                        && (productsFilter == null || productsFilter.ActiveStatus == ProductActiveStatusEnum.IncludeInactive ||
+                                           (productsFilter != null && productsFilter.ActiveStatus == ProductActiveStatusEnum.ActiveOnly &&
+                                            p.ValidFrom <= DateTime.Now &&
+                                            (p.ValidTo == null || p.ValidTo >= DateTime.Now)))
 
                                       select new
                                       {
@@ -143,7 +147,11 @@ namespace Beelina.LIB.BusinessLogic
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = pu,
                                         SupplierId = p.SupplierId,
-                                        Supplier = ps
+                                        Supplier = ps,
+                                        ValidFrom = p.ValidFrom,
+                                        ValidTo = p.ValidTo,
+                                        Parent = p.Parent,
+                                        ProductParentGroupId = p.ProductParentGroupId
                                       })
                                       .AsNoTracking()
                                       .ToListAsync(cancellationToken);
@@ -166,7 +174,11 @@ namespace Beelina.LIB.BusinessLogic
                                           ProductUnitId = p.ProductUnitId,
                                           ProductUnit = p.ProductUnit,
                                           SupplierId = p.SupplierId,
-                                          Supplier = p.Supplier
+                                          Supplier = p.Supplier,
+                                          ValidFrom = p.ValidFrom,
+                                          ValidTo = p.ValidTo,
+                                          Parent = p.Parent,
+                                          ProductParentGroupId = p.ProductParentGroupId
                                         })
                                         .OrderByDescending(p => p.SearchResultPercentage)
                                         .ToList();
@@ -224,6 +236,11 @@ namespace Beelina.LIB.BusinessLogic
             finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.PricePerUnit <= 0)];
           }
         }
+
+        if (productsFilter is not null && productsFilter.Parent.HasValue)
+        {
+          finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.Parent == productsFilter.Parent.Value)];
+        }
       }
       catch (TaskCanceledException ex)
       {
@@ -271,6 +288,10 @@ namespace Beelina.LIB.BusinessLogic
                                           && p.IsActive
                                           && ((productId > 0 && p.Id == productId) || productId == 0)
                                           && (productsFilter == null || (productsFilter != null && ((productsFilter.SupplierId == 0) || (productsFilter.SupplierId > 0 && p.SupplierId == productsFilter.SupplierId))))
+                                          && (productsFilter == null || productsFilter.ActiveStatus == ProductActiveStatusEnum.IncludeInactive ||
+                                             (productsFilter != null && productsFilter.ActiveStatus == ProductActiveStatusEnum.ActiveOnly &&
+                                              p.ValidFrom <= DateTime.Now &&
+                                              (p.ValidTo == null || p.ValidTo >= DateTime.Now)))
 
                                         select new
                                         {
@@ -286,7 +307,11 @@ namespace Beelina.LIB.BusinessLogic
                                           ProductUnitId = p.ProductUnitId,
                                           ProductUnit = pu,
                                           SupplierId = p.SupplierId,
-                                          Supplier = ps
+                                          Supplier = ps,
+                                          ValidFrom = p.ValidFrom,
+                                          ValidTo = p.ValidTo,
+                                          Parent = p.Parent,
+                                          ProductParentGroupId = p.ProductParentGroupId
                                         }).ToListAsync(cancellationToken);
           // Filter product list
           filteredProductsFromRepo = (from p in productsFromRepo
@@ -307,7 +332,11 @@ namespace Beelina.LIB.BusinessLogic
                                         ProductUnit = p.ProductUnit,
                                         IsTransferable = p.IsTransferable,
                                         SupplierId = p.SupplierId,
-                                        Supplier = p.Supplier
+                                        Supplier = p.Supplier,
+                                        ValidFrom = p.ValidFrom,
+                                        ValidTo = p.ValidTo,
+                                        Parent = p.Parent,
+                                        ProductParentGroupId = p.ProductParentGroupId
                                       })
                                       .OrderByDescending(p => p.SearchResultPercentage)
                                       .ToList();
@@ -355,6 +384,11 @@ namespace Beelina.LIB.BusinessLogic
             finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.PricePerUnit <= 0)];
           }
         }
+
+        if (productsFilter is not null && productsFilter.Parent.HasValue)
+        {
+          finalProductsFromRepo = [.. finalProductsFromRepo.Where(p => p.Parent == productsFilter.Parent.Value)];
+        }
       }
       catch (TaskCanceledException ex)
       {
@@ -399,6 +433,26 @@ namespace Beelina.LIB.BusinessLogic
       return productFromRepo;
     }
 
+    public async Task<List<Product>> GetParentProducts(string filterKeyword = "", CancellationToken cancellationToken = default)
+    {
+      var query = _beelinaRepository.ClientDbContext.Products
+                    .Where(p => p.Parent && p.IsActive && !p.IsDelete);
+
+      // Apply filtering if search keyword is provided
+      if (!string.IsNullOrEmpty(filterKeyword))
+      {
+        query = query.Where(p => p.Name.Contains(filterKeyword) || p.Code.Contains(filterKeyword));
+      }
+
+      var parentProductsFromRepo = await query
+                                    .OrderBy(p => p.Code)
+                                    .ThenBy(p => p.Name)
+                                    .AsNoTracking()
+                                    .ToListAsync(cancellationToken);
+
+      return parentProductsFromRepo;
+    }
+
     public async Task<List<Product>> CreateOrUpdatePanelProducts(int userAccountId, int warehouseId, List<ProductInput> productInputs, CancellationToken cancellationToken = default)
     {
       // Begin a transaction
@@ -428,7 +482,11 @@ namespace Beelina.LIB.BusinessLogic
               Description = productInput.Description,
               IsTransferable = productInput.IsTransferable,
               NumberOfUnits = productInput.NumberOfUnits,
-              SupplierId = productInput.SupplierId
+              SupplierId = productInput.SupplierId,
+              ValidFrom = productInput.ValidFrom,
+              ValidTo = productInput.ValidTo,
+              Parent = productInput.Parent,
+              ProductParentGroupId = productInput.ProductParentGroupId
             };
 
             _logger.LogInformation("Part 1 - ({@counter}): Registering new product. Product: {@product}", counter, productFromRepo);
@@ -443,6 +501,10 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
             productFromRepo.SupplierId = productInput.SupplierId;
+            productFromRepo.ValidFrom = productInput.ValidFrom;
+            productFromRepo.ValidTo = productInput.ValidTo;
+            productFromRepo.Parent = productInput.Parent;
+            productFromRepo.ProductParentGroupId = productInput.ProductParentGroupId;
 
             _logger.LogInformation("Part 1 - ({@counter}): Updating existing product. Product: {@product}", counter, productFromRepo);
           }
@@ -517,6 +579,10 @@ namespace Beelina.LIB.BusinessLogic
               IsTransferable = productInput.IsTransferable,
               NumberOfUnits = productInput.NumberOfUnits,
               SupplierId = productInput.SupplierId,
+              ValidFrom = productInput.ValidFrom,
+              ValidTo = productInput.ValidTo,
+              Parent = productInput.Parent,
+              ProductParentGroupId = productInput.ProductParentGroupId
             };
 
             _logger.LogInformation("Part 1 - ({@counter}): Registering new warehouse product. Product: {@product}", counter, productFromRepo);
@@ -531,6 +597,10 @@ namespace Beelina.LIB.BusinessLogic
             productFromRepo.IsTransferable = productInput.IsTransferable;
             productFromRepo.NumberOfUnits = productInput.NumberOfUnits;
             productFromRepo.SupplierId = productInput.SupplierId;
+            productFromRepo.ValidFrom = productInput.ValidFrom;
+            productFromRepo.ValidTo = productInput.ValidTo;
+            productFromRepo.Parent = productInput.Parent;
+            productFromRepo.ProductParentGroupId = productInput.ProductParentGroupId;
 
             _logger.LogInformation("Part 1 - ({@counter}): Updating existing warehouse product. Product: {@product}", counter, productFromRepo);
 
@@ -1213,7 +1283,11 @@ namespace Beelina.LIB.BusinessLogic
                                      StockQuantity = wp.StockQuantity,
                                      IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
                                      SupplierId = p.SupplierId,
-                                     Supplier = p.Supplier
+                                     Supplier = p.Supplier,
+                                     ValidFrom = p.ValidFrom,
+                                     ValidTo = p.ValidTo,
+                                     Parent = p.Parent,
+                                     ProductParentGroupId = p.ProductParentGroupId
                                    })
                                 .ToList();
 
@@ -1262,7 +1336,11 @@ namespace Beelina.LIB.BusinessLogic
                                                    ProductUnit = p.ProductUnit,
                                                    SupplierId = p.SupplierId,
                                                    Supplier = p.Supplier,
-                                                   StockAbsoluteQuantity = (ps == null ? 0 : ps.Quantity)
+                                                   StockAbsoluteQuantity = (ps == null ? 0 : ps.Quantity),
+                                                   ValidFrom = p.ValidFrom,
+                                                   ValidTo = p.ValidTo,
+                                                   Parent = p.Parent,
+                                                   ProductParentGroupId = p.ProductParentGroupId
                                                  })
                                                  .ToList();
 
@@ -1311,7 +1389,11 @@ namespace Beelina.LIB.BusinessLogic
                                      StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
                                      IsLinkedToSalesAgent = p.IsLinkedToSalesAgent,
                                      SupplierId = p.SupplierId,
-                                     Supplier = p.Supplier
+                                     Supplier = p.Supplier,
+                                     ValidFrom = p.ValidFrom,
+                                     ValidTo = p.ValidTo,
+                                     Parent = p.Parent,
+                                     ProductParentGroupId = p.ProductParentGroupId
                                    })
                               .ToList();
 
@@ -1417,7 +1499,11 @@ namespace Beelina.LIB.BusinessLogic
                                      StockQuantity = owsa.Quantity,
                                      IsTransferable = p.IsTransferable,
                                      SupplierId = p.SupplierId,
-                                     Supplier = p.Supplier
+                                     Supplier = p.Supplier,
+                                     ValidFrom = p.ValidFrom,
+                                     ValidTo = p.ValidTo,
+                                     Parent = p.Parent,
+                                     ProductParentGroupId = p.ProductParentGroupId
                                    }).ToList();
 
       return finalProductsFromRepo;
@@ -1502,6 +1588,10 @@ namespace Beelina.LIB.BusinessLogic
                                      ProductUnit = p.ProductUnit,
                                      SupplierId = p.SupplierId,
                                      StockQuantity = (pws == null ? 0 : pws.Quantity),
+                                     ValidFrom = p.ValidFrom,
+                                     ValidTo = p.ValidTo,
+                                     Parent = p.Parent,
+                                     ProductParentGroupId = p.ProductParentGroupId
                                    })
                               .ToList();
 
@@ -1633,7 +1723,11 @@ namespace Beelina.LIB.BusinessLogic
                                      StockQuantity = owsa.Quantity,
                                      IsTransferable = p.IsTransferable,
                                      SupplierId = p.SupplierId,
-                                     Supplier = p.Supplier
+                                     Supplier = p.Supplier,
+                                     ValidFrom = p.ValidFrom,
+                                     ValidTo = p.ValidTo,
+                                     Parent = p.Parent,
+                                     ProductParentGroupId = p.ProductParentGroupId
                                    }).ToList();
 
       return finalProductsFromRepo;
@@ -1873,6 +1967,148 @@ namespace Beelina.LIB.BusinessLogic
       return affectedAssignments;
     }
 
+    public async Task<List<ProductStockPerPanel>> AssignProductToSalesAgents(
+        int productId,
+        List<int> salesAgentIds,
+        int warehouseId,
+        int currentUserId,
+        CancellationToken cancellationToken = default)
+    {
+      var affectedAssignments = new List<ProductStockPerPanel>();
+
+      try
+      {
+        _logger.LogInformation("Starting product assignment for productId: {productId} to {salesAgentCount} sales agents",
+            productId, salesAgentIds.Count);
+
+        if (salesAgentIds.Count == 0)
+        {
+          _logger.LogWarning("No sales agent IDs provided for product assignment");
+          return affectedAssignments;
+        }
+
+        // Get the sales agents by IDs to validate they exist and are sales agents
+        var salesAgents = await _userAccountRepository.GetAllSalesAgents();
+        var validSalesAgents = salesAgents.Where(sa => salesAgentIds.Contains(sa.Id)).ToList();
+
+        if (!validSalesAgents.Any())
+        {
+          _logger.LogWarning("No valid sales agents found for provided IDs: {salesAgentIds}",
+              string.Join(", ", salesAgentIds));
+          return affectedAssignments;
+        }
+
+        // Get the product information to check for the parent product (previous version)
+        var currentProduct = await _beelinaRepository.ClientDbContext.Products
+            .Where(p => p.Id == productId && p.IsActive && !p.IsDelete)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (currentProduct == null)
+        {
+          _logger.LogWarning("Product not found: {productId}", productId);
+          return affectedAssignments;
+        }
+
+        // Get warehouse price for this product as fallback
+        var warehouseProductStock = await _productStockPerWarehouseRepository
+            .GetProductStockPerWarehouse(productId, warehouseId);
+
+        float fallbackPrice = warehouseProductStock?.PricePerUnit ?? 0f;
+
+        _logger.LogInformation("Found {validSalesAgentCount} valid sales agents. Fallback price: {fallbackPrice}",
+            validSalesAgents.Count, fallbackPrice);
+
+        // Process each valid sales agent
+        foreach (var salesAgent in validSalesAgents)
+        {
+          try
+          {
+            // Check if the sales agent already has this product assigned
+            var existingAssignment = await _productStockPerPanelRepository
+                .GetProductStockPerPanel(productId, salesAgent.Id);
+
+            if (existingAssignment != null)
+            {
+              _logger.LogInformation("Product already assigned to sales agent {salesAgentId}, skipping", salesAgent.Id);
+              continue;
+            }
+
+            float priceToAssign = fallbackPrice;
+
+            // If current product has a parent (previous version), try to get the price from the old assignment
+            if (currentProduct.ProductParentGroupId.HasValue)
+            {
+              // Find the most recent product in the same parent group (excluding the current product)
+              // Based on ValidFrom date only, regardless of active status
+              var mostRecentProductInGroup = await _beelinaRepository.ClientDbContext.Products
+                  .Where(p => p.ProductParentGroupId == currentProduct.ProductParentGroupId.Value
+                           && p.Id != productId
+                           && !p.IsDelete)
+                  .OrderByDescending(p => p.ValidFrom)
+                  .ThenByDescending(p => p.DateCreated)
+                  .FirstOrDefaultAsync(cancellationToken);
+
+              if (mostRecentProductInGroup != null)
+              {
+                var oldProductAssignment = await _productStockPerPanelRepository
+                    .GetProductStockPerPanel(mostRecentProductInGroup.Id, salesAgent.Id);
+
+                if (oldProductAssignment != null && oldProductAssignment.PricePerUnit > 0)
+                {
+                  priceToAssign = oldProductAssignment.PricePerUnit;
+                  _logger.LogInformation("Using price from old product assignment (Product ID: {oldProductId}, ValidFrom: {validFrom}): {oldPrice} for sales agent {salesAgentId}",
+                      mostRecentProductInGroup.Id, mostRecentProductInGroup.ValidFrom, priceToAssign, salesAgent.Id);
+                }
+                else
+                {
+                  _logger.LogInformation("No old assignment found or price is 0 for most recent valid product in group (Product ID: {oldProductId}), using warehouse price: {fallbackPrice} for sales agent {salesAgentId}",
+                      mostRecentProductInGroup.Id, fallbackPrice, salesAgent.Id);
+                }
+              }
+              else
+              {
+                _logger.LogInformation("No previous valid product found in parent group {parentGroupId}, using warehouse price: {fallbackPrice} for sales agent {salesAgentId}",
+                    currentProduct.ProductParentGroupId.Value, fallbackPrice, salesAgent.Id);
+              }
+            }
+
+            // Create new assignment
+            var newAssignment = new ProductStockPerPanel
+            {
+              ProductId = productId,
+              UserAccountId = salesAgent.Id,
+              PricePerUnit = priceToAssign,
+            };
+
+            await _productStockPerPanelRepository.AddEntity(newAssignment);
+            affectedAssignments.Add(newAssignment);
+
+            _logger.LogInformation("Created assignment for sales agent {salesAgentId} with price {price}",
+                salesAgent.Id, priceToAssign);
+          }
+          catch (Exception ex)
+          {
+            _logger.LogError(ex, "Error processing sales agent {salesAgentId} for product {productId}",
+                salesAgent.Id, productId);
+            // Continue with next sales agent
+          }
+        }
+
+        // Save all changes
+        await _productStockPerPanelRepository.SaveChanges(cancellationToken);
+
+        _logger.LogInformation("Successfully assigned product {productId} to {assignmentCount} sales agents",
+            productId, affectedAssignments.Count);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Error in AssignProductToSalesAgents for product {productId}", productId);
+        throw;
+      }
+
+      return affectedAssignments;
+    }
+
     private async Task<ProductStockPerPanel> UpdateOrAddProductStockPerPanel(ProductStockPerPanelInput product, int userAccountId, CancellationToken cancellationToken)
     {
       var productStockPerPanel = await _productStockPerPanelRepository.GetProductStockPerPanel(product.Id, userAccountId);
@@ -2000,6 +2236,25 @@ namespace Beelina.LIB.BusinessLogic
       catch (Exception ex)
       {
         _logger.LogError(ex, "Failed to reset sales agent product stocks. SalesAgentId: {SalesAgentId}, CurrentUserId: {CurrentUserId}", salesAgentId, currentUserId);
+        return false;
+      }
+    }
+
+    public async Task<bool> HasLinkedProducts(int productId, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        // Check if there are any products that reference this product as their parent
+        var hasLinkedProducts = await _beelinaRepository
+          .ClientDbContext
+          .Products
+          .AnyAsync(p => p.ProductParentGroupId == productId && p.IsActive && !p.IsDelete, cancellationToken);
+
+        return hasLinkedProducts;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Failed to check if product has linked products. ProductId: {ProductId}", productId);
         return false;
       }
     }

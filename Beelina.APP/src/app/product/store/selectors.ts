@@ -53,6 +53,11 @@ export const priceStatusSelector = createSelector(
   (state) => state.priceStatus
 );
 
+export const activeStatusSelector = createSelector(
+  selectFeature,
+  (state) => state.activeStatus
+);
+
 export const totalCountSelector = createSelector(
   selectFeature,
   (state) => state.totalCount

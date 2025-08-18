@@ -14,6 +14,7 @@ namespace Beelina.LIB.Interfaces
         Task<Product> UpdateProduct(Product product);
         Task<Product> GetProductByUniqueCode(int productId, string productCode);
         Task<Product> GetProductByCode(string productCode);
+        Task<List<Product>> GetParentProducts(string filterKeyword = "", CancellationToken cancellationToken = default);
         Task<List<Product>> CreateOrUpdatePanelProducts(int userAccountId, int warehouseId, List<ProductInput> productInputs, CancellationToken cancellationToken = default);
         Task<List<Product>> CreateOrUpdateWarehouseProducts(int warehouseId, List<ProductInput> productInputs, CancellationToken cancellationToken = default);
         Task<List<ProductStockAuditItem>> GetProductStockAuditItems(int productId, int userAccountId, StockAuditSourceEnum stockAuditSource, string fromDate, string toDate, CancellationToken cancellationToken = default);
@@ -64,5 +65,12 @@ namespace Beelina.LIB.Interfaces
         Task<string> GetLatestProductCode(CancellationToken cancellationToken = default);
         Task<string> GetLatestTransactionCode(int userAccountId, CancellationToken cancellationToken = default);
         Task<bool> ResetSalesAgentProductStocks(int salesAgentId, int currentUserId, CancellationToken cancellationToken = default);
+        Task<bool> HasLinkedProducts(int productId, CancellationToken cancellationToken = default);
+        Task<List<ProductStockPerPanel>> AssignProductToSalesAgents(
+            int productId,
+            List<int> salesAgentIds,
+            int warehouseId,
+            int currentUserId,
+            CancellationToken cancellationToken = default);
     }
 }

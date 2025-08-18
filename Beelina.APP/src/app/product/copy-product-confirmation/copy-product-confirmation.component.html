@@ -1,0 +1,36 @@
+<div class="copy-product-confirmation-dialog-container">
+  <div class="dialog-form-container__header">
+    <span>{{ "PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_CONFIRMATION_DIALOG.TITLE" | translate }}</span>
+    <mat-icon (click)="onCancel()">cancel</mat-icon>
+  </div>
+  <div class="dialog-form-container__body" [formGroup]="copyProductConfirmationForm">
+
+    <div class="copy-product-info">
+      {{ "PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_CONFIRMATION_DIALOG.DESCRIPTION_1" | translate: {productName:
+        productName} }}
+      {{ "PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_CONFIRMATION_DIALOG.DESCRIPTION_2" | translate }}
+    </div>
+
+    <div class="copy-product-confirmation-dialog-container__validity-options">
+      <mat-slide-toggle formControlName="setValidToDate">
+        {{
+        "PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_CONFIRMATION_DIALOG.FORM_CONTROL_SECTION.SET_VALID_TO_DATE_CONTROL.LABEL"
+        | translate }}
+      </mat-slide-toggle>
+      <mat-hint>{{
+        "PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_CONFIRMATION_DIALOG.FORM_CONTROL_SECTION.SET_VALID_TO_DATE_CONTROL.HINT" |
+        translate }}</mat-hint>
+    </div>
+  </div>
+
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onConfirm()">
+        {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+      </button>
+      <button mat-raised-button color="default" (click)="onCancel()">
+        {{ "GENERAL_TEXTS.CANCEL" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
