@@ -1195,4 +1195,89 @@ export class ProductCartComponent
       );
     });
   };
+
+  get transactionId(): number {
+    return this._transactionId();
+  }
+
+  deleteTransaction() {
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant(
+          'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.TITLE'
+        ),
+        this.translateService.instant(
+          'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.CONFIRM'
+        )
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.store.dispatch(
+            ProductTransactionActions.setSaveOrderLoadingState({
+              state: true,
+            })
+          );
+
+          if (!this.isLocalTransaction()) {
+            this.transactionService
+              .deleteTransactions([this._transactionId()])
+              .subscribe({
+                next: () => {
+                  this.store.dispatch(
+                    ProductTransactionActions.setSaveOrderLoadingState({
+                      state: false,
+                    })
+                  );
+                  this.notificationService.openSuccessNotification(
+                    this.translateService.instant(
+                      'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
+                    )
+                  );
+                  this.router.navigate(['/order-transactions']);
+                },
+                error: () => {
+                  this.store.dispatch(
+                    ProductTransactionActions.setSaveOrderLoadingState({
+                      state: false,
+                    })
+                  );
+                  this.notificationService.openErrorNotification(
+                    this.translateService.instant(
+                      'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
+                    )
+                  );
+                },
+              });
+          } else {
+            this.localOrdersDbService
+              .deleteLocalOrders([this._transactionId()])
+              .then(() => {
+                this.store.dispatch(
+                  ProductTransactionActions.setSaveOrderLoadingState({
+                    state: false,
+                  })
+                );
+                this.notificationService.openSuccessNotification(
+                  this.translateService.instant(
+                    'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
+                  )
+                );
+                this.router.navigate(['/order-transactions']);
+              })
+              .catch(() => {
+                this.store.dispatch(
+                  ProductTransactionActions.setSaveOrderLoadingState({
+                    state: false,
+                  })
+                );
+                this.notificationService.openErrorNotification(
+                  this.translateService.instant(
+                    'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.ERROR_MESSAGE'
+                  )
+                );
+              });
+          }
+        }
+      });
+  }
 }

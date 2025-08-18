@@ -309,6 +309,13 @@
               <mat-icon>save</mat-icon>
               {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
             </button>
+
+            @if (isAdmin() && transactionId > 0) {
+              <button mat-raised-button color="warn" (click)="deleteTransaction()">
+                <mat-icon>delete</mat-icon>
+                {{ "GENERAL_TEXTS.DELETE" | translate }}
+              </button>
+            }
           }
 
         </div>
