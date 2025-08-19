@@ -17,6 +17,7 @@ export enum DateFilterEnum {
   Daily = 1,
   Weekly = 2,
   Monthly = 3,
+  Custom = 4,
 }
 
 @Component({
@@ -71,6 +72,8 @@ export class SalesComponent extends BaseComponent implements OnInit {
       day: [new Date()],
       week: [currentWeekNumber],
       month: [currentMonthNumber],
+      fromDate: [new Date()],
+      toDate: [new Date()],
     });
   }
 
@@ -112,6 +115,26 @@ export class SalesComponent extends BaseComponent implements OnInit {
     this.getTransactionSales(DateFilterEnum.Monthly);
   }
 
+  fromDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+  }
+
+  toDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+  }
+
+  protected validateCustomDateRange() {
+    const fromDate = this._filterForm.get('fromDate')?.value;
+    const toDate = this._filterForm.get('toDate')?.value;
+
+    if (fromDate && toDate && fromDate > toDate) {
+      // Reset toDate to fromDate if invalid range
+      this._filterForm.get('toDate')?.setValue(fromDate);
+    }
+  }
+
   getDateRange(filterOption: DateFilterEnum): {
     fromDate: string;
     toDate: string;
@@ -137,6 +160,10 @@ export class SalesComponent extends BaseComponent implements OnInit {
         fromDate = new Date(new Date().getFullYear(), month, 1);
         toDate = new Date(new Date().getFullYear(), month + 1, 0);
         break;
+      case DateFilterEnum.Custom:
+        fromDate = this._filterForm.get('fromDate').value;
+        toDate = this._filterForm.get('toDate').value;
+        break;
     }
     return {
       fromDate: DateFormatter.format(fromDate),
@@ -151,6 +178,8 @@ export class SalesComponent extends BaseComponent implements OnInit {
       return this.getDateRangeFromWeekNumber(this._filterForm.get('week').value + 1, duration);
     } else if (filterType === DateFilterEnum.Monthly) {
       return this.getDateRangesForMonths(this._filterForm.get('month').value, duration);
+    } else if (filterType === DateFilterEnum.Custom) {
+      return this.getCustomDateRanges(duration);
     } else {
       throw new Error('Invalid date filter type');
     }
@@ -213,6 +242,34 @@ export class SalesComponent extends BaseComponent implements OnInit {
     }
 
     return dateRanges;
+  }
+
+  private getCustomDateRanges(duration: number): DateRange[] {
+    const fromDate = this._filterForm.get('fromDate')?.value;
+    const toDate = this._filterForm.get('toDate')?.value;
+
+    if (!fromDate || !toDate) {
+      return [];
+    }
+
+    const startMoment = moment(fromDate);
+    const endMoment = moment(toDate);
+    const daysDiff = endMoment.diff(startMoment, 'days') + 1;
+
+    // For custom ranges, we'll return daily breakdown up to the duration limit
+    const dates: DateRange[] = [];
+    const maxDays = Math.min(daysDiff, duration);
+
+    for (let i = 0; i < maxDays; i++) {
+      const current = startMoment.clone().add(i, 'days');
+      dates.push(<DateRange>{
+        fromDate: current.format('YYYY-MM-DD'),
+        toDate: current.format('YYYY-MM-DD'),
+        label: current.format('MMM DD, YYYY'),
+      });
+    }
+
+    return dates;
   }
 
   protected getWeekNumber(d: Date) {
@@ -291,5 +348,10 @@ export class SalesComponent extends BaseComponent implements OnInit {
 
   get maxDate(): Date {
     return new Date();
+  }
+
+  get minToDate(): Date {
+    const fromDate = this._filterForm.get('fromDate')?.value;
+    return fromDate ? new Date(fromDate) : null;
   }
 }

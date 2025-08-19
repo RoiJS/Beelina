@@ -69,12 +69,15 @@
           width: 100%;
           font-size: 1.2em;
         }
-      }
 
-      .sales-date-filter-options {
-        mat-form-field {
-          width: 100%;
-          font-size: 1.2em;
+        .custom-date-range-container {
+          display: flex;
+          gap: 10px;
+
+          .date-from-field,
+          .date-to-field {
+            flex: 1;
+          }
         }
       }
     }

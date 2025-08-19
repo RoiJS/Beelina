@@ -90,4 +90,16 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
     this.getTransactionSales(DateFilterEnum.Monthly);
     this.initChartView();
   }
+
+  override fromDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+    this.initChartView();
+  }
+
+  override toDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+    this.initChartView();
+  }
 }
