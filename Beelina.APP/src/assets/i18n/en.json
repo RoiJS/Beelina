@@ -5,6 +5,7 @@
     "DAILY": "Daily",
     "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
+    "CUSTOM": "Custom",
     "CONFIRM": "Confirm",
     "EXTRACT": "Extract",
     "IMPORT": "Import",
@@ -653,7 +654,7 @@
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
-      "REFRESH_PRODUCT_LIST_ERROR_MESSAGE": "Product List has been refreshed."
+      "REFRESH_PRODUCT_LIST_SUCCESS_MESSAGE": "Product List has been refreshed."
     },
     "SYNC_PRODUCTS_DIALOG": {
       "SYNCING_NOTIFICATION_MESSAGE": "Syncing products..",
@@ -949,7 +950,9 @@
     "FILTER_OPTIONS_PANEL": {
       "PICK_DATE": "Pick Date",
       "PICK_WEEK": "Pick Week",
-      "PICK_MONTH": "Pick Month"
+      "PICK_MONTH": "Pick Month",
+      "FROM_DATE": "From Date",
+      "TO_DATE": "To Date"
     },
     "SALES_PANEL": {
       "LABEL": "Sales Amount",

@@ -80,6 +80,18 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
     this.initChartView();
   }
 
+  override fromDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+    this.initChartView();
+  }
+
+  override toDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+    this.initChartView();
+  }
+
   override setFilterOption(filterOption: DateFilterEnum) {
     this._currentFilterOption = filterOption;
     this.initChartView();

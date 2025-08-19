@@ -113,7 +113,7 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
         .getProductDetailList(this.authService.userId)
         .subscribe((productList: Array<Product>) => {
           this.notificationService.openSuccessNotification(this.translateService.instant(
-            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_SUCCESS_MESSAGE'
           ));
           this._productList = productList;
         });
@@ -122,7 +122,7 @@ export class TextOrderComponent extends BaseComponent implements OnInit, OnDestr
         .getMyLocalProducts('', 0, StockStatusEnum.All, PriceStatusEnum.All, 0, [])
         .then((data) => {
           this.notificationService.openSuccessNotification(this.translateService.instant(
-            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_ERROR_MESSAGE'
+            'PRODUCTS_CATALOGUE_PAGE.TEXT_ORDER_DIALOG.REFRESH_PRODUCT_LIST_SUCCESS_MESSAGE'
           ));
           this._productList = data.products;
         });
