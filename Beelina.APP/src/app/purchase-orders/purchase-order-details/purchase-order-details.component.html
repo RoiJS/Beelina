@@ -10,67 +10,166 @@
       </span>
     </div>
 
-    <!-- Purchase Order General Info Panel -->
+    <!-- Purchase Order General Info Panel with Expansion Panels -->
     <div class="panel panel--full-width purchase-order-panel">
       <div [formGroup]="purchaseOrderDetailsForm" class="panel__details-group-panel">
         <div class="panel__body-section">
-          <div class="biz-form-container">
 
-            <div class="form-general-section">
-              <div class="form-column-direction">
-                <div class="biz-form-container__form-control">
-                  <label>{{
-                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
-                    | translate }}</label>
-                  <ng-select [items]="suppliersDatasource" bindLabel="nameWithCode" bindValue="id"
-                    formControlName="supplierId" [editableSearchTerm]="true">
-                    <ng-template ng-label-tmp let-item="item">
-                      {{ item.code }} - {{ item.name }}
-                    </ng-template>
-                  </ng-select>
+          <mat-accordion>
+            <!-- Basic Information Panel -->
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.BASIC_INFO_SECTION.TITLE" |
+                  translate }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.BASIC_INFO_SECTION.DESCRIPTION" |
+                  translate }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="biz-form-container">
+                <div class="form-general-section">
+                  <div class="form-column-direction">
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.SUPPLIER_CONTROL.LABEL"
+                        | translate }}</label>
+                      <ng-select [items]="suppliersDatasource" appendTo="body" bindLabel="nameWithCode" bindValue="id"
+                        formControlName="supplierId" [editableSearchTerm]="true">
+                        <ng-template ng-label-tmp let-item="item">
+                          {{ item.code }} - {{ item.name }}
+                        </ng-template>
+                      </ng-select>
+                    </div>
+
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
+                        | translate }}</label>
+                      <div class="input-with-suffix">
+                        <input type="number" class="discount-control" formControlName="discount" min="0" max="100"
+                          step="0.01">
+                        <span class="input-suffix">%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-column-direction">
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.LABEL"
+                        | translate }}</label>
+                      <input type="text" class="reference-no-control" formControlName="referenceNo"
+                        [ngClass]="{ 'is-invalid': (purchaseOrderDetailsForm.get('referenceNo').hasError('required') || purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) && purchaseOrderDetailsForm.get('referenceNo').touched }">
+
+                      @if(purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) {
+                      <span class="biz-form-container__form-control--error-message">{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
+                        | translate }}</span>
+                      }
+                    </div>
+
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.PLATE_NO_CONTROL.LABEL"
+                        | translate }}</label>
+                      <input type="text" class="plate-no-control" formControlName="plateNo">
+                    </div>
+                  </div>
                 </div>
 
-                <div class="biz-form-container__form-control">
-                  <label>{{
-                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STOCK_ENTRY_DATE_CONTROL.LABEL"
-                    | translate }}</label>
-                  <input type="date" class="date-picker-control" formControlName="stockEntryDate">
+                <div class="form-notes-section">
+                  <div class="biz-form-container__form-control">
+                    <label>{{
+                      "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.NOTES_CONTROL.LABEL"
+                      | translate }}</label>
+                    <textarea class="notes-control" formControlName="notes"></textarea>
+                  </div>
                 </div>
               </div>
+            </mat-expansion-panel>
 
-              <div class="form-column-direction">
-                <div class="biz-form-container__form-control">
-                  <label>{{
-                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.LABEL"
-                    | translate }}</label>
-                  <input type="text" class="reference-no-control" formControlName="referenceNo"
-                    [ngClass]="{ 'is-invalid': (purchaseOrderDetailsForm.get('referenceNo').hasError('required') || purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) && purchaseOrderDetailsForm.get('referenceNo').touched }">
+            <!-- Additional Information Panel -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.ADDITIONAL_INFO_SECTION.TITLE" |
+                  translate }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.ADDITIONAL_INFO_SECTION.DESCRIPTION"
+                  | translate }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
 
-                  @if(purchaseOrderDetailsForm.get('referenceNo').hasError('purchaseOrderAlreadyExists')) {
-                  <span class="biz-form-container__form-control--error-message">{{
-                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.REFERENCE_NO_CONTROL.ALREADY_EXIST_ERROR_MESSAGE"
-                    | translate }}</span>
-                  }
-                </div>
+              <div class="biz-form-container">
+                <div class="form-general-section">
+                  <div class="form-column-direction">
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STOCK_ENTRY_DATE_CONTROL.LABEL"
+                        | translate }}</label>
+                      <input type="date" class="date-picker-control" formControlName="stockEntryDate">
+                    </div>
 
-                <div class="biz-form-container__form-control">
-                  <label>{{
-                    "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.PLATE_NO_CONTROL.LABEL"
-                    | translate }}</label>
-                  <input type="text" class="plate-no-control" formControlName="plateNo">
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.INVOICE_NO_CONTROL.LABEL"
+                        | translate }}</label>
+                      <input type="text" class="invoice-no-control" formControlName="invoiceNo">
+                    </div>
+                  </div>
+
+                  <div class="form-column-direction">
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.INVOICE_DATE_CONTROL.LABEL"
+                        | translate }}</label>
+                      <input type="date" class="date-picker-control" formControlName="invoiceDate">
+                    </div>
+
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.DATE_ENCODED_CONTROL.LABEL"
+                        | translate }}</label>
+                      <input type="date" class="date-picker-control" formControlName="dateEncoded">
+                    </div>
+                  </div>
+
+                  <div class="form-column-direction">
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STATUS_CONTROL.LABEL"
+                        | translate }}</label>
+                      <ng-select formControlName="purchaseOrderStatus" appendTo="body" bindLabel="label"
+                        bindValue="value">
+                        <ng-option [value]="purchaseOrderStatusEnum.OPEN">
+                          {{
+                          "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STATUS_CONTROL.OPEN_OPTION"
+                          | translate }}
+                        </ng-option>
+                        <ng-option [value]="purchaseOrderStatusEnum.CLOSED">
+                          {{
+                          "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.STATUS_CONTROL.CLOSED_OPTION"
+                          | translate }}
+                        </ng-option>
+                      </ng-select>
+                    </div>
+
+                    <div class="biz-form-container__form-control">
+                      <label>{{
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.LOCATION_CONTROL.LABEL"
+                        | translate }}</label>
+                      <input type="text" class="location-control" formControlName="location">
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </mat-expansion-panel>
+          </mat-accordion>
 
-            <div class="form-notes-section">
-              <div class="biz-form-container__form-control">
-                <label>{{
-                  "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.NOTES_CONTROL.LABEL"
-                  | translate }}</label>
-                <textarea type="text" class="notes-control" formControlName="notes"></textarea>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -97,12 +196,14 @@
                   (ngModelChange)="onProductChange($event, element, i)">
                   <ng-template ng-label-tmp let-item="item">
                     {{ item.productUnit.name }} - {{ item.name }}
-                    <span *ngIf="!item.isCurrentlyActive" class="inactive-badge">{{ 'GENERAL_TEXTS.INACTIVE' | translate }}</span>
+                    <span *ngIf="!item.isCurrentlyActive" class="inactive-badge">{{ 'GENERAL_TEXTS.INACTIVE' | translate
+                      }}</span>
                   </ng-template>
                   <ng-template ng-option-tmp let-item="item">
                     <div class="product-option">
                       <span class="product-name">{{ item.productUnit.name }} - {{ item.name }}</span>
-                      <span *ngIf="!item.isCurrentlyActive" class="inactive-badge">{{ 'GENERAL_TEXTS.INACTIVE' | translate }}</span>
+                      <span *ngIf="!item.isCurrentlyActive" class="inactive-badge">{{ 'GENERAL_TEXTS.INACTIVE' |
+                        translate }}</span>
                     </div>
                   </ng-template>
                 </ng-select>
@@ -185,7 +286,7 @@
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;"
-                     [ngClass]="{'product-row--inactive': !isProductActive(row)}"></mat-row>
+              [ngClass]="{'product-row--inactive': !isProductActive(row)}"></mat-row>
             <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
           </mat-table>
 
@@ -197,6 +298,26 @@
           <mat-paginator [pageSize]="10" [length]="purchaseOrderItemsTableDatasource.data.length "
             [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons>
           </mat-paginator>
+
+          <br>
+          <!-- Purchase Order Summary Section -->
+          <div class="purchase-order-summary">
+            <div class="summary-row">
+              <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.GROSS_TOTAL" |
+                translate }}:</span>
+              <span class="summary-value">{{ grossTotal }}</span>
+            </div>
+            <div class="summary-row discount-row">
+              <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.DISCOUNT" | translate
+                }} ({{ discountPercentage }}%):</span>
+              <span class="summary-value discount-value">-{{ discountAmount }}</span>
+            </div>
+            <div class="summary-row total-row">
+              <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.NET_TOTAL" | translate
+                }}:</span>
+              <span class="summary-value total-value">{{ netTotal }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

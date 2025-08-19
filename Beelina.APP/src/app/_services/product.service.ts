@@ -201,6 +201,13 @@ const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT = gql`
           supplierId
           notes
           plateNo
+          warehouseId
+          discount
+          invoiceNo
+          invoiceDate
+          dateEncoded
+          purchaseOrderStatus
+          location
           productStockWarehouseAuditsResult {
               id
               productId
@@ -272,6 +279,12 @@ const GET_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
                 plateNo
                 warehouseId
                 notes
+                discount
+                invoiceNo
+                invoiceDate
+                dateEncoded
+                purchaseOrderStatus
+                location
             }
             pageInfo {
                 hasNextPage
@@ -370,6 +383,13 @@ const UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
       stockEntryDate
       referenceNo
       supplierId
+      warehouseId
+      discount
+      invoiceNo
+      invoiceDate
+      dateEncoded
+      purchaseOrderStatus
+      location
       productStockWarehouseAudits {
           id
           productStockPerWarehouseId
@@ -1270,6 +1290,12 @@ export class ProductService {
             productWarehouseStockReceiptEntry.plateNo = productWarehouseStockReceiptEntryDto.plateNo;
             productWarehouseStockReceiptEntry.warehouseId = productWarehouseStockReceiptEntryDto.warehouseId;
             productWarehouseStockReceiptEntry.notes = productWarehouseStockReceiptEntryDto.notes;
+            productWarehouseStockReceiptEntry.discount = productWarehouseStockReceiptEntryDto.discount;
+            productWarehouseStockReceiptEntry.invoiceNo = productWarehouseStockReceiptEntryDto.invoiceNo;
+            productWarehouseStockReceiptEntry.invoiceDate = productWarehouseStockReceiptEntryDto.invoiceDate;
+            productWarehouseStockReceiptEntry.dateEncoded = productWarehouseStockReceiptEntryDto.dateEncoded;
+            productWarehouseStockReceiptEntry.purchaseOrderStatus = productWarehouseStockReceiptEntryDto.purchaseOrderStatus;
+            productWarehouseStockReceiptEntry.location = productWarehouseStockReceiptEntryDto.location;
             return productWarehouseStockReceiptEntry;
           });
 
@@ -1503,6 +1529,12 @@ export class ProductService {
         plateNo: p.plateNo,
         notes: p.notes,
         warehouseId: this._warehouseId,
+        discount: p.discount || 0,
+        invoiceNo: p.invoiceNo || '',
+        invoiceDate: p.invoiceDate,
+        dateEncoded: p.dateEncoded,
+        purchaseOrderStatus: p.purchaseOrderStatus,
+        location: p.location || '',
         productStockWarehouseAuditInputs: p.productStockWarehouseAuditInputs.map((a) => {
           const productStockWarehousAudit: IProductStockWarehouseAuditInput = {
             id: (a.id <= 0 ? 0 : a.id),

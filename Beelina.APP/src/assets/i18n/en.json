@@ -1268,6 +1268,14 @@
     "DESCRIPTION": "Manage purchase order details and product items here.",
     "PURCHASE_ORDER_GENERAL_INFO_PANEL": {
       "TITLE": "Product List",
+      "BASIC_INFO_SECTION": {
+        "TITLE": "Basic Information",
+        "DESCRIPTION": "Core purchase order details"
+      },
+      "ADDITIONAL_INFO_SECTION": {
+        "TITLE": "Additional Information",
+        "DESCRIPTION": "Extended purchase order details for reporting"
+      },
       "FORM_CONTROL_SECTION": {
         "SUPPLIER_CONTROL": {
           "LABEL": "Supplier"
@@ -1284,6 +1292,26 @@
         },
         "NOTES_CONTROL": {
           "LABEL": "Notes"
+        },
+        "DISCOUNT_CONTROL": {
+          "LABEL": "Discount (%)"
+        },
+        "INVOICE_NO_CONTROL": {
+          "LABEL": "Invoice No."
+        },
+        "INVOICE_DATE_CONTROL": {
+          "LABEL": "Invoice Date"
+        },
+        "DATE_ENCODED_CONTROL": {
+          "LABEL": "Date Encoded"
+        },
+        "STATUS_CONTROL": {
+          "LABEL": "Status",
+          "OPEN_OPTION": "Open",
+          "CLOSED_OPTION": "Closed"
+        },
+        "LOCATION_CONTROL": {
+          "LABEL": "Location"
         }
       }
     },
@@ -1301,6 +1329,11 @@
           "TOTAL_FIELD": "Total"
         }
       }
+    },
+    "PURCHASE_ORDER_SUMMARY": {
+      "GROSS_TOTAL": "Gross Total",
+      "DISCOUNT": "Discount",
+      "NET_TOTAL": "Net Total"
     },
     "RESET_PURCHASE_ORDER_ITEMS_DIALOG": {
       "TITLE": "Reset items",
