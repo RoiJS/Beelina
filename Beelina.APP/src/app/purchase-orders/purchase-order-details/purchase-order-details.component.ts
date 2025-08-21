@@ -391,6 +391,10 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     return product ? product.isCurrentlyActive : true;
   }
 
+  private calculateGrossTotal() {
+    return this.purchaseOrderItemsTableDatasource.data.map(t => t.amount).reduce((acc, value) => acc + value, 0);
+  }
+
   get warehouseProductsDatasource() {
     return this._warehouseProductsDatasource;
   }
@@ -408,12 +412,12 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   }
 
   get totalAmount() {
-    const amount = this.purchaseOrderItemsTableDatasource.data.map(t => t.amount).reduce((acc, value) => acc + value, 0);
+    const amount = this.calculateGrossTotal();
     return NumberFormatter.formatCurrency(amount);
   }
 
   get grossTotal() {
-    const amount = this.purchaseOrderItemsTableDatasource.data.map(t => t.amount).reduce((acc, value) => acc + value, 0);
+    const amount = this.calculateGrossTotal();
     return NumberFormatter.formatCurrency(amount);
   }
 
@@ -422,14 +426,14 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   }
 
   get discountAmount() {
-    const gross = this.purchaseOrderItemsTableDatasource.data.map(t => t.amount).reduce((acc, value) => acc + value, 0);
+    const gross = this.calculateGrossTotal();
     const discountPercent = this.discountPercentage;
     const discount = (gross * discountPercent) / 100;
     return NumberFormatter.formatCurrency(discount);
   }
 
   get netTotal() {
-    const gross = this.purchaseOrderItemsTableDatasource.data.map(t => t.amount).reduce((acc, value) => acc + value, 0);
+    const gross = this.calculateGrossTotal();
     const discountPercent = this.discountPercentage;
     const discount = (gross * discountPercent) / 100;
     const net = gross - discount;
