@@ -1096,7 +1096,9 @@
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_NAME": "Sales Agent Collection Summary Report",
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date.",
       "CUSTOMER_COLLECTION_SUMMARY_REPORT_NAME": "Customer Collection Summary Report",
-      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date."
+      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date.",
+      "PURCHASE_ORDER_REPORT_NAME": "Purchase Order Report",
+      "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range."
     }
   },
   "REPORT_DETAILS_PAGE": {
@@ -1124,6 +1126,12 @@
       },
       "INVOICE_NO_AUTOCOMPLETE_CONTROL": {
         "LABEL": "Invoice Number"
+      },
+      "PURCHASE_ORDER_REFERENCE_NO_AUTOCOMPLETE_CONTROL": {
+        "LABEL": "Purchase Order Reference No"
+      },
+      "SUPPLIER_AUTOCOMPLETE_CONTROL": {
+        "LABEL": "Supplier"
       },
       "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
         "LABEL": "Order Transaction Type",

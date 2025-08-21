@@ -7,16 +7,16 @@ using System.Data;
 
 namespace Beelina.LIB.Models.Reports
 {
-    public class CustomerDetailedTransactionsReport<TOutput>
+    public class PurchaseOrderReport<TOutput>
         : BaseReport<TOutput>, IBaseReport<TOutput> where TOutput : BaseReportOutput, new()
     {
-        public CustomerDetailedTransactionsReport(int reportId, int userId, string userFullName, List<ControlValues> controlValues, EmailService emailService, ReportRepository reportRepository)
+        public PurchaseOrderReport(int reportId, int userId, string userFullName, List<ControlValues> controlValues, EmailService emailService, ReportRepository reportRepository)
             : base(reportId, userId, userFullName, controlValues, emailService, reportRepository)
         {
 
         }
 
-        public CustomerDetailedTransactionsReport() : base()
+        public PurchaseOrderReport() : base()
         {
 
         }
@@ -25,9 +25,9 @@ namespace Beelina.LIB.Models.Reports
         {
             var reportOutputDataSet = GenerateReportData();
 
-            var reportOutput = new CustomerDetailedTransactionsReportOutput
+            var reportOutput = new PurchaseOrderReportOutput
             {
-                InvoiceHeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new CustomerDetailedTransactionsOutputInvoiceHeader
+                InvoiceHeaderOutput = reportOutputDataSet.Tables[0].AsEnumerable().Select(row => new PurchaseOrderOutputInvoiceHeader
                 {
                     CompanyName = row.Field<string>("CompanyName"),
                     OwnerName = row.Field<string>("OwnerName"),
@@ -35,28 +35,35 @@ namespace Beelina.LIB.Models.Reports
                     Telephone = row.Field<string>("Telephone"),
                     FaxTelephone = row.Field<string>("FaxTelephone"),
                     Tin = row.Field<string>("Tin"),
+                    UserFullName = row.Field<string>("UserFullName"),
                 }).FirstOrDefault(),
 
-                HeaderOutput = [.. reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new CustomerDetailedTransactionsReportOutputHeader
+                HeaderOutput = [.. reportOutputDataSet.Tables[1].AsEnumerable().Select(row => new PurchaseOrderReportOutputHeader
                 {
-                    OrderId = row.Field<int>("OrderId"),
+                    PurchaseOrderId = row.Field<int>("PurchaseOrderId"),
+                    ReferenceNo = row.Field<string>("ReferenceNo"),
+                    StockEntryDate = row.Field<string>("StockEntryDate"),
                     InvoiceNo = row.Field<string>("InvoiceNo"),
-                    Date = row.Field<string>("Date"),
-                    SalesAgentName = row.Field<string>("SalesAgentName"),
-                    StoreAddress = row.Field<string>("Address"),
-                    StoreName = row.Field<string>("Name"),
-                    PaymentMethod = row.Field<string>("PaymentMethod"),
-                    Discount = row.Field<double>("Discount")
+                    InvoiceDate = row.Field<string>("InvoiceDate"),
+                    WarehouseName = row.Field<string>("WarehouseName"),
+                    SupplierName = row.Field<string>("SupplierName"),
+                    PlateNo = row.Field<string>("PlateNo"),
+                    Discount = row.Field<decimal>("Discount"),
+                    Notes = row.Field<string>("Notes"),
+                    FromDate = row.Field<string>("FromDate"),
+                    ToDate = row.Field<string>("ToDate"),
+                    Location = row.Field<string>("Location"),
+                    PurchaseOrderStatus = row.Field<PurchaseOrderStatusEnum>("PurchaseOrderStatus"),
                 })],
 
-                ListOutput = [.. reportOutputDataSet.Tables[2].AsEnumerable().Select(row => new CustomerDetailedTransactionsReportOutputList
+                ListOutput = [.. reportOutputDataSet.Tables[2].AsEnumerable().Select(row => new PurchaseOrderReportOutputList
                 {
-                    OrderId = row.Field<int>("OrderId"),
+                    PurchaseOrderId = row.Field<int>("PurchaseOrderId"),
                     ItemCode = row.Field<string>("ItemCode"),
                     ItemName = row.Field<string>("ItemName"),
                     UnitName = row.Field<string>("UnitName"),
-                    PricePerUnit = row.Field<decimal>("PricePerUnit"),
                     Quantity = row.Field<int>("Quantity"),
+                    PricePerUnit = row.Field<decimal>("PricePerUnit"),
                     Amount = row.Field<decimal>("Amount"),
 
                 })]
@@ -72,10 +79,9 @@ namespace Beelina.LIB.Models.Reports
                 var worksheetCounter = 1;
                 foreach (var mainLevel in reportOutput.HeaderOutput)
                 {
-                    var sheetName = $"{mainLevel.InvoiceNo} - {mainLevel.StoreName}";
+                    var sheetName = $"{mainLevel.ReferenceNo} - {mainLevel.SupplierName}";
                     // Sanitize and truncate sheet name using shared base method
                     sheetName = SanitizeWorksheetName(sheetName);
-                    
                     var worksheet = worksheetCounter == 1
                         ? package.Workbook.Worksheets[0]
                         : package.Workbook.Worksheets.Add(sheetName);
@@ -84,11 +90,12 @@ namespace Beelina.LIB.Models.Reports
 
                     var currentRow = SetupReportMainHeader(worksheet, reportOutput.InvoiceHeaderOutput);
                     currentRow = SetupReportSubHeader(worksheet, mainLevel, currentRow);
-                    currentRow = SetupTableHeader(worksheet, currentRow);
-                    currentRow = PopulateTableData(worksheet, reportOutput.ListOutput, mainLevel.OrderId, currentRow);
+                    var (nextRow, headerRowIndex) = SetupTableHeader(worksheet, currentRow);
+                    currentRow = nextRow;
+                    currentRow = PopulateTableData(worksheet, reportOutput.ListOutput, mainLevel.PurchaseOrderId, currentRow);
                     currentRow = AddReportFooter(worksheet, reportOutput.ListOutput, mainLevel, currentRow);
-                    AddSignatureSection(worksheet, currentRow);
-                    ConfigureWorksheetLayout(worksheet);
+                    AddSignatureSection(worksheet, currentRow, reportOutput.InvoiceHeaderOutput.UserFullName);
+                    ConfigureWorksheetLayout(worksheet, headerRowIndex);
 
                     worksheetCounter++;
                 }
@@ -100,7 +107,7 @@ namespace Beelina.LIB.Models.Reports
             return this;
         }
 
-        private int SetupReportMainHeader(ExcelWorksheet worksheet, CustomerDetailedTransactionsOutputInvoiceHeader invoiceHeader)
+        private int SetupReportMainHeader(ExcelWorksheet worksheet, PurchaseOrderOutputInvoiceHeader invoiceHeader)
         {
             // Company Name
             worksheet.Cells["A1"].Value = invoiceHeader.CompanyName;
@@ -136,60 +143,81 @@ namespace Beelina.LIB.Models.Reports
             worksheet.Cells["A5"].Style.Font.Italic = true;
             worksheet.Cells["A5"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
-            return 7; // Starting row for next section
+            // Report Title
+            worksheet.Cells["A6"].Value = "PURCHASE ORDER";
+            worksheet.Cells["A6:F6"].Merge = true;
+            worksheet.Cells["A6"].Style.Font.Size = 14;
+            worksheet.Cells["A6"].Style.Font.Bold = true;
+            worksheet.Cells["A6"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+            return 8; // Starting row for next section
         }
 
-        private int SetupReportSubHeader(ExcelWorksheet worksheet, CustomerDetailedTransactionsReportOutputHeader headerData, int startRow)
+        private int SetupReportSubHeader(ExcelWorksheet worksheet, PurchaseOrderReportOutputHeader headerData, int startRow)
         {
             var currentRow = startRow;
 
             // Make labels bold
-            worksheet.Cells[$"A{currentRow}:A{currentRow + 4}"].Style.Font.Bold = true;
+            worksheet.Cells[$"A{currentRow}:A{currentRow + 6}"].Style.Font.Bold = true;
 
-            // Invoice No
+            // Reference No
+            worksheet.Cells[$"A{currentRow}"].Value = "Reference No:";
+            worksheet.Cells[$"B{currentRow}"].Value = headerData.ReferenceNo;
+            worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
+            currentRow++;
+
+            // Supplier
+            worksheet.Cells[$"A{currentRow}"].Value = "Supplier:";
+            worksheet.Cells[$"B{currentRow}"].Value = headerData.SupplierName;
+            worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
+            currentRow++;
+
+            // Stock Entry Date
+            worksheet.Cells[$"A{currentRow}"].Value = "Stock Entry Date:";
+            worksheet.Cells[$"B{currentRow}"].Value = headerData.StockEntryDate;
+            worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
+            currentRow++;
+
+            // Invoice Information
             worksheet.Cells[$"A{currentRow}"].Value = "Invoice No:";
             worksheet.Cells[$"B{currentRow}"].Value = headerData.InvoiceNo;
             worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
             currentRow++;
 
-            // Date
-            worksheet.Cells[$"A{currentRow}"].Value = "Date:";
-            worksheet.Cells[$"B{currentRow}"].Value = headerData.Date;
+            worksheet.Cells[$"A{currentRow}"].Value = "Invoice Date:";
+            worksheet.Cells[$"B{currentRow}"].Value = headerData.InvoiceDate;
             worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
             currentRow++;
 
-            // Sales Agent
-            worksheet.Cells[$"A{currentRow}"].Value = "Sales Agent:";
-            worksheet.Cells[$"B{currentRow}"].Value = headerData.SalesAgentName;
+            // Purchase Order Status
+            worksheet.Cells[$"A{currentRow}"].Value = "Status:";
+            worksheet.Cells[$"B{currentRow}"].Value = headerData.PurchaseOrderStatus.ToString();
             worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
             currentRow++;
 
-            // Customer
-            worksheet.Cells[$"A{currentRow}"].Value = "Customer:";
-            worksheet.Cells[$"B{currentRow}"].Value = $"{headerData.StoreName} - {headerData.StoreAddress}";
-            worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
-            currentRow++;
-
-            // Payment Method
-            worksheet.Cells[$"A{currentRow}"].Value = "Payment Method:";
-            worksheet.Cells[$"B{currentRow}"].Value = headerData.PaymentMethod;
-            worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
-            currentRow++;
+            // Plate Number
+            if (!String.IsNullOrEmpty(headerData.PlateNo))
+            {
+                worksheet.Cells[$"A{currentRow}"].Value = "Plate No:";
+                worksheet.Cells[$"B{currentRow}"].Value = headerData.PlateNo;
+                worksheet.Cells[$"B{currentRow}:F{currentRow}"].Merge = true;
+                currentRow++;
+            }
 
             return currentRow + 1; // Add extra space before table
         }
 
-        private int SetupTableHeader(ExcelWorksheet worksheet, int startRow)
+        private (int nextRow, int headerRow) SetupTableHeader(ExcelWorksheet worksheet, int startRow)
         {
             var headerRow = startRow;
 
             // Set header values
-            worksheet.Cells[$"A{headerRow}"].Value = "Quantity";
-            worksheet.Cells[$"B{headerRow}"].Value = "Unit";
-            worksheet.Cells[$"C{headerRow}"].Value = "Item Code";
-            worksheet.Cells[$"D{headerRow}"].Value = "Product Description";
-            worksheet.Cells[$"E{headerRow}"].Value = "Price Per Unit";
-            worksheet.Cells[$"F{headerRow}"].Value = "Amount";
+            worksheet.Cells[$"A{headerRow}"].Value = "Item Code";
+            worksheet.Cells[$"B{headerRow}"].Value = "Item Description";
+            worksheet.Cells[$"C{headerRow}"].Value = "Stock Unit";
+            worksheet.Cells[$"D{headerRow}"].Value = "Qty";
+            worksheet.Cells[$"E{headerRow}"].Value = "Unit Price";
+            worksheet.Cells[$"F{headerRow}"].Value = "Unit Amount";
 
             // Style header row
             worksheet.Cells[$"A{headerRow}:F{headerRow}"].Style.Font.Bold = true;
@@ -201,28 +229,28 @@ namespace Beelina.LIB.Models.Reports
             worksheet.Cells[$"A{headerRow}:F{headerRow}"].Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
 
             // Align column headers
-            worksheet.Cells[$"A{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right; // Quantity (numeric)
-            worksheet.Cells[$"B{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;  // Unit (alphanumeric)
-            worksheet.Cells[$"C{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;  // Item Code (alphanumeric)
-            worksheet.Cells[$"D{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;  // Product Description (alphanumeric)
-            worksheet.Cells[$"E{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right; // Price Per Unit (numeric)
-            worksheet.Cells[$"F{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right; // Amount (numeric)
+            worksheet.Cells[$"A{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;  // Item Code (alphanumeric)
+            worksheet.Cells[$"B{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;  // Item Description (alphanumeric)
+            worksheet.Cells[$"C{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;  // Stock Unit (alphanumeric)
+            worksheet.Cells[$"D{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right; // Qty (numeric)
+            worksheet.Cells[$"E{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right; // Unit Price (numeric)
+            worksheet.Cells[$"F{headerRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right; // Unit Amount (numeric)
 
-            return headerRow + 1; // Return next row for data
+            return (headerRow + 1, headerRow); // Return next row for data and header row position
         }
 
-        private int PopulateTableData(ExcelWorksheet worksheet, List<CustomerDetailedTransactionsReportOutputList> listOutput, int orderId, int startRow)
+        private int PopulateTableData(ExcelWorksheet worksheet, List<PurchaseOrderReportOutputList> listOutput, int purchaseOrderId, int startRow)
         {
-            var rowData = listOutput.Where(l => l.OrderId == orderId).ToList();
+            var rowData = listOutput.Where(l => l.PurchaseOrderId == purchaseOrderId).ToList();
             var currentRow = startRow;
             var startDataRow = currentRow;
 
             foreach (var row in rowData)
             {
-                worksheet.Cells[$"A{currentRow}"].Value = row.Quantity;
-                worksheet.Cells[$"B{currentRow}"].Value = row.UnitName;
-                worksheet.Cells[$"C{currentRow}"].Value = row.ItemCode;
-                worksheet.Cells[$"D{currentRow}"].Value = row.ItemName;
+                worksheet.Cells[$"A{currentRow}"].Value = row.ItemCode;
+                worksheet.Cells[$"B{currentRow}"].Value = row.ItemName;
+                worksheet.Cells[$"C{currentRow}"].Value = row.UnitName;
+                worksheet.Cells[$"D{currentRow}"].Value = row.Quantity;
                 worksheet.Cells[$"E{currentRow}"].Value = row.PricePerUnit;
                 worksheet.Cells[$"F{currentRow}"].Value = row.Amount;
 
@@ -245,16 +273,24 @@ namespace Beelina.LIB.Models.Reports
             return currentRow + 1; // Add space before footer
         }
 
-        private int AddReportFooter(ExcelWorksheet worksheet, List<CustomerDetailedTransactionsReportOutputList> listOutput, CustomerDetailedTransactionsReportOutputHeader headerData, int startRow)
+        private int AddReportFooter(ExcelWorksheet worksheet, List<PurchaseOrderReportOutputList> listOutput, PurchaseOrderReportOutputHeader headerData, int startRow)
         {
-            var rowData = listOutput.Where(l => l.OrderId == headerData.OrderId).ToList();
+            var rowData = listOutput.Where(l => l.PurchaseOrderId == headerData.PurchaseOrderId).ToList();
             var currentRow = startRow;
 
             // Calculate totals
+            int totalQuantity = rowData.Sum(r => r.Quantity);
             decimal grossTotal = rowData.Sum(r => r.Amount);
-            double discountPercent = headerData.Discount;
-            decimal discountAmount = grossTotal * (decimal)(discountPercent / 100.0);
+            decimal discountPercent = headerData.Discount;
+            decimal discountAmount = grossTotal * (discountPercent / 100m);
             decimal netTotal = grossTotal - discountAmount;
+
+            // Total Qty
+            worksheet.Cells[$"E{currentRow}"].Value = "Total Qty:";
+            worksheet.Cells[$"E{currentRow}"].Style.Font.Bold = true;
+            worksheet.Cells[$"F{currentRow}"].Value = totalQuantity;
+            worksheet.Cells[$"F{currentRow}"].Style.Font.Bold = true;
+            currentRow++;
 
             // Gross Total
             worksheet.Cells[$"E{currentRow}"].Value = "Gross Total:";
@@ -264,7 +300,6 @@ namespace Beelina.LIB.Models.Reports
             worksheet.Cells[$"F{currentRow}"].Style.Font.Bold = true;
             currentRow++;
 
-            // Discount
             worksheet.Cells[$"E{currentRow}"].Value = $"Discount ({discountPercent}%):";
             worksheet.Cells[$"E{currentRow}"].Style.Font.Bold = true;
             worksheet.Cells[$"F{currentRow}"].Value = discountAmount;
@@ -280,80 +315,87 @@ namespace Beelina.LIB.Models.Reports
             worksheet.Cells[$"F{currentRow}"].Style.Font.Bold = true;
             currentRow++;
 
+            // Notes (if provided)
+            if (!String.IsNullOrEmpty(headerData.Notes))
+            {
+                currentRow++;
+                worksheet.Cells[$"A{currentRow}"].Value = "Notes:";
+                worksheet.Cells[$"A{currentRow}"].Style.Font.Bold = true;
+                currentRow++;
+                worksheet.Cells[$"A{currentRow}"].Value = headerData.Notes;
+                worksheet.Cells[$"A{currentRow}:F{currentRow}"].Merge = true;
+                worksheet.Cells[$"A{currentRow}"].Style.WrapText = true;
+                currentRow++;
+            }
+
             return currentRow + 2; // Add extra space before signatures
         }
 
-        private void AddSignatureSection(ExcelWorksheet worksheet, int startRow)
+        private void AddSignatureSection(ExcelWorksheet worksheet, int startRow, string userFullName)
         {
             var currentRow = startRow;
 
             // Signature labels
-            worksheet.Cells[$"A{currentRow}"].Value = "Received By:";
+            worksheet.Cells[$"A{currentRow}"].Value = "Printed By:";
             worksheet.Cells[$"A{currentRow}"].Style.Font.Bold = true;
             worksheet.Cells[$"A{currentRow}:B{currentRow}"].Merge = true;
 
-            worksheet.Cells[$"E{currentRow}"].Value = "Delivered By:";
+            worksheet.Cells[$"E{currentRow}"].Value = "Checked By:";
             worksheet.Cells[$"E{currentRow}"].Style.Font.Bold = true;
             worksheet.Cells[$"E{currentRow}:F{currentRow}"].Merge = true;
             currentRow++;
 
             // Signature lines
-            worksheet.Cells[$"A{currentRow}"].Value = "______________________________";
+            worksheet.Cells[$"A{currentRow}"].Value = userFullName;
             worksheet.Cells[$"A{currentRow}:B{currentRow}"].Merge = true;
-            worksheet.Cells[$"E{currentRow}"].Value = "______________________________";
+            worksheet.Cells[$"A{currentRow}:B{currentRow}"].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+            worksheet.Cells[$"A{currentRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
             worksheet.Cells[$"E{currentRow}:F{currentRow}"].Merge = true;
+            worksheet.Cells[$"E{currentRow}:F{currentRow}"].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+            worksheet.Cells[$"E{currentRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
             currentRow++;
 
             // Name & Signature labels
-            worksheet.Cells[$"A{currentRow}"].Value = "(Name & Signature)";
-            worksheet.Cells[$"A{currentRow}:B{currentRow}"].Merge = true;
-            worksheet.Cells[$"A{currentRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
             worksheet.Cells[$"E{currentRow}"].Value = "(Name & Signature)";
             worksheet.Cells[$"E{currentRow}:F{currentRow}"].Merge = true;
             worksheet.Cells[$"E{currentRow}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
             currentRow++;
             currentRow++;
-
-            // Date fields
-            worksheet.Cells[$"A{currentRow}"].Value = "Date:";
-            worksheet.Cells[$"A{currentRow}"].Style.Font.Bold = true;
-            worksheet.Cells[$"A{currentRow}:B{currentRow}"].Merge = true;
-            worksheet.Cells[$"E{currentRow}"].Value = "Date:";
-            worksheet.Cells[$"E{currentRow}"].Style.Font.Bold = true;
-            worksheet.Cells[$"E{currentRow}:F{currentRow}"].Merge = true;
         }
 
-        private void ConfigureWorksheetLayout(ExcelWorksheet worksheet)
+        private void ConfigureWorksheetLayout(ExcelWorksheet worksheet, int headerRowIndex)
         {
             // Auto-fit columns first
             worksheet.Cells.AutoFitColumns();
 
             // Set specific column widths
-            worksheet.Column(2).Width = 13;
-            worksheet.Column(3).Width = 15;
-            worksheet.Column(4).Width = 30;
-            worksheet.Column(5).Width = 15;
-            worksheet.Column(6).Width = 15;
+            worksheet.Column(1).Width = 15; // Item Code
+            worksheet.Column(2).Width = 30; // Item Description
+            worksheet.Column(3).Width = 13; // Stock Unit
+            worksheet.Column(4).Width = 10; // Qty
+            worksheet.Column(5).Width = 30; // Unit Price
+            worksheet.Column(6).Width = 15; // Unit Amount
 
-            // Freeze panes to keep headers visible
-            worksheet.View.FreezePanes(14, 6);
+            // Freeze panes to keep headers visible - freeze immediately below the header row
+            // First column (A) is index 1, so we use 1 as the column parameter
+            worksheet.View.FreezePanes(headerRowIndex + 1, 1);
         }
     }
 
-    public class CustomerDetailedTransactionsReportOutput : BaseReportOutput
+    public class PurchaseOrderReportOutput : BaseReportOutput
     {
-        public CustomerDetailedTransactionsOutputInvoiceHeader InvoiceHeaderOutput { get; set; }
-        public List<CustomerDetailedTransactionsReportOutputHeader> HeaderOutput { get; set; }
-        public List<CustomerDetailedTransactionsReportOutputList> ListOutput { get; set; }
+        public PurchaseOrderOutputInvoiceHeader InvoiceHeaderOutput { get; set; }
+        public List<PurchaseOrderReportOutputHeader> HeaderOutput { get; set; }
+        public List<PurchaseOrderReportOutputList> ListOutput { get; set; }
 
-        public CustomerDetailedTransactionsReportOutput() : base()
+        public PurchaseOrderReportOutput() : base()
         {
             HeaderOutput = [];
             ListOutput = [];
         }
     }
 
-    public class CustomerDetailedTransactionsOutputInvoiceHeader
+    public class PurchaseOrderOutputInvoiceHeader
     {
         public string CompanyName { get; set; }
         public string OwnerName { get; set; }
@@ -361,33 +403,40 @@ namespace Beelina.LIB.Models.Reports
         public string Telephone { get; set; }
         public string FaxTelephone { get; set; }
         public string Tin { get; set; }
+        public string UserFullName { get; set; }
 
-        public CustomerDetailedTransactionsOutputInvoiceHeader()
+        public PurchaseOrderOutputInvoiceHeader()
         {
 
         }
     }
 
-    public class CustomerDetailedTransactionsReportOutputHeader
+    public class PurchaseOrderReportOutputHeader
     {
-        public string SalesAgentName { get; set; }
-        public string Date { get; set; }
-        public string PaymentMethod { get; set; }
-        public string StoreName { get; set; }
-        public string StoreAddress { get; set; }
+        public int PurchaseOrderId { get; set; }
+        public string ReferenceNo { get; set; }
+        public string StockEntryDate { get; set; }
         public string InvoiceNo { get; set; }
-        public int OrderId { get; set; }
-        public double Discount { get; set; }
+        public string InvoiceDate { get; set; }
+        public string WarehouseName { get; set; }
+        public string SupplierName { get; set; }
+        public string PlateNo { get; set; }
+        public decimal Discount { get; set; }
+        public string Notes { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+        public string Location { get; set; }
+        public PurchaseOrderStatusEnum PurchaseOrderStatus { get; set; }
 
-        public CustomerDetailedTransactionsReportOutputHeader()
+        public PurchaseOrderReportOutputHeader()
         {
 
         }
     }
 
-    public class CustomerDetailedTransactionsReportOutputList
+    public class PurchaseOrderReportOutputList
     {
-        public int OrderId { get; set; }
+        public int PurchaseOrderId { get; set; }
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
         public string UnitName { get; set; }
@@ -395,7 +444,7 @@ namespace Beelina.LIB.Models.Reports
         public decimal PricePerUnit { get; set; }
         public decimal Amount { get; set; }
 
-        public CustomerDetailedTransactionsReportOutputList()
+        public PurchaseOrderReportOutputList()
         {
 
         }

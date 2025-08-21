@@ -19,6 +19,8 @@ import { SortOrderControlComponent } from '../report-controls/sort-order-control
 import { TransactionTypeDropdownControlComponent } from '../report-controls/transaction-type-dropdown-control/transaction-type-dropdown-control.component';
 import { CustomerDropdownControlComponent } from '../report-controls/customer-dropdown-control/customer-dropdown-control.component';
 import { InvoiceNoAutocompleteControlComponent } from '../report-controls/invoice-no-autocomplete-control/invoice-no-autocomplete-control.component';
+import { PurchaseOrderReferenceNoAutocompleteControlComponent } from '../report-controls/purchase-order-reference-no-autocomplete-control/purchase-order-reference-no-autocomplete-control.component';
+import { SupplierAutocompleteControlComponent } from '../report-controls/supplier-autocomplete-control/supplier-autocomplete-control.component';
 
 @NgModule({
   imports: [
@@ -43,6 +45,8 @@ import { InvoiceNoAutocompleteControlComponent } from '../report-controls/invoic
     CustomerDropdownControlComponent,
     TransactionTypeDropdownControlComponent,
     InvoiceNoAutocompleteControlComponent,
+    PurchaseOrderReferenceNoAutocompleteControlComponent,
+    SupplierAutocompleteControlComponent,
   ],
 })
 export class ReportDetailsModule { }
