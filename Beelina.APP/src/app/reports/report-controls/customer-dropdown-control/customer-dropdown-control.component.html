@@ -1,13 +1,25 @@
-<div [ngClass]="{ 'no-display': hide }" [formGroup]="form">
+<div [ngClass]="{ 'no-display': hide }" class="report-control-autocomplete">
   <mat-form-field appearance="fill">
     <mat-label>{{ controLabel }}:</mat-label>
-    <mat-select formControlName="store">
-      @if(allowAllOption) {
-      <mat-option [value]="0">{{ 'GENERAL_TEXTS.ALL' | translate }}</mat-option>
+    <input
+      type="text"
+      [placeholder]="'GENERAL_TEXTS.ALL' | translate"
+      aria-label="Customer"
+      matInput
+      [formControl]="customerControl"
+      [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCustomer">
+      @for (customer of filteredCustomers | async; track customer.id) {
+        <mat-option [value]="customer">
+          <span class="report-control__option-primary-text">{{ customer.name }} - {{ customer.barangay.name }}</span>
+        </mat-option>
       }
-      @for (store of stores; track $index) {
-        <mat-option [value]="store.id">{{ store.name }}</mat-option>
-      }
-    </mat-select>
+    </mat-autocomplete>
+
+    @if (selectedCustomer) {
+      <button mat-button matSuffix aria-label="Clear" (click)="clearSelection()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
   </mat-form-field>
 </div>

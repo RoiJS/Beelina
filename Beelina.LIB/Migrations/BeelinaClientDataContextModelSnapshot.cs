@@ -810,6 +810,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<DateTime>("DateDeleted")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateEncoded")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
@@ -819,17 +822,32 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
+                    b.Property<double>("Discount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("InvoiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceNo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PlateNo")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PurchaseOrderStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("ReferenceNo")
                         .HasColumnType("nvarchar(max)");

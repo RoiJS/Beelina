@@ -1,0 +1,25 @@
+<div [ngClass]="{ 'no-display': hide }" class="report-control-autocomplete">
+  <mat-form-field appearance="fill">
+    <mat-label>{{ controLabel }}:</mat-label>
+    <input
+      type="text"
+      [placeholder]="'GENERAL_TEXTS.ALL' | translate"
+      aria-label="Supplier"
+      matInput
+      [formControl]="supplierControl"
+      [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displaySupplier">
+      @for (supplier of filteredSuppliers | async; track supplier.id) {
+        <mat-option [value]="supplier">
+          <span class="report-control__option-primary-text">{{ supplier.nameWithCode }}</span>
+        </mat-option>
+      }
+    </mat-autocomplete>
+
+    @if (selectedSupplier) {
+      <button mat-button matSuffix aria-label="Clear" (click)="clearSelection()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+</div>

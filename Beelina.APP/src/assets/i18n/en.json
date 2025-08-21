@@ -1096,7 +1096,9 @@
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_NAME": "Sales Agent Collection Summary Report",
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date.",
       "CUSTOMER_COLLECTION_SUMMARY_REPORT_NAME": "Customer Collection Summary Report",
-      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date."
+      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date.",
+      "PURCHASE_ORDER_REPORT_NAME": "Purchase Order Report",
+      "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range."
     }
   },
   "REPORT_DETAILS_PAGE": {
@@ -1125,6 +1127,12 @@
       "INVOICE_NO_AUTOCOMPLETE_CONTROL": {
         "LABEL": "Invoice Number"
       },
+      "PURCHASE_ORDER_REFERENCE_NO_AUTOCOMPLETE_CONTROL": {
+        "LABEL": "Purchase Order Reference No"
+      },
+      "SUPPLIER_AUTOCOMPLETE_CONTROL": {
+        "LABEL": "Supplier"
+      },
       "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
         "LABEL": "Order Transaction Type",
         "CONFIRM_OPTION": "Confirm",
@@ -1133,7 +1141,8 @@
       },
       "FORM_CONTROL_ERRORS": {
         "REQUIRED_FIELD": "This field is required",
-        "INVALID_INVOICE_SELECTION": "Please select a valid invoice number from the available options"
+        "INVALID_INVOICE_SELECTION": "Please select a valid invoice number from the available options",
+        "INVALID_SALES_AGENT_SELECTION": "Please select a valid sales agent from the available options"
       }
     },
     "BUTTON_OPTIONS": {
@@ -1268,6 +1277,14 @@
     "DESCRIPTION": "Manage purchase order details and product items here.",
     "PURCHASE_ORDER_GENERAL_INFO_PANEL": {
       "TITLE": "Product List",
+      "BASIC_INFO_SECTION": {
+        "TITLE": "Basic Information",
+        "DESCRIPTION": "Core purchase order details"
+      },
+      "ADDITIONAL_INFO_SECTION": {
+        "TITLE": "Additional Information",
+        "DESCRIPTION": "Extended purchase order details for reporting"
+      },
       "FORM_CONTROL_SECTION": {
         "SUPPLIER_CONTROL": {
           "LABEL": "Supplier"
@@ -1284,6 +1301,26 @@
         },
         "NOTES_CONTROL": {
           "LABEL": "Notes"
+        },
+        "DISCOUNT_CONTROL": {
+          "LABEL": "Discount (%)"
+        },
+        "INVOICE_NO_CONTROL": {
+          "LABEL": "Invoice No."
+        },
+        "INVOICE_DATE_CONTROL": {
+          "LABEL": "Invoice Date"
+        },
+        "DATE_ENCODED_CONTROL": {
+          "LABEL": "Date Encoded"
+        },
+        "STATUS_CONTROL": {
+          "LABEL": "Status",
+          "OPEN_OPTION": "Open",
+          "CLOSED_OPTION": "Closed"
+        },
+        "LOCATION_CONTROL": {
+          "LABEL": "Location"
         }
       }
     },
@@ -1301,6 +1338,11 @@
           "TOTAL_FIELD": "Total"
         }
       }
+    },
+    "PURCHASE_ORDER_SUMMARY": {
+      "GROSS_TOTAL": "Gross Total",
+      "DISCOUNT": "Discount",
+      "NET_TOTAL": "Net Total"
     },
     "RESET_PURCHASE_ORDER_ITEMS_DIALOG": {
       "TITLE": "Reset items",
