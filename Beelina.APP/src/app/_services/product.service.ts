@@ -912,11 +912,24 @@ const ASSIGN_PRODUCT_TO_SALES_AGENTS = gql`
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private _warehouseId: number = 1;
+  private _cachedSalesAgents: ReadonlyArray<User> | null = null;
 
   apollo = inject(Apollo);
   http = inject(HttpClient);
   store = inject(Store<AppStateInterface>);
   storageService = inject(StorageService);
+
+  get cachedSalesAgents(): ReadonlyArray<User> | null {
+    // Return a shallow copy to prevent external mutation
+    return this._cachedSalesAgents ? [...this._cachedSalesAgents] : null;
+  }
+
+  /**
+   * Invalidates the sales agents cache to prevent stale data across sessions/tenants
+   */
+  invalidateSalesAgentsCache(): void {
+    this._cachedSalesAgents = null;
+  }
 
   getProducts(userAccountId: number, cursor: string, filterKeyword: string, productsFilter: ProductsFilter, limit: number, productTransactionItems: Array<ProductTransaction>) {
     return this.apollo
@@ -2034,6 +2047,9 @@ export class ProductService {
             user.salesAgentType = currentUser.salesAgentType;
             return user;
           });
+
+          // Cache the result as ReadonlyArray to prevent external mutation
+          this._cachedSalesAgents = Object.freeze([...salesAgents]);
 
           return salesAgents;
         })

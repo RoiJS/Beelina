@@ -151,9 +151,22 @@ const DELETE_CUSTOMER = gql`
 
 @Injectable({ providedIn: 'root' })
 export class CustomerStoreService {
+  private _cachedCustomers: ReadonlyArray<CustomerStore> | null = null;
 
   private apollo = inject(Apollo);
   private store = inject(Store<AppStateInterface>);
+
+  get cachedCustomers(): ReadonlyArray<CustomerStore> | null {
+    // Return a shallow copy to prevent external mutation
+    return this._cachedCustomers ? [...this._cachedCustomers] : null;
+  }
+
+  /**
+   * Invalidates the customers cache to prevent stale data across sessions/tenants
+   */
+  invalidateCustomersCache(): void {
+    this._cachedCustomers = null;
+  }
 
   /**
    * Updates the store information.
@@ -331,6 +344,8 @@ export class CustomerStoreService {
               return customer;
             });
 
+            // Cache the customers
+            this._cachedCustomers = data;
             return data;
           }
         )

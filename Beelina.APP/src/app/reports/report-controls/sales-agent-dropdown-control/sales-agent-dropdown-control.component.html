@@ -1,14 +1,36 @@
-<div [ngClass]="{ 'no-display': hide }" [formGroup]="form">
+<div [ngClass]="{ 'no-display': hide }" class="report-control-autocomplete">
   <mat-form-field appearance="fill">
     <mat-label>{{ controLabel }}:</mat-label>
-    <mat-select formControlName="salesAgent">
+    <input
+      type="text"
+      [placeholder]="allowAllOption ? ('GENERAL_TEXTS.ALL' | translate) : ''"
+      aria-label="Sales Agent"
+      matInput
+      [formControl]="salesAgentControl"
+      [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displaySalesAgent">
       @if(allowAllOption) {
-      <mat-option [value]="0">{{ 'GENERAL_TEXTS.ALL' | translate }}</mat-option>
+        <mat-option [value]="0">
+          <span class="report-control__option-primary-text">{{ 'GENERAL_TEXTS.ALL' | translate }}</span>
+        </mat-option>
       }
 
-      @for (salesAgent of salesAgents; track $index) {
-        <mat-option  [value]="salesAgent.id">{{ salesAgent.fullname }}</mat-option>
+      @for (salesAgent of filteredSalesAgents | async; track salesAgent.id) {
+        <mat-option [value]="salesAgent">
+          <span class="report-control__option-primary-text">{{ salesAgent.fullname }}</span>
+          <span class="report-control__option-secondary-text">{{ salesAgent.username }}</span>
+        </mat-option>
       }
-    </mat-select>
+    </mat-autocomplete>
+
+    @if (isInvalidSelection) {
+      <mat-error>{{ validationErrorMessage }}</mat-error>
+    }
+
+    @if (selectedSalesAgent || (allowAllOption && salesAgentControl.value === 0)) {
+      <button mat-button matSuffix aria-label="Clear" (click)="clearSelection()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
   </mat-form-field>
 </div>

@@ -10,6 +10,9 @@ import { map, switchMap, take, tap } from 'rxjs/operators';
 import { UserAccountService } from './user-account.service';
 import { RoutingService } from './routing.service';
 import { StorageService } from './storage.service';
+import { ProductService } from './product.service';
+import { SupplierService } from './supplier.service';
+import { CustomerStoreService } from './customer-store.service';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import { AuthToken } from '../_models/auth-token.model';
@@ -102,6 +105,9 @@ export class AuthService {
   private storageService = inject(StorageService);
   private store = inject(Store<AppStateInterface>);
   private userAccountService = inject(UserAccountService);
+  private productService = inject(ProductService);
+  private supplierService = inject(SupplierService);
+  private customerStoreService = inject(CustomerStoreService);
 
   constructor() {
     this._company.next(this.storageService.getString('company'));
@@ -255,6 +261,11 @@ export class AuthService {
     let redirectUrl = '/auth';
     this._user.next(null);
     this._tokenInfo.next(null);
+
+    // Invalidate all caches to prevent cross-session/tenant data leakage
+    this.productService.invalidateSalesAgentsCache();
+    this.supplierService.invalidateSuppliersCache();
+    this.customerStoreService.invalidateCustomersCache();
 
     this.storageService.remove('userData');
     this.storageService.remove('authToken');
