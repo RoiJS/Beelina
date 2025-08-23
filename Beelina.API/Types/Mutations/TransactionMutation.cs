@@ -100,7 +100,7 @@ namespace Beelina.API.Types.Mutations
                 transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
                 await transactionRepository.DeleteOrderTransactions(transactionIds);
 
-                await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+                await transactionRepository.SaveChanges(httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 logger.LogInformation("Successfully delete transactions. Params: {@params}", new
                 {
@@ -135,7 +135,7 @@ namespace Beelina.API.Types.Mutations
             try
             {
                 transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
-                await transactionRepository.SetTransactionsStatus(transactionIds, status, markAsPaid, httpContextAccessor.HttpContext.RequestAborted);
+                await transactionRepository.SetTransactionsStatus(transactionIds, status, markAsPaid, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 logger.LogInformation("Successfully set transactions status . Params: {@params}", new
                 {
@@ -177,7 +177,7 @@ namespace Beelina.API.Types.Mutations
                     await transactionRepository.DeleteOrderTransactions(transactionsByDateFromRepo.Select(t => t.Id).ToList());
                 }
 
-                await transactionRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+                await transactionRepository.SaveChanges(httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 logger.LogInformation("Successfully deleted transactions by date. Params: {@params}", new
                 {

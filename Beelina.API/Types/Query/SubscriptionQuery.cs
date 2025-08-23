@@ -32,7 +32,7 @@ namespace Beelina.API.Types.Query
             int subscriptionId
         )
         {
-            return await subscriptionRepository.GetSubscriptions(subscriptionId, httpContextAccessor.HttpContext.RequestAborted);
+            return await subscriptionRepository.GetSubscriptions(subscriptionId, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
     }
 }

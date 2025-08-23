@@ -20,7 +20,7 @@ namespace Beelina.API.Types.Query
             string filterKeyword = ""
         )
         {
-            return await userAccountRepository.GetUserAccounts(0, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
+            return await userAccountRepository.GetUserAccounts(0, filterKeyword, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -30,7 +30,7 @@ namespace Beelina.API.Types.Query
             [Service] IMapper mapper,
             int userId)
         {
-            var userAccountFromRepo = await userAccountRepository.GetUserAccounts(userId, "", httpContextAccessor.HttpContext.RequestAborted);
+            var userAccountFromRepo = await userAccountRepository.GetUserAccounts(userId, "", httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
             if (userAccountFromRepo == null || userAccountFromRepo.Count == 0)
             {

@@ -76,7 +76,7 @@ namespace Beelina.API.Types.Mutations
                 supplierRepository.SetCurrentUserId(currentUserService.CurrentUserId);
                 await supplierRepository.DeleteSuppliers(supplierIds);
 
-                await supplierRepository.SaveChanges(httpContextAccessor.HttpContext.RequestAborted);
+                await supplierRepository.SaveChanges(httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 logger.LogInformation("Successfully deleted suppliers. Params: {@params}", new
                 {
