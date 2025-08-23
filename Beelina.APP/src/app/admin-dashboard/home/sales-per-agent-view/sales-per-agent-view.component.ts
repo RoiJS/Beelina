@@ -36,7 +36,7 @@ export class SalesPerAgentViewComponent extends SalesComponent implements OnInit
       series: [],
       chart: {
         type: "donut",
-        width: 600
+        width: 500
       },
       labels: [],
       dataLabels: {},
@@ -58,7 +58,7 @@ export class SalesPerAgentViewComponent extends SalesComponent implements OnInit
               },
               value: {
                 show: true,
-                fontSize: '16px',
+                fontSize: '12px',
                 fontFamily: 'Helvetica, Arial, sans-serif',
                 fontWeight: 400,
                 color: undefined,
@@ -71,7 +71,7 @@ export class SalesPerAgentViewComponent extends SalesComponent implements OnInit
                 show: true,
                 showAlways: true,
                 label: 'Total',
-                fontSize: '22px',
+                fontSize: '17px',
                 fontFamily: 'Helvetica, Arial, sans-serif',
                 fontWeight: 600,
                 color: '#373d3f',

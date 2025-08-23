@@ -19,6 +19,7 @@ export class SalesAgentListComponent extends SharedComponent implements OnInit {
 
   private _salesAgents: Array<User>;
   private _currentSalesAgent: User;
+  protected override _isLoading = true;
   private _productService = inject(ProductService);
 
   constructor(protected override uiService: UIService) {
@@ -28,6 +29,7 @@ export class SalesAgentListComponent extends SharedComponent implements OnInit {
       next: (data: Array<User>) => {
         this._salesAgents = data;
         this._currentSalesAgent = data[0];
+        this._isLoading = false;
         this.initDefaultSalesAgent.emit(this._currentSalesAgent);
       },
     });
@@ -37,8 +39,10 @@ export class SalesAgentListComponent extends SharedComponent implements OnInit {
   }
 
   selectSalesAgentEvent(salesAgent: User) {
-    this._currentSalesAgent = salesAgent;
-    this.selectSalesAgent.emit(salesAgent);
+    if (this._currentSalesAgent?.id !== salesAgent.id) {
+      this._currentSalesAgent = salesAgent;
+      this.selectSalesAgent.emit(salesAgent);
+    }
   }
 
   get salesAgents(): Array<User> {
@@ -47,5 +51,9 @@ export class SalesAgentListComponent extends SharedComponent implements OnInit {
 
   get currentSalesAgent(): number {
     return this._currentSalesAgent?.id;
+  }
+
+  override get isLoading(): boolean {
+    return this._isLoading;
   }
 }

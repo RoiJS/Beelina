@@ -237,6 +237,68 @@ namespace Beelina.LIB.BusinessLogic
             };
         }
 
+        public async Task<double> GetProfit(int userId, string fromDate, string toDate)
+        {
+            // Use existing GetSales method to get total sales amount
+            var salesData = await GetSales(userId, fromDate, toDate);
+            var totalSalesAmount = salesData.TotalSalesAmount;
+
+            // Get total purchase order amount for the date range
+            var totalPurchaseOrderAmount = await GetTotalPurchaseOrderAmount(fromDate, toDate);
+
+            // Calculate profit: Total Sales - Total Purchase Orders
+            return totalSalesAmount - totalPurchaseOrderAmount;
+        }
+
+        private async Task<double> GetTotalPurchaseOrderAmount(string fromDate, string toDate)
+        {
+            var purchaseOrdersQuery = (from pore in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
+                                       join pswa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
+                                       on pore.Id equals pswa.ProductWarehouseStockReceiptEntryId
+                                       
+                                       join psw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
+                                       on pswa.ProductStockPerWarehouseId equals psw.Id
+
+                                       where
+                                           pore.IsActive
+                                           && !pore.IsDelete
+                                           && pswa.IsActive
+                                           && !pswa.IsDelete
+
+                                       select new
+                                       {
+                                           PurchaseOrder = pore,
+                                           Quantity = pswa.Quantity,
+                                           PricePerUnit = psw.PricePerUnit
+                                       });
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                var fromDateTime = Convert.ToDateTime(fromDate).Date;
+                var toDateTime = Convert.ToDateTime(toDate).Date.AddDays(1).AddSeconds(-1);
+
+                purchaseOrdersQuery = purchaseOrdersQuery.Where(p =>
+                        p.PurchaseOrder.StockEntryDate >= fromDateTime
+                        && p.PurchaseOrder.StockEntryDate <= toDateTime
+                );
+            }
+
+            // Calculate total purchase order amount with discount applied
+            var purchaseOrdersWithAmounts = purchaseOrdersQuery
+                        .GroupBy(p => new { p.PurchaseOrder.Id, p.PurchaseOrder.Discount })
+                        .Select(g => new
+                        {
+                            PurchaseOrderId = g.Key.Id,
+                            Discount = g.Key.Discount,
+                            GrossTotal = g.Sum(p => p.Quantity * p.PricePerUnit)
+                        });
+
+            var totalPurchaseOrderAmount = await purchaseOrdersWithAmounts
+                .SumAsync(p => p.GrossTotal - (p.GrossTotal * p.Discount / 100));
+
+            return (double)totalPurchaseOrderAmount;
+        }
+
         public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate)
         {
             var salesAgents = await _userAccountRepository.GetAllSalesAgents();

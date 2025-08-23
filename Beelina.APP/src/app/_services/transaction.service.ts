@@ -356,6 +356,12 @@ const GET_TRANSACTION_SALES_FOR_ALL_PER_DATE_RANGE_QUERY = gql`
   }
 `;
 
+const GET_PROFIT_QUERY = gql`
+  query ($userId: Int!, $fromDate: String!, $toDate: String!) {
+    profit(userId: $userId, fromDate: $fromDate, toDate: $toDate)
+  }
+`;
+
 const GET_CUSTOMER_SALES_PRODUCTS_QUERY = gql`
   query(
     $storeId: Int!
@@ -1202,6 +1208,28 @@ export class TransactionService {
             return result.data.transactionSales;
           }
         )
+      );
+  }
+
+  getProfit(userId: number, fromDate: string, toDate: string) {
+    return this.apollo
+      .watchQuery({
+        query: GET_PROFIT_QUERY,
+        variables: { userId, fromDate, toDate },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              profit: number;
+            }>
+          ) => {
+            return result.data.profit;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
       );
   }
 

@@ -123,7 +123,7 @@ namespace Beelina.API.Types.Mutations
                                 sourceProductNumberOfUnits,
                                 sourceNumberOfUnitsTransfered,
                                 transferProductStockType,
-                                httpContextAccessor.HttpContext.RequestAborted
+                                httpContextAccessor?.HttpContext?.RequestAborted ?? default
                             );
                 }
                 else
@@ -137,7 +137,7 @@ namespace Beelina.API.Types.Mutations
                                     sourceProductNumberOfUnits,
                                     sourceNumberOfUnitsTransfered,
                                     transferProductStockType,
-                                    httpContextAccessor.HttpContext.RequestAborted
+                                    httpContextAccessor?.HttpContext?.RequestAborted ?? default
                                 );
                 }
 
@@ -193,7 +193,7 @@ namespace Beelina.API.Types.Mutations
             {
                 await using Stream stream = file.OpenReadStream();
                 var extractedProducts = await extractProductFileService.ReadFile(stream);
-                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
+                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
                 var mapExtractedProductsResult = await productRepository.MapProductImport(extractedProducts, warehouseProductsFromRepo);
 
                 logger.LogInformation("Successfully extracted product excel file. Params: {@params}", new { warehouseId, file });
