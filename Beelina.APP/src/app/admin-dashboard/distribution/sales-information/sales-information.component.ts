@@ -1,5 +1,6 @@
 import { Component, OnInit, output, viewChild, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
 import { User } from 'src/app/_models/user.model';
 
 import { AuthService } from 'src/app/_services/auth.service';
@@ -13,7 +14,7 @@ import { SalesChartViewComponent } from '../../home/sales-chart-view/sales-chart
   styleUrls: ['./sales-information.component.scss']
 })
 export class SalesInformationComponent extends SalesComponent implements OnInit {
-  private _currentSalesAgent: User;
+  private _currentSalesAgent!: User;
 
   salesChartView = viewChild(SalesChartViewComponent);
   salesChartViewLoadingState = output<boolean>();
@@ -33,10 +34,17 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
   }
 
   dateRanges() {
-    return this.getDateRanges(this._currentFilterOption, 5);
+    return this.getDateRanges(this._currentFilterOption, 7);
   }
 
   initChartView() {
+    // Defensive guard: ensure _currentSalesAgent is set before proceeding
+    if (!this._currentSalesAgent?.id) {
+      console.warn('SalesInformationComponent: Cannot initialize chart view - sales agent not set');
+      this.salesChartViewLoadingState.emit(false);
+      return;
+    }
+
     this.salesChartViewLoadingState.emit(true);
     this.salesChartView().loadTotalSalesChart(this._currentSalesAgent.id, this.dateRanges(), () => {
       this.salesChartViewLoadingState.emit(false);
@@ -50,18 +58,37 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
   }
 
   override getTransactionSales(filterOption: DateFilterEnum) {
+    // Defensive guard: ensure _currentSalesAgent is set before proceeding
+    if (!this._currentSalesAgent?.id) {
+      console.warn('SalesInformationComponent: Cannot get transaction sales - sales agent not set');
+      this._isLoading = false;
+      return;
+    }
+
     const userId = this._currentSalesAgent.id;
     const dateFilters = this.getDateRange(filterOption);
     this._isLoading = true;
     this.transactionService
       .getTransactionSales(userId, dateFilters.fromDate, dateFilters.toDate)
-      .subscribe((transactionSales: TransactionSales) => {
-        this._isLoading = false;
-        this._sales = transactionSales.totalSalesAmount;
-        this._cashOnHand = transactionSales.cashAmountOnHand;
-        this._chequeOnHand = transactionSales.chequeAmountOnHand;
-        this._badOrders = transactionSales.badOrderAmount;
-        this._accountReceivables = transactionSales.accountReceivables;
+      .subscribe({
+        next: (transactionSales: TransactionSales) => {
+          this._sales = transactionSales.totalSalesAmount;
+          this._cashOnHand = transactionSales.cashAmountOnHand;
+          this._chequeOnHand = transactionSales.chequeAmountOnHand;
+          this._badOrders = transactionSales.badOrderAmount;
+          this._accountReceivables = transactionSales.accountReceivables;
+          this._isLoading = false
+        },
+        error: (error) => {
+          console.error('SalesInformationComponent: Error fetching transaction sales:', error);
+          // Set safe default values to prevent UI issues
+          this._sales = 0;
+          this._cashOnHand = 0;
+          this._chequeOnHand = 0;
+          this._badOrders = 0;
+          this._accountReceivables = 0;
+          this._isLoading = false
+        }
       });
   }
 

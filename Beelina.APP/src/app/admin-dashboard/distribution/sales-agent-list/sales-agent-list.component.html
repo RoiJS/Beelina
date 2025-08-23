@@ -9,20 +9,60 @@
     <div class="panel__body-section">
       <app-list-container [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="salesAgents?.length">
         <cdk-virtual-scroll-viewport itemSize="10" class="list-container sales-agent-list">
-          <div *cdkVirtualFor="let salesAgent of salesAgents">
-            <div matRipple
-              [ngClass]="{ 'sales-agent-list__item-section--active': salesAgent?.id === currentSalesAgent, 'transition-color-animation': salesAgent?.id === currentSalesAgent }"
-              class="sales-agent-list__item-section list-container__item-section list-container__item-section--justify-content-space-between"
-              (click)="selectSalesAgentEvent(salesAgent)">
+
+          @if(isLoading) {
+          <!-- Loading skeleton cards -->
+          <ng-container>
+            <div *ngFor="let item of [1,2,3,4,5]; index as i" class="sales-agent-list__item-section loading"
+              [style.animation-delay.ms]="i * 100">
               <div class="item-container">
                 <div class="item-container__user-image">
-                  <img src="../../../../assets/icons/user-icon.png" />
+                  <div class="skeleton-circle"></div>
                 </div>
-                <div class="item-container__user-name">{{ salesAgent.fullname }}</div>
-                <mat-icon>keyboard_arrow_right</mat-icon>
+                <div class="item-container__user-info">
+                  <div class="skeleton-line"></div>
+                  <div class="skeleton-line skeleton-line--small"></div>
+                </div>
+                <div class="skeleton-icon"></div>
               </div>
             </div>
-          </div>
+          </ng-container>
+          }
+
+          @if(!isLoading) {
+          <!-- Actual sales agent cards -->
+          <ng-container>
+            <div *cdkVirtualFor="let salesAgent of salesAgents; index as i">
+              <div matRipple [ngClass]="{
+                  'sales-agent-list__item-section--active': salesAgent?.id === currentSalesAgent,
+                  'transition-color-animation': salesAgent?.id === currentSalesAgent
+                }"
+                class="sales-agent-list__item-section list-container__item-section list-container__item-section--justify-content-space-between"
+                (click)="selectSalesAgentEvent(salesAgent)" [attr.data-index]="i">
+                <div class="item-container">
+                  <div class="item-container__user-image">
+                    <img src="assets/icons/user-icon.png" alt="" loading="lazy" />
+                  </div>
+                  <div class="item-container__user-info">
+                    <div class="item-container__user-name">{{ salesAgent.fullname }}</div>
+
+                    @if(salesAgent.username) {
+                    <div class="item-container__user-username">
+                      {{ '@' + salesAgent.username }}
+                    </div>
+                    } @else {
+                    <div class="item-container__user-username">
+                      {{ salesAgent.emailAddress }}
+                    </div>
+                    }
+                  </div>
+                  <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          }
+
         </cdk-virtual-scroll-viewport>
       </app-list-container>
     </div>

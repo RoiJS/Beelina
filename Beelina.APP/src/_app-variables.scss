@@ -1,3 +1,82 @@
+// =============================================================================
+// PRIMARY COLORS
+// =============================================================================
+$primary: #d89c2a;
+$from-color-gradiant: #d69213;
+$to-color-gradiant: $primary;
+$active: #875800;
+
+// Base colors
+$white: white;
+$black: black;
+
+// =============================================================================
+// STATUS COLORS
+// =============================================================================
+$error: #ff4a1d;
+$warning: #ff961d;
+$success: #00d555;
+
+// Success color variations
+$success-light: #00b347;
+$success-medium: #009938;
+$success-dark: #007d2b;
+
+// Error variations
+$error-bg-color: #f3afaf;
+$error-border-color: red;
+
+// Info variations
+$info-bg-color: #a2ccff;
+$info-border-color: #0073ff;
+
+// Success variations
+$success-bg-color: #a3f3a2;
+$success-border-color: #00d511;
+
+// Warning variations
+$warning-bg-color: #ffdaa2;
+$warning-border-color: #fc9700;
+
+// =============================================================================
+// GRAY SCALE COLORS
+// =============================================================================
+$gray-50: #f8f9fa;
+$gray-100: #f1f3f4;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+// Legacy gray colors (for backward compatibility)
+$light-gray: $gray-50;
+$medium-gray: #666;
+$alt-text-color: #4d4c4c;
+$alt-border-color: #cfcfcf;
+
+// =============================================================================
+// SEMANTIC COLORS
+// =============================================================================
+$text-primary: $gray-900;
+$text-secondary: $gray-600;
+$text-muted: $gray-500;
+
+$border-light: $gray-300;
+$border-medium: $gray-400;
+$border-dark: $gray-600;
+
+// Navigation specific colors
+$nav-home: #4caf50;
+$nav-distribution: #2196f3;
+$nav-insights: #9c27b0;
+
+// =============================================================================
+// BACKGROUND GRADIENTS
+// =============================================================================
 $background-gradient: linear-gradient(
   120deg,
   #e7e7e7 0%,
@@ -5,47 +84,104 @@ $background-gradient: linear-gradient(
   #e7e7e7 100%
 );
 
-$primary: #d89c2a;
-$from-color-gradiant: #d69213;
-$to-color-gradiant: $primary;
 $primary-gradient: linear-gradient(
   300deg,
   $from-color-gradiant 40%,
   $to-color-gradiant 100%
 );
 
-$white: white;
-$black: black;
-$active: #875800;
-$error: #ff4a1d;
-$warning: #ff961d;
-$success: #00d555;
+$success-gradient: linear-gradient(
+  135deg,
+  $success 0%,
+  $success-light 25%,
+  $success-medium 75%,
+  $success-dark 100%
+);
 
-$alt-text-color: #4d4c4c;
-$alt-border-color: #cfcfcf;
+$primary-sales-gradient: linear-gradient(
+  135deg,
+  $from-color-gradiant 0%,
+  $primary 25%,
+  #e6b93d 75%,
+  #f4d463 100%
+);
 
-$error-bg-color: #f3afaf;
-$error-border-color: red;
+$card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.8) 100%);
+$card-white-gradient: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
 
-$info-bg-color: #a2ccff;
-$info-border-color: #0073ff;
+// Navigation gradients
+$nav-gradient-base: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%);
 
-$success-bg-color: #a3f3a2;
-$success-border-color: #00d511;
+// =============================================================================
+// BOX SHADOWS
+// =============================================================================
+$shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.2);
+$shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.12);
 
-$warning-bg-color: #ffdaa2;
-$warning-border-color: #fc9700;
+// Primary color shadows
+$shadow-primary: 0 6px 20px rgba(216, 156, 42, 0.3);
+$shadow-primary-lg: 0 8px 32px rgba(216, 156, 42, 0.3);
 
-// Summary section colors
-$summary-bg-color: #f8f9fa;
-$summary-border-color: #dee2e6;
-$summary-row-border-color: #e9ecef;
-$summary-label-color: #495057;
-$summary-value-color: #212529;
+// Navigation shadows
+$shadow-nav-home: 0 6px 20px rgba(76, 175, 80, 0.3);
+$shadow-nav-distribution: 0 6px 20px rgba(33, 150, 243, 0.3);
+$shadow-nav-insights: 0 6px 20px rgba(156, 39, 176, 0.3);
+
+// Active state shadows
+$shadow-nav-home-active: 0 4px 15px rgba(76, 175, 80, 0.4);
+$shadow-nav-distribution-active: 0 4px 15px rgba(33, 150, 243, 0.4);
+$shadow-nav-insights-active: 0 4px 15px rgba(156, 39, 176, 0.4);
+
+// =============================================================================
+// OPACITY VALUES
+// =============================================================================
+$opacity-light: 0.1;
+$opacity-medium: 0.3;
+$opacity-heavy: 0.5;
+$opacity-overlay: 0.8;
+$opacity-disabled: 0.6;
+
+// =============================================================================
+// BORDER RADIUS
+// =============================================================================
+$border-radius-sm: 6px;
+$border-radius-md: 12px;
+$border-radius-lg: 16px;
+$border-radius-xl: 20px;
+$border-radius-circle: 50%;
+
+// =============================================================================
+// ANIMATION TIMING
+// =============================================================================
+$transition-fast: 0.1s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
+$transition-cubic: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// =============================================================================
+// SPACING
+// =============================================================================
+$spacing-xs: 0.25em;
+$spacing-sm: 0.5em;
+$spacing-md: 1em;
+$spacing-lg: 1.5em;
+$spacing-xl: 2em;
+$spacing-xxl: 3em;
+
+// =============================================================================
+// LEGACY SUMMARY SECTION COLORS (for backward compatibility)
+// =============================================================================
+$summary-bg-color: $gray-50;
+$summary-border-color: $gray-300;
+$summary-row-border-color: $gray-200;
+$summary-label-color: $gray-700;
+$summary-value-color: $gray-900;
 $summary-discount-color: #dc3545;
 
-// Additional utility colors
-$light-gray: #f8f8f8;
-$medium-gray: #666;
+// =============================================================================
+// LEGACY UTILITY COLORS (for backward compatibility)
+// =============================================================================
 $inactive-product-bg: #fff3f3;
 $delete-icon-color: #ff6b6b;

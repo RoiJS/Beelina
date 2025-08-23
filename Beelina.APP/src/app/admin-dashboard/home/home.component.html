@@ -7,34 +7,43 @@
       }}</span>
   </div>
   <div class="sales-container">
-    <div class="panel panel--full-width sales-container__panel sales-container__chart-section">
-      <div class="panel__header-section">
-        {{ "DASHBOARD_ADMIN.HOME_PAGE.ORDER_TRANSACTION_DISTRIBUTION.TITLE" | translate }}
-      </div>
-      <div class="panel__body-section sales-container__body-section">
-        @if (hideSalesAgentDistributionWidget()) {
-        <app-subscription-panel></app-subscription-panel>
-        }
 
-        <app-loader-layout [busy]="salesPerAgentChartViewLoading">
-          <div class="sales-per-agent-container">
-            <app-sales-per-agent-view></app-sales-per-agent-view>
-          </div>
-        </app-loader-layout>
+    <div class="sales-container__chart-section">
+
+      <div class="panel panel--full-width sales-container__panel sales-container__pie-chart-section">
+        <div class="panel__header-section">
+          {{ "DASHBOARD_ADMIN.HOME_PAGE.ORDER_TRANSACTION_DISTRIBUTION.TITLE" | translate }}
+        </div>
+
+        <div class="panel__body-section sales-container__body-section">
+          @if (hideSalesAgentDistributionWidget()) {
+          <app-subscription-panel></app-subscription-panel>
+          }
+
+          <app-loader-layout [busy]="salesPerAgentChartViewLoading">
+            <div class="sales-per-agent-container">
+              <app-sales-per-agent-view></app-sales-per-agent-view>
+            </div>
+          </app-loader-layout>
+        </div>
       </div>
-    </div>
-    <div class="sales-container__chart-filter-section">
-      <div class="panel panel--full-width sales-container__panel">
+
+      <div class="panel panel--full-width sales-container__panel sales-container__bar-chart-section">
         <div class="panel__header-section">
           {{ 'DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.TITLE' | translate }}
         </div>
         <div class="panel__body-section sales-container__body-section">
           <app-loader-layout [busy]="salesChartViewLoading">
-            <app-sales-chart-view></app-sales-chart-view>
+            <app-sales-chart-view [width]="580"></app-sales-chart-view>
           </app-loader-layout>
         </div>
       </div>
-      <div class="panel panel--full-width sales-container__panel">
+    </div>
+
+
+    <div class="sales-container__chart-filter-section">
+
+      <div class="panel panel--full-width sales-container__panel sales-container__financial-summary-section">
         <div class="panel__header-section">
           {{ 'DASHBOARD_ADMIN.HOME_PAGE.CHART_SECTION.TITLE' | translate }}
         </div>
@@ -119,7 +128,7 @@
                     "SALES_PAGE.FILTER_OPTIONS_PANEL.FROM_DATE" | translate
                     }}:</mat-label>
                   <input matInput (dateChange)="fromDateChange($event)" [matDatepicker]="fromPicker"
-                         formControlName="fromDate" [max]="maxDate" />
+                    formControlName="fromDate" [max]="maxDate" />
                   <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
                   <mat-datepicker #fromPicker></mat-datepicker>
                 </mat-form-field>
@@ -129,7 +138,7 @@
                     "SALES_PAGE.FILTER_OPTIONS_PANEL.TO_DATE" | translate
                     }}:</mat-label>
                   <input matInput (dateChange)="toDateChange($event)" [matDatepicker]="toPicker"
-                         formControlName="toDate" [min]="minToDate" [max]="maxDate" />
+                    formControlName="toDate" [min]="minToDate" />
                   <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
                   <mat-datepicker #toPicker></mat-datepicker>
                 </mat-form-field>
@@ -137,48 +146,111 @@
               }
 
             </div>
+
             <div class="panel panel--full-width sales-information-panel">
-              <div class="sales-information-panel__amount-container">
-                <label>{{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}:</label>
+              <div class="financial-summary-grid">
+                <!-- Profit Section -->
+                <div class="summary-card summary-card--profit">
+                  <div class="summary-card__icon">
+                    <mat-icon>trending_up</mat-icon>
+                  </div>
+                  <div class="summary-card__content">
+                    <div class="summary-card__label">
+                      {{ "DASHBOARD_ADMIN.HOME_PAGE.PROFIT_PANEL.LABEL" | translate }}
+                    </div>
+                    @if(!isLoading) {
+                    <div class="summary-card__amount scale-in-center-animation">
+                      {{ profit }}
+                    </div>
+                    } @else {
+                    <div class="summary-card__loading">
+                      <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
+                    </div>
+                    }
+                  </div>
+                </div>
 
-                @if(!isLoading) {
-                <span class="scale-in-center-animation">{{
-                  sales
-                  }}</span>
-                }
-              </div>
-
-              @if (!isLoading) {
-              <div class="sales-information-panel__amount-breakdown-container">
-                <div></div>
-                <div>
-                  <div class="amount-information">
-                    <label>{{ "SALES_PAGE.SALES_PANEL.CASH_ON_HAND_LABEL" | translate }}:</label>
-                    <span class="scale-in-center-animation">{{
-                      cashOnHand
-                      }}</span>
+                <!-- Sales Section -->
+                <div class="summary-card summary-card--sales">
+                  <div class="summary-card__icon">
+                    <mat-icon>attach_money</mat-icon>
                   </div>
-                  <div class="amount-information">
-                    <label>{{ "SALES_PAGE.SALES_PANEL.CHEQUE_ON_HAND_LABEL" | translate }}:</label>
-                    <span class="scale-in-center-animation">{{
-                      chequeOnHand
-                      }}</span>
-                  </div>
-                  <div class="amount-information">
-                    <label>{{ "SALES_PAGE.SALES_PANEL.ACCOUNT_RECEIVABLES_LABEL" | translate }}:</label>
-                    <span class="scale-in-center-animation">{{
-                      accountReceivables
-                      }}</span>
-                  </div>
-                  <div class="amount-information">
-                    <label>{{ "SALES_PAGE.SALES_PANEL.BAD_ORDERS_LABEL" | translate }}:</label>
-                    <span class="scale-in-center-animation">{{
-                      badOrders
-                      }}</span>
+                  <div class="summary-card__content">
+                    <div class="summary-card__label">
+                      {{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}
+                    </div>
+                    @if(!isLoading) {
+                    <div class="summary-card__amount scale-in-center-animation">
+                      {{ sales }}
+                    </div>
+                    } @else {
+                    <div class="summary-card__loading">
+                      <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
+                    </div>
+                    }
                   </div>
                 </div>
               </div>
-              }
+
+              <div class="payment-breakdown-section">
+                <div class="payment-breakdown-grid">
+                  <div class="breakdown-item breakdown-item--delay-1">
+                    <div class="breakdown-item__icon">
+                      <mat-icon>payments</mat-icon>
+                    </div>
+                    <div class="breakdown-item__content">
+                      <div class="breakdown-item__label">
+                        {{ "SALES_PAGE.SALES_PANEL.CASH_ON_HAND_LABEL" | translate }}
+                      </div>
+                      <div class="breakdown-item__amount scale-in-center-animation">
+                        {{ cashOnHand }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="breakdown-item breakdown-item--delay-2">
+                    <div class="breakdown-item__icon">
+                      <mat-icon>receipt</mat-icon>
+                    </div>
+                    <div class="breakdown-item__content">
+                      <div class="breakdown-item__label">
+                        {{ "SALES_PAGE.SALES_PANEL.CHEQUE_ON_HAND_LABEL" | translate }}
+                      </div>
+                      <div class="breakdown-item__amount scale-in-center-animation">
+                        {{ chequeOnHand }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="breakdown-item breakdown-item--delay-3">
+                    <div class="breakdown-item__icon">
+                      <mat-icon>account_balance</mat-icon>
+                    </div>
+                    <div class="breakdown-item__content">
+                      <div class="breakdown-item__label">
+                        {{ "SALES_PAGE.SALES_PANEL.ACCOUNT_RECEIVABLES_LABEL" | translate }}
+                      </div>
+                      <div class="breakdown-item__amount scale-in-center-animation">
+                        {{ accountReceivables }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="breakdown-item breakdown-item--warning breakdown-item--delay-4">
+                    <div class="breakdown-item__icon">
+                      <mat-icon>warning</mat-icon>
+                    </div>
+                    <div class="breakdown-item__content">
+                      <div class="breakdown-item__label">
+                        {{ "SALES_PAGE.SALES_PANEL.BAD_ORDERS_LABEL" | translate }}
+                      </div>
+                      <div class="breakdown-item__amount scale-in-center-animation">
+                        {{ badOrders }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

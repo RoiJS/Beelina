@@ -1830,6 +1830,9 @@
       "ORDER_TRANSACTION_DISTRIBUTION": {
         "TITLE": "Order transactions: Sales agents distribution"
       },
+      "PROFIT_PANEL": {
+        "LABEL": "Total Profit"
+      },
       "CHART_SECTION": {
         "TITLE": "Sales Date Distribution Chart",
         "SALES_LABEL": "Sales",

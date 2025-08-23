@@ -2,42 +2,255 @@
 
 .bottom-nav-container {
   position: absolute;
-  border-radius: 10px;
+  border-radius: $border-radius-xl;
   bottom: -25px;
   z-index: 1000;
   display: flex;
   justify-content: space-around;
-  padding: 2em 0;
-  background: white;
-  width: 90%;
-  box-shadow: 2px 2px 4px 5px #ccc;
+  padding: $spacing-lg $spacing-md;
+  background: $nav-gradient-base;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba($primary, 0.2);
+  width: 60%;
+  height: 80px;
+  box-shadow:
+    $shadow-xl,
+    0 4px 16px rgba($primary, 0.15),
+    inset 0 1px 0 rgba($white, 0.6);
   margin: 12px;
   left: 50%;
   transform: translate(-50%, -50%);
-
-  -webkit-box-shadow: 3px 3px 5px 6px #ccc; /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-  -moz-box-shadow: 3px 3px 5px 6px #ccc; /* Firefox 3.5 - 3.6 */
-  box-shadow: 2px 2px 4px 5px #ccc; /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+  animation: slideUpIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 
   button {
-    // background: $primary;
     height: 4em;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
+    border-radius: $border-radius-md;
+    transition: $transition-cubic;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba($primary, $opacity-light) 100%);
+      opacity: 0;
+      transition: $transition-normal;
+    }
+
+    &:hover::before {
+      opacity: 1;
+    }
 
     mat-icon {
       margin: 0;
+      font-size: 1.8em;
+      width: 1.8em;
+      height: 1.8em;
+      transition: all 0.3s ease;
+      color: $text-secondary;
+      position: relative;
+      z-index: 1;
     }
 
     span {
       display: block;
+      font-size: 0.85em;
+      font-weight: 500;
+      margin-top: 0.3em;
+      transition: all 0.3s ease;
+      color: $text-secondary;
+      position: relative;
+      z-index: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    &:hover {
+      transform: translateY(-3px) scale(1.05);
+      background: linear-gradient(135deg, rgba($primary, $opacity-light) 0%, rgba($primary, 0.2) 100%);
+      box-shadow: $shadow-primary;
+
+      mat-icon {
+        animation: iconBounceNav 0.6s ease-in-out;
+        color: $primary;
+        transform: scale(1.1);
+      }
+
+      span {
+        color: $primary;
+        transform: translateY(-2px);
+      }
+    }
+
+    &:active {
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    // Specific button styles
+    &.nav-button--home:hover {
+      background: linear-gradient(135deg, rgba($nav-home, $opacity-light) 0%, rgba($nav-home, 0.2) 100%);
+      box-shadow: $shadow-nav-home;
+
+      mat-icon {
+        color: $nav-home;
+      }
+
+      span {
+        color: $nav-home;
+      }
+    }
+
+    &.nav-button--distribution:hover {
+      background: linear-gradient(135deg, rgba($nav-distribution, $opacity-light) 0%, rgba($nav-distribution, 0.2) 100%);
+      box-shadow: $shadow-nav-distribution;
+
+      mat-icon {
+        color: $nav-distribution;
+      }
+
+      span {
+        color: $nav-distribution;
+      }
+    }
+
+    &.nav-button--insights:hover {
+      background: linear-gradient(135deg, rgba($nav-insights, $opacity-light) 0%, rgba($nav-insights, 0.2) 100%);
+      box-shadow: $shadow-nav-insights;
+
+      mat-icon {
+        color: $nav-insights;
+      }
+
+      span {
+        color: $nav-insights;
+      }
     }
   }
 }
 
-button:hover,
 .active-link {
-  color: $primary;
+  background: linear-gradient(135deg, rgba($primary, 0.15) 0%, rgba($primary, 0.25) 100%) !important;
+  box-shadow: 0 4px 15px rgba($primary, 0.4) !important;
+  transform: translateY(-2px) !important;
+
+  mat-icon {
+    color: $primary !important;
+    animation: iconGlowNav 2s ease-in-out infinite !important;
+  }
+
+  span {
+    color: $primary !important;
+    font-weight: 600 !important;
+  }
+
+  &::before {
+    opacity: 1 !important;
+  }
+
+  // Specific active states
+  &.nav-button--home {
+    background: linear-gradient(135deg, rgba($nav-home, 0.15) 0%, rgba($nav-home, 0.25) 100%) !important;
+    box-shadow: $shadow-nav-home-active !important;
+
+    mat-icon {
+      color: $nav-home !important;
+    }
+
+    span {
+      color: $nav-home !important;
+    }
+  }
+
+  &.nav-button--distribution {
+    background: linear-gradient(135deg, rgba($nav-distribution, 0.15) 0%, rgba($nav-distribution, 0.25) 100%) !important;
+    box-shadow: $shadow-nav-distribution-active !important;
+
+    mat-icon {
+      color: $nav-distribution !important;
+    }
+
+    span {
+      color: $nav-distribution !important;
+    }
+  }
+
+  &.nav-button--insights {
+    background: linear-gradient(135deg, rgba($nav-insights, 0.15) 0%, rgba($nav-insights, 0.25) 100%) !important;
+    box-shadow: $shadow-nav-insights-active !important;
+
+    mat-icon {
+      color: $nav-insights !important;
+    }
+
+    span {
+      color: $nav-insights !important;
+    }
+  }
+}
+
+// Keyframe animations
+@keyframes slideUpIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes iconBounceNav {
+  0%, 20%, 50%, 80%, 100% {
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(1.2) translateY(-3px);
+  }
+  60% {
+    transform: scale(1.15) translateY(-1px);
+  }
+}
+
+@keyframes iconGlowNav {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba($primary, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba($primary, 0.7));
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .bottom-nav-container {
+    width: 95%;
+    padding: $spacing-md $spacing-sm;
+
+    button {
+      height: 3.5em;
+
+      mat-icon {
+        font-size: 1.5em;
+        width: 1.5em;
+        height: 1.5em;
+      }
+
+      span {
+        font-size: 0.75em;
+      }
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, input, Input, OnInit, viewChild, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, input, Input, OnInit, viewChild, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { SalesPerDateRange } from 'src/app/_models/sales-per-date-range';
 import { AuthService } from 'src/app/_services/auth.service';
@@ -20,9 +20,10 @@ import { ChartOptions } from 'src/app/_models/chart-option.model';
   templateUrl: './sales-chart-view.component.html',
   styleUrls: ['./sales-chart-view.component.scss']
 })
-export class SalesChartViewComponent extends SalesComponent implements OnInit {
+export class SalesChartViewComponent extends SalesComponent implements OnInit, AfterViewInit {
   chartType = input<ChartType>('bar');
   chart = viewChild(ChartComponent);
+  width = input<number>(0);
 
   public chartOptions: Partial<ChartOptions>;
 
@@ -58,7 +59,7 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
       ],
       chart: {
         height: 200,
-        width: 800,
+        width: this.width(),
         type: this.chartType(),
       },
       plotOptions: {
@@ -135,6 +136,10 @@ export class SalesChartViewComponent extends SalesComponent implements OnInit {
 
   override ngOnInit() {
     super.ngOnInit();
+  }
+
+  ngAfterViewInit() {
+    this.chartOptions.chart.width = this.width();
   }
 
   loadTotalSalesChart(userId: number, dateRanges: DateRange[], callback: Function) {

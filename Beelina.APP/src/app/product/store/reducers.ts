@@ -123,6 +123,10 @@ export const reducers = createReducer(
     updatedProduct.pricePerUnit = product.pricePerUnit;
     updatedProduct.price = product.price;
     updatedProduct.productUnit = product.productUnit;
+    updatedProduct.validFrom = product.validFrom;
+    updatedProduct.validTo = product.validTo;
+    updatedProduct.parent = product.parent;
+    updatedProduct.productParentGroupId = product.productParentGroupId;
     updatedProduct.deductedStock = -action.deduction;
 
     const updatedProducts = [...state.products];
