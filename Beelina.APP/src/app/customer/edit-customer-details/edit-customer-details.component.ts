@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription, map, startWith } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { OutletTypeEnum } from 'src/app/_enum/outlet-type.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
 import { CustomerStoreService } from 'src/app/_services/customer-store.service';
@@ -34,6 +35,7 @@ export class EditCustomerDetailsComponent implements OnInit {
   private _customerForm: FormGroup;
   private _paymentMethodOptions: Array<PaymentMethod> = [];
   private _paymentMethodOptionsSubscription: Subscription;
+  private _outletTypeOptions: Array<{value: OutletTypeEnum, label: string}> = [];
   private _storeId: number;
   private _barangay: string;
 
@@ -66,6 +68,8 @@ export class EditCustomerDetailsComponent implements OnInit {
     this._barangay = this.activatedRoute.snapshot.paramMap.get('barangay');
     const barangayControl = this._customerForm.get('barangay');
     barangayControl.disable();
+
+    this._outletTypeOptions = this.customerStoreService.getOutletTypeOptions('EDIT_CUSTOMER_DETAILS_PAGE');
 
     this.store.dispatch(PaymentMethodActions.getPaymentMethodsAction());
     this.store.dispatch(BarangayActions.getBarangaysAction());
@@ -162,5 +166,9 @@ export class EditCustomerDetailsComponent implements OnInit {
 
   get paymentMethodOptions(): Array<PaymentMethod> {
     return this._paymentMethodOptions;
+  }
+
+  get outletTypeOptions(): Array<{value: OutletTypeEnum, label: string}> {
+    return this._outletTypeOptions;
   }
 }

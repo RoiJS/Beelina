@@ -291,7 +291,15 @@
         "LABEL": "Outlet Type",
         "OPTIONS": {
           "KEY_ACCOUNT": "Key Account",
-          "GEN_TRADE": "Gen Trade"
+          "GEN_TRADE": "Gen Trade",
+          "SUPERMARKET": "Supermarket",
+          "GROCERY": "Grocery",
+          "PUBLIC_MARKET_STOOL_STORE": "Public Market Stool/Store",
+          "SARI_SARI_STORE": "Sari-Sari Store",
+          "FOOD_SERVICES": "Food Services",
+          "CONVENIENCE_STORE": "Convenience Store",
+          "PHARMACY": "Pharmacy",
+          "GASOLINE_STATION": "Gasoline Station"
         }
       },
       "PAYMENT_METHOD_CONTROL": {
@@ -334,7 +342,15 @@
         "LABEL": "Outlet Type",
         "OPTIONS": {
           "KEY_ACCOUNT": "Key Account",
-          "GEN_TRADE": "Gen Trade"
+          "GEN_TRADE": "Gen Trade",
+          "SUPERMARKET": "Supermarket",
+          "GROCERY": "Grocery",
+          "PUBLIC_MARKET_STOOL_STORE": "Public Market Stool/Store",
+          "SARI_SARI_STORE": "Sari-Sari Store",
+          "FOOD_SERVICES": "Food Services",
+          "CONVENIENCE_STORE": "Convenience Store",
+          "PHARMACY": "Pharmacy",
+          "GASOLINE_STATION": "Gasoline Station"
         }
       },
       "CUSTOMER_ACCOUNT_CONTROL": {

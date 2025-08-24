@@ -8,6 +8,7 @@ import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { catchError, map, take } from 'rxjs';
 
 import { Product } from '../_models/product';
+import { OutletTypeHelper } from '../_helpers/outlet-type.helper';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
 
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
@@ -1301,7 +1302,7 @@ export class TransactionService {
                 customerSale.storeId = t.storeId;
                 customerSale.storeName = t.storeName;
                 customerSale.numberOfTransactions = t.numberOfTransactions;
-                customerSale.outletType = t.outletType === OutletTypeEnum.GEN_TRADE ? this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE') : this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT');
+                customerSale.outletType = OutletTypeHelper.getOutletTypeDisplayText(t.outletType, this.translateService);
                 customerSale.totalSalesAmount = t.totalSalesAmount;
                 return customerSale;
               })

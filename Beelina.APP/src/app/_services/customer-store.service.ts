@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { ApolloQueryResult } from '@apollo/client/core';
 import { Apollo, gql, MutationResult } from 'apollo-angular';
+import { TranslateService } from '@ngx-translate/core';
 
 import { AppStateInterface } from '../_interfaces/app-state.interface';
 import {
@@ -18,6 +19,7 @@ import { IStoreOutput } from '../_interfaces/outputs/istore.output';
 import { IStoreInput } from '../_interfaces/inputs/istore.input';
 import { CustomerStore } from '../_models/customer-store';
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
+import { OutletTypeEnum } from '../_enum/outlet-type.enum';
 
 const UPDATE_STORE_MUTATION = gql`
   mutation ($storeInput: StoreInput!) {
@@ -155,6 +157,7 @@ export class CustomerStoreService {
 
   private apollo = inject(Apollo);
   private store = inject(Store<AppStateInterface>);
+  private translateService = inject(TranslateService);
 
   get cachedCustomers(): ReadonlyArray<CustomerStore> | null {
     // Return a shallow copy to prevent external mutation
@@ -403,5 +406,55 @@ export class CustomerStoreService {
           return null;
         })
       );
+  }
+
+  /**
+   * Gets all available outlet type options with translated labels
+   * @param {string} pageContext - The page context for translations ('ADD_CUSTOMER_DETAILS_PAGE' or 'EDIT_CUSTOMER_DETAILS_PAGE')
+   * @returns {Array<{value: OutletTypeEnum, label: string}>} Array of outlet type options
+   */
+  getOutletTypeOptions(pageContext: string = 'ADD_CUSTOMER_DETAILS_PAGE'): Array<{value: OutletTypeEnum, label: string}> {
+    return [
+      {
+        value: OutletTypeEnum.KEY_ACCOUNT,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT`)
+      },
+      {
+        value: OutletTypeEnum.GEN_TRADE,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE`)
+      },
+      {
+        value: OutletTypeEnum.SUPERMARKET,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.SUPERMARKET`)
+      },
+      {
+        value: OutletTypeEnum.GROCERY,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GROCERY`)
+      },
+      {
+        value: OutletTypeEnum.PUBLIC_MARKET_STOOL_STORE,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.PUBLIC_MARKET_STOOL_STORE`)
+      },
+      {
+        value: OutletTypeEnum.SARI_SARI_STORE,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.SARI_SARI_STORE`)
+      },
+      {
+        value: OutletTypeEnum.FOOD_SERVICES,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.FOOD_SERVICES`)
+      },
+      {
+        value: OutletTypeEnum.CONVENIENCE_STORE,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.CONVENIENCE_STORE`)
+      },
+      {
+        value: OutletTypeEnum.PHARMACY,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.PHARMACY`)
+      },
+      {
+        value: OutletTypeEnum.GASOLINE_STATION,
+        label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GASOLINE_STATION`)
+      }
+    ];
   }
 }

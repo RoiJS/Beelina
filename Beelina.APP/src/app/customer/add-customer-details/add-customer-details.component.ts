@@ -23,6 +23,7 @@ import * as PaymentMethodActions from '../../payment-methods/store/actions';
 import { isUpdateLoadingSelector } from '../store/selectors';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
+import { OutletTypeEnum } from 'src/app/_enum/outlet-type.enum';
 
 import { CustomerStore } from 'src/app/_models/customer-store';
 import { PaymentMethod } from 'src/app/_models/payment-method';
@@ -37,6 +38,7 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
 
   private _paymentMethodOptions: Array<PaymentMethod> = [];
   private _paymentMethodOptionsSubscription: Subscription;
+  private _outletTypeOptions: Array<{value: OutletTypeEnum, label: string}> = [];
 
   private _barangay: string;
 
@@ -71,6 +73,8 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
 
     barangayControl.setValue(this._barangay);
     barangayControl.disable();
+
+    this._outletTypeOptions = this.customerStoreService.getOutletTypeOptions('ADD_CUSTOMER_DETAILS_PAGE');
 
     this.store.dispatch(PaymentMethodActions.getPaymentMethodsAction());
     this.store.dispatch(BarangayActions.getBarangaysAction());
@@ -155,5 +159,9 @@ export class AddCustomerDetailsComponent implements OnInit, OnDestroy {
 
   get paymentMethodOptions(): Array<PaymentMethod> {
     return this._paymentMethodOptions;
+  }
+
+  get outletTypeOptions(): Array<{value: OutletTypeEnum, label: string}> {
+    return this._outletTypeOptions;
   }
 }
