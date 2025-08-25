@@ -69,6 +69,7 @@ import { ProductsFilter } from '../_models/filters/products.filter';
 import { ProductStockPerPanel } from '../_models/product-stock-per-panel.model';
 import { IProductStockPerPanelOutput } from '../_interfaces/outputs/iproduct-stock-per-panel.output';
 import { IProductStockPerPanelPayload } from '../_interfaces/payloads/iproduct-stock-per-panel.payload';
+import { ProductActiveStatusEnum } from '../_enum/product-active-status.enum';
 
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
@@ -1102,10 +1103,11 @@ export class ProductService {
         cursor: null,
         filterKeyword: productName,
         userAccountId: +this.storageService.getString('currentSalesAgentId'),
-        productsFilter: {
+        productsFilter: <ProductsFilter>{
           supplierId: 0,
           stockStatus: StockStatusEnum.All,
-          priceStatus: PriceStatusEnum.All
+          priceStatus: PriceStatusEnum.All,
+          activeStatus: ProductActiveStatusEnum.ActiveOnly
         },
         limit: 50
       };
@@ -1133,10 +1135,11 @@ export class ProductService {
         cursor: null,
         filterKeyword: productName,
         warehouseId: 1,
-        productsFilter: {
+        productsFilter: <ProductsFilter>{
           supplierId: 0,
           stockStatus: StockStatusEnum.All,
-          priceStatus: PriceStatusEnum.All
+          priceStatus: PriceStatusEnum.All,
+          activeStatus: ProductActiveStatusEnum.ActiveOnly
         },
         limit: 50
       };
