@@ -10,7 +10,9 @@ namespace Beelina.LIB.Migrations.BeelinaData
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-migrationBuilder.Sql(@"
+            migrationBuilder.Sql(@"
+SET IDENTITY_INSERT ReportControls ON;
+
 INSERT INTO ReportControls (
     Id,
     LabelIdentifier,
@@ -35,6 +37,8 @@ VALUES (
     '0001-01-01T00:00:00.0000000',
     '0001-01-01T00:00:00.0000000'
 );
+
+SET IDENTITY_INSERT ReportControls OFF;
 ");
         }
 
