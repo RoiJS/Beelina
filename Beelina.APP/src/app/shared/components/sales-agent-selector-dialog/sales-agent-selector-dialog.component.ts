@@ -41,7 +41,7 @@ export interface SalesAgentSelectorConfig {
 
         <div class="agents-list-container">
           <div class="select-all-container" *ngIf="config.allowMultipleSelection">
-            <mat-checkbox 
+            <mat-checkbox
               [checked]="isAllSelected()"
               [indeterminate]="isIndeterminate()"
               (change)="toggleSelectAll()">
@@ -51,7 +51,7 @@ export interface SalesAgentSelectorConfig {
 
           <div class="agents-list" *ngIf="filteredSalesAgents().length > 0">
             <ng-container *ngFor="let agent of filteredSalesAgents()">
-              <mat-checkbox 
+              <mat-checkbox
                 [checked]="isSelected(agent.id)"
                 (change)="toggleAgent(agent.id)"
                 class="agent-checkbox">
@@ -88,9 +88,9 @@ export interface SalesAgentSelectorConfig {
         <button mat-button (click)="onClose()" class="cancel-button">
           {{ "GENERAL_TEXTS.CANCEL" | translate }}
         </button>
-        <button 
-          mat-raised-button 
-          color="primary" 
+        <button
+          mat-raised-button
+          color="primary"
           [disabled]="selectedAgentIds().length === 0"
           (click)="onConfirm()"
           class="confirm-button">
@@ -102,7 +102,6 @@ export interface SalesAgentSelectorConfig {
   styles: [`
     .dialog-container {
       padding: 0;
-      max-width: 500px;
       width: 100%;
     }
 
@@ -250,7 +249,7 @@ export class SalesAgentSelectorDialogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadSalesAgents();
     this.setupSearch();
-    
+
     // Set preselected agents if provided
     if (this.config.preselectedAgentIds?.length > 0) {
       this.selectedAgentIds.set([...this.config.preselectedAgentIds]);
@@ -271,11 +270,11 @@ export class SalesAgentSelectorDialogComponent implements OnInit, OnDestroy {
           // Filter out excluded agents
           let filteredAgents = agents;
           if (this.config.excludeAgentIds?.length > 0) {
-            filteredAgents = agents.filter(agent => 
+            filteredAgents = agents.filter(agent =>
               !this.config.excludeAgentIds.includes(agent.id)
             );
           }
-          
+
           this.salesAgents.set(filteredAgents);
           this.filteredSalesAgents.set(filteredAgents);
           this.isLoading.set(false);
@@ -310,7 +309,7 @@ export class SalesAgentSelectorDialogComponent implements OnInit, OnDestroy {
   toggleAgent(agentId: number) {
     const currentSelected = this.selectedAgentIds();
     const index = currentSelected.indexOf(agentId);
-    
+
     if (!this.config.allowMultipleSelection) {
       // For single selection mode, allow toggle behavior (select/deselect)
       if (index > -1) {
@@ -343,15 +342,15 @@ export class SalesAgentSelectorDialogComponent implements OnInit, OnDestroy {
 
   getSelectedAgentName(): string {
     if (this.selectedAgentIds().length === 0) return '';
-    
+
     const selectedId = this.selectedAgentIds()[0];
     const selectedAgent = this.salesAgents().find(agent => agent.id === selectedId);
-    
+
     return selectedAgent ? `${selectedAgent.firstName} ${selectedAgent.lastName}` : '';
   }
 
   isAllSelected(): boolean {
-    return this.filteredSalesAgents().length > 0 && 
+    return this.filteredSalesAgents().length > 0 &&
            this.filteredSalesAgents().every(agent => this.isSelected(agent.id));
   }
 
