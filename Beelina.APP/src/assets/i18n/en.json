@@ -5,6 +5,7 @@
     "DAILY": "Daily",
     "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
+    "CUSTOM": "Custom",
     "CONFIRM": "Confirm",
     "EXTRACT": "Extract",
     "IMPORT": "Import",
@@ -290,7 +291,15 @@
         "LABEL": "Outlet Type",
         "OPTIONS": {
           "KEY_ACCOUNT": "Key Account",
-          "GEN_TRADE": "Gen Trade"
+          "GEN_TRADE": "Gen Trade",
+          "SUPERMARKET": "Supermarket",
+          "GROCERY": "Grocery",
+          "PUBLIC_MARKET_STOOL_STORE": "Public Market Stool/Store",
+          "SARI_SARI_STORE": "Sari-Sari Store",
+          "FOOD_SERVICES": "Food Services",
+          "CONVENIENCE_STORE": "Convenience Store",
+          "PHARMACY": "Pharmacy",
+          "GASOLINE_STATION": "Gasoline Station"
         }
       },
       "PAYMENT_METHOD_CONTROL": {
@@ -333,7 +342,15 @@
         "LABEL": "Outlet Type",
         "OPTIONS": {
           "KEY_ACCOUNT": "Key Account",
-          "GEN_TRADE": "Gen Trade"
+          "GEN_TRADE": "Gen Trade",
+          "SUPERMARKET": "Supermarket",
+          "GROCERY": "Grocery",
+          "PUBLIC_MARKET_STOOL_STORE": "Public Market Stool/Store",
+          "SARI_SARI_STORE": "Sari-Sari Store",
+          "FOOD_SERVICES": "Food Services",
+          "CONVENIENCE_STORE": "Convenience Store",
+          "PHARMACY": "Pharmacy",
+          "GASOLINE_STATION": "Gasoline Station"
         }
       },
       "CUSTOMER_ACCOUNT_CONTROL": {
@@ -482,6 +499,11 @@
   },
   "ADD_PRODUCT_DETAILS_PAGE": {
     "TITLE": "Add Product",
+    "TAB_SECTIONS": {
+      "PRODUCT_INFORMATION": "Product Information",
+      "PRODUCT_CONNECTION": "Product Connection",
+      "PRODUCT_VALIDITY": "Product Validity"
+    },
     "FORM_CONTROL_SECTION": {
       "HEADER_TITLE": "Add New Product",
       "NAME_CONTROL": {
@@ -526,6 +548,19 @@
       },
       "NUMBER_OF_UNITS_CONTROL": {
         "LABEL": "Quantity per unit"
+      },
+      "VALID_FROM_CONTROL": {
+        "LABEL": "Valid From"
+      },
+      "VALID_TO_CONTROL": {
+        "LABEL": "Valid To"
+      },
+      "IS_PARENT_PRODUCT_CONTROL": {
+        "LABEL": "Is Parent Product"
+      },
+      "PRODUCT_PARENT_GROUP_CONTROL": {
+        "LABEL": "Product Parent Group",
+        "PLACEHOLDER": "Please select a parent product"
       }
     },
     "SAVE_NEW_PRODUCT_DIALOG": {
@@ -537,6 +572,15 @@
   },
   "EDIT_PRODUCT_DETAILS_PAGE": {
     "TITLE": "Edit Product",
+    "TAB_SECTIONS": {
+      "PRODUCT_INFORMATION": "Product Information",
+      "PRODUCT_CONNECTION": "Product Connection",
+      "PRODUCT_VALIDITY": "Product Validity"
+    },
+    "MORE_OPTIONS": {
+      "VIEW_STOCK_AUDIT": "View stock audit",
+      "ASSIGN_PRODUCT": "Assign product"
+    },
     "FORM_CONTROL_SECTION": {
       "HEADER_TITLE": "Edit New Product",
       "NAME_CONTROL": {
@@ -581,6 +625,20 @@
       },
       "NUMBER_OF_UNITS_CONTROL": {
         "LABEL": "Quantity per unit"
+      },
+      "VALID_FROM_CONTROL": {
+        "LABEL": "Valid From"
+      },
+      "VALID_TO_CONTROL": {
+        "LABEL": "Valid To"
+      },
+      "IS_PARENT_PRODUCT_CONTROL": {
+        "LABEL": "Is Parent Product",
+        "DISABLED_TOOLTIP": "Cannot modify parent status because this product is linked to other products"
+      },
+      "PRODUCT_PARENT_GROUP_CONTROL": {
+        "LABEL": "Product Parent Group",
+        "PLACEHOLDER": "Please select a parent product"
       }
     },
     "EDIT_PRODUCT_DIALOG": {
@@ -648,12 +706,20 @@
             "WITH_PRICE": "With Price",
             "WITHOUT_PRICE": "Without Price"
           }
+        },
+        "ACTIVE_STATUS_CONTROL": {
+          "LABEL": "Active Status",
+          "HINT": "Please choose active status",
+          "OPTIONS": {
+            "ACTIVE_ONLY": "Active Only",
+            "INCLUDE_INACTIVE": "Include Inactive"
+          }
         }
       }
     },
     "TEXT_ORDER_DIALOG": {
       "LOAD_PRODUCT_LIST_ERROR_MESSAGE": "Failed to load product list. Try reloading the page.",
-      "REFRESH_PRODUCT_LIST_ERROR_MESSAGE": "Product List has been refreshed."
+      "REFRESH_PRODUCT_LIST_SUCCESS_MESSAGE": "Product List has been refreshed."
     },
     "SYNC_PRODUCTS_DIALOG": {
       "SYNCING_NOTIFICATION_MESSAGE": "Syncing products..",
@@ -689,6 +755,20 @@
       "CONFIRM": "Are you sure you want to copy the selected product?",
       "SUCCESS_MESSAGE": "Product has been successfully copied!",
       "ERROR_MESSAGE": "Failed to copy product. Please try again later."
+    },
+    "COPY_PRODUCT_CONFIRMATION_DIALOG": {
+      "TITLE": "Copy Product Confirmation",
+      "DESCRIPTION_1": "You are about to create a copy of \"{{productName}}\".",
+      "DESCRIPTION_2": "Are you sure you want to proceed?",
+      "FORM_CONTROL_SECTION": {
+        "CONFIRMATION_CHECKBOX_CONTROL": {
+          "LABEL": "I confirm that I want to create a copy of this product"
+        },
+        "SET_VALID_TO_DATE_CONTROL": {
+          "LABEL": "Automatically set valid-to date on the original product",
+          "HINT": "This will mark the original product as expired (valid until yesterday) and the new copy will be valid from today forward."
+        }
+      }
     },
     "RESET_PRODUCT_STOCKS_DIALOG": {
       "TITLE": "Reset Product Stocks",
@@ -949,7 +1029,9 @@
     "FILTER_OPTIONS_PANEL": {
       "PICK_DATE": "Pick Date",
       "PICK_WEEK": "Pick Week",
-      "PICK_MONTH": "Pick Month"
+      "PICK_MONTH": "Pick Month",
+      "FROM_DATE": "From Date",
+      "TO_DATE": "To Date"
     },
     "SALES_PANEL": {
       "LABEL": "Sales Amount",
@@ -1030,7 +1112,9 @@
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_NAME": "Sales Agent Collection Summary Report",
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date.",
       "CUSTOMER_COLLECTION_SUMMARY_REPORT_NAME": "Customer Collection Summary Report",
-      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date."
+      "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date.",
+      "PURCHASE_ORDER_REPORT_NAME": "Purchase Order Report",
+      "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range."
     }
   },
   "REPORT_DETAILS_PAGE": {
@@ -1059,6 +1143,12 @@
       "INVOICE_NO_AUTOCOMPLETE_CONTROL": {
         "LABEL": "Invoice Number"
       },
+      "PURCHASE_ORDER_REFERENCE_NO_AUTOCOMPLETE_CONTROL": {
+        "LABEL": "Purchase Order Reference No"
+      },
+      "SUPPLIER_AUTOCOMPLETE_CONTROL": {
+        "LABEL": "Supplier"
+      },
       "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
         "LABEL": "Order Transaction Type",
         "CONFIRM_OPTION": "Confirm",
@@ -1067,7 +1157,8 @@
       },
       "FORM_CONTROL_ERRORS": {
         "REQUIRED_FIELD": "This field is required",
-        "INVALID_INVOICE_SELECTION": "Please select a valid invoice number from the available options"
+        "INVALID_INVOICE_SELECTION": "Please select a valid invoice number from the available options",
+        "INVALID_SALES_AGENT_SELECTION": "Please select a valid sales agent from the available options"
       }
     },
     "BUTTON_OPTIONS": {
@@ -1202,6 +1293,14 @@
     "DESCRIPTION": "Manage purchase order details and product items here.",
     "PURCHASE_ORDER_GENERAL_INFO_PANEL": {
       "TITLE": "Product List",
+      "BASIC_INFO_SECTION": {
+        "TITLE": "Basic Information",
+        "DESCRIPTION": "Core purchase order details"
+      },
+      "ADDITIONAL_INFO_SECTION": {
+        "TITLE": "Additional Information",
+        "DESCRIPTION": "Extended purchase order details for reporting"
+      },
       "FORM_CONTROL_SECTION": {
         "SUPPLIER_CONTROL": {
           "LABEL": "Supplier"
@@ -1218,6 +1317,26 @@
         },
         "NOTES_CONTROL": {
           "LABEL": "Notes"
+        },
+        "DISCOUNT_CONTROL": {
+          "LABEL": "Discount (%)"
+        },
+        "INVOICE_NO_CONTROL": {
+          "LABEL": "Invoice No."
+        },
+        "INVOICE_DATE_CONTROL": {
+          "LABEL": "Invoice Date"
+        },
+        "DATE_ENCODED_CONTROL": {
+          "LABEL": "Date Encoded"
+        },
+        "STATUS_CONTROL": {
+          "LABEL": "Status",
+          "OPEN_OPTION": "Open",
+          "CLOSED_OPTION": "Closed"
+        },
+        "LOCATION_CONTROL": {
+          "LABEL": "Location"
         }
       }
     },
@@ -1235,6 +1354,11 @@
           "TOTAL_FIELD": "Total"
         }
       }
+    },
+    "PURCHASE_ORDER_SUMMARY": {
+      "GROSS_TOTAL": "Gross Total",
+      "DISCOUNT": "Discount",
+      "NET_TOTAL": "Net Total"
     },
     "RESET_PURCHASE_ORDER_ITEMS_DIALOG": {
       "TITLE": "Reset items",
@@ -1513,8 +1637,11 @@
             "UNPAID_OPTION": "Unpaid"
           }
         },
-        "TRANSACTION_DATE_CONTROL": {
-          "LABEL": "Date"
+        "DATE_FROM_CONTROL": {
+          "LABEL": "Date From"
+        },
+        "DATE_TO_CONTROL": {
+          "LABEL": "Date To"
         }
       }
     },
@@ -1719,6 +1846,9 @@
       "ORDER_TRANSACTION_DISTRIBUTION": {
         "TITLE": "Order transactions: Sales agents distribution"
       },
+      "PROFIT_PANEL": {
+        "LABEL": "Total Profit"
+      },
       "CHART_SECTION": {
         "TITLE": "Sales Date Distribution Chart",
         "SALES_LABEL": "Sales",
@@ -1807,5 +1937,31 @@
       "SUCCESS_MESSAGE": "Product removed successfully",
       "ERROR_MESSAGE": "Failed to remove product. Please try again later."
     }
+  },
+  "SALES_AGENT_SELECTOR_DIALOG": {
+    "DEFAULT_TITLE": "Select Sales Agents",
+    "SEARCH_PLACEHOLDER": "Search sales agents...",
+    "SELECT_ALL": "Select All",
+    "NO_AGENTS_FOUND": "No sales agents found",
+    "LOADING": "Loading sales agents...",
+    "SELECTED_COUNT": "{{count}} agent(s) selected",
+    "SELECTED_SINGLE": "{{name}} selected",
+    "CONFIRM_BUTTON": "Confirm Selection",
+    "ERROR_LOADING_AGENTS": "Failed to load sales agents. Please try again."
+  },
+  "ASSIGN_PRODUCT_DIALOG": {
+    "TITLE": "Assign Product to Sales Agents",
+    "SUBTITLE": "Select the sales agents you want to assign this product to",
+    "SEARCH_PLACEHOLDER": "Search sales agents...",
+    "SELECT_ALL": "Select All",
+    "NO_AGENTS_FOUND": "No sales agents found",
+    "LOADING": "Loading sales agents...",
+    "SELECTED_COUNT": "{{count}} agent(s) selected",
+    "ASSIGN_BUTTON": "Assign Product",
+    "ERROR_LOADING_AGENTS": "Failed to load sales agents. Please try again.",
+    "CONFIRM_TITLE": "Confirm Product Assignment",
+    "CONFIRM_MESSAGE": "Are you sure you want to assign '{{productName}}' to {{agentCount}} sales agent(s)?",
+    "SUCCESS_MESSAGE": "Product successfully assigned to {{count}} sales agent(s)",
+    "ERROR_MESSAGE": "Failed to assign product to sales agents. Please try again."
   }
 }

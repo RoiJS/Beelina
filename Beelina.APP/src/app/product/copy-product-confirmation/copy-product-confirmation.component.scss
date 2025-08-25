@@ -1,0 +1,17 @@
+
+.copy-product-confirmation-dialog-container {
+  &__validity-options {
+    margin-top: 1em;
+    padding: 1em;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fafafa;
+
+    mat-hint {
+      font-size: 0.8em;
+      color: #666;
+      margin-top: 0.5em;
+      display: block;
+    }
+  }
+}

@@ -4,7 +4,8 @@ namespace Beelina.LIB.Models.Filters
 {
     public class TransactionsFilter
     {
-        public string TransactionDate { get; set; }
+        public string DateFrom { get; set; }
+        public string DateTo { get; set; }
         public TransactionStatusEnum Status { get; set; }
         public PaymentStatusEnum PaymentStatus { get; set; }
         public int StoreId { get; set; }

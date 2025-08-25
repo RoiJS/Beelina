@@ -1,4 +1,4 @@
-@import "../../../app-variables";
+@import "../../../_app-variables";
 
 .sales-container {
   display: flex;
@@ -17,13 +17,25 @@
   }
 
   &__chart-section {
+    display: flex;
+    flex-direction: column;
     width: 40%;
+    gap: 1em;
 
     .sales-per-agent-container {
       display: flex;
-      height: 100%;
-      align-items: center;
+      flex-direction: column;
+      justify-content: space-around;
     }
+  }
+
+  &__pie-chart-section {
+    width: 100%;
+    height: 50%;
+  }
+
+  &__financial-summary-section {
+    height: 100%;
   }
 
   &__chart-filter-section {
@@ -49,14 +61,15 @@
         height: 3em;
 
         &__filter-options {
-          background-color: #b3c3c3;
+          background-color: $gray-500;
           color: $white;
           flex: 1;
           text-align: center;
           padding: 10px;
-          border-radius: 15px;
+          border-radius: $border-radius-lg;
           font-size: 1.2em;
           cursor: pointer;
+          transition: $transition-normal;
 
           &--active {
             background-color: $primary;
@@ -69,22 +82,335 @@
           width: 100%;
           font-size: 1.2em;
         }
-      }
 
-      .sales-date-filter-options {
-        mat-form-field {
-          width: 100%;
-          font-size: 1.2em;
+        .custom-date-range-container {
+          display: flex;
+          gap: 10px;
+
+          .date-from-field,
+          .date-to-field {
+            flex: 1;
+          }
         }
       }
     }
 
     .sales-information-panel {
-      padding: 2em 1em;
+      padding: 1em;
       display: flex;
       justify-content: space-between;
       flex-direction: column;
 
+      .sales-summary-header {
+        margin-bottom: $spacing-lg;
+        border-bottom: 2px solid $border-light;
+        padding-bottom: $spacing-sm;
+
+        h3 {
+          color: $primary;
+          font-size: 1.8em;
+          font-weight: 600;
+          margin: 0;
+          text-align: center;
+        }
+      }
+
+      .financial-summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: $spacing-lg;
+        margin-bottom: $spacing-xl;
+
+        .summary-card {
+          background: $background-gradient;
+          border-radius: $border-radius-md;
+          padding: $spacing-lg;
+          box-shadow: $shadow-md;
+          display: flex;
+          align-items: center;
+          gap: $spacing-md;
+          transition: $transition-cubic;
+
+          &:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: $shadow-lg;
+          }
+
+          &--profit {
+            background: $success-gradient;
+            border: 1px solid rgba($success, $opacity-medium);
+            color: white;
+            position: relative;
+            overflow: hidden;
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+              );
+              animation: homeShimmer 3s ease-in-out infinite;
+            }
+
+            .summary-card__icon mat-icon {
+              color: rgba(255, 255, 255, 0.9);
+              animation: homeIconPulse 2s ease-in-out infinite, homeIconGlow 3s ease-in-out infinite;
+            }
+
+            &:hover .summary-card__icon mat-icon {
+              animation: homeIconBounce 0.6s ease-in-out, homeIconGlow 3s ease-in-out infinite;
+            }
+          }
+
+          &--sales {
+            background: $primary-sales-gradient;
+            border: 1px solid rgba($primary, $opacity-medium);
+            color: white;
+            position: relative;
+            overflow: hidden;
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.15) 50%,
+                transparent 70%
+              );
+              animation: homeShimmer 4s ease-in-out infinite;
+            }
+
+            .summary-card__icon mat-icon {
+              color: rgba(255, 255, 255, 0.95);
+              animation: homeIconPulse 2.5s ease-in-out infinite;
+            }
+
+            &:hover .summary-card__icon mat-icon {
+              animation: homeIconRotate 1s ease-in-out, homeIconPulse 2.5s ease-in-out infinite;
+            }
+          }
+
+          &__icon {
+            flex-shrink: 0;
+
+            mat-icon {
+              font-size: 2.5em;
+              width: auto;
+              height: 2.5em;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              animation: homeIconPulse 2s ease-in-out infinite;
+              transition: transform 0.3s ease;
+            }
+
+            &:hover mat-icon {
+              animation: homeIconBounce 0.6s ease-in-out;
+              transform: scale(1.1);
+            }
+          }
+
+          &__content {
+            flex: 1;
+          }
+
+          &__label {
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-bottom: 0.5em;
+            opacity: 0.9;
+          }
+
+          &__amount {
+            font-size: 2.2em;
+            font-weight: 700;
+            line-height: 1;
+          }
+
+          &__loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 2.2em;
+
+            .loading-text {
+              font-style: italic;
+              opacity: 0.7;
+            }
+          }
+        }
+      }
+
+      .payment-breakdown-section {
+        .breakdown-title {
+          color: $alt-text-color;
+          font-size: 1.4em;
+          font-weight: 600;
+          margin-bottom: 1em;
+          text-align: center;
+        }
+
+        .payment-breakdown-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: $spacing-md;
+
+          .breakdown-item {
+            background: $card-white-gradient;
+            border: 1px solid $border-light;
+            border-radius: $border-radius-md;
+            padding: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: $spacing-md;
+            transition: $transition-cubic;
+            position: relative;
+            overflow: hidden;
+            animation: homeSlideInUp 0.6s ease-out;
+            will-change: transform, opacity;
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(
+                90deg,
+                transparent,
+                rgba($primary, $opacity-light),
+                transparent
+              );
+              transition: $transition-slow;
+            }
+
+            &:hover {
+              border-color: $primary;
+              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+              transform: translateY(-3px) scale(1.02);
+              background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+
+              &::before {
+                left: 100%;
+              }
+            }
+
+            &:focus-visible {
+              outline: 2px solid $primary;
+              outline-offset: 2px;
+              border-color: $primary;
+
+              .breakdown-item__amount {
+                color: darken($primary, 15%);
+                transform: scale(1.02);
+              }
+            }
+
+            &--warning {
+              border-color: $warning;
+              background: linear-gradient(135deg, #fff8f0 0%, #ffeaa7 100%);
+
+              &:hover {
+                background: linear-gradient(135deg, #fff8f0 0%, #fdcb6e 100%);
+                border-color: darken($warning, 10%);
+              }
+
+              .breakdown-item__icon mat-icon {
+                color: $warning;
+                animation: homeIconFloatGentle 3s ease-in-out infinite, homeWarningPulse 2s ease-in-out infinite;
+              }
+
+              &:hover .breakdown-item__icon mat-icon {
+                animation: homeIconBounce 0.6s ease-in-out, homeWarningPulse 2s ease-in-out infinite;
+              }
+            }
+
+            &__icon {
+              flex-shrink: 0;
+              position: relative;
+
+              mat-icon {
+                font-size: 2em;
+                width: 2em;
+                height: 2em;
+                color: $primary;
+                transition: all 0.3s ease;
+                animation: homeIconFloatGentle 3s ease-in-out infinite;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+              }
+            }
+
+            &:hover &__icon mat-icon {
+              transform: scale(1.15) rotate(8deg);
+              animation: homeIconBounceSpring 0.8s ease-in-out, homeIconGlowSoft 2s ease-in-out infinite;
+              color: darken($primary, 10%);
+            }
+
+            &__content {
+              flex: 1;
+            }
+
+            &__label {
+              font-size: 0.95em;
+              color: #555;
+              margin-bottom: 0.4em;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              transition: color 0.3s ease;
+            }
+
+            &__amount {
+              font-size: 1.4em;
+              font-weight: 700;
+              color: $primary;
+              transition: all 0.3s ease;
+              animation: homeCountUp 0.8s ease-out;
+            }
+
+            &:hover &__label {
+              color: darken($primary, 15%);
+            }
+
+            &:hover &__amount {
+              color: darken($primary, 10%);
+              transform: scale(1.05);
+            }
+
+            // Staggered animation delays
+            &--delay-1 {
+              animation-delay: 0.1s;
+            }
+
+            &--delay-2 {
+              animation-delay: 0.2s;
+            }
+
+            &--delay-3 {
+              animation-delay: 0.3s;
+            }
+
+            &--delay-4 {
+              animation-delay: 0.4s;
+            }
+          }
+        }
+      }
+
+      // Legacy styles for backward compatibility
       &__amount-container {
         display: flex;
         width: 100%;
@@ -119,6 +445,226 @@
           }
         }
       }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .sales-container {
+    flex-direction: column;
+
+    &__chart-section,
+    &__chart-filter-section {
+      width: 100%;
+    }
+
+    &__chart-filter-section {
+      .sales-information-panel {
+        .financial-summary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .payment-breakdown-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+}
+
+// Icon Animations
+@keyframes homeIconPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes homeIconBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) scale(1.1);
+  }
+  40% {
+    transform: translateY(-8px) scale(1.15);
+  }
+  60% {
+    transform: translateY(-4px) scale(1.12);
+  }
+}
+
+@keyframes homeIconRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes homeIconGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+  }
+}
+
+@keyframes homeIconFloatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes homeIconShimmer {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes homeShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes homeSlideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes homeIconBounceSpring {
+  0%, 20%, 50%, 80%, 100% {
+    transform: scale(1.15) rotate(8deg);
+  }
+  40% {
+    transform: scale(1.25) rotate(12deg) translateY(-5px);
+  }
+  60% {
+    transform: scale(1.2) rotate(10deg) translateY(-2px);
+  }
+}
+
+@keyframes homeIconGlowSoft {
+  0%, 100% {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  50% {
+    filter: drop-shadow(0 4px 8px rgba(216, 156, 42, 0.4));
+  }
+}
+
+@keyframes homeWarningPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes homeCountUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Accessibility: Disable animations for users who prefer reduced motion
+@media (prefers-reduced-motion: reduce) {
+  // Disable all animations globally within this component
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  // Preserve essential hover effects without animations
+  .summary-card {
+    &--profit:hover .summary-card__icon mat-icon,
+    &--sales:hover .summary-card__icon mat-icon {
+      transform: scale(1.05) !important;
+    }
+
+    &__icon {
+      &:hover mat-icon {
+        transform: scale(1.1) !important;
+      }
+    }
+  }
+
+  // Preserve payment breakdown hover effects
+  .payment-breakdown-grid {
+    .breakdown-item {
+      &:hover &__icon mat-icon {
+        transform: scale(1.05) !important;
+      }
+
+      &__amount {
+        transform: none !important;
+      }
+
+      &:hover &__amount {
+        transform: scale(1.02) !important;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary !important;
+        outline-offset: 2px !important;
+
+        .breakdown-item__amount {
+          transform: scale(1.02) !important;
+        }
+      }
+    }
+  }
+
+  // Remove shimmer effects but keep gradients
+  .summary-card--profit::before,
+  .summary-card--sales::before {
+    display: none !important;
+  }
+
+  // Simplify financial summary interactions
+  .financial-summary-grid {
+    .breakdown-item:hover .breakdown-item__icon mat-icon {
+      transform: scale(1.05) !important;
     }
   }
 }

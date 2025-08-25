@@ -1,5 +1,5 @@
 <div class="sales-information-container">
-  <app-sales-chart-view></app-sales-chart-view>
+  <app-sales-chart-view [width]="800"></app-sales-chart-view>
 
   <div class="chart-filter-container">
     <div class="sales-date-filter-container">
@@ -20,6 +20,12 @@
     currentFilterOption === 3
 }" (click)="setFilterOption(3)">
         {{ "GENERAL_TEXTS.MONTHLY" | translate }}
+      </div>
+      <div class="sales-date-filter-container__filter-options" [ngClass]="{
+  'sales-date-filter-container__filter-options--active':
+    currentFilterOption === 4
+}" (click)="setFilterOption(4)">
+        {{ "GENERAL_TEXTS.CUSTOM" | translate }}
       </div>
     </div>
 
@@ -64,6 +70,30 @@
             <mat-option [value]="$index">{{ month }}</mat-option>
             }
           </mat-select>
+        </mat-form-field>
+      </div>
+      }
+
+      @if (currentFilterOption === 4) {
+      <div class="custom-date-range-container">
+        <mat-form-field class="date-from-field" appearance="fill">
+          <mat-label>{{
+            "SALES_PAGE.FILTER_OPTIONS_PANEL.FROM_DATE" | translate
+            }}:</mat-label>
+          <input matInput (dateChange)="fromDateChange($event)" [matDatepicker]="fromPicker" formControlName="fromDate"
+            [max]="maxDate" />
+          <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="date-to-field" appearance="fill">
+          <mat-label>{{
+            "SALES_PAGE.FILTER_OPTIONS_PANEL.TO_DATE" | translate
+            }}:</mat-label>
+          <input matInput (dateChange)="toDateChange($event)" [matDatepicker]="toPicker" formControlName="toDate"
+            [min]="minToDate" [max]="maxDate" />
+          <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
         </mat-form-field>
       </div>
       }

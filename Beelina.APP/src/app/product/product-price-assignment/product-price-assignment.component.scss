@@ -10,6 +10,51 @@
     cursor: pointer;
     color: $white;
   }
+
+  // Inactive product row styling - allows interaction
+  .product-row--inactive {
+    opacity: 0.8;
+    background-color: #f8f8f8;
+    border-left: 3px solid #ff6b6b;
+    
+    .mat-mdc-cell {
+      color: #666;
+      // Remove line-through for better readability
+      font-style: italic;
+    }
+
+    &:hover .mat-mdc-cell {
+      background-color: #ff6b6b !important;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    // Keep price input functional but styled differently
+    input {
+      background-color: #fff3f3;
+      color: #666;
+      border: 1px solid #ff6b6b;
+      cursor: text;
+      pointer-events: auto;
+      
+      &:focus {
+        outline: 2px solid #ff6b6b;
+        background-color: #fff;
+      }
+    }
+
+    // Style the delete icon differently but keep it functional
+    .delete-icon {
+      color: #ff6b6b;
+      opacity: 0.8;
+      cursor: pointer;
+      
+      &:hover {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+    }
+  }
 }
 
 // Table styles

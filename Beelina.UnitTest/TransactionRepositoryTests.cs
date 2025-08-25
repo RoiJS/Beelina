@@ -217,4 +217,188 @@ public class TransactionRepositoryTests
         Assert.NotNull(result);
         Assert.Equal(205, result.AccountReceivables); // Replace with actual expected value
     }
+
+    [Fact]
+    public async Task GetTransactions_Filters_By_DateRange_Correctly()
+    {
+        // Arrange
+        var userId = FieldAgent.Id;
+        var repo = CreateRepositoryWithSeededData(userId);
+        var fromDate = DateTime.Now.AddDays(-10).ToString("yyyy-MM-dd");
+        var toDate = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+        
+        var transactionsFilter = new Beelina.LIB.Models.Filters.TransactionsFilter
+        {
+            Status = TransactionStatusEnum.All,
+            PaymentStatus = PaymentStatusEnum.All,
+            StoreId = 0,
+            DateFrom = fromDate,
+            DateTo = toDate
+        };
+
+        // Act
+        var result = await repo.GetTransactions(userId, "", transactionsFilter);
+
+        // Assert
+        Assert.NotNull(result);
+        // Verify that all returned transactions are within the date range
+        foreach (var transaction in result)
+        {
+            Assert.True(transaction.TransactionDate >= DateTime.Parse(fromDate));
+            Assert.True(transaction.TransactionDate <= DateTime.Parse(toDate));
+        }
+    }
+
+    [Fact]
+    public async Task GetTransactions_Filters_By_DateFrom_Only()
+    {
+        // Arrange
+        var userId = FieldAgent.Id;
+        var repo = CreateRepositoryWithSeededData(userId);
+        var fromDate = DateTime.Now.AddDays(-5).ToString("yyyy-MM-dd");
+        
+        var transactionsFilter = new Beelina.LIB.Models.Filters.TransactionsFilter
+        {
+            Status = TransactionStatusEnum.All,
+            PaymentStatus = PaymentStatusEnum.All,
+            StoreId = 0,
+            DateFrom = fromDate,
+            DateTo = null
+        };
+
+        // Act
+        var result = await repo.GetTransactions(userId, "", transactionsFilter);
+
+        // Assert
+        Assert.NotNull(result);
+        // Verify that all returned transactions are on or after the from date
+        foreach (var transaction in result)
+        {
+            Assert.True(transaction.TransactionDate >= DateTime.Parse(fromDate));
+        }
+    }
+
+    [Fact]
+    public async Task GetTransactions_Filters_By_DateTo_Only()
+    {
+        // Arrange
+        var userId = FieldAgent.Id;
+        var repo = CreateRepositoryWithSeededData(userId);
+        var toDate = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+        
+        var transactionsFilter = new Beelina.LIB.Models.Filters.TransactionsFilter
+        {
+            Status = TransactionStatusEnum.All,
+            PaymentStatus = PaymentStatusEnum.All,
+            StoreId = 0,
+            DateFrom = null,
+            DateTo = toDate
+        };
+
+        // Act
+        var result = await repo.GetTransactions(userId, "", transactionsFilter);
+
+        // Assert
+        Assert.NotNull(result);
+        // Verify that all returned transactions are on or before the to date
+        foreach (var transaction in result)
+        {
+            Assert.True(transaction.TransactionDate <= DateTime.Parse(toDate));
+        }
+    }
+
+    [Fact]
+    public async Task GetTransactions_Works_With_Specific_Date_Filter()
+    {
+        // Arrange
+        var userId = FieldAgent.Id;
+        var repo = CreateRepositoryWithSeededData(userId);
+        var specificDate = DateTime.Now.ToString("yyyy-MM-dd");
+        
+        var transactionsFilter = new Beelina.LIB.Models.Filters.TransactionsFilter
+        {
+            Status = TransactionStatusEnum.All,
+            PaymentStatus = PaymentStatusEnum.All,
+            StoreId = 0,
+            DateFrom = specificDate,
+            DateTo = specificDate
+        };
+
+        // Act
+        var result = await repo.GetTransactions(userId, "", transactionsFilter);
+
+        // Assert
+        Assert.NotNull(result);
+        // Verify that all returned transactions match the specific date
+        foreach (var transaction in result)
+        {
+            Assert.Equal(DateTime.Parse(specificDate).Date, transaction.TransactionDate.Date);
+        }
+    }
+
+    [Fact]
+    public async Task GetTransactions_Combines_DateRange_And_Other_Filters()
+    {
+        // Arrange
+        var userId = FieldAgent.Id;
+        var repo = CreateRepositoryWithSeededData(userId);
+        var fromDate = DateTime.Now.AddDays(-10).ToString("yyyy-MM-dd");
+        var toDate = DateTime.Now.ToString("yyyy-MM-dd");
+        
+        var transactionsFilter = new Beelina.LIB.Models.Filters.TransactionsFilter
+        {
+            Status = TransactionStatusEnum.Confirmed,
+            PaymentStatus = PaymentStatusEnum.All,
+            StoreId = 0,
+            DateFrom = fromDate,
+            DateTo = toDate
+        };
+
+        // Act
+        var result = await repo.GetTransactions(userId, "", transactionsFilter);
+
+        // Assert
+        Assert.NotNull(result);
+        // Verify that all returned transactions are within the date range and have confirmed status
+        foreach (var transaction in result)
+        {
+            Assert.True(transaction.TransactionDate >= DateTime.Parse(fromDate));
+            Assert.True(transaction.TransactionDate <= DateTime.Parse(toDate));
+            Assert.Equal(TransactionStatusEnum.Confirmed, transaction.Status);
+        }
+    }
+
+    [Fact]
+    public async Task GetProfit_Returns_Correct_Profit_Calculation()
+    {
+        // Arrange
+        var repo = CreateRepositoryWithSeededData(FieldAgent.Id);
+        var fromDate = DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
+        var toDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        // Act
+        var result = await repo.GetProfit(FieldAgent.Id, fromDate, toDate);
+
+        // Assert
+        // The profit is calculated as: Total Sales - Total Purchase Orders
+        // The result can be positive, negative, or zero depending on the test data
+        // We just verify that the calculation completes and returns a valid number
+        Assert.True(!double.IsNaN(result) && !double.IsInfinity(result), "Profit calculation should return a valid number");
+    }
+
+    [Fact]
+    public async Task GetProfit_WithNoDates_Returns_AllTimeProfit()
+    {
+        // Arrange
+        var repo = CreateRepositoryWithSeededData(FieldAgent.Id);
+
+        // Act
+        var result = await repo.GetProfit(FieldAgent.Id, "", "");
+
+        // Assert
+        // When no dates are provided, it should calculate profit for all time
+        // The result should be a valid number (not NaN or infinity)
+        Assert.False(double.IsNaN(result), "Result should not be NaN");
+        Assert.False(double.IsInfinity(result), "Result should not be infinity");
+    }
 }

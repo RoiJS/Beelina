@@ -71,6 +71,13 @@ namespace Beelina.LIB.BusinessLogic
                 SupplierId = productStockPerWarehouseFromRepo.SupplierId,
                 Notes = productStockPerWarehouseFromRepo.Notes,
                 PlateNo = productStockPerWarehouseFromRepo.PlateNo,
+                WarehouseId = productStockPerWarehouseFromRepo.WarehouseId,
+                Discount = productStockPerWarehouseFromRepo.Discount,
+                InvoiceNo = productStockPerWarehouseFromRepo.InvoiceNo,
+                InvoiceDate = productStockPerWarehouseFromRepo.InvoiceDate,
+                DateEncoded = productStockPerWarehouseFromRepo.DateEncoded,
+                PurchaseOrderStatus = productStockPerWarehouseFromRepo.PurchaseOrderStatus,
+                Location = productStockPerWarehouseFromRepo.Location,
                 ProductStockWarehouseAuditsResult = productStockWarehouseAuditResults,
             };
 
@@ -119,6 +126,12 @@ namespace Beelina.LIB.BusinessLogic
                             WarehouseId = t.WarehouseId,
                             Notes = t.Notes,
                             StockEntryDate = t.StockEntryDate, // TODO: Apply timezone conversion here
+                            Discount = t.Discount,
+                            InvoiceNo = t.InvoiceNo,
+                            InvoiceDate = t.InvoiceDate,
+                            DateEncoded = t.DateEncoded,
+                            PurchaseOrderStatus = t.PurchaseOrderStatus,
+                            Location = t.Location,
                         }).
                         ToListAsync(cancellationToken);
 
@@ -205,6 +218,12 @@ namespace Beelina.LIB.BusinessLogic
                 PlateNo = input.PlateNo,
                 WarehouseId = input.WarehouseId,
                 Notes = input.Notes,
+                Discount = input.Discount,
+                InvoiceNo = input.InvoiceNo,
+                InvoiceDate = DateTime.TryParse(input.InvoiceDate, out var invoiceDate) ? invoiceDate : null,
+                DateEncoded = DateTime.TryParse(input.DateEncoded, out var dateEncoded) ? dateEncoded : null,
+                PurchaseOrderStatus = input.PurchaseOrderStatus,
+                Location = input.Location,
                 IsActive = true,
                 IsDelete = false,
                 DateCreated = DateTime.Now,
@@ -220,6 +239,12 @@ namespace Beelina.LIB.BusinessLogic
             entity.PlateNo = input.PlateNo;
             entity.WarehouseId = input.WarehouseId;
             entity.Notes = input.Notes;
+            entity.Discount = input.Discount;
+            entity.InvoiceNo = input.InvoiceNo;
+            entity.InvoiceDate = DateTime.TryParse(input.InvoiceDate, out var invoiceDate) ? invoiceDate : entity.InvoiceDate;
+            entity.DateEncoded = DateTime.TryParse(input.DateEncoded, out var dateEncoded) ? dateEncoded : entity.DateEncoded;
+            entity.PurchaseOrderStatus = input.PurchaseOrderStatus;
+            entity.Location = input.Location;
             entity.DateUpdated = DateTime.Now;
         }
 

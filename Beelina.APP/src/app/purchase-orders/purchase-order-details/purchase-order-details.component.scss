@@ -50,6 +50,51 @@
       color: $white;
     }
 
+    // Inactive product row styling - allows interaction
+    .product-row--inactive {
+      opacity: 0.8;
+      background-color: $light-gray;
+      border-left: 3px solid $delete-icon-color;
+
+      .mat-mdc-cell {
+        color: $medium-gray;
+        // Remove line-through for better readability
+        font-style: italic;
+      }
+
+      &:hover .mat-mdc-cell {
+        background-color: $delete-icon-color !important;
+        color: $white;
+        cursor: pointer;
+      }
+
+      // Keep inputs functional but styled differently
+      input, ng-select {
+        background-color: $inactive-product-bg;
+        color: $medium-gray;
+        border: 1px solid $delete-icon-color;
+        cursor: text;
+        pointer-events: auto;
+
+        &:focus {
+          outline: 2px solid $delete-icon-color;
+          background-color: $white;
+        }
+      }
+
+      // Style the delete icon differently but keep it functional
+      .delete-icon {
+        color: $delete-icon-color;
+        opacity: 0.8;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+    }
+
     .mat-column-code,
     .mat-column-unit {
       flex: none;
@@ -85,6 +130,32 @@
   }
 }
 
+// Inactive badge styling
+.inactive-badge {
+  background-color: $delete-icon-color;
+  color: $white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+// Product option styling
+.product-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  .product-name {
+    flex: 1;
+  }
+}
+
 .purchase-order-buttons-panel {
   padding: 1em;
 
@@ -94,5 +165,79 @@
     gap: 1em;
     padding: 0;
     width: 100%;
+  }
+}
+
+.input-with-suffix {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: 2em; // Make space for the % symbol
+  }
+
+  .input-suffix {
+    position: absolute;
+    right: 0.5em;
+    color: $medium-gray;
+    font-size: 0.9em;
+    pointer-events: none;
+  }
+}
+
+.purchase-order-summary {
+  margin-top: 1em;
+  padding: 1em;
+  background-color: $summary-bg-color;
+  border: 1px solid $summary-border-color;
+  border-radius: 4px;
+  max-width: 400px;
+  margin-left: auto;
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 0;
+    border-bottom: 1px solid $summary-row-border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      font-weight: 500;
+      color: $summary-label-color;
+    }
+
+    .summary-value {
+      font-weight: 600;
+      color: $summary-value-color;
+    }
+
+    &.discount-row {
+      .summary-label {
+        color: $summary-discount-color;
+      }
+
+      .discount-value {
+        color: $summary-discount-color;
+      }
+    }
+
+    &.total-row {
+      border-top: 2px solid $summary-label-color;
+      margin-top: 0.5em;
+      padding-top: 0.75em;
+      font-size: 1.1em;
+
+      .summary-label,
+      .total-value {
+        font-weight: 700;
+        color: $summary-value-color;
+      }
+    }
   }
 }

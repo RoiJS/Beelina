@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, inject, signal, viewChild 
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription, take, combineLatest } from 'rxjs';
+import { Subscription, take, combineLatest, firstValueFrom } from 'rxjs';
 
 import {
   MatBottomSheet,
@@ -11,6 +11,7 @@ import {
 
 import { AddProductStockQuantityDialogComponent } from './add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 import { AddToCartProductComponent } from './add-to-cart-product/add-to-cart-product.component';
+import { CopyProductConfirmationComponent } from './copy-product-confirmation/copy-product-confirmation.component';
 import { SearchFieldComponent } from '../shared/ui/search-field/search-field.component';
 import { SharedComponent } from '../shared/components/shared/shared.component';
 import { TransferProductInventoryComponent } from './transfer-product-inventory/transfer-product-inventory.component';
@@ -30,7 +31,7 @@ import * as ProductActions from './store/actions';
 
 import { ProductTransaction } from '../_models/transaction';
 import { productTransactionsSelector } from './add-to-cart-product/store/selectors';
-import { errorSelector, filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
+import { activeStatusSelector, errorSelector, filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
 
 import { BusinessModelEnum } from '../_enum/business-model.enum';
 import { ButtonOptions } from '../_enum/button-options.enum';
@@ -62,6 +63,7 @@ import {
   stockStatusSelector,
   supplierIdSelector as supplierIdProductSelector,
 } from '../product/store/selectors';
+import { ProductActiveStatusEnum } from '../_enum/product-active-status.enum';
 
 @Component({
   selector: 'app-product',
@@ -105,6 +107,8 @@ export class ProductComponent
       priceStatus: PriceStatusEnum;
     }
   >;
+
+  _dialogCopyProductRef: MatBottomSheetRef<CopyProductConfirmationComponent>;
 
   _subscription: Subscription = new Subscription();
   _transferInventoryDialogRef: MatBottomSheetRef<TransferProductInventoryComponent>;
@@ -206,6 +210,7 @@ export class ProductComponent
     this._transferInventoryDialogRef = null;
     this._dialogOpenFilterRef = null;
     this._dialogAddQuantityRef = null;
+    this._dialogCopyProductRef = null;
     super.ngOnDestroy();
   }
 
@@ -226,15 +231,17 @@ export class ProductComponent
             combineLatest([
               this.store.select(supplierIdProductSelector),
               this.store.select(stockStatusSelector),
-              this.store.select(priceStatusSelector)
+              this.store.select(priceStatusSelector),
+              this.store.select(activeStatusSelector)
             ]).pipe(take(1))
-            .subscribe(([currentSupplierId, currentStockStatus, currentPriceStatus]) => {
-              const productsFilter = new ProductsFilter();
-              productsFilter.supplierId = currentSupplierId;
-              productsFilter.stockStatus = currentStockStatus;
-              productsFilter.priceStatus = currentPriceStatus;
-              this.productsFilter.set(productsFilter);
-            })
+              .subscribe(([currentSupplierId, currentStockStatus, currentPriceStatus, currentActiveStatus]) => {
+                const productsFilter = new ProductsFilter();
+                productsFilter.supplierId = currentSupplierId;
+                productsFilter.stockStatus = currentStockStatus;
+                productsFilter.priceStatus = currentPriceStatus;
+                productsFilter.activeStatus = currentActiveStatus;
+                this.productsFilter.set(productsFilter);
+              })
           );
         })
     );
@@ -328,14 +335,27 @@ export class ProductComponent
     }
   }
 
-  copyProductItem(product: Product) {
+  async copyProductItem(product: Product) {
     this.selectedProduct.set(product);
 
     const copyProduct = new Product();
     const copyOfText = this.translateService.instant("GENERAL_TEXTS.COPY_OF");
+
+    // Get the latest product code and use it if available
+    const latestProductCode = await firstValueFrom(this.productService.getLatestProductCode());
+
     copyProduct.id = 0;
     copyProduct.name = copyOfText + ' ' + this.selectedProduct().name;
-    copyProduct.code = copyOfText + ' ' + this.selectedProduct().code;
+
+    // Use latest product code if available, otherwise use copy of existing code
+    if (latestProductCode) {
+      // Increment the latest code (assuming numeric suffix)
+      const incrementedCode = this.incrementCode(latestProductCode);
+      copyProduct.code = incrementedCode;
+    } else {
+      copyProduct.code = copyOfText + ' ' + this.selectedProduct().code;
+    }
+
     copyProduct.description = this.selectedProduct().description;
     copyProduct.stockQuantity = 0;
     copyProduct.isTransferable = this.selectedProduct().isTransferable;
@@ -344,38 +364,100 @@ export class ProductComponent
     copyProduct.supplierId = this.selectedProduct().supplierId;
     copyProduct.productUnit.name = this.selectedProduct().productUnit.name;
 
-    this.dialogService
-      .openConfirmation(
-        this.translateService.instant(
-          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.TITLE'
-        ),
-        this.translateService.instant(
-          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.CONFIRM',
-          { name: copyProduct.name }
+    // Handle product parent group assignment
+    if (this.selectedProduct().parent) {
+      // If the original product is a parent, assign it as the parent group
+      copyProduct.productParentGroupId = this.selectedProduct().id;
+      copyProduct.parent = false; // The copy is not a parent itself
+    } else {
+      // If the original product is not a parent, copy its parent group id
+      copyProduct.productParentGroupId = this.selectedProduct().productParentGroupId;
+      copyProduct.parent = false; // The copy is not a parent itself
+    }
+
+    // Set the copy's valid from date to current date
+    copyProduct.validFrom = new Date();
+    copyProduct.validTo = null;
+
+    // Open the copy product confirmation dialog
+    this._dialogCopyProductRef = this.bottomSheet.open(CopyProductConfirmationComponent, {
+      data: {
+        productName: copyProduct.name
+      }
+    });
+
+    this._subscription.add(
+      this._dialogCopyProductRef
+        .afterDismissed()
+        .subscribe(
+          (data: {
+            confirm: boolean;
+            setValidToDate: boolean;
+          }) => {
+            if (!data || !data.confirm) return;
+
+            // Handle valid dates based on user choice and product group
+            if (data.setValidToDate) {
+              // User wants to set validTo date and products are in same group
+              this.updateOriginalProductAndCreateCopy(copyProduct);
+            } else {
+              // Either user doesn't want validTo date or products are not in same group
+              this.createProductCopyDirectly(copyProduct);
+            }
+          }
         )
-      )
-      .subscribe((result: ButtonOptions) => {
-        if (result === ButtonOptions.YES) {
-          this.productService.updateProductInformation([copyProduct]).subscribe({
-            next: () => {
-              this.notificationService.openSuccessNotification(
-                this.translateService.instant(
-                  'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.SUCCESS_MESSAGE'
-                )
-              );
-              this.store.dispatch(ProductActions.resetProductState());
-              this.store.dispatch(ProductActions.getProductsAction());
-            },
-            error: () => {
-              this.notificationService.openErrorNotification(
-                this.translateService.instant(
-                  'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.ERROR_MESSAGE'
-                )
-              );
-            },
-          });
+    );
+  }
+
+  private updateOriginalProductAndCreateCopy(copyProduct: Product) {
+    const currentDate = new Date();
+    const previousDay = new Date(currentDate);
+    previousDay.setDate(currentDate.getDate() - 1);
+
+    // Create a proper Product instance for the original
+    const originalProduct = new Product();
+    Object.assign(originalProduct, this.selectedProduct());
+    originalProduct.validTo = previousDay;
+
+    // Update the original product first
+    this._subscription.add(
+      this.productService.updateProductInformation([originalProduct]).subscribe({
+        next: () => {
+          // Then proceed with creating the copy
+          this.createProductCopyDirectly(copyProduct);
+        },
+        error: () => {
+          this.notificationService.openErrorNotification(
+            this.translateService.instant(
+              'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.ERROR_MESSAGE'
+            )
+          );
         }
-      });
+      })
+    );
+  }
+
+  private createProductCopyDirectly(copyProduct: Product) {
+    this._subscription.add(
+      this.productService.updateProductInformation([copyProduct]).subscribe({
+        next: () => {
+          this.notificationService.openSuccessNotification(
+            this.translateService.instant(
+              'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+            )
+          );
+          this.store.dispatch(ProductActions.resetProductState());
+          this.store.dispatch(ProductActions.getProductsAction());
+        },
+        error: () => {
+          this.notificationService.openErrorNotification(
+            this.translateService.instant(
+              'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.ERROR_MESSAGE'
+            )
+          );
+        },
+      })
+    );
   }
 
   openTextParserDialog() {
@@ -413,12 +495,14 @@ export class ProductComponent
   openFilter() {
     let supplierId = 0,
       stockStatus = StockStatusEnum.All,
-      priceStatus = PriceStatusEnum.All;
+      priceStatus = PriceStatusEnum.All,
+      activeStatus = ProductActiveStatusEnum.ActiveOnly;
 
     const defaultProductsFilter = new ProductsFilter();
     defaultProductsFilter.supplierId = supplierId;
     defaultProductsFilter.stockStatus = stockStatus;
     defaultProductsFilter.priceStatus = priceStatus;
+    defaultProductsFilter.activeStatus = activeStatus;
 
     this._dialogOpenFilterRef = this.bottomSheet.open(ProductFilterComponent, {
       data: {
@@ -433,7 +517,8 @@ export class ProductComponent
         (data: {
           supplierId: number,
           stockStatus: StockStatusEnum,
-          priceStatus: PriceStatusEnum
+          priceStatus: PriceStatusEnum,
+          activeStatus: ProductActiveStatusEnum
         }) => {
           if (!data) return;
 
@@ -441,6 +526,7 @@ export class ProductComponent
           productsFilter.supplierId = data.supplierId;
           productsFilter.stockStatus = data.stockStatus;
           productsFilter.priceStatus = data.priceStatus;
+          productsFilter.activeStatus = data.activeStatus;
           this.productsFilter.set(productsFilter);
 
           this.store.dispatch(ProductActions.resetProductState());

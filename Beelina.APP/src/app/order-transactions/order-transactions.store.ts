@@ -14,7 +14,8 @@ export interface IOrderTransactionState extends IBaseState, IBaseStateConnection
   transactions: Array<Transaction>;
   totalCount: number;
   transactionStatus: TransactionStatusEnum;
-  transactionDate: string;
+  dateFrom: string;
+  dateTo: string;
   paymentStatus: PaymentStatusEnum
   storeId: number;
 }
@@ -24,7 +25,8 @@ export const initialState: IOrderTransactionState = {
   isUpdateLoading: false,
   transactions: new Array<Transaction>(),
   transactionStatus: TransactionStatusEnum.ALL,
-  transactionDate: '',
+  dateFrom: '',
+  dateTo: '',
   endCursor: null,
   filterKeyword: '',
   hasNextPage: false,
@@ -44,7 +46,8 @@ export const OrderTransactionStore = signalStore(
       const transactionsFilter = new TransactionsFilter();
       transactionsFilter.status = store.transactionStatus();
       transactionsFilter.paymentStatus = store.paymentStatus();
-      transactionsFilter.transactionDate = store.transactionDate();
+      transactionsFilter.dateFrom = store.dateFrom();
+      transactionsFilter.dateTo = store.dateTo();
       transactionsFilter.storeId = store.storeId();
 
       if (store.filterKeyword() || transactionsFilter.isActive()) {
@@ -83,7 +86,8 @@ export const OrderTransactionStore = signalStore(
     setTransactionFilter: (transactionFilter: TransactionsFilter) => {
       patchState(store, {
         transactionStatus: transactionFilter.status,
-        transactionDate: transactionFilter.transactionDate,
+        dateFrom: transactionFilter.dateFrom,
+        dateTo: transactionFilter.dateTo,
         paymentStatus: transactionFilter.paymentStatus,
         storeId: transactionFilter.storeId
       });
@@ -97,7 +101,8 @@ export const OrderTransactionStore = signalStore(
       patchState(store, {
         transactions: initialState.transactions,
         endCursor: initialState.endCursor,
-        transactionDate: store.transactionDate(),
+        dateFrom: store.dateFrom(),
+        dateTo: store.dateTo(),
         transactionStatus: store.transactionStatus(),
         paymentStatus: store.paymentStatus()
       });

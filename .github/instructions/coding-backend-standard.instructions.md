@@ -74,5 +74,5 @@ Beelina.LIB is the shared C# library powering business logic, data models, datab
 - Keep code reusable and testable.
 - Document public APIs and complex logic.
 - Follow .NET best practices and code conventions.
-
----
+- If necessary to adjust something on the database objects (new columns, new Sp, delete columns, rename columns, etc.), Activate the ActivateEFMigration on `Beelina.API/appsettings.json` file to be able to run dotnet migrations cli command.
+- Do not run database update, let me run it myself, just add the migrations file by running the `dotnet migrations add <migration_message> -c <Database Context> -s ../Beelina.API/`. Database context: `BeelinaDataContext` or `BeelinaClientDbContext` 

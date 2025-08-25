@@ -25,7 +25,7 @@ namespace Beelina.API.Types.Query
         {
             try
             {
-                var savedProducts = await productRepository.CreateOrUpdateWarehouseProducts(warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
+                var savedProducts = await productRepository.CreateOrUpdateWarehouseProducts(warehouseId, productInputs, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 logger.LogInformation("Products Updated. Params: savedProducts = {@savedProducts}", savedProducts);
 
@@ -55,7 +55,7 @@ namespace Beelina.API.Types.Query
                 var updatedEntries = await productWarehouseStockReceiptEntryRepository
                     .UpdateProductWarehouseStockReceiptEntriesBatch(
                         productWarehouseStockReceiptEntryInputs,
-                        httpContextAccessor.HttpContext.RequestAborted
+                        httpContextAccessor?.HttpContext?.RequestAborted ?? default
                     );
 
                 return updatedEntries;
@@ -78,7 +78,7 @@ namespace Beelina.API.Types.Query
         {
             try
             {
-                var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntry(id, httpContextAccessor.HttpContext.RequestAborted);
+                var stockEntryFromRepo = await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntry(id, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 if (stockEntryFromRepo is null)
                 {
@@ -107,7 +107,7 @@ namespace Beelina.API.Types.Query
                      string filterKeyword = ""
                 )
         {
-            return await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntries(productReceiptEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
+            return await productWarehouseStockReceiptEntryRepository.GetProductWarehouseStockReceiptEntries(productReceiptEntryFilter, filterKeyword, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -115,7 +115,7 @@ namespace Beelina.API.Types.Query
             [Service] IProductWarehouseStockReceiptEntryRepository<ProductWarehouseStockReceiptEntry> productWarehouseStockReceiptEntryRepository,
             [Service] IHttpContextAccessor httpContextAccessor)
         {
-            return await productWarehouseStockReceiptEntryRepository.GetStockEntryLatestReferenceNo(httpContextAccessor.HttpContext.RequestAborted);
+            return await productWarehouseStockReceiptEntryRepository.GetStockEntryLatestReferenceNo(httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -129,7 +129,7 @@ namespace Beelina.API.Types.Query
             ProductsFilter productsFilter,
             string filterKeyword = "")
         {
-            return await productRepository.GetWarehouseProducts(warehouseId, 0, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetWarehouseProducts(warehouseId, 0, filterKeyword, productsFilter, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -140,7 +140,7 @@ namespace Beelina.API.Types.Query
             int productId,
             int warehouseId)
         {
-            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
+            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
             if (productFromRepo == null || productFromRepo?.Count == 0)
             {
@@ -166,7 +166,7 @@ namespace Beelina.API.Types.Query
         public async Task<List<InsufficientProductQuantity>> CheckWarehouseProductStockQuantity([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int productId, int warehouseId, int quantity)
         {
             var insufficientProductQuantities = new List<InsufficientProductQuantity>();
-            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
+            var productFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
             if (productFromRepo != null && productFromRepo[0].StockQuantity < quantity)
             {
                 var product = productFromRepo[0];

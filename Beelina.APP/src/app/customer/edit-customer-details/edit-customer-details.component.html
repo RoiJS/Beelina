@@ -55,18 +55,11 @@
               | translate
               }}:</mat-label>
             <mat-select formControlName="outletType">
-              <mat-option [value]="'KEY_ACCOUNT'">
-                {{
-                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT"
-                | translate
-                }}
+              @for (outletType of outletTypeOptions; track $index) {
+              <mat-option [value]="outletType.value">
+                {{ outletType.label }}
               </mat-option>
-              <mat-option [value]="'GEN_TRADE'">
-                {{
-                "EDIT_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE"
-                | translate
-                }}
-              </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">

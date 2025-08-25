@@ -30,7 +30,7 @@ namespace Beelina.API.Types.Query
 
 				var result = await transactionRepository.RegisterTransactionWithBusinessLogic(
 					transactionInput, 
-					httpContextAccessor.HttpContext.RequestAborted);
+					httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
 				if (transactionInput.Id > 0)
 				{
@@ -150,7 +150,7 @@ namespace Beelina.API.Types.Query
 						transactionFromRepo.Payments.Add(newPayment);
 					}
 
-					await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor.HttpContext.RequestAborted);
+					await transactionRepository.RegisterTransaction(transactionFromRepo, deletedProductTransactions, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
 					if (transactionInput.Id > 0)
 					{
@@ -260,6 +260,12 @@ namespace Beelina.API.Types.Query
 		}
 
 		[Authorize]
+		public async Task<double> GetProfit([Service] ITransactionRepository<Transaction> transactionRepository, int userId, string fromDate, string toDate)
+		{
+			return await transactionRepository.GetProfit(userId, fromDate, toDate);
+		}
+
+		[Authorize]
 		public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent([Service] ITransactionRepository<Transaction> transactionRepository, string fromDate, string toDate)
 		{
 			return await transactionRepository.GetSalesForAllSalesAgent(fromDate, toDate);
@@ -296,7 +302,7 @@ namespace Beelina.API.Types.Query
 				transactionIds, 
 				userAccountId, 
 				productRepository,
-				httpContextAccessor.HttpContext.RequestAborted);
+				httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 		}
 
 		[Authorize]
@@ -311,7 +317,7 @@ namespace Beelina.API.Types.Query
 				transactionInputs, 
 				userAccountId, 
 				productRepository,
-				httpContextAccessor.HttpContext.RequestAborted);
+				httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 		}
 
 		[Authorize]

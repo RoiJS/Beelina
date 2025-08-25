@@ -7,6 +7,7 @@ import * as ProductActions from './actions';
 import { IProductPayload } from 'src/app/_interfaces/payloads/iproduct.payload';
 import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
+import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
 
 export const initialState: IProductState = {
   isLoading: false,
@@ -23,7 +24,8 @@ export const initialState: IProductState = {
   error: null,
   supplierId: 0,
   stockStatus: StockStatusEnum.All,
-  priceStatus: PriceStatusEnum.All
+  priceStatus: PriceStatusEnum.All,
+  activeStatus: ProductActiveStatusEnum.ActiveOnly
 };
 
 export const reducers = createReducer(
@@ -89,7 +91,8 @@ export const reducers = createReducer(
     ...state,
     supplierId: action.productsFilter.supplierId,
     stockStatus: action.productsFilter.stockStatus,
-    priceStatus: action.productsFilter.priceStatus
+    priceStatus: action.productsFilter.priceStatus,
+    activeStatus: action.productsFilter.activeStatus
   })),
   on(ProductActions.resetProductState, (state, action) =>
   (<IProductState>{
@@ -97,7 +100,8 @@ export const reducers = createReducer(
     filterKeyword: state.filterKeyword,
     supplierId: state.supplierId,
     stockStatus: state.stockStatus,
-    priceStatus: state.priceStatus
+    priceStatus: state.priceStatus,
+    activeStatus: state.activeStatus
   })),
   on(ProductActions.resetTextInventoriesState, (state, action) => ({
     ...state,
@@ -119,6 +123,10 @@ export const reducers = createReducer(
     updatedProduct.pricePerUnit = product.pricePerUnit;
     updatedProduct.price = product.price;
     updatedProduct.productUnit = product.productUnit;
+    updatedProduct.validFrom = product.validFrom;
+    updatedProduct.validTo = product.validTo;
+    updatedProduct.parent = product.parent;
+    updatedProduct.productParentGroupId = product.productParentGroupId;
     updatedProduct.deductedStock = -action.deduction;
 
     const updatedProducts = [...state.products];

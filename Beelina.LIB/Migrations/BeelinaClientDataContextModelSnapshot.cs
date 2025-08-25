@@ -297,8 +297,14 @@ namespace Beelina.LIB.Migrations
                     b.Property<int>("NumberOfUnits")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Parent")
+                        .HasColumnType("bit");
+
                     b.Property<float>("PricePerUnit")
                         .HasColumnType("real");
+
+                    b.Property<int?>("ProductParentGroupId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProductUnitId")
                         .HasColumnType("int");
@@ -312,6 +318,12 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
@@ -319,6 +331,8 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("DeactivatedById");
 
                     b.HasIndex("DeletedById");
+
+                    b.HasIndex("ProductParentGroupId");
 
                     b.HasIndex("ProductUnitId");
 
@@ -796,6 +810,9 @@ namespace Beelina.LIB.Migrations
                     b.Property<DateTime>("DateDeleted")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateEncoded")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
@@ -805,17 +822,32 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
+                    b.Property<double>("Discount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("InvoiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceNo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PlateNo")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PurchaseOrderStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("ReferenceNo")
                         .HasColumnType("nvarchar(max)");
@@ -1491,6 +1523,10 @@ namespace Beelina.LIB.Migrations
                         .HasForeignKey("DeletedById")
                         .HasConstraintName("FK_Product_DeletedById_Accounts_AccountId");
 
+                    b.HasOne("Beelina.LIB.Models.Product", "ProductParentGroup")
+                        .WithMany()
+                        .HasForeignKey("ProductParentGroupId");
+
                     b.HasOne("Beelina.LIB.Models.ProductUnit", "ProductUnit")
                         .WithMany()
                         .HasForeignKey("ProductUnitId")
@@ -1513,6 +1549,8 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("DeactivatedBy");
 
                     b.Navigation("DeletedBy");
+
+                    b.Navigation("ProductParentGroup");
 
                     b.Navigation("ProductUnit");
 

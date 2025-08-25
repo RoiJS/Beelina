@@ -1,10 +1,10 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription, firstValueFrom, map, startWith } from 'rxjs';
+import { Observable, Subscription, Subject, firstValueFrom, map, startWith, switchMap, debounceTime, distinctUntilChanged, takeUntil, tap, of, first } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
@@ -32,6 +32,7 @@ import { PermissionLevelEnum } from 'src/app/_enum/permission-level.enum';
 
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
+import { SalesAgentSelectorDialogComponent, SalesAgentSelectorConfig } from 'src/app/shared/components/sales-agent-selector-dialog';
 import { SupplierStore } from 'src/app/suppliers/suppliers.store';
 import { InsufficientProductQuantity } from 'src/app/_models/insufficient-product-quantity';
 
@@ -48,7 +49,7 @@ import { ProductStockAudit } from 'src/app/_models/product-stock-audit';
   templateUrl: './edit-product-details.component.html',
   styleUrls: ['./edit-product-details.component.scss'],
 })
-export class EditProductDetailsComponent extends BaseComponent implements OnInit {
+export class EditProductDetailsComponent extends BaseComponent implements OnInit, OnDestroy {
   private _dialogRef: MatBottomSheetRef<
     AddProductStockQuantityDialogComponent,
     {
@@ -62,6 +63,8 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   private _productUnitOptions: Array<ProductUnit> = [];
   private _productUnitFilterOptions: Observable<Array<ProductUnit>>;
   private _productUnitOptionsSubscription: Subscription;
+  private _destroy$ = new Subject<void>();
+  private _filteredParentProducts$: Observable<Product[]>;
   private _productAdditionalStockQuantitySubscription: Subscription;
   private _productId: number;
   private _productSource: ProductSourceEnum;
@@ -72,6 +75,10 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   private _updateProductSubscription: Subscription;
   private _warehouseId: number = 1;
   private _isAdmin = false;
+  private _productInformationLabelText: string;
+  private _productConnectionLabelText: string;
+  private _productValidityLabelText: string;
+  private _isParentSwitchDisabled: boolean = false;
 
   activatedRoute = inject(ActivatedRoute);
   authService = inject(AuthService);
@@ -99,6 +106,10 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
     this._productSource = <ProductSourceEnum>state.productSource;
     this._businessModel = this.authService.businessModel;
 
+    this._productInformationLabelText = this.translateService.instant('EDIT_PRODUCT_DETAILS_PAGE.TAB_SECTIONS.PRODUCT_INFORMATION');
+    this._productConnectionLabelText = this.translateService.instant('EDIT_PRODUCT_DETAILS_PAGE.TAB_SECTIONS.PRODUCT_CONNECTION');
+    this._productValidityLabelText = this.translateService.instant('EDIT_PRODUCT_DETAILS_PAGE.TAB_SECTIONS.PRODUCT_VALIDITY');
+
     this._productForm = this.formBuilder.group(
       {
         code: [
@@ -121,11 +132,13 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         productUnit: ['', Validators.required],
         isTransferable: [false],
         numberOfUnits: [0],
-        supplierId: [null, Validators.required]
+        supplierId: [null, Validators.required],
+        validFrom: [null],
+        validTo: [null],
+        parent: [false],
+        productParentGroupId: [null],
+        productParentGroupDisplay: ['']
       },
-      {
-        updateOn: 'blur',
-      }
     );
 
     this.$isLoading = this.store.pipe(select(isUpdateLoadingSelector));
@@ -152,6 +165,53 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         this._productForm.get('isTransferable').setValue(product.isTransferable);
         this._productForm.get('numberOfUnits').setValue(product.numberOfUnits);
         this._productForm.get('productUnit').setValue(product.productUnit.name);
+        this._productForm.get('validFrom').setValue(product.validFrom);
+        this._productForm.get('validTo').setValue(product.validTo);
+        this._productForm.get('parent').setValue(product.parent);
+        this._productForm.get('productParentGroupId').setValue(product.productParentGroupId);
+
+        // Set display value for parent product autocomplete
+        if (product.productParentGroupId) {
+          // Get the specific parent product for display using efficient single product fetch
+          this.productService[this._productSourceGetFunc[this._productSource]](product.productParentGroupId)
+            .pipe(
+              first(),
+              takeUntil(this._destroy$)
+            )
+            .subscribe({
+              next: (parentProduct: ProductInformationResult) => {
+                if (parentProduct) {
+                  this._productForm.get('productParentGroupDisplay').setValue(parentProduct);
+                }
+              },
+              error: (error) => {
+                console.warn('Failed to load parent product:', error);
+                // Optionally show a notification or log the error
+                this.loggerService.logMessage(LogLevelEnum.ERROR, 'Failed to load parent product: ' + error);
+              }
+            });
+        }
+
+        // Check if product has linked products to disable parent switch
+        if (product.parent) {
+          this.productService.hasLinkedProducts(product.id)
+            .pipe(
+              first(),
+              takeUntil(this._destroy$)
+            )
+            .subscribe({
+              next: (hasLinkedProducts: boolean) => {
+                if (hasLinkedProducts) {
+                  this._productForm.get('parent').disable();
+                  this._isParentSwitchDisabled = true;
+                }
+              },
+              error: (error) => {
+                console.warn('Failed to check linked products:', error);
+                this.loggerService.logMessage(LogLevelEnum.ERROR, 'Failed to check linked products: ' + error);
+              }
+            });
+        }
 
         if (this.showDefaultPrice) {
           this._productForm.get('pricePerUnit').setValue(product?.defaultPrice);
@@ -173,6 +233,33 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         map((value) => this._filter(value || ''))
       );
 
+    // Setup parent product autocomplete with server-side search
+    this._filteredParentProducts$ = this._productForm
+      .get('productParentGroupDisplay')!
+      .valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap((value: string | Product) => {
+          // Handle selection of a product object
+          if (value && typeof value === 'object' && value.id) {
+            this._productForm.get('productParentGroupId')?.setValue(value.id);
+          }
+        }),
+        switchMap((value: string | Product) => {
+          const searchTerm = typeof value === 'string' ? value : value?.name || '';
+
+          if (searchTerm.length < 1) {
+            return of([]);
+          }
+
+          return this.productService.getParentProducts(searchTerm).pipe(
+            map(result => result || []),
+            takeUntil(this._destroy$)
+          );
+        })
+      );
+
     this._productAdditionalStockQuantitySubscription = this._productForm
       .get('additionalStockQuantity')
       .valueChanges
@@ -186,6 +273,8 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   }
 
   ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
     this._dialogRef = null;
     if (this._updateProductSubscription) this._updateProductSubscription.unsubscribe();
     this._productUnitOptionsSubscription.unsubscribe();
@@ -213,6 +302,10 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
       product.numberOfUnits = this._productForm.get('numberOfUnits').value;
       product.pricePerUnit = this._productForm.get('pricePerUnit').value;
       product.productUnit.name = this._productForm.get('productUnit').value;
+      product.validFrom = this._productForm.get('validFrom').value;
+      product.validTo = this._productForm.get('validTo').value;
+      product.parent = this._productForm.get('parent').value;
+      product.productParentGroupId = this._productForm.get('productParentGroupId').value;
 
       this._productForm.markAllAsTouched();
 
@@ -406,12 +499,109 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
     );
   }
 
+  displayParentProduct(product: Product): string {
+    return product ? `${product.code}: ${product.name}` : '';
+  }
+
+  assignProduct() {
+    try {
+      const config: SalesAgentSelectorConfig = {
+        title: this.translateService.instant('ASSIGN_PRODUCT_DIALOG.TITLE'),
+        subtitle: this.translateService.instant('ASSIGN_PRODUCT_DIALOG.SUBTITLE'),
+        searchPlaceholder: this.translateService.instant('ASSIGN_PRODUCT_DIALOG.SEARCH_PLACEHOLDER'),
+        confirmButtonText: this.translateService.instant('ASSIGN_PRODUCT_DIALOG.ASSIGN_BUTTON'),
+        allowMultipleSelection: true,
+        preselectedAgentIds: [],
+        excludeAgentIds: []
+      };
+
+      const dialogRef = this.bottomSheet.open(SalesAgentSelectorDialogComponent, {
+        data: config,
+        disableClose: false,
+        hasBackdrop: true,
+        panelClass: 'assign-product-dialog'
+      });
+
+      dialogRef.afterDismissed()
+        .subscribe((selectedAgentIds: number[]) => {
+          if (selectedAgentIds && selectedAgentIds.length > 0) {
+            this.confirmAssignment(selectedAgentIds);
+          }
+        });
+    } catch (error) {
+      console.error('Error opening assign product dialog:', error);
+      this.loggerService.logMessage(LogLevelEnum.ERROR, 'Error opening assign product dialog: ' + error);
+    }
+  }
+
+  private confirmAssignment(salesAgentIds: number[]) {
+    const agentCount = salesAgentIds.length;
+    const productName = this._productDetails?.name || 'product';
+
+    this.dialogService
+      .openConfirmation(
+        this.translateService.instant('ASSIGN_PRODUCT_DIALOG.CONFIRM_TITLE'),
+        this.translateService.instant('ASSIGN_PRODUCT_DIALOG.CONFIRM_MESSAGE', {
+          productName,
+          agentCount
+        })
+      )
+      .subscribe((result: ButtonOptions) => {
+        if (result === ButtonOptions.YES) {
+          this.performAssignment(salesAgentIds);
+        }
+      });
+  }
+
+  private performAssignment(salesAgentIds: number[]) {
+    this.store.dispatch(
+      ProductActions.setUpdateProductLoadingState({ state: true })
+    );
+
+    this.productService.assignProductToSalesAgents(
+      this._productId,
+      salesAgentIds,
+      this._warehouseId
+    ).subscribe({
+      next: (assignments) => {
+        this.store.dispatch(
+          ProductActions.setUpdateProductLoadingState({ state: false })
+        );
+
+        const assignmentCount = assignments.length;
+        this.notificationService.openSuccessNotification(
+          this.translateService.instant('ASSIGN_PRODUCT_DIALOG.SUCCESS_MESSAGE', {
+            count: assignmentCount
+          })
+        );
+      },
+      error: (error) => {
+        this.store.dispatch(
+          ProductActions.setUpdateProductLoadingState({ state: false })
+        );
+
+        this.notificationService.openErrorNotification(
+          this.translateService.instant('ASSIGN_PRODUCT_DIALOG.ERROR_MESSAGE')
+        );
+
+        this.loggerService.logMessage(
+          LogLevelEnum.ERROR,
+          `Failed to assign product ${this._productId}: ${error.message}`
+        );
+      }
+    });
+  }
+
   get productForm(): FormGroup {
     return this._productForm;
   }
 
   get productUnitFilterOptions(): Observable<Array<ProductUnit>> {
     return this._productUnitFilterOptions;
+  }
+
+  get parentProductFilterOptions(): Observable<Array<Product>> {
+    return this._filteredParentProducts$;
   }
 
   get showDefaultPrice(): boolean {
@@ -424,5 +614,25 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
 
   get isAdmin(): boolean {
     return this._isAdmin;
+  }
+
+  get productInformationLabelText(): string {
+    return this._productInformationLabelText;
+  }
+
+  get productConnectionLabelText(): string {
+    return this._productConnectionLabelText;
+  }
+
+  get productValidityLabelText(): string {
+    return this._productValidityLabelText;
+  }
+
+  get isParentSwitchDisabled(): boolean {
+    return this._isParentSwitchDisabled;
+  }
+
+  override get businessModelEnum(): typeof BusinessModelEnum {
+    return BusinessModelEnum;
   }
 }

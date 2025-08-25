@@ -5,6 +5,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
@@ -14,6 +15,7 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { CustomUISharedModule } from '../shared/custom-ui-shared.module';
 import { ProductRoutingModule } from './product.routing.module';
@@ -51,6 +53,7 @@ import { TopSellingProductEffects } from './top-products/store/effects';
     MatBadgeModule,
     MatIconModule,
     MatInputModule,
+    MatTooltipModule,
     MatListModule,
     MatMenuModule,
     MatRippleModule,
@@ -58,6 +61,7 @@ import { TopSellingProductEffects } from './top-products/store/effects';
     MatSelectModule,
     MatNativeDateModule,
     MatDatepickerModule,
+    MatTabsModule,
     ReactiveFormsModule,
     StoreModule.forFeature('barangays', BarangayReducers.reducers),
     StoreModule.forFeature('products', ProductReducers.reducers),

@@ -52,7 +52,9 @@ export class OrderTransactionsComponent extends BaseComponent implements OnDestr
     TransactionFilterComponent,
     {
       transactionStatus: TransactionStatusEnum;
-      transactionDate: Date;
+      dateFrom: string;
+      dateTo: string;
+      paymentStatus: PaymentStatusEnum;
     }
   >;
 
@@ -70,10 +72,15 @@ export class OrderTransactionsComponent extends BaseComponent implements OnDestr
         const newTransactionsFilter = new TransactionsFilter();
         newTransactionsFilter.status = this.orderTransactionStore.transactionStatus();
 
-        if (this.orderTransactionStore.transactionDate().length === 0) {
-          newTransactionsFilter.transactionDate = DateFormatter.format(new Date());
+        if (this.orderTransactionStore.dateFrom().length === 0 && this.orderTransactionStore.dateTo().length === 0) {
+          // For initial load, set both dateFrom and dateTo to today's date
+          const today = DateFormatter.format(new Date());
+          newTransactionsFilter.dateFrom = today;
+          newTransactionsFilter.dateTo = today;
         } else {
-          newTransactionsFilter.transactionDate = this.orderTransactionStore.transactionDate();
+          // Use existing date range from store
+          newTransactionsFilter.dateFrom = this.orderTransactionStore.dateFrom();
+          newTransactionsFilter.dateTo = this.orderTransactionStore.dateTo();
           newTransactionsFilter.paymentStatus = this.orderTransactionStore.paymentStatus();
         }
 
@@ -115,14 +122,16 @@ export class OrderTransactionsComponent extends BaseComponent implements OnDestr
       .subscribe(
         (data: {
           transactionStatus: TransactionStatusEnum;
-          transactionDate: Date;
+          dateFrom: string;
+          dateTo: string;
           paymentStatus: PaymentStatusEnum;
         }) => {
           if (!data) return;
 
           this.transactionsFilter.update(() => {
             const newTransactionsFilter = new TransactionsFilter();
-            newTransactionsFilter.transactionDate = DateFormatter.format(data.transactionDate);
+            newTransactionsFilter.dateFrom = data.dateFrom;
+            newTransactionsFilter.dateTo = data.dateTo;
             newTransactionsFilter.status = data.transactionStatus;
             newTransactionsFilter.paymentStatus = data.paymentStatus;
             return newTransactionsFilter;

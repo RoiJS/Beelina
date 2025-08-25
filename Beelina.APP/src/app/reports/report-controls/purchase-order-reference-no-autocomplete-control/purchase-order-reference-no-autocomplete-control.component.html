@@ -1,0 +1,29 @@
+<div [ngClass]="{ 'no-display': hide }" class="report-control-autocomplete">
+  <mat-form-field appearance="fill">
+    <mat-label>{{ controLabel }}:</mat-label>
+    <input
+      type="text"
+      [placeholder]="'GENERAL_TEXTS.ALL' | translate"
+      aria-label="Purchase Order Reference Number"
+      matInput
+      [formControl]="purchaseOrderReferenceNoControl"
+      [matAutocomplete]="purchaseOrderInput">
+    <mat-autocomplete #purchaseOrderInput="matAutocomplete" [displayWith]="displayPurchaseOrderReferenceNo">
+      @for (purchaseOrder of filteredPurchaseOrderReferenceNos | async; track purchaseOrder.id) {
+        <mat-option [value]="purchaseOrder">
+          <span class="report-control__option-primary-text">{{ purchaseOrder.referenceNo }}</span>
+          <small class="report-control__option-secondary-text">
+            - {{ purchaseOrder.supplier?.name || 'Unknown Supplier' }}
+            ({{ purchaseOrder.stockEntryDate | date:'shortDate' }})
+          </small>
+        </mat-option>
+      }
+    </mat-autocomplete>
+
+    @if (selectedPurchaseOrder) {
+      <button mat-button matSuffix aria-label="Clear" (click)="clearSelection()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+</div>

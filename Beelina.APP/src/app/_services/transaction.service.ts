@@ -8,6 +8,7 @@ import { Apollo, gql, MutationResult } from 'apollo-angular';
 import { catchError, map, take } from 'rxjs';
 
 import { Product } from '../_models/product';
+import { OutletTypeHelper } from '../_helpers/outlet-type.helper';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
 
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
@@ -353,6 +354,12 @@ const GET_TRANSACTION_SALES_FOR_ALL_PER_DATE_RANGE_QUERY = gql`
       salesAgentName
       sales
     }
+  }
+`;
+
+const GET_PROFIT_QUERY = gql`
+  query ($userId: Int!, $fromDate: String!, $toDate: String!) {
+    profit(userId: $userId, fromDate: $fromDate, toDate: $toDate)
   }
 `;
 
@@ -1205,6 +1212,28 @@ export class TransactionService {
       );
   }
 
+  getProfit(userId: number, fromDate: string, toDate: string) {
+    return this.apollo
+      .watchQuery({
+        query: GET_PROFIT_QUERY,
+        variables: { userId, fromDate, toDate },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              profit: number;
+            }>
+          ) => {
+            return result.data.profit;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
   getTransactionSalesPerDateRange(userId: number, dateRanges: Array<DateRange>) {
     return this.apollo
       .watchQuery({
@@ -1273,7 +1302,7 @@ export class TransactionService {
                 customerSale.storeId = t.storeId;
                 customerSale.storeName = t.storeName;
                 customerSale.numberOfTransactions = t.numberOfTransactions;
-                customerSale.outletType = t.outletType === OutletTypeEnum.GEN_TRADE ? this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GEN_TRADE') : this.translateService.instant('ADD_CUSTOMER_DETAILS_PAGE.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.KEY_ACCOUNT');
+                customerSale.outletType = OutletTypeHelper.getOutletTypeDisplayText(t.outletType, this.translateService);
                 customerSale.totalSalesAmount = t.totalSalesAmount;
                 return customerSale;
               })

@@ -19,7 +19,7 @@ namespace Beelina.API.Types.Mutations
         {
             try
             {
-                var result = await subscriptionRepository.UpdateClientSubscription(clientSubscriptionInput, httpContextAccessor.HttpContext.RequestAborted);
+                var result = await subscriptionRepository.UpdateClientSubscription(clientSubscriptionInput, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 if (result is null)
                 {
@@ -61,8 +61,7 @@ namespace Beelina.API.Types.Mutations
 
             try
             {
-                var resut = await subscriptionRepository.ApproveClientSubscription(clientSubscriptionInput, httpContextAccessor.HttpContext.RequestAborted);
-
+                result = await subscriptionRepository.ApproveClientSubscription(clientSubscriptionInput, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
                 logger.LogInformation("Successfully approved client subscription. Params: {@params}", clientSubscriptionInput);
             }
             catch (Exception ex)

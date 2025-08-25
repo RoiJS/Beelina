@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize, take } from 'rxjs/operators';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
@@ -9,6 +11,7 @@ import { SalesPerAgentViewComponent } from './sales-per-agent-view/sales-per-age
 import { LocalClientSubscriptionDbService } from 'src/app/_services/local-db/local-client-subscription-db.service';
 import { ClientSubscriptionDetails } from 'src/app/_models/client-subscription-details.model';
 import { SubscriptionFeatureHideDashboardWidget } from 'src/app/_models/subscription-feature-hide-dashboard-widget.model';
+import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +20,7 @@ import { SubscriptionFeatureHideDashboardWidget } from 'src/app/_models/subscrip
 })
 export class HomeComponent extends SalesComponent implements OnInit, AfterViewInit {
   private userId: number;
+  protected _profit: number = 0;
 
   salesChartView = viewChild(SalesChartViewComponent);
   salesPerAgentChartView = viewChild(SalesPerAgentViewComponent);
@@ -48,7 +52,7 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
   }
 
   dateRanges() {
-    return this.getDateRanges(this._currentFilterOption, 8);
+    return this.getDateRanges(this._currentFilterOption, 5);
   }
 
   initChartView() {
@@ -89,5 +93,59 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
   override monthChange(e) {
     this.getTransactionSales(DateFilterEnum.Monthly);
     this.initChartView();
+  }
+
+  override fromDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+    this.initChartView();
+  }
+
+  override toDateChange(e) {
+    this.validateCustomDateRange();
+    this.getTransactionSales(DateFilterEnum.Custom);
+    this.initChartView();
+  }
+
+  override getTransactionSales(filterOption: DateFilterEnum) {
+    const userId = this.authService.userId;
+    const dateFilters = this.getDateRange(filterOption);
+    this._isLoading = true;
+
+    // Combine sales and profit data with error handling
+    // Note: Consider switching to switchMap/takeUntilDestroyed if cancelling in-flight requests on rapid filter changes is desired
+    forkJoin({
+      sales: this.transactionService
+        .getTransactionSales(userId, dateFilters.fromDate, dateFilters.toDate)
+        .pipe(
+          take(1), // Ensure the observable completes for forkJoin
+          catchError(() => of({
+            totalSalesAmount: 0,
+            cashAmountOnHand: 0,
+            chequeAmountOnHand: 0,
+            accountReceivables: 0,
+            badOrderAmount: 0
+          }))
+        ),
+      profit: this.transactionService
+        .getProfit(userId, dateFilters.fromDate, dateFilters.toDate)
+        .pipe(
+          take(1), // Ensure the observable completes for forkJoin
+          catchError(() => of(0))
+        )
+    }).pipe(
+      finalize(() => this._isLoading = false)
+    ).subscribe((result) => {
+      this._sales = result.sales.totalSalesAmount;
+      this._cashOnHand = result.sales.cashAmountOnHand;
+      this._chequeOnHand = result.sales.chequeAmountOnHand;
+      this._accountReceivables = result.sales.accountReceivables;
+      this._badOrders = result.sales.badOrderAmount;
+      this._profit = result.profit;
+    });
+  }
+
+  get profit(): string {
+    return NumberFormatter.formatCurrency(this._profit);
   }
 }

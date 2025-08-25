@@ -158,13 +158,22 @@ export function migrationFactory() {
       const store = transaction.objectStore('userSettings');
 
       store.createIndex('printReceiptFontSize', 'printReceiptFontSize', { unique: false });
+    },
+    19: (db: IDBDatabase, transaction: IDBTransaction) => {
+      const store = transaction.objectStore('products');
+
+      // Add new product validity and parent group properties
+      store.createIndex('validFrom', 'validFrom', { unique: false });
+      store.createIndex('validTo', 'validTo', { unique: false });
+      store.createIndex('parent', 'parent', { unique: false });
+      store.createIndex('productParentGroupId', 'productParentGroupId', { unique: false });
     }
   };
 }
 
 const dbConfig: DBConfig = {
   name: 'bizualLocalDb',
-  version: 18,
+  version: 19,
   objectStoresMeta: [
     {
       store: 'customerUsers',
@@ -191,6 +200,10 @@ const dbConfig: DBConfig = {
         { name: 'isTransferable', keypath: 'isTransferable', options: { unique: false } },
         { name: 'numberOfUnits', keypath: 'numberOfUnits', options: { unique: false } },
         { name: 'productUnitId', keypath: 'productUnitId', options: { unique: false } },
+        { name: 'validFrom', keypath: 'validFrom', options: { unique: false } },
+        { name: 'validTo', keypath: 'validTo', options: { unique: false } },
+        { name: 'parent', keypath: 'parent', options: { unique: false } },
+        { name: 'productParentGroupId', keypath: 'productParentGroupId', options: { unique: false } },
       ]
     },
     {

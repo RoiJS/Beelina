@@ -4,6 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,6 +18,7 @@ import { PurchaseOrderDetailsComponent } from './purchase-order-details.componen
     CustomUISharedModule,
     MatTableModule,
     MatPaginatorModule,
+    MatExpansionModule,
     NgSelectModule,
     FormsModule,
     ReactiveFormsModule,

@@ -4,7 +4,7 @@ import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest, firstValueFrom, take } from 'rxjs';
 
 import { ButtonOptions } from 'src/app/_enum/button-options.enum';
 import { ProductSourceEnum } from 'src/app/_enum/product-source.enum';
@@ -17,6 +17,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
 import { ProductFilterComponent } from '../product/product-filter/product-filter.component';
 import { SearchFieldComponent } from 'src/app/shared/ui/search-field/search-field.component';
 import { TransferProductInventoryComponent } from '../product/transfer-product-inventory/transfer-product-inventory.component';
+import { CopyProductConfirmationComponent } from '../product/copy-product-confirmation/copy-product-confirmation.component';
 
 import { ApplySubscriptionService } from '../_services/apply-subscription.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
@@ -24,11 +25,12 @@ import { LocalClientSubscriptionDbService } from '../_services/local-db/local-cl
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 import { ProductService } from 'src/app/_services/product.service';
 import * as WarehouseProductActions from './store/actions';
-import { filterKeywordSelector, isLoadingSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
+import { activeStatusSelector, filterKeywordSelector, isLoadingSelector, priceStatusSelector, stockStatusSelector, supplierIdSelector, totalCountSelector } from './store/selectors';
 import { ProductsFilter } from '../_models/filters/products.filter';
 import { ClientSubscriptionDetails } from '../_models/client-subscription-details.model';
 import { StockStatusEnum } from '../_enum/stock-status.enum';
 import { PriceStatusEnum } from '../_enum/price-status.enum';
+import { ProductActiveStatusEnum } from '../_enum/product-active-status.enum';
 
 @Component({
   selector: 'app-warehouse',
@@ -64,6 +66,14 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     }
   >;
 
+  private _copyProductConfirmationRef: MatBottomSheetRef<
+    CopyProductConfirmationComponent,
+    {
+      confirm: boolean;
+      setValidToDate: boolean;
+    }
+  >;
+
   clientSubscriptionDetails: ClientSubscriptionDetails;
 
   applySubscriptionService = inject(ApplySubscriptionService);
@@ -95,6 +105,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     this._dialogAddQuantityRef = null;
     this._transferInventoryDialogRef = null;
     this._dialogOpenFilterRef = null;
+    this._copyProductConfirmationRef = null;
   }
 
   ngAfterViewInit() {
@@ -109,11 +120,22 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     this._subscription.add(
       this.store.pipe(select(supplierIdSelector))
         .subscribe((supplierId: number) => {
-          const productsFilter = new ProductsFilter();
-          productsFilter.supplierId = supplierId;
-          productsFilter.stockStatus = StockStatusEnum.All;
-          productsFilter.priceStatus = PriceStatusEnum.All;
-          this.productsFilter.set(productsFilter);
+          this._subscription.add(
+            combineLatest([
+              this.store.select(supplierIdSelector),
+              this.store.select(stockStatusSelector),
+              this.store.select(priceStatusSelector),
+              this.store.select(activeStatusSelector)
+            ]).pipe(take(1))
+              .subscribe(([currentSupplierId, currentStockStatus, currentPriceStatus, currentActiveStatus]) => {
+                const productsFilter = new ProductsFilter();
+                productsFilter.supplierId = currentSupplierId;
+                productsFilter.stockStatus = currentStockStatus;
+                productsFilter.priceStatus = currentPriceStatus;
+                productsFilter.activeStatus = currentActiveStatus;
+                this.productsFilter.set(productsFilter);
+              })
+          );
         })
     );
 
@@ -142,6 +164,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     defaultProductsFilter.supplierId = 0;
     defaultProductsFilter.stockStatus = StockStatusEnum.All;
     defaultProductsFilter.priceStatus = PriceStatusEnum.All;
+    defaultProductsFilter.activeStatus = ProductActiveStatusEnum.ActiveOnly;
 
     this._dialogOpenFilterRef = this.bottomSheet.open(ProductFilterComponent, {
       data: {
@@ -156,7 +179,8 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
         (data: {
           supplierId: number,
           stockStatus: StockStatusEnum,
-          priceStatus: PriceStatusEnum
+          priceStatus: PriceStatusEnum,
+          activeStatus: ProductActiveStatusEnum
         }) => {
           if (!data) return;
 
@@ -164,6 +188,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
           productsFilter.supplierId = data.supplierId;
           productsFilter.stockStatus = data.stockStatus;
           productsFilter.priceStatus = data.priceStatus;
+          productsFilter.activeStatus = data.activeStatus;
           this.productsFilter.set(productsFilter);
 
           this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
@@ -234,43 +259,83 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     }
   }
 
-  copyProductItem(product: Product) {
+  async copyProductItem(product: Product) {
     this.selectedProduct.set(product);
 
     const copyProduct = new Product();
     const copyOfText = this.translateService.instant("GENERAL_TEXTS.COPY_OF");
+
+    let latestProductCode: string | null = null;
+    try {
+      latestProductCode = await firstValueFrom(this.productService.getLatestProductCode());
+    } catch (error) {
+      console.error('Failed to get latest product code:', error);
+      // Continue with fallback approach
+    }
     copyProduct.id = 0;
     copyProduct.name = copyOfText + ' ' + this.selectedProduct().name;
-    copyProduct.code = copyOfText + ' ' + this.selectedProduct().code;
+
+    // Use latest product code if available, otherwise use copy of existing code
+    if (latestProductCode) {
+      // Increment the latest code (assuming numeric suffix)
+      const incrementedCode = this.incrementCode(latestProductCode);
+      copyProduct.code = incrementedCode;
+    } else {
+      copyProduct.code = copyOfText + ' ' + this.selectedProduct().code;
+    }
+
     copyProduct.description = this.selectedProduct().description;
     copyProduct.stockQuantity = 0;
     copyProduct.isTransferable = this.selectedProduct().isTransferable;
     copyProduct.numberOfUnits = this.selectedProduct().numberOfUnits;
     copyProduct.pricePerUnit = this.selectedProduct().pricePerUnit;
     copyProduct.supplierId = this.selectedProduct().supplierId;
+    copyProduct.validFrom = new Date();
+    copyProduct.validTo = null;
     copyProduct.productUnit.name = this.selectedProduct().productUnit.name;
 
-    this.dialogService
-      .openConfirmation(
-        this.translateService.instant(
-          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.TITLE'
-        ),
-        this.translateService.instant(
-          'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.CONFIRM',
-          { name: copyProduct.name }
-        )
-      )
-      .subscribe((result: ButtonOptions) => {
-        if (result === ButtonOptions.YES) {
-          this.productService.updateWarehouseProductInformation([copyProduct]).subscribe({
+    // Handle product parent group assignment
+    if (this.selectedProduct().parent) {
+      // If the original product is a parent, assign it as the parent group
+      copyProduct.productParentGroupId = this.selectedProduct().id;
+      copyProduct.parent = false; // The copy is not a parent itself
+    } else {
+      // If the original product is not a parent, copy its parent group id
+      copyProduct.productParentGroupId = this.selectedProduct().productParentGroupId;
+      copyProduct.parent = false; // The copy is not a parent itself
+    }
+
+    // Handle valid dates for products with same product group id
+    const currentDate = new Date();
+    const previousDay = new Date(currentDate);
+    previousDay.setDate(currentDate.getDate() - 1);
+
+    // Set the copy's valid from date to current date
+    copyProduct.validFrom = currentDate;
+    copyProduct.validTo = null;
+
+    // Open the copy product confirmation dialog
+    this._copyProductConfirmationRef = this.bottomSheet.open(CopyProductConfirmationComponent, {
+      data: {
+        productName: copyProduct.name,
+      },
+    });
+
+    this._copyProductConfirmationRef.afterDismissed().subscribe((result) => {
+      if (result?.confirm) {
+        // If user confirmed and wants to set validTo date on original product
+        if (result.setValidToDate) {
+
+          // Create a proper Product instance for the original
+          const originalProduct = new Product();
+          Object.assign(originalProduct, this.selectedProduct());
+          originalProduct.validTo = previousDay;
+
+          // Update the original product first
+          this.productService.updateWarehouseProductInformation([originalProduct]).subscribe({
             next: () => {
-              this.notificationService.openSuccessNotification(
-                this.translateService.instant(
-                  'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.SUCCESS_MESSAGE'
-                )
-              );
-              this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
-              this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
+              // Then proceed with creating the copy
+              this.proceedWithWarehouseProductCopy(copyProduct);
             },
             error: () => {
               this.notificationService.openErrorNotification(
@@ -278,10 +343,35 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
                   'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.ERROR_MESSAGE'
                 )
               );
-            },
+            }
           });
+        } else {
+          // If no validTo date setting needed, proceed directly with copy creation
+          this.proceedWithWarehouseProductCopy(copyProduct);
         }
-      });
+      }
+    });
+  }
+
+  private proceedWithWarehouseProductCopy(copyProduct: Product) {
+    this.productService.updateWarehouseProductInformation([copyProduct]).subscribe({
+      next: () => {
+        this.notificationService.openSuccessNotification(
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.SUCCESS_MESSAGE'
+          )
+        );
+        this.store.dispatch(WarehouseProductActions.resetWarehouseProductState());
+        this.store.dispatch(WarehouseProductActions.getWarehouseProductsAction());
+      },
+      error: () => {
+        this.notificationService.openErrorNotification(
+          this.translateService.instant(
+            'PRODUCTS_CATALOGUE_PAGE.COPY_PRODUCT_DIALOG.ERROR_MESSAGE'
+          )
+        );
+      },
+    });
   }
 
 

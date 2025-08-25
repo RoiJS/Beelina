@@ -1,10 +1,10 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription, firstValueFrom, map, startWith } from 'rxjs';
+import { Observable, Subscription, Subject, firstValueFrom, map, startWith, switchMap, debounceTime, distinctUntilChanged, takeUntil, tap, of } from 'rxjs';
 
 import { AppStateInterface } from 'src/app/_interfaces/app-state.interface';
 
@@ -29,6 +29,7 @@ import { ProductUnit } from 'src/app/_models/product-unit';
 import { UniqueProductCodeValidator } from 'src/app/_validators/unique-product-code.validator';
 import { AddProductStockQuantityDialogComponent } from '../add-product-stock-quantity-dialog/add-product-stock-quantity-dialog.component';
 import { SupplierStore } from 'src/app/suppliers/suppliers.store';
+import { ParentProductStore } from '../parent-products.store';
 import { ProductWarehouseStockReceiptEntry } from 'src/app/_models/product-warehouse-stock-receipt-entry';
 import { ProductStockWarehouseAudit } from 'src/app/_models/product-stock-warehouse-audit';
 import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
@@ -41,7 +42,7 @@ import { BaseComponent } from 'src/app/shared/components/base-component/base.com
   templateUrl: './add-product-details.component.html',
   styleUrls: ['./add-product-details.component.scss'],
 })
-export class AddProductDetailsComponent extends BaseComponent implements OnInit {
+export class AddProductDetailsComponent extends BaseComponent implements OnInit, OnDestroy {
   private _dialogRef: MatBottomSheetRef<
     AddProductStockQuantityDialogComponent,
     {
@@ -53,11 +54,17 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit 
   private _productUnitOptions: Array<ProductUnit> = [];
   private _productUnitFilterOptions: Observable<Array<ProductUnit>>;
   private _productUnitOptionsSubscription: Subscription;
+  private _parentProductOptions: Array<Product> = [];
+  private _destroy$ = new Subject<void>();
+  private _filteredParentProducts$: Observable<Product[]>;
   private _productAdditionalStockQuantitySubscription: Subscription;
   private _productSource: ProductSourceEnum;
   private _productSourceUpdateFunc: Array<string> = ["updateProductInformation", "updateWarehouseProductInformation"];
   private _productSourceRedirectUrl: Array<string> = ['/product-catalogue', "/warehouse-products"];
   private _updateProductSubscription: Subscription;
+  private _productInformationLabelText: string;
+  private _productConnectionLabelText: string;
+  private _productValidityLabelText: string;
 
   bottomSheet = inject(MatBottomSheet);
   store = inject(Store<AppStateInterface>);
@@ -69,15 +76,22 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit 
   notificationService = inject(NotificationService);
   uniqueProductCodeValidator = inject(UniqueProductCodeValidator);
   supplierStore = inject(SupplierStore);
+  parentProductStore = inject(ParentProductStore);
   storageService = inject(StorageService);
   translateService = inject(TranslateService);
 
   suppliers = computed(() => this.supplierStore.suppliers());
+  parentProducts = computed(() => this.parentProductStore.parentProducts());
 
   constructor() {
     super();
     const state = <any>this.router.getCurrentNavigation().extras.state;
     this._productSource = <ProductSourceEnum>state.productSource;
+
+    // Initialize tab labels
+    this._productInformationLabelText = this.translateService.instant('ADD_PRODUCT_DETAILS_PAGE.TAB_SECTIONS.PRODUCT_INFORMATION');
+    this._productConnectionLabelText = this.translateService.instant('ADD_PRODUCT_DETAILS_PAGE.TAB_SECTIONS.PRODUCT_CONNECTION');
+    this._productValidityLabelText = this.translateService.instant('ADD_PRODUCT_DETAILS_PAGE.TAB_SECTIONS.PRODUCT_VALIDITY');
 
     this._productForm = this.formBuilder.group(
       {
@@ -100,15 +114,18 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit 
         productUnit: ['', Validators.required],
         isTransferable: [false],
         numberOfUnits: [0],
-        supplierId: [null, Validators.required]
+        supplierId: [null, Validators.required],
+        validFrom: [new Date(), Validators.required],
+        validTo: [null],
+        parent: [true],
+        productParentGroupId: [null],
+        productParentGroupDisplay: ['']
       },
-      {
-        updateOn: 'blur',
-      }
     );
 
     this.$isLoading = this.store.pipe(select(isUpdateLoadingSelector));
     this.supplierStore.getAllSuppliers();
+    this.parentProductStore.getParentProducts();
   }
 
   async ngOnInit() {
@@ -135,6 +152,33 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit 
         map((value) => this._filter(value || ''))
       );
 
+    // Setup parent product autocomplete with server-side search
+    this._filteredParentProducts$ = this._productForm
+      .get('productParentGroupDisplay')!
+      .valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap((value: string | Product) => {
+          // Handle selection of a product object
+          if (value && typeof value === 'object' && value.id) {
+            this._productForm.get('productParentGroupId')?.setValue(value.id);
+          }
+        }),
+        switchMap((value: string | Product) => {
+          const searchTerm = typeof value === 'string' ? value : value?.name || '';
+
+          if (searchTerm.length < 1) {
+            return of([]);
+          }
+
+          return this.productService.getParentProducts(searchTerm).pipe(
+            map(result => result || []),
+            takeUntil(this._destroy$)
+          );
+        })
+      );
+
     this._productAdditionalStockQuantitySubscription = this._productForm
       .get('additionalStockQuantity')
       .valueChanges
@@ -145,6 +189,8 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit 
   }
 
   ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
     this._dialogRef = null;
     if (this._updateProductSubscription) this._updateProductSubscription.unsubscribe();
     this._productUnitOptionsSubscription.unsubscribe();
@@ -167,6 +213,10 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit 
       product.numberOfUnits = this._productForm.get('numberOfUnits').value;
       product.pricePerUnit = this._productForm.get('pricePerUnit').value;
       product.productUnit.name = this._productForm.get('productUnit').value;
+      product.validFrom = this._productForm.get('validFrom').value;
+      product.validTo = this._productForm.get('validTo').value;
+      product.parent = this._productForm.get('parent').value;
+      product.productParentGroupId = this._productForm.get('productParentGroupId').value;
 
       this._productForm.markAllAsTouched();
 
@@ -341,7 +391,27 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit 
     return this._productUnitFilterOptions;
   }
 
+  get parentProductFilterOptions(): Observable<Array<Product>> {
+    return this._filteredParentProducts$;
+  }
+
   get productSource(): ProductSourceEnum {
     return this._productSource;
+  }
+
+  get productInformationLabelText(): string {
+    return this._productInformationLabelText;
+  }
+
+  get productConnectionLabelText(): string {
+    return this._productConnectionLabelText;
+  }
+
+  get productValidityLabelText(): string {
+    return this._productValidityLabelText;
+  }
+
+  displayParentProduct(product: Product): string {
+    return product ? `${product.code}: ${product.name}` : '';
   }
 }

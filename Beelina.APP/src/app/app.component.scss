@@ -8,14 +8,45 @@
   display: flex;
   justify-content: space-around;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba($white, $opacity-light),
+      transparent
+    );
+    // Animation removed from default state for accessibility
+  }
+
+  &:hover::before {
+    animation: shimmerHeader 4s ease-in-out infinite;
+  }
+
   img {
     width: 100%;
     height: auto;
+    transition: $transition-normal;
+    // Animation removed from default state for accessibility
+
+    &:hover {
+      transform: scale(1.05);
+      animation: logoFloat 6s ease-in-out infinite, logoPulse 1s ease-in-out;
+    }
   }
 }
 
 mat-tree {
-  margin-top: 10px;
+  margin-top: $spacing-md;
+  overflow-x: hidden; /* Restore hidden overflow */
 }
 
 mat-tree-node[aria-level="1"] {
@@ -23,20 +54,46 @@ mat-tree-node[aria-level="1"] {
 }
 
 .mat-tree-node mat-icon {
-  margin-right: 10px;
+  margin-right: $spacing-md;
+  transition: $transition-cubic;
+  // Animation removed from default state for accessibility
+  filter: drop-shadow(0 1px 3px rgba($black, $opacity-light));
+}
+
+.mat-tree-node:hover mat-icon,
+.mat-tree-node:focus mat-icon {
+  animation: iconFloatGentle 3s ease-in-out infinite;
 }
 
 .mat-tree-node:hover {
   background: $primary-gradient;
-  color: white;
+  color: $white;
+  transition: $transition-normal;
+
+  mat-icon {
+    animation: iconBounceMenu 0.6s ease-in-out, iconGlowMenu 2s ease-in-out infinite;
+    transform: scale(1.05) rotate(3deg); /* Reduced scale and rotation to prevent overflow */
+    filter: drop-shadow(0 2px 6px rgba($black, $opacity-medium));
+  }
 }
 
 mat-tree-node.active,
 mat-tree-node:hover {
   background: $primary-gradient;
-  color: white;
-  border-bottom-right-radius: 50px;
-  border-top-right-radius: 50px;
+  color: $white;
+  border-bottom-right-radius: $border-radius-xl;
+  border-top-right-radius: $border-radius-xl;
+  transform: translateX(0px);
+  transition: $transition-normal;
+  margin-right: 0px; /* Remove margin */
+  position: relative;
+  width: calc(100% - 25px); /* Reduce width to accommodate border radius */
+
+  mat-icon {
+    animation: iconPulseActive 2s ease-in-out infinite, iconGlowMenu 2s ease-in-out infinite;
+    transform: scale(1.1); /* Reduced from 1.15 to prevent overflow */
+    color: rgba($white, 0.95);
+  }
 }
 
 /*#endregion*/
@@ -47,6 +104,8 @@ mat-tree-node:hover {
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: hidden; /* Restore hidden overflow */
+    padding-right: 0px; /* Remove padding */
 
     .sidenav-divider {
       flex: 1;
@@ -62,10 +121,22 @@ mat-tree-node:hover {
     label {
       display: flex;
       align-self: center;
+      transition: $transition-normal;
+
+      &:hover {
+        transform: scale(1.05);
+      }
     }
 
     mat-icon {
       font-size: 18px;
+      transition: $transition-normal;
+      // Animation removed from default state for accessibility
+
+      &:hover {
+        animation: iconBounceSmall 0.4s ease-in-out, iconFloatSubtle 5s ease-in-out infinite;
+        transform: scale(1.1);
+      }
     }
 
     &__offline-banner {
@@ -76,6 +147,7 @@ mat-tree-node:hover {
       justify-content: space-around;
       background: $primary-gradient;
       height: 4em;
+      animation: slideInFromBottom 0.8s ease-out;
 
       .label {
         display: flex;
@@ -83,13 +155,25 @@ mat-tree-node:hover {
         align-items: center;
         color: $white;
         font-size: 12px;
+
+        mat-icon {
+          // Animation moved to interaction state for accessibility
+          margin-right: $spacing-sm;
+
+          &:hover,
+          &:focus {
+            animation: iconBlinkWarning 2s ease-in-out infinite;
+          }
+        }
       }
     }
   }
 }
 
 .sidenav {
-  width: 320px;
+  width: 320px; /* Restore original width */
+  overflow-x: hidden; /* Restore hidden overflow */
+  overflow-y: auto; /* Allow vertical scrolling if needed */
 }
 
 .sidenav .mat-toolbar {
@@ -103,8 +187,25 @@ mat-tree-node:hover {
 }
 
 .side-drawer-menu-tree .mat-tree-node {
-  padding-left: 1em;
+  padding-left: $spacing-md;
   cursor: pointer;
+  transition: $transition-normal;
+  overflow: hidden; /* Restore hidden overflow */
+
+  button[matTreeNodeToggle] {
+    transition: $transition-normal;
+
+    mat-icon {
+      transition: $transition-normal;
+      // Animation removed from default state for accessibility
+    }
+
+    &:hover mat-icon,
+    &:focus mat-icon {
+      animation: iconSpinToggle 0.5s ease-in-out, iconFloatSubtle 4s ease-in-out infinite;
+      transform: scale(1.05); /* Reduced from 1.1 to prevent overflow */
+    }
+  }
 }
 
 .side-drawer-menu-tree-invisible {
@@ -136,7 +237,7 @@ mat-tree-node:hover {
 
 .mobile-view-supported-info-container {
   height: 100%;
-  padding: 0px;
+  padding: 0;
   display: flex;
   justify-content: space-around;
 
@@ -147,4 +248,160 @@ mat-tree-node:hover {
 
 mat-sidenav-content {
   overflow: hidden;
+}
+
+// Side menu icon animations
+@keyframes iconFloatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes iconFloatSubtle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes iconBounceMenu {
+  0%, 20%, 50%, 80%, 100% {
+    transform: scale(1.05) rotate(3deg);
+  }
+  40% {
+    transform: scale(1.1) rotate(5deg) translateY(-2px);
+  }
+  60% {
+    transform: scale(1.07) rotate(4deg) translateY(-1px);
+  }
+}
+
+@keyframes iconGlowMenu {
+  0%, 100% {
+    filter: drop-shadow(0 2px 6px rgba($black, $opacity-medium));
+  }
+  50% {
+    filter: drop-shadow(0 4px 12px rgba($white, 0.4));
+  }
+}
+
+@keyframes iconPulseActive {
+  0%, 100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+@keyframes iconSpinToggle {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.05);
+  }
+}
+
+@keyframes iconBounceSmall {
+  0%, 20%, 50%, 80%, 100% {
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(1.15) translateY(-2px);
+  }
+  60% {
+    transform: scale(1.12) translateY(-1px);
+  }
+}
+
+@keyframes iconBlinkWarning {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmerHeader {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1.05);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+// Optional animation trigger class for explicit interaction-based animations
+.animate-on-interaction {
+  &.logo-animate img {
+    animation: logoFloat 6s ease-in-out infinite;
+  }
+
+  &.icon-animate mat-icon {
+    animation: iconFloatGentle 3s ease-in-out infinite;
+  }
+
+  &.subtle-animate mat-icon {
+    animation: iconFloatSubtle 5s ease-in-out infinite;
+  }
+}
+
+// Accessibility: Disable all animations for users who prefer reduced motion
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+
+  // Preserve essential transforms for layout but remove animations
+  .mat-tree-node:hover,
+  .mat-tree-node:focus {
+    transform: translateX(0px) !important;
+  }
+
+  // Keep basic hover effects but remove complex animations
+  img:hover {
+    transform: scale(1.05) !important;
+  }
+
+  mat-icon:hover {
+    transform: scale(1.1) !important;
+  }
 }

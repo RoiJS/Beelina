@@ -73,6 +73,9 @@ namespace Beelina.LIB.Models.Reports
                 foreach (var mainLevel in reportOutput.HeaderOutput)
                 {
                     var sheetName = $"{mainLevel.InvoiceNo} - {mainLevel.StoreName}";
+                    // Sanitize and truncate sheet name using shared base method
+                    sheetName = SanitizeWorksheetName(sheetName);
+                    
                     var worksheet = worksheetCounter == 1
                         ? package.Workbook.Worksheets[0]
                         : package.Workbook.Worksheets.Add(sheetName);

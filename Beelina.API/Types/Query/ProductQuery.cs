@@ -25,7 +25,7 @@ namespace Beelina.API.Types.Query
             var warehouseId = 1;
             try
             {
-                var savedProducts = await productRepository.CreateOrUpdatePanelProducts(userAccountId, warehouseId, productInputs, httpContextAccessor.HttpContext.RequestAborted);
+                var savedProducts = await productRepository.CreateOrUpdatePanelProducts(userAccountId, warehouseId, productInputs, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 logger.LogInformation("Products Updated. Params: savedProducts = {@savedProducts}", savedProducts);
 
@@ -54,7 +54,7 @@ namespace Beelina.API.Types.Query
             {
                 return await productWithdrawalEntryRepository.UpdateProductWithdrawalEntriesWithBusinessLogic(
                     productWithdrawalEntryInputs,
-                    httpContextAccessor.HttpContext.RequestAborted);
+                    httpContextAccessor?.HttpContext?.RequestAborted ?? default);
             }
             catch (Exception ex)
             {
@@ -72,7 +72,7 @@ namespace Beelina.API.Types.Query
                     List<ProductStockPerPanelInput> updateProductAssignments,
                     List<int> deletedProductAssignments)
         {
-            return await productRepository.UpdateProductPriceAssignments(userAccountId, updateProductAssignments, deletedProductAssignments, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.UpdateProductPriceAssignments(userAccountId, updateProductAssignments, deletedProductAssignments, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -85,7 +85,7 @@ namespace Beelina.API.Types.Query
         {
             try
             {
-                var withdrawalEntryFromRepo = await productWithdrawalEntryRepository.GetProductWithdrawalEntry(id, httpContextAccessor.HttpContext.RequestAborted);
+                var withdrawalEntryFromRepo = await productWithdrawalEntryRepository.GetProductWithdrawalEntry(id, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
                 if (withdrawalEntryFromRepo is null)
                 {
@@ -114,7 +114,7 @@ namespace Beelina.API.Types.Query
                      string filterKeyword = ""
                 )
         {
-            return await productWithdrawalEntryRepository.GetProductWithdarawalEntries(productWithdrawalEntryFilter, filterKeyword, httpContextAccessor.HttpContext.RequestAborted);
+            return await productWithdrawalEntryRepository.GetProductWithdarawalEntries(productWithdrawalEntryFilter, filterKeyword, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -122,7 +122,7 @@ namespace Beelina.API.Types.Query
             [Service] IProductWithdrawalEntryRepository<ProductWithdrawalEntry> productWithdrawalEntryRepository,
             [Service] IHttpContextAccessor httpContextAccessor)
         {
-            return await productWithdrawalEntryRepository.GetLastProductWithdrawalCode(httpContextAccessor.HttpContext.RequestAborted);
+            return await productWithdrawalEntryRepository.GetLastProductWithdrawalCode(httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -136,7 +136,7 @@ namespace Beelina.API.Types.Query
             ProductsFilter productsFilter,
             string filterKeyword = "")
         {
-            return await productRepository.GetProducts(userAccountId, 0, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetProducts(userAccountId, 0, filterKeyword, productsFilter, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
 
@@ -153,7 +153,7 @@ namespace Beelina.API.Types.Query
         {
             var warehouseId = 1;
 
-            var productFromRepo = await productRepository.GetProducts(userAccountId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
+            var productFromRepo = await productRepository.GetProducts(userAccountId, productId, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
             if (productFromRepo == null || productFromRepo?.Count == 0)
             {
@@ -176,7 +176,7 @@ namespace Beelina.API.Types.Query
             // Get remaining stocks from warehouse
             if (currentUserService.CurrrentBusinessModel == BusinessModelEnum.WarehousePanelMonitoring)
             {
-                var warehouseProductFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor.HttpContext.RequestAborted);
+                var warehouseProductFromRepo = await productRepository.GetWarehouseProducts(warehouseId, productId, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
                 if (warehouseProductFromRepo != null && warehouseProductFromRepo.Count > 0)
                 {
                     productResult.StocksRemainingFromWarehouse = warehouseProductFromRepo[0].StockQuantity;
@@ -193,13 +193,26 @@ namespace Beelina.API.Types.Query
         [UseSorting]
         public async Task<List<ProductStockAuditItem>> GetProductStockAuditItems([Service] IProductRepository<Product> productRepository, [Service] IHttpContextAccessor httpContextAccessor, int productId, StockAuditSourceEnum stockAuditSource, int userAccountId, string? fromDate, string? toDate)
         {
-            return await productRepository.GetProductStockAuditItems(productId, userAccountId, stockAuditSource, fromDate, toDate, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetProductStockAuditItems(productId, userAccountId, stockAuditSource, fromDate, toDate, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
         public async Task<List<Product>> GetProductsDetailList([Service] IProductRepository<Product> productRepository, int userAccountId, string filterKeyword = "")
         {
             return await productRepository.GetProductsDetailList(userAccountId, filterKeyword);
+        }
+
+        [Authorize]
+        [UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public async Task<List<Product>> GetParentProducts(
+            [Service] IProductRepository<Product> productRepository, 
+            [Service] IHttpContextAccessor httpContextAccessor,
+            string filterKeyword = "")
+        {
+            return await productRepository.GetParentProducts(filterKeyword, httpContextAccessor.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -215,7 +228,7 @@ namespace Beelina.API.Types.Query
             [Service] IHttpContextAccessor httpContextAccessor,
             int userAccountId)
         {
-            var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
+            var productsFromRepo = await productRepository.GetProducts(userAccountId, 0, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
             var inventoryTotalValue = productsFromRepo.Sum(x => x.StockQuantity * x.Price);
             return inventoryTotalValue;
         }
@@ -242,7 +255,7 @@ namespace Beelina.API.Types.Query
             ProductsFilter productsFilter,
             string filterKeyword = "")
         {
-            return await productRepository.GetProductPriceAssignments(userAccountId, filterKeyword, productsFilter, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetProductPriceAssignments(userAccountId, filterKeyword, productsFilter, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -255,7 +268,7 @@ namespace Beelina.API.Types.Query
             return await productRepository.CopyProductPriceAssignments(
                 sourceUserAccountId,
                 destinationUserAccountId,
-                httpContextAccessor.HttpContext.RequestAborted
+                httpContextAccessor?.HttpContext?.RequestAborted ?? default
             );
         }
 
@@ -264,7 +277,7 @@ namespace Beelina.API.Types.Query
             [Service] IProductRepository<Product> productRepository,
             [Service] IHttpContextAccessor httpContextAccessor)
         {
-            return await productRepository.GetLatestProductCode(httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetLatestProductCode(httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         [Authorize]
@@ -273,7 +286,16 @@ namespace Beelina.API.Types.Query
             [Service] IHttpContextAccessor httpContextAccessor,
             int userAccountId)
         {
-            return await productRepository.GetLatestTransactionCode(userAccountId, httpContextAccessor.HttpContext.RequestAborted);
+            return await productRepository.GetLatestTransactionCode(userAccountId, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
+        }
+
+        [Authorize]
+        public async Task<bool> HasLinkedProducts(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int productId)
+        {
+            return await productRepository.HasLinkedProducts(productId, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
         }
 
         private static async Task SetProductStockPanels(ProductWithdrawalEntryInput productWithdrawalEntryInput, IProductRepository<Product> productRepository, CancellationToken cancellationToken)

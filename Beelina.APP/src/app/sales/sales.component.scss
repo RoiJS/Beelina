@@ -24,6 +24,16 @@
   mat-form-field {
     width: 100%;
   }
+
+  .custom-date-range-container {
+    display: flex;
+    gap: 10px;
+
+    .date-from-field,
+    .date-to-field {
+      flex: 1;
+    }
+  }
 }
 
 .sales-information-panel {

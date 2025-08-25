@@ -83,8 +83,21 @@ const CHECK_SUPPLIER_CODE = gql`
 
 @Injectable({ providedIn: 'root' })
 export class SupplierService {
+  private _cachedSuppliers: ReadonlyArray<Supplier> | null = null;
 
   apollo = inject(Apollo);
+
+  get cachedSuppliers(): ReadonlyArray<Supplier> | null {
+    // Return a shallow copy to prevent external mutation
+    return this._cachedSuppliers ? [...this._cachedSuppliers] : null;
+  }
+
+  /**
+   * Invalidates the suppliers cache to prevent stale data across sessions/tenants
+   */
+  invalidateSuppliersCache(): void {
+    this._cachedSuppliers = null;
+  }
 
   constructor() { }
 
@@ -136,6 +149,9 @@ export class SupplierService {
             supplier.name = b.name;
             return supplier;
           });
+
+          // Cache the result as ReadonlyArray to prevent external mutation
+          this._cachedSuppliers = Object.freeze([...data]);
 
           return data;
         })

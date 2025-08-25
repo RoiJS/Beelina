@@ -26,10 +26,12 @@ export class TransactionFilterComponent extends BaseComponent {
 
   constructor() {
     super();
-    const transactionDate = this.data.transactionDate === '' ? this.data.transactionDate : DateFormatter.toDate(this.data.transactionDate);
+    const dateFrom = this.data.dateFrom === '' ? this.data.dateFrom : DateFormatter.toDate(this.data.dateFrom);
+    const dateTo = this.data.dateTo === '' ? this.data.dateTo : DateFormatter.toDate(this.data.dateTo);
     this._transactionFilterForm = this._formBuilder.group({
       transactionStatus: [this.data.status],
-      transactionDate: [transactionDate],
+      dateFrom: [dateFrom],
+      dateTo: [dateTo],
       paymentStatus: [this.data.paymentStatus],
     });
   }
@@ -41,19 +43,25 @@ export class TransactionFilterComponent extends BaseComponent {
   onReset() {
     this._bottomSheetRef.dismiss({
       transactionStatus: TransactionStatusEnum.ALL,
-      transactionDate: DateFormatter.format(new Date()),
+      dateFrom: '',
+      dateTo: '',
       paymentStatus: PaymentStatusEnum.All
     });
   }
 
   onConfirm() {
     const transactionStatus = this._transactionFilterForm.get('transactionStatus').value;
-    const transactionDate = this._transactionFilterForm.get('transactionDate').value;
+    const dateFromValue = this._transactionFilterForm.get('dateFrom').value;
+    const dateToValue = this._transactionFilterForm.get('dateTo').value;
     const paymentStatus = this._transactionFilterForm.get('paymentStatus').value;
+
+    const dateFrom = dateFromValue ? DateFormatter.format(dateFromValue) : '';
+    const dateTo = dateToValue ? DateFormatter.format(dateToValue) : '';
 
     this._bottomSheetRef.dismiss({
       transactionStatus,
-      transactionDate,
+      dateFrom,
+      dateTo,
       paymentStatus
     });
   }

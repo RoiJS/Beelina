@@ -123,7 +123,7 @@ namespace Beelina.API.Types.Mutations
                                 sourceProductNumberOfUnits,
                                 sourceNumberOfUnitsTransfered,
                                 transferProductStockType,
-                                httpContextAccessor.HttpContext.RequestAborted
+                                httpContextAccessor?.HttpContext?.RequestAborted ?? default
                             );
                 }
                 else
@@ -137,7 +137,7 @@ namespace Beelina.API.Types.Mutations
                                     sourceProductNumberOfUnits,
                                     sourceNumberOfUnitsTransfered,
                                     transferProductStockType,
-                                    httpContextAccessor.HttpContext.RequestAborted
+                                    httpContextAccessor?.HttpContext?.RequestAborted ?? default
                                 );
                 }
 
@@ -193,7 +193,7 @@ namespace Beelina.API.Types.Mutations
             {
                 await using Stream stream = file.OpenReadStream();
                 var extractedProducts = await extractProductFileService.ReadFile(stream);
-                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor.HttpContext.RequestAborted);
+                var warehouseProductsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
                 var mapExtractedProductsResult = await productRepository.MapProductImport(extractedProducts, warehouseProductsFromRepo);
 
                 logger.LogInformation("Successfully extracted product excel file. Params: {@params}", new { warehouseId, file });
@@ -226,6 +226,40 @@ namespace Beelina.API.Types.Mutations
             }
 
             return result;
+        }
+
+        [Authorize]
+        [Error(typeof(ProductErrorFactory))]
+        public async Task<List<ProductStockPerPanel>> AssignProductToSalesAgents(
+            [Service] ILogger<ProductMutation> logger,
+            [Service] IProductRepository<Product> productRepository,
+            [Service] ICurrentUserService currentUserService,
+            int productId,
+            List<int> salesAgentIds,
+            int warehouseId = 1)
+        {
+            try
+            {
+                logger.LogInformation("Starting product assignment for productId: {productId} to {salesAgentCount} sales agents, warehouseId: {warehouseId}", 
+                    productId, salesAgentIds.Count, warehouseId);
+
+                var result = await productRepository.AssignProductToSalesAgents(
+                    productId, 
+                    salesAgentIds,
+                    warehouseId, 
+                    currentUserService.CurrentUserId);
+
+                logger.LogInformation("Successfully assigned product {productId} to {assignmentCount} sales agents", 
+                    productId, result.Count);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to assign product to sales agents. Params: productId = {productId}, salesAgentIds = {salesAgentIds}, warehouseId = {warehouseId}", 
+                    productId, string.Join(",", salesAgentIds), warehouseId);
+                throw new Exception($"Failed to assign product to sales agents. {ex.Message}");
+            }
         }
     }
 }

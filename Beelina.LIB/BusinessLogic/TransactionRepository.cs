@@ -237,6 +237,68 @@ namespace Beelina.LIB.BusinessLogic
             };
         }
 
+        public async Task<double> GetProfit(int userId, string fromDate, string toDate)
+        {
+            // Use existing GetSales method to get total sales amount
+            var salesData = await GetSales(userId, fromDate, toDate);
+            var totalSalesAmount = salesData.TotalSalesAmount;
+
+            // Get total purchase order amount for the date range
+            var totalPurchaseOrderAmount = await GetTotalPurchaseOrderAmount(fromDate, toDate);
+
+            // Calculate profit: Total Sales - Total Purchase Orders
+            return totalSalesAmount - totalPurchaseOrderAmount;
+        }
+
+        private async Task<double> GetTotalPurchaseOrderAmount(string fromDate, string toDate)
+        {
+            var purchaseOrdersQuery = (from pore in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
+                                       join pswa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
+                                       on pore.Id equals pswa.ProductWarehouseStockReceiptEntryId
+                                       
+                                       join psw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
+                                       on pswa.ProductStockPerWarehouseId equals psw.Id
+
+                                       where
+                                           pore.IsActive
+                                           && !pore.IsDelete
+                                           && pswa.IsActive
+                                           && !pswa.IsDelete
+
+                                       select new
+                                       {
+                                           PurchaseOrder = pore,
+                                           Quantity = pswa.Quantity,
+                                           PricePerUnit = psw.PricePerUnit
+                                       });
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                var fromDateTime = Convert.ToDateTime(fromDate).Date;
+                var toDateTime = Convert.ToDateTime(toDate).Date.AddDays(1).AddSeconds(-1);
+
+                purchaseOrdersQuery = purchaseOrdersQuery.Where(p =>
+                        p.PurchaseOrder.StockEntryDate >= fromDateTime
+                        && p.PurchaseOrder.StockEntryDate <= toDateTime
+                );
+            }
+
+            // Calculate total purchase order amount with discount applied
+            var purchaseOrdersWithAmounts = purchaseOrdersQuery
+                        .GroupBy(p => new { p.PurchaseOrder.Id, p.PurchaseOrder.Discount })
+                        .Select(g => new
+                        {
+                            PurchaseOrderId = g.Key.Id,
+                            Discount = g.Key.Discount,
+                            GrossTotal = g.Sum(p => p.Quantity * p.PricePerUnit)
+                        });
+
+            var totalPurchaseOrderAmount = await purchaseOrdersWithAmounts
+                .SumAsync(p => p.GrossTotal - (p.GrossTotal * p.Discount / 100));
+
+            return (double)totalPurchaseOrderAmount;
+        }
+
         public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate)
         {
             var salesAgents = await _userAccountRepository.GetAllSalesAgents();
@@ -264,7 +326,8 @@ namespace Beelina.LIB.BusinessLogic
             var transactionsFilter = new TransactionsFilter
             {
                 Status = status,
-                TransactionDate = transactionDate,
+                DateFrom = transactionDate,
+                DateTo = transactionDate,
                 PaymentStatus = PaymentStatusEnum.All,
                 StoreId = 0 // Assuming we want to get transactions for all stores
             };
@@ -296,11 +359,12 @@ namespace Beelina.LIB.BusinessLogic
                     on s.BarangayId equals b.Id
 
                     where
-                        (transactionsFilter.Status == TransactionStatusEnum.All || (transactionsFilter.Status != TransactionStatusEnum.All && t.Status == transactionsFilter.Status))
+                        (transactionsFilter == null || transactionsFilter.Status == TransactionStatusEnum.All || (transactionsFilter.Status != TransactionStatusEnum.All && t.Status == transactionsFilter.Status))
                         && (userId == 0 || (userId > 0 && t.CreatedById == userId))
                         && (transactionsFilter == null ||
                             (transactionsFilter != null && (
-                                    (String.IsNullOrEmpty(transactionsFilter.TransactionDate) || (!String.IsNullOrEmpty(transactionsFilter.TransactionDate) && t.TransactionDate == Convert.ToDateTime(transactionsFilter.TransactionDate))) &&
+                                    (String.IsNullOrEmpty(transactionsFilter.DateFrom) || (!String.IsNullOrEmpty(transactionsFilter.DateFrom) && t.TransactionDate >= Convert.ToDateTime(transactionsFilter.DateFrom))) &&
+                                    (String.IsNullOrEmpty(transactionsFilter.DateTo) || (!String.IsNullOrEmpty(transactionsFilter.DateTo) && t.TransactionDate <= Convert.ToDateTime(transactionsFilter.DateTo))) &&
                                     (transactionsFilter.StoreId == 0 || s.Id == transactionsFilter.StoreId))))
                         && !t.IsDelete
                         && t.IsActive
@@ -318,7 +382,7 @@ namespace Beelina.LIB.BusinessLogic
                         TransactionDate = t.TransactionDate,
                         ProductTransaction = pt,
                         DateUpdated = t.DateUpdated,
-                        UpdatedBy = up.PersonFullName ?? String.Empty,
+                        UpdatedBy = up != null ? (up.PersonFullName ?? String.Empty) : String.Empty,
                     }
                 )
                 .AsNoTracking()

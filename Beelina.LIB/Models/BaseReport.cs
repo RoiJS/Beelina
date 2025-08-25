@@ -172,6 +172,29 @@ namespace Beelina.LIB.Models
             if (dateControl is null) return String.Empty;
             return dateControl.CurrentValue;
         }
+
+        /// <summary>
+        /// Sanitizes and truncates worksheet names to comply with Excel requirements.
+        /// Excel worksheet names must be 31 characters or less and cannot contain: \ / ? * [ ]
+        /// </summary>
+        /// <param name="worksheetName">The proposed worksheet name</param>
+        /// <returns>A sanitized and truncated worksheet name safe for Excel</returns>
+        protected static string SanitizeWorksheetName(string worksheetName)
+        {
+            if (string.IsNullOrEmpty(worksheetName))
+                return "Sheet1";
+
+            // Replace invalid characters with underscores
+            var sanitized = System.Text.RegularExpressions.Regex.Replace(worksheetName, @"[\\\/\?\*\[\]]", "_");
+            
+            // Truncate to Excel's 31-character limit
+            if (sanitized.Length > 31)
+            {
+                sanitized = sanitized[..31];
+            }
+
+            return sanitized;
+        }
     }
 
     public struct StoreProcedureParameters

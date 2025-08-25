@@ -1,3 +1,4 @@
+using Beelina.LIB.Enums;
 using Beelina.LIB.Interfaces;
 
 namespace Beelina.LIB.Models
@@ -11,6 +12,12 @@ namespace Beelina.LIB.Models
         public string PlateNo { get; set; }
         public string Notes { get; set; }
         public int WarehouseId { get; set; }
+        public double Discount { get; set; }
+        public string InvoiceNo { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public DateTime? DateEncoded { get; set; }
+        public PurchaseOrderStatusEnum PurchaseOrderStatus { get; set; }
+        public string Location { get; set; }
 
         public List<ProductStockWarehouseAudit> ProductStockWarehouseAudits { get; set; }
         public virtual Supplier Supplier { get; set; }

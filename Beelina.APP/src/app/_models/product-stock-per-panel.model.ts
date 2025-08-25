@@ -12,6 +12,7 @@ export class ProductStockPerPanel {
   public plateNo: string;
   public isTransferable: boolean;
   public numberOfUnits: number;
+  public userAccountId: number;
 
   constructor() {
     this.productName = '';
