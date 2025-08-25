@@ -14,8 +14,6 @@ namespace Beelina.LIB.Migrations.BeelinaData
 BEGIN TRY
     IF NOT EXISTS (SELECT 1 FROM [Reports] WHERE [Id] = 12 OR [ReportClass] = 'PurchaseOrderReport')
     BEGIN
-        SET IDENTITY_INSERT [Reports] ON;
-
         INSERT INTO [Reports] (
             [Id],
             [NameTextIdentifier],
@@ -53,12 +51,9 @@ BEGIN TRY
             NULL,
             1
         );
-
-        SET IDENTITY_INSERT [Reports] OFF;
     END
 END TRY
 BEGIN CATCH
-    BEGIN TRY SET IDENTITY_INSERT [Reports] OFF; END TRY BEGIN CATCH END CATCH;
     THROW;
 END CATCH
 ");        }
