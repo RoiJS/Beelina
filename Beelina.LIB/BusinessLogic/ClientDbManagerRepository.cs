@@ -50,7 +50,7 @@ namespace Beelina.LIB.BusinessLogic
                 var url = String.Format("{0}{1}", _appHostInfo.Value.APIDomain, _applicationSettings.Value.AppSettingsURL.SyncDatabaseURL);
                 var options = new RestClientOptions(url)
                 {
-                    Timeout = TimeSpan.FromSeconds(-1)
+                    Timeout = Timeout.InfiniteTimeSpan
                 };
                 var httpClient = new RestClient(options);
                 var httpRequest = new RestRequest(url, Method.Post);
