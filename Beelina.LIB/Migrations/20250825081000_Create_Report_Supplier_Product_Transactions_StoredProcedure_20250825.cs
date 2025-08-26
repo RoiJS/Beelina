@@ -18,7 +18,7 @@ namespace Beelina.LIB.Migrations
 -- =============================================
 -- exec Report_Supplier_Product_Transactions @supplierId = 1, @orderType = 2, @startDate = '2025-07-01', @endDate = '2025-08-25', @userId = 1
 
-ALTER PROCEDURE [dbo].[Report_Supplier_Product_Transactions]
+CREATE PROCEDURE [dbo].[Report_Supplier_Product_Transactions]
     @supplierId INT = 0,
     @orderType INT = 0,
     @startDate VARCHAR(10) = NULL,
