@@ -1114,7 +1114,9 @@
       "CUSTOMER_COLLECTION_SUMMARY_REPORT_NAME": "Customer Collection Summary Report",
       "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date.",
       "PURCHASE_ORDER_REPORT_NAME": "Purchase Order Report",
-      "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range."
+      "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range.",
+      "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_NAME": "Supplier Product Transactions Report",
+      "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_DESC": "This report can generate the product transactions for a specific supplier, allowing for detailed analysis of sales and inventory."
     }
   },
   "REPORT_DETAILS_PAGE": {
