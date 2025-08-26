@@ -69,7 +69,7 @@
     "PURCHASE_ORDERS": "Purchase Orders",
     "PRODUCT_WITHDRAWALS": "Product Withdrawals",
     "ACCOUNTS": "Accounts",
-    "DRAFT_ORDERS": "Draft Orders",
+    "DRAFT_ORDERS": "Pre-book Orders",
     "CONFIRMED_ORDERS": "Confirmed Orders",
     "BAD_ORDERS": "Bad Orders",
     "REPORTS": "Reports",
@@ -81,7 +81,7 @@
     "BIZUAL_OFFLINE": "Offline Mode"
   },
   "ORDER_TYPE": {
-    "DRAFT": "Draft",
+    "DRAFT": "Pre-book",
     "BAD_ORDER": "Bad Order",
     "CONFIRM": "Confirm"
   },
@@ -411,7 +411,7 @@
       },
       "BUTTON_OPTIONS": {
         "CONFIRM": "Confirm",
-        "DRAFT": "Draft",
+        "DRAFT": "Pre-book",
         "ADD_ITEM": "Add Item +",
         "REGISTER_PAYMENT": "Register Payment"
       }
@@ -459,18 +459,18 @@
       "LOADING_MESSAGE": "Saving order as confirmed. Please wait..."
     },
     "SAVE_NEW_DRAFT_ORDER_DIALOG": {
-      "TITLE": "Save as draft order",
-      "CONFIRM": "Are you sure to save new draft order?",
-      "SUCCESS_MESSAGE": "New draft order has been saved!",
-      "ERROR_MESSAGE": "Saving draft order failed. Please again later.",
-      "LOADING_MESSAGE": "Saving order as draft. Please wait..."
+      "TITLE": "Save as pre-book order",
+      "CONFIRM": "Are you sure to save new pre-book order?",
+      "SUCCESS_MESSAGE": "New pre-book order has been saved!",
+      "ERROR_MESSAGE": "Saving pre-book order failed. Please again later.",
+      "LOADING_MESSAGE": "Saving order as pre-book. Please wait..."
     },
     "SAVE_EXISTING_DRAFT_ORDER_DIALOG": {
-      "TITLE": "Save draft order",
-      "CONFIRM": "Are you sure to save new updates for this draft order?",
-      "SUCCESS_MESSAGE": "New updates for this draft order has been saved!",
-      "ERROR_MESSAGE": "Saving new updates for this draft order failed. Please again later.",
-      "LOADING_MESSAGE": "Saving new updates for this draft order. Please wait..."
+      "TITLE": "Save pre-book order",
+      "CONFIRM": "Are you sure to save new updates for this pre-book order?",
+      "SUCCESS_MESSAGE": "New updates for this pre-book order has been saved!",
+      "ERROR_MESSAGE": "Saving new updates for this pre-book order failed. Please again later.",
+      "LOADING_MESSAGE": "Saving new updates for this pre-book order. Please wait..."
     },
     "SAVE_NEW_BAD_ORDER_DIALOG": {
       "TITLE": "Save as bad order",
@@ -882,8 +882,8 @@
     "DESCRIPTION": "This shows the list of dates where there are confirmed orders."
   },
   "DRAFT_TRANSACTIONS_PAGE": {
-    "TITLE": "Draft Orders",
-    "DESCRIPTION": "This shows available dates that have draft orders.",
+    "TITLE": "Pre-book Orders",
+    "DESCRIPTION": "This shows available dates that have pre-book orders.",
     "CONFIRM_ORDERS_DIALOG": {
       "TITLE": "Confirm Selected Order(s)",
       "ALL_INVALID_MESSAGE": "All selected order(s) are invalid and with insufficient product quantities. Kindly check the prodcut quantities and try again.",
@@ -897,14 +897,14 @@
       "ERROR_MESSAGE": "There are offline orders selected. Please select online orders only to proceed."
     },
     "SYNC_OFFLINE_ORDER_DIALOG": {
-      "TITLE": "Sync offline draft order",
-      "CONFIRM_MESSAGE": "Are you sure to sync offline draft order?",
-      "SUCCESS_MESSAGE": "Offline draft order has been successfully synced.",
-      "ERROR_MESSAGE": "Failed to sync offline draft order. Please try again later."
+      "TITLE": "Sync offline pre-book order",
+      "CONFIRM_MESSAGE": "Are you sure to sync offline pre-book order?",
+      "SUCCESS_MESSAGE": "Offline pre-book order has been successfully synced.",
+      "ERROR_MESSAGE": "Failed to sync offline pre-book order. Please try again later."
     },
     "SYNC_MULTIPLE_OFFLINE_ORDERS_DIALOG": {
-      "TITLE": "Sync offline draft order(s)",
-      "CONFIRM_MESSAGE": "Are you sure to sync selected offline draft order(s)?"
+      "TITLE": "Sync offline pre-book order(s)",
+      "CONFIRM_MESSAGE": "Are you sure to sync selected offline pre-book order(s)?"
     }
   },
   "BAD_ORDERS_PAGE": {
@@ -1152,7 +1152,7 @@
       "TRANSACTION_TYPE_DROPDOWN_CONTROL": {
         "LABEL": "Order Transaction Type",
         "CONFIRM_OPTION": "Confirm",
-        "DRAFT_OPTION": "Draft",
+        "DRAFT_OPTION": "Pre-book",
         "BAD_OPTION": "Bad Order"
       },
       "FORM_CONTROL_ERRORS": {
@@ -1626,7 +1626,7 @@
           "LABEL": "Order Status",
           "DROPDOWN_OPTION_CONTROL": {
             "CONFIRM_OPTION": "Confirm",
-            "DRAFT_OPTION": "Draft",
+            "DRAFT_OPTION": "Pre-book",
             "BAD_OPTION": "Bad Order"
           }
         },
