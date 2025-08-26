@@ -170,8 +170,8 @@
           }
 
           &--sales {
-            background: $primary-sales-gradient;
-            border: 1px solid rgba($primary, $opacity-medium);
+            background: $sales-red-gradient;
+            border: 1px solid rgba(#dc3545, $opacity-medium);
             color: white;
             position: relative;
             overflow: hidden;
