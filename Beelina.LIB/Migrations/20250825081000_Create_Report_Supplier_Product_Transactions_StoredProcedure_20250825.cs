@@ -37,7 +37,7 @@ BEGIN
 
     SET @orderStatusName = CASE @orderType
                                 WHEN 0 THEN 'All'
-                                WHEN 1 THEN 'Draft'
+                                WHEN 1 THEN 'Pre-book'
                                 WHEN 2 THEN 'Confirmed' 
                                 WHEN 3 THEN 'Bad Order'
                                 ELSE 'All'
