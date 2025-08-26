@@ -118,6 +118,9 @@ export class TransferProductInventoryComponent extends BaseComponent implements 
         this._sourceProduct.price = result.pricePerUnit;
         this._sourceProduct.numberOfUnits = result.numberOfUnits;
         this._sourceProduct.productUnit.name = result.productUnit.name;
+        this._sourceProduct.validFrom = result.validFrom;
+        this._sourceProduct.validTo = result.validTo;
+        this._sourceProduct.productParentGroupId = result.productParentGroupId;
 
         this._bulkToPiecesGroupForm.get('numberOfUnits').setValue(this._sourceProduct.numberOfUnits);
         if (this._sourceProduct.numberOfUnits > 0) {

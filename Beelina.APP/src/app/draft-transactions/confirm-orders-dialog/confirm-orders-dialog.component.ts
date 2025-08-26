@@ -3,6 +3,7 @@ import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bott
 import { TranslateService } from '@ngx-translate/core';
 
 import { InvalidProductTransactionOverallQuantitiesTransactions } from 'src/app/_models/insufficient-product-quantity';
+import { UserAccountService } from 'src/app/_services/user-account.service';
 
 @Component({
   selector: 'app-confirm-orders-dialog',
@@ -12,6 +13,7 @@ import { InvalidProductTransactionOverallQuantitiesTransactions } from 'src/app/
 export class ConfirmOrdersDialogComponent implements OnInit {
 
   private _bottomSheetRef = inject(MatBottomSheetRef<ConfirmOrdersDialogComponent>);
+  userService = inject(UserAccountService)
   translateService = inject(TranslateService);
   confirmationMessage = signal<string>("");
   markAsPaid: boolean = false;

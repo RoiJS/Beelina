@@ -137,7 +137,7 @@ namespace Beelina.LIB.BusinessLogic
                 var url = String.Format("{0}{1}", _appHostInfo.Value.APIDomain, _appSettings.Value.AppSettingsURL.SyncDatabaseURL);
                 var options = new RestClientOptions(url)
                 {
-                    Timeout = TimeSpan.FromSeconds(-1)
+                    Timeout = Timeout.InfiniteTimeSpan
                 };
                 var httpClient = new RestClient(options);
                 var httpRequest = new RestRequest(url, Method.Post);
@@ -174,7 +174,7 @@ namespace Beelina.LIB.BusinessLogic
                 var url = String.Format("{0}{1}", _appHostInfo.Value.APIDomain, _appSettings.Value.AppSettingsURL.PopulateDatabaseURL);
                 var options = new RestClientOptions(url)
                 {
-                    MaxTimeout = -1
+                    Timeout = Timeout.InfiniteTimeSpan
                 };
                 var httpClient = new RestClient(options);
                 //httpClient.Options.MaxTimeout = -1;

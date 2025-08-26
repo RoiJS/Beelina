@@ -2041,7 +2041,7 @@ namespace Beelina.LIB.BusinessLogic
               // Find the most recent product in the same parent group (excluding the current product)
               // Based on ValidFrom date only, regardless of active status
               var mostRecentProductInGroup = await _beelinaRepository.ClientDbContext.Products
-                  .Where(p => p.ProductParentGroupId == currentProduct.ProductParentGroupId.Value
+                  .Where(p => (p.ProductParentGroupId == currentProduct.ProductParentGroupId.Value || p.Id == currentProduct.ProductParentGroupId.Value)
                            && p.Id != productId
                            && !p.IsDelete)
                   .OrderByDescending(p => p.ValidFrom)
