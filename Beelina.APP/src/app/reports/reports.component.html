@@ -13,25 +13,53 @@
     <app-list-container [templateType]="emptyEntityTemplateEnum.REPORTS" [count]="reports?.length">
       <div class="list-container">
 
-        @for (item of reports; track $index) {
-        <div>
-          <div class="list-container__item-section" matRipple (click)="goToReportInformation(item.id)">
-            <div class="list-container__icon-section list-container__icon-section--right-space">
-              <div class="list-container__icon-section--icon-container">
-                <mat-icon>bar_chart</mat-icon>
-              </div>
+        @for (group of reportGroups; track $index) {
+          <div class="report-category-section">
+            <!-- Category Header -->
+            <div class="category-header"
+                 (click)="toggleCategoryCollapse(group)"
+                 matRipple
+                 role="button"
+                 [attr.aria-expanded]="!group.isCollapsed"
+                 [attr.aria-controls]="'reports-' + $index"
+                 tabindex="0"
+                 (keydown.enter)="onKeyboardToggle($event, group)"
+                 (keydown.space)="onKeyboardToggle($event, group)">
+              <mat-icon class="collapse-icon" [class.rotated]="group.isCollapsed">
+                expand_more
+              </mat-icon>
+              <h3 class="category-title">{{ group.categoryLabelKey | translate }}</h3>
+              <div class="category-divider"></div>
+              <span class="reports-count">({{ group.reports.length }})</span>
             </div>
-            <div class="list-container__details-section">
-              <label style="margin-bottom: 8px" class="main-label">{{
-                item.name
-                }}</label>
-              <label>{{ item.description }}</label>
-            </div>
-            <div class="list-container__options-section">
-              <mat-icon class="option">keyboard_arrow_right</mat-icon>
+
+            <!-- Reports in this category -->
+            <div class="reports-list"
+                 [@slideInOut]="group.isCollapsed ? 'out' : 'in'"
+                 [id]="'reports-' + $index"
+                 [attr.aria-hidden]="group.isCollapsed">
+              @for (item of group.reports; track $index) {
+                <div>
+                  <div class="list-container__item-section" matRipple (click)="goToReportInformation(item.id)">
+                    <div class="list-container__icon-section list-container__icon-section--right-space">
+                      <div class="list-container__icon-section--icon-container">
+                        <mat-icon>bar_chart</mat-icon>
+                      </div>
+                    </div>
+                    <div class="list-container__details-section">
+                      <label style="margin-bottom: 8px" class="main-label">{{
+                        item.name
+                        }}</label>
+                      <label>{{ item.description }}</label>
+                    </div>
+                    <div class="list-container__options-section">
+                      <mat-icon class="option">keyboard_arrow_right</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
           </div>
-        </div>
         }
 
       </div>

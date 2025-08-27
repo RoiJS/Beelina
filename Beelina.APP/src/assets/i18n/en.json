@@ -1117,6 +1117,12 @@
       "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range.",
       "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_NAME": "Supplier Product Transactions Report",
       "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_DESC": "This report can generate the product transactions for a specific supplier, allowing for detailed analysis of sales and inventory."
+    },
+    "CATEGORIES": {
+      "ORDER_TRANSACTIONS": "Order Transactions",
+      "PRODUCTS": "Products",
+      "SALES": "Sales",
+      "OTHER": "Other"
     }
   },
   "REPORT_DETAILS_PAGE": {

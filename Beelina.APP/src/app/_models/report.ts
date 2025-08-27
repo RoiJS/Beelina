@@ -1,6 +1,7 @@
 import { Entity } from './entity.model';
 
 import { ReportControlsRelation } from './report-control-relation';
+import { ReportCategoryEnum } from '../_enum/report-category.enum';
 
 export class Report extends Entity {
   name: string;
@@ -10,6 +11,7 @@ export class Report extends Entity {
   reportClass: string;
   custom: boolean;
   storedProcedureName: string;
+  category: ReportCategoryEnum;
   reportControlsRelations: ReportControlsRelation[];
 
   constructor() {
