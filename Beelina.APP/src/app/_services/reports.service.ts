@@ -20,6 +20,7 @@ const GET_ALL_REPORTS = gql`
       nameTextIdentifier
       descriptionTextIdentifier
       moduleId
+      category
     }
   }
 `;
@@ -125,6 +126,7 @@ export class ReportsService {
             report.descriptionTextIdentifier = rp.descriptionTextIdentifier;
             report.reportClass = rp.reportClass;
             report.custom = rp.custom;
+            report.category = rp.category;
 
             // rp.reportControlsRelations.forEach((rr: ReportControlsRelation) => {
             //   const reportControlsRelation = new ReportControlsRelation();
