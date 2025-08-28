@@ -1,0 +1,13 @@
+<div [ngClass]="{ 'no-display': hide }" [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label>{{ controLabel }}:</mat-label>
+    <mat-select formControlName="activeStatus">
+      <mat-option [value]="'1'">{{
+        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.ACTIVE_STATUS_CONTROL.ACTIVE_ONLY_OPTION" | translate
+        }}</mat-option>
+      <mat-option [value]="'0'">{{
+        "REPORT_DETAILS_PAGE.CONTROL_INFORMATION.ACTIVE_STATUS_CONTROL.INCLUDE_INACTIVE_OPTION" | translate
+        }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
