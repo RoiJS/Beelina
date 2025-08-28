@@ -15,6 +15,7 @@ import { DatePickerComponent } from '../report-controls/date-picker/date-picker.
 import { ReportDetailsComponent } from './report-details.component';
 import { ReportGenerateOptionDialogComponent } from './report-generate-option-dialog/report-generate-option-dialog.component';
 import { SalesAgentDropdownControlComponent } from '../report-controls/sales-agent-dropdown-control/sales-agent-dropdown-control.component';
+import { ActiveStatusControlComponent } from '../report-controls/active-status-control/active-status-control.component';
 import { SortOrderControlComponent } from '../report-controls/sort-order-control/sort-order-control.component';
 import { TransactionTypeDropdownControlComponent } from '../report-controls/transaction-type-dropdown-control/transaction-type-dropdown-control.component';
 import { CustomerDropdownControlComponent } from '../report-controls/customer-dropdown-control/customer-dropdown-control.component';
@@ -47,6 +48,7 @@ import { SupplierAutocompleteControlComponent } from '../report-controls/supplie
     InvoiceNoAutocompleteControlComponent,
     PurchaseOrderReferenceNoAutocompleteControlComponent,
     SupplierAutocompleteControlComponent,
+    ActiveStatusControlComponent,
   ],
 })
 export class ReportDetailsModule { }

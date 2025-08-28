@@ -1116,7 +1116,9 @@
       "PURCHASE_ORDER_REPORT_NAME": "Purchase Order Report",
       "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range.",
       "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_NAME": "Supplier Product Transactions Report",
-      "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_DESC": "This report can generate the product transactions for a specific supplier, allowing for detailed analysis of sales and inventory."
+      "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_DESC": "This report can generate the product transactions for a specific supplier, allowing for detailed analysis of sales and inventory.",
+      "PRODUCTS_PER_SUPPLIER_REPORT_NAME": "Products per Supplier Report",
+      "PRODUCTS_PER_SUPPLIER_REPORT_DESC": "This report lists all products associated with a specific supplier, including product codes, descriptions, units, and warehouse prices."
     },
     "CATEGORIES": {
       "ORDER_TRANSACTIONS": "Order Transactions",
@@ -1162,6 +1164,11 @@
         "CONFIRM_OPTION": "Confirm",
         "DRAFT_OPTION": "Pre-book",
         "BAD_OPTION": "Bad Order"
+      },
+      "ACTIVE_STATUS_CONTROL": {
+        "LABEL": "Active Status",
+        "ACTIVE_ONLY_OPTION": "Active Only",
+        "INCLUDE_INACTIVE_OPTION": "Include Inactive"
       },
       "FORM_CONTROL_ERRORS": {
         "REQUIRED_FIELD": "This field is required",
