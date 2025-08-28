@@ -67,7 +67,7 @@ Beelina.LIB is the shared C# library powering business logic, data models, datab
 - GraphQL types and resolvers
 - Shared utilities and helpers
 
-### Guidelines
+### General Guidelines
 
 - Maintain separation of concerns: models, logic, helpers, contexts.
 - Avoid direct API or UI dependencies.
@@ -75,4 +75,4 @@ Beelina.LIB is the shared C# library powering business logic, data models, datab
 - Document public APIs and complex logic.
 - Follow .NET best practices and code conventions.
 - If necessary to adjust something on the database objects (new columns, new Sp, delete columns, rename columns, etc.), Activate the ActivateEFMigration on `Beelina.API/appsettings.json` file to be able to run dotnet migrations cli command.
-- Do not run database update, let me run it myself, just add the migrations file by running the `dotnet migrations add <migration_message> -c <Database Context> -s ../Beelina.API/`. Database context: `BeelinaDataContext` or `BeelinaClientDbContext` 
+- Do not run database update, let me run it myself, just add the migrations file by running the `dotnet migrations add <migration_message> -c <Database Context> -s ../Beelina.API/`. Database context: `BeelinaDataContext` or `BeelinaClientDbContext`

@@ -108,6 +108,7 @@ Beelina.APP is an Angular-based SPA (Single Page Application) serving as the mai
 - Update `app-version.service.ts` with the new version number (eg. For bug fixes, use `1.0.1` or `1.0.2`, for new features, use `1.1.0` or `1.2.0`, and for breaking changes, use `2.0.0` or `3.0.0`)
 - Use Apollo Angular for GraphQL queries and mutations
 - Use Angular Material for UI components
+- Ensure to follow app theme guidelines
 - Introduce unit tests for new features and critical components
 - Keep code modular and documented
 - Use i18n and responsive/PWA design
