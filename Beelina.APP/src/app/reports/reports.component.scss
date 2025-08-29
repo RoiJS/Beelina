@@ -1,0 +1,101 @@
+@import "../../app-variables";
+
+.report-category-section {
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: $border-radius-sm;
+  transition: $transition-normal;
+  user-select: none;
+  min-height: 48px; // Ensure consistent height
+
+  &:hover {
+    background-color: rgba($primary, $opacity-light);
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+  }
+
+  &:focus {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .collapse-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $spacing-sm;
+    transition: transform $transition-normal;
+    color: $primary;
+    font-size: 1.25em;
+    width: 24px; // Fixed width for consistent alignment
+    height: 24px; // Fixed height for consistent alignment
+    flex-shrink: 0; // Prevent shrinking
+
+    &.rotated {
+      transform: rotate(-90deg);
+    }
+  }
+
+  .category-title {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 1.0625em; // 17px equivalent, matching page titles
+    font-weight: bold; // Following app pattern for section titles
+    color: $primary;
+    white-space: nowrap;
+    margin-right: $spacing-md;
+    font-family: Roboto, "Helvetica Neue", sans-serif; // Explicit font family
+    line-height: 1.2; // Consistent line height
+    flex-shrink: 0; // Prevent shrinking
+  }
+
+  .category-divider {
+    flex: 1;
+    height: 1px;
+    background-color: $border-light;
+    margin-right: $spacing-sm;
+    align-self: center; // Ensure divider is centered
+  }
+
+  .reports-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-secondary;
+    font-size: 0.75em; // 12px equivalent, matching description text
+    font-weight: 500;
+    background-color: rgba($gray-500, $opacity-light);
+    padding: 4px $spacing-sm;
+    border-radius: $border-radius-md;
+    min-width: 24px; // Minimum width for small numbers
+    height: 24px; // Fixed height for consistent alignment
+    flex-shrink: 0; // Prevent shrinking
+    line-height: 1; // Tight line height for badges
+  }
+}
+
+.reports-list {
+  overflow: hidden;
+}
+
+// Override margin for list items within categories
+.report-category-section .list-container__item-section {
+  margin-bottom: $spacing-sm;
+}

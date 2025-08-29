@@ -1,3 +1,4 @@
+import { ActiveStatusControlComponent } from './active-status-control/active-status-control.component';
 import { CustomerDropdownControlComponent } from './customer-dropdown-control/customer-dropdown-control.component';
 import { DatePickerComponent } from './date-picker/date-picker.component';
 import { DateRangeControlComponent } from './date-range-control/date-range-control.component';
@@ -21,4 +22,5 @@ export const componentsRegistry: { [key: string]: any } = {
   InvoiceNoAutocompleteControl: InvoiceNoAutocompleteControlComponent,
   PurchaseOrderReferenceNoAutocompleteControl: PurchaseOrderReferenceNoAutocompleteControlComponent,
   SupplierAutocompleteControl: SupplierAutocompleteControlComponent,
+  ActiveStatusDropdownControl: ActiveStatusControlComponent,
 };

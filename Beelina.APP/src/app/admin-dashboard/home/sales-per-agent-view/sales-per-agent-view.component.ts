@@ -36,7 +36,7 @@ export class SalesPerAgentViewComponent extends SalesComponent implements OnInit
       series: [],
       chart: {
         type: "donut",
-        width: 500
+        width: 450
       },
       labels: [],
       dataLabels: {},
