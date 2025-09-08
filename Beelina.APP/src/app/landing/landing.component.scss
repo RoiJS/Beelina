@@ -1,0 +1,168 @@
+.landing-page {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Global scroll optimization */
+:host {
+  display: block;
+}
+
+/* Section dividers */
+.section-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(216, 156, 42, 0.3), transparent);
+  margin: 80px 0;
+}
+
+/* Navigation Header */
+.landing-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(216, 156, 42, 0.1);
+  z-index: 1000;
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .brand-name {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(135deg, #d89c2a 0%, #f4b942 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tagline {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .nav-link {
+      color: #374151;
+      font-weight: 500;
+      text-transform: none;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #d89c2a;
+      }
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #d89c2a 0%, #f4b942 100%);
+      color: white;
+      font-weight: 600;
+      text-transform: none;
+      border-radius: 25px;
+      padding: 0 24px;
+      height: 40px;
+      box-shadow: 0 4px 12px rgba(216, 156, 42, 0.3);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(216, 156, 42, 0.4);
+      }
+
+      mat-icon {
+        margin-right: 8px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
+
+/* Add top padding to account for fixed nav */
+.landing-page {
+  padding-top: 70px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .landing-nav {
+    .nav-container {
+      padding: 0 16px;
+      height: 60px;
+    }
+
+    .nav-brand {
+      .brand-name {
+        font-size: 24px;
+      }
+
+      .brand-tagline {
+        font-size: 10px;
+      }
+    }
+
+    .nav-links {
+      gap: 8px;
+
+      .nav-link {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      .login-btn {
+        padding: 0 16px;
+        height: 36px;
+        font-size: 14px;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  .landing-page {
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-nav {
+    .nav-links {
+      .nav-link:not(.login-btn) {
+        display: none; /* Hide navigation links on very small screens */
+      }
+    }
+  }
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}

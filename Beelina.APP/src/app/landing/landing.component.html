@@ -1,0 +1,45 @@
+<div class="landing-page">
+  <!-- Navigation Header -->
+  <nav class="landing-nav">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2 class="brand-name">{{ 'LANDING_PAGE.BRAND.NAME' | translate }}</h2>
+        <span class="brand-tagline">{{ 'LANDING_PAGE.BRAND.TAGLINE' | translate }}</span>
+      </div>
+      <div class="nav-links">
+        <button mat-button class="nav-link" (click)="scrollToSection('features')">
+          {{ 'LANDING_PAGE.NAVIGATION.FEATURES' | translate }}
+        </button>
+        <button mat-button class="nav-link" (click)="scrollToSection('contact-form')">
+          {{ 'LANDING_PAGE.NAVIGATION.CONTACT' | translate }}
+        </button>
+        <button mat-raised-button color="primary" class="login-btn" (click)="navigateToLogin()">
+          <mat-icon>account_circle</mat-icon>
+          {{ 'LANDING_PAGE.NAVIGATION.LOGIN' | translate }}
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <app-hero></app-hero>
+
+  <div class="section-divider"></div>
+
+  <div id="problem-solution">
+    <app-problem-solution></app-problem-solution>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div id="features">
+    <app-features></app-features>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div id="contact-form">
+    <app-contact-form></app-contact-form>
+  </div>
+
+  <app-footer></app-footer>
+</div>

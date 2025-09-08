@@ -1,0 +1,315 @@
+@import "../../../../_app-variables";
+
+.contact-section {
+  padding: 5rem 0;
+  background: $primary-gradient;
+  color: white;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.contact-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.contact-info {
+  animation: fadeInLeft 1s ease-out;
+}
+
+.section-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.section-subtitle {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  opacity: 0.9;
+}
+
+.contact-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+
+  .benefit-icon {
+    color: #4ecdc4;
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+  }
+
+  .benefit-text {
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: white;
+    }
+
+    p {
+      font-size: 1rem;
+      margin: 0;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+  }
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.1rem;
+
+  mat-icon {
+    color: #4ecdc4;
+  }
+}
+
+.contact-form-container {
+  animation: fadeInRight 1s ease-out;
+}
+
+.contact-form-card {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.1);
+  background: white;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+mat-card-header {
+  padding: 2rem 2rem 1rem;
+  text-align: center;
+
+  mat-card-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 0.5rem;
+  }
+
+  mat-card-subtitle {
+    font-size: 1rem;
+    color: $text-secondary;
+  }
+}
+
+.contact-form {
+  padding: 1rem 2rem 2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-field,
+.form-field-full {
+  width: 100%;
+
+  .mat-mdc-form-field-subscript-wrapper {
+    margin-top: 0.25rem;
+  }
+}
+
+.form-field-full {
+  margin-bottom: 1rem;
+}
+
+/* Custom form field styling */
+::ng-deep {
+  .contact-form {
+    .mat-mdc-form-field-outline {
+      border-radius: 10px;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      border-radius: 10px;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #e0e6ed;
+    }
+
+    .mat-mdc-form-field.mat-focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: $primary;
+        border-width: 2px;
+      }
+    }
+
+    .mat-mdc-input-element {
+      font-size: 1rem;
+    }
+
+    .mat-mdc-form-field-label {
+      color: $text-secondary;
+    }
+
+    .mat-mdc-select-value-text {
+      font-size: 1rem;
+    }
+  }
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.submit-button {
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 10px;
+  background: $primary-gradient;
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+  min-width: 200px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  mat-icon {
+    margin-right: 0.5rem;
+  }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+}
+
+/* Custom snackbar styles */
+::ng-deep {
+  .success-snackbar {
+    background-color: $success !important;
+    color: white !important;
+  }
+
+  .error-snackbar {
+    background-color: $error !important;
+    color: white !important;
+  }
+}
+
+/* Animations */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 3rem 0;
+  }
+
+  .contact-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .contact-benefits {
+    margin-bottom: 2rem;
+  }
+
+  .contact-details {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .submit-button {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    min-width: 180px;
+  }
+}

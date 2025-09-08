@@ -1,0 +1,144 @@
+<section class="contact-section" id="contact-form">
+  <div class="container">
+    <div class="contact-content">
+      <div class="contact-info">
+        <h2 class="section-title">{{ 'LANDING_PAGE.CONTACT_FORM.TITLE' | translate }}</h2>
+        <p class="section-subtitle">
+          {{ 'LANDING_PAGE.CONTACT_FORM.SUBTITLE' | translate }}
+        </p>
+
+        <div class="contact-benefits">
+          <div class="benefit-item">
+            <mat-icon class="benefit-icon">schedule</mat-icon>
+            <div class="benefit-text">
+              <h4>Quick Setup</h4>
+              <p>Get up and running in less than 24 hours</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <mat-icon class="benefit-icon">support_agent</mat-icon>
+            <div class="benefit-text">
+              <h4>Expert Support</h4>
+              <p>Dedicated support team to guide your success</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <mat-icon class="benefit-icon">security</mat-icon>
+            <div class="benefit-text">
+              <h4>Secure & Reliable</h4>
+              <p>Enterprise-grade security and 99.9% uptime</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-details">
+          <div class="contact-item">
+            <mat-icon>email</mat-icon>
+            <span>{{ 'LANDING_PAGE.CONTACT_FORM.CONTACT_INFO.EMAIL.VALUE' | translate }}</span>
+          </div>
+          <div class="contact-item">
+            <mat-icon>phone</mat-icon>
+            <span>{{ 'LANDING_PAGE.CONTACT_FORM.CONTACT_INFO.PHONE.VALUE' | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-container">
+        <mat-card class="contact-form-card">
+          <mat-card-header>
+            <mat-card-title>{{ 'LANDING_PAGE.CONTACT_FORM.CONTACT_INFO.TITLE' | translate }}</mat-card-title>
+            <mat-card-subtitle>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.SUBTITLE' | translate }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.CONTACT_PERSON.LABEL' | translate }}</mat-label>
+                  <input matInput formControlName="firstName" required
+                         [placeholder]="'LANDING_PAGE.CONTACT_FORM.FORM.CONTACT_PERSON.PLACEHOLDER' | translate">
+                  <mat-error *ngIf="contactForm.get('firstName')?.invalid && contactForm.get('firstName')?.touched">
+                    {{ getErrorMessage('firstName') }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.LAST_NAME.LABEL' | translate }}</mat-label>
+                  <input matInput formControlName="lastName" required
+                         [placeholder]="'LANDING_PAGE.CONTACT_FORM.FORM.LAST_NAME.PLACEHOLDER' | translate">
+                  <mat-error *ngIf="contactForm.get('lastName')?.invalid && contactForm.get('lastName')?.touched">
+                    {{ getErrorMessage('lastName') }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.EMAIL.LABEL' | translate }}</mat-label>
+                <input matInput type="email" formControlName="email" required
+                       [placeholder]="'LANDING_PAGE.CONTACT_FORM.FORM.EMAIL.PLACEHOLDER' | translate">
+                <mat-error *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+                  {{ getErrorMessage('email') }}
+                </mat-error>
+              </mat-form-field>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.COMPANY_NAME.LABEL' | translate }}</mat-label>
+                  <input matInput formControlName="company" required
+                         [placeholder]="'LANDING_PAGE.CONTACT_FORM.FORM.COMPANY_NAME.PLACEHOLDER' | translate">
+                  <mat-error *ngIf="contactForm.get('company')?.invalid && contactForm.get('company')?.touched">
+                    {{ getErrorMessage('company') }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.PHONE.LABEL' | translate }}</mat-label>
+                  <input matInput formControlName="phone" required
+                         [placeholder]="'LANDING_PAGE.CONTACT_FORM.FORM.PHONE.PLACEHOLDER' | translate">
+                  <mat-error *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">
+                    {{ getErrorMessage('phone') }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.BUSINESS_TYPE.LABEL' | translate }}</mat-label>
+                <mat-select formControlName="businessType" required>
+                  <mat-option value="wholesaler">{{ 'LANDING_PAGE.CONTACT_FORM.FORM.BUSINESS_TYPE.OPTIONS.WHOLESALE' | translate }}</mat-option>
+                  <mat-option value="retailer">{{ 'LANDING_PAGE.CONTACT_FORM.FORM.BUSINESS_TYPE.OPTIONS.RETAIL' | translate }}</mat-option>
+                  <mat-option value="manufacturer">{{ 'LANDING_PAGE.CONTACT_FORM.FORM.BUSINESS_TYPE.OPTIONS.MANUFACTURING' | translate }}</mat-option>
+                  <mat-option value="pharmacy">{{ 'LANDING_PAGE.CONTACT_FORM.FORM.BUSINESS_TYPE.OPTIONS.PHARMACY' | translate }}</mat-option>
+                  <mat-option value="food">{{ 'LANDING_PAGE.CONTACT_FORM.FORM.BUSINESS_TYPE.OPTIONS.FOOD' | translate }}</mat-option>
+                  <mat-option value="other">{{ 'LANDING_PAGE.CONTACT_FORM.FORM.BUSINESS_TYPE.OPTIONS.OTHER' | translate }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="contactForm.get('businessType')?.invalid && contactForm.get('businessType')?.touched">
+                  {{ getErrorMessage('businessType') }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ 'LANDING_PAGE.CONTACT_FORM.FORM.MESSAGE.LABEL' | translate }}</mat-label>
+                <textarea matInput formControlName="message" rows="4" required
+                  [placeholder]="'LANDING_PAGE.CONTACT_FORM.FORM.MESSAGE.PLACEHOLDER' | translate"></textarea>
+                <mat-error *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched">
+                  {{ getErrorMessage('message') }}
+                </mat-error>
+              </mat-form-field>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit"
+                  [disabled]="isSubmitting" class="submit-button">
+                  <mat-icon *ngIf="isSubmitting">hourglass_empty</mat-icon>
+                  <mat-icon *ngIf="!isSubmitting">send</mat-icon>
+                  {{ isSubmitting ? ('LANDING_PAGE.CONTACT_FORM.FORM.SENDING_BUTTON' | translate) : ('LANDING_PAGE.CONTACT_FORM.FORM.SEND_MESSAGE_BUTTON' | translate) }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,90 @@
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">{{ 'LANDING_PAGE.FEATURES.TITLE' | translate }}</h2>
+      <p class="section-subtitle">
+        {{ 'LANDING_PAGE.FEATURES.SUBTITLE' | translate }}
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="panel panel--feature"
+           *ngFor="let feature of features; let i = index">
+        <div class="panel__header-section">
+          <div class="feature-icon-container">
+            <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+          </div>
+          {{ feature.title }}
+        </div>
+
+        <div class="panel__body-section">
+          <p class="feature-description">{{ feature.description }}</p>
+
+          <div class="feature-highlights">
+            <div class="highlight-item" *ngFor="let highlight of feature.highlights">
+              <mat-icon class="highlight-icon">check_circle</mat-icon>
+              <span class="highlight-text">{{ highlight }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-showcase">
+      <div class="showcase-content">
+        <div class="panel panel--showcase">
+          <div class="panel__header-section">
+            {{ 'LANDING_PAGE.FEATURES.SHOWCASE.TITLE' | translate }}
+          </div>
+          <div class="panel__body-section">
+            <p class="showcase-description">
+              {{ 'LANDING_PAGE.FEATURES.SHOWCASE.DESCRIPTION' | translate }}
+            </p>
+            <div class="showcase-stats">
+              <div class="stat-item">
+                <div class="stat-number counter" data-target="60">{{ 'LANDING_PAGE.FEATURES.SHOWCASE.STATS.FASTER_PROCESSING.VALUE' | translate }}</div>
+                <div class="stat-label">{{ 'LANDING_PAGE.FEATURES.SHOWCASE.STATS.FASTER_PROCESSING.LABEL' | translate }}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number counter" data-target="40">{{ 'LANDING_PAGE.FEATURES.SHOWCASE.STATS.REDUCTION_STOCKOUTS.VALUE' | translate }}</div>
+                <div class="stat-label">{{ 'LANDING_PAGE.FEATURES.SHOWCASE.STATS.REDUCTION_STOCKOUTS.LABEL' | translate }}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number counter" data-target="25">{{ 'LANDING_PAGE.FEATURES.SHOWCASE.STATS.INCREASE_SALES.VALUE' | translate }}</div>
+                <div class="stat-label">{{ 'LANDING_PAGE.FEATURES.SHOWCASE.STATS.INCREASE_SALES.LABEL' | translate }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="showcase-visual">
+        <div class="panel panel--demo">
+          <div class="panel__header-section">
+            <mat-icon class="dashboard-icon">timeline</mat-icon>
+            Real-time Dashboard
+          </div>
+          <div class="panel__body-section">
+            <div class="demo-chart">
+              <div class="chart-bar" style="height: 60%"></div>
+              <div class="chart-bar" style="height: 80%"></div>
+              <div class="chart-bar" style="height: 45%"></div>
+              <div class="chart-bar" style="height: 90%"></div>
+              <div class="chart-bar" style="height: 70%"></div>
+            </div>
+            <div class="demo-metrics">
+              <div class="metric">
+                <span class="metric-label">Today's Sales</span>
+                <span class="metric-value">₱125,000</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Orders Processed</span>
+                <span class="metric-value">247</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

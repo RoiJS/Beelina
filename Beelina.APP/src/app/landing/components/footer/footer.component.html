@@ -1,0 +1,97 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section brand-section">
+        <div class="brand">
+          <h3 class="brand-name">{{ 'LANDING_PAGE.BRAND.NAME' | translate }}</h3>
+          <p class="brand-tagline">{{ 'LANDING_PAGE.BRAND.TAGLINE' | translate }}</p>
+        </div>
+        <p class="brand-description">
+          {{ 'LANDING_PAGE.FOOTER.BRAND_DESCRIPTION' | translate }}
+        </p>
+        <div class="social-links">
+          <button mat-icon-button class="social-link" aria-label="Facebook">
+            <mat-icon>share</mat-icon>
+          </button>
+          <button mat-icon-button class="social-link" aria-label="LinkedIn">
+            <mat-icon>business</mat-icon>
+          </button>
+          <button mat-icon-button class="social-link" aria-label="Twitter">
+            <mat-icon>chat</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="section-title">{{ 'LANDING_PAGE.FOOTER.PRODUCT.TITLE' | translate }}</h4>
+        <ul class="footer-links">
+          <li><a href="#features">{{ 'LANDING_PAGE.FOOTER.PRODUCT.FEATURES' | translate }}</a></li>
+          <li><a href="#problem-solution">{{ 'LANDING_PAGE.FOOTER.PRODUCT.SOLUTIONS' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.PRODUCT.PRICING' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.PRODUCT.INTEGRATIONS' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.PRODUCT.API_DOCS' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="section-title">{{ 'LANDING_PAGE.FOOTER.COMPANY.TITLE' | translate }}</h4>
+        <ul class="footer-links">
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.COMPANY.ABOUT' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.COMPANY.CAREERS' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.COMPANY.NEWS' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.COMPANY.CUSTOMER_STORIES' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.COMPANY.PARTNERS' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="section-title">{{ 'LANDING_PAGE.FOOTER.SUPPORT.TITLE' | translate }}</h4>
+        <ul class="footer-links">
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.SUPPORT.HELP_CENTER' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.SUPPORT.DOCUMENTATION' | translate }}</a></li>
+          <li><a href="#contact-form">{{ 'LANDING_PAGE.FOOTER.SUPPORT.CONTACT' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.SUPPORT.TRAINING' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.SUPPORT.SYSTEM_STATUS' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="section-title">{{ 'LANDING_PAGE.FOOTER.ACCESS.TITLE' | translate }}</h4>
+        <ul class="footer-links">
+          <li><a (click)="navigateToLogin()" class="login-link">
+            <mat-icon>account_circle</mat-icon>
+            {{ 'LANDING_PAGE.FOOTER.ACCESS.LOGIN' | translate }}
+          </a></li>
+          <li><a href="#contact-form">{{ 'LANDING_PAGE.FOOTER.ACCESS.REQUEST_DEMO' | translate }}</a></li>
+          <li><a href="#contact-form">{{ 'LANDING_PAGE.FOOTER.ACCESS.GET_STARTED' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.ACCESS.DOWNLOAD_APP' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="section-title">{{ 'LANDING_PAGE.FOOTER.LEGAL.TITLE' | translate }}</h4>
+        <ul class="footer-links">
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.LEGAL.PRIVACY' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.LEGAL.TERMS' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.LEGAL.SECURITY' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.LEGAL.COMPLIANCE' | translate }}</a></li>
+          <li><a href="#">{{ 'LANDING_PAGE.FOOTER.LEGAL.COOKIES' | translate }}</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+      <div class="copyright">
+        <p>&copy; {{ currentYear }} {{ 'LANDING_PAGE.BRAND.NAME' | translate }}. {{ 'LANDING_PAGE.FOOTER.COPYRIGHT' | translate }}</p>
+      </div>
+      <div class="footer-actions">
+        <button mat-button class="back-to-top" (click)="scrollToTop()">
+          <mat-icon>keyboard_arrow_up</mat-icon>
+          {{ 'LANDING_PAGE.FOOTER.BACK_TO_TOP' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>

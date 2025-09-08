@@ -1,0 +1,105 @@
+<section class="hero-section">
+  <!-- Animated Distribution Background -->
+  <div class="distribution-background">
+    <div class="floating-element truck-1">
+      <mat-icon>local_shipping</mat-icon>
+    </div>
+    <div class="floating-element package-1">
+      <mat-icon>inventory_2</mat-icon>
+    </div>
+    <div class="floating-element warehouse-1">
+      <mat-icon>warehouse</mat-icon>
+    </div>
+    <div class="floating-element truck-2">
+      <mat-icon>local_shipping</mat-icon>
+    </div>
+    <div class="floating-element package-2">
+      <mat-icon>package_2</mat-icon>
+    </div>
+    <div class="floating-element store-1">
+      <mat-icon>store</mat-icon>
+    </div>
+    <div class="floating-element delivery-1">
+      <mat-icon>delivery_dining</mat-icon>
+    </div>
+    <div class="floating-element inventory-1">
+      <mat-icon>inventory</mat-icon>
+    </div>
+
+    <!-- Supply Chain Flow Lines -->
+    <div class="flow-line line-1"></div>
+    <div class="flow-line line-2"></div>
+    <div class="flow-line line-3"></div>
+    <div class="flow-line line-4"></div>
+
+    <!-- Animated Dots for Movement -->
+    <div class="flow-dot dot-1"></div>
+    <div class="flow-dot dot-2"></div>
+    <div class="flow-dot dot-3"></div>
+    <div class="flow-dot dot-4"></div>
+    <div class="flow-dot dot-5"></div>
+    <div class="flow-dot dot-6"></div>
+  </div>
+
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          {{ 'LANDING_PAGE.HERO.TITLE' | translate }}
+          <span class="brand-highlight">{{ 'LANDING_PAGE.HERO.BRAND_HIGHLIGHT' | translate }}</span>
+        </h1>
+        <p class="hero-subtitle">
+          {{ 'LANDING_PAGE.HERO.SUBTITLE' | translate }}
+        </p>
+        <div class="hero-actions">
+          <button mat-raised-button color="primary" class="cta-primary" (click)="scrollToContact()">
+            {{ 'LANDING_PAGE.HERO.CTA_PRIMARY' | translate }}
+          </button>
+          <button mat-stroked-button class="cta-secondary" (click)="scrollToFeatures()">
+            {{ 'LANDING_PAGE.HERO.CTA_SECONDARY' | translate }}
+          </button>
+        </div>
+      </div>
+      <div class="hero-image">
+        <mat-card class="feature-preview">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>bar_chart</mat-icon>
+            <mat-card-title>{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.TITLE' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="dashboard-preview">
+              <div class="metric-card">
+                <mat-icon>trending_up</mat-icon>
+                <div class="metric-info">
+                  <span class="metric-value">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.USERS.VALUE' | translate }}</span>
+                  <span class="metric-label">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.USERS.LABEL' | translate }}</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <mat-icon>inventory</mat-icon>
+                <div class="metric-info">
+                  <span class="metric-value">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.ORDERS.VALUE' | translate }}</span>
+                  <span class="metric-label">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.ORDERS.LABEL' | translate }}</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <mat-icon>people</mat-icon>
+                <div class="metric-info">
+                  <span class="metric-value">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.REVENUE.VALUE' | translate }}</span>
+                  <span class="metric-label">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.REVENUE.LABEL' | translate }}</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <mat-icon>speed</mat-icon>
+                <div class="metric-info">
+                  <span class="metric-value">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.EFFICIENCY.VALUE' | translate }}</span>
+                  <span class="metric-label">{{ 'LANDING_PAGE.HERO.DASHBOARD_PREVIEW.METRICS.EFFICIENCY.LABEL' | translate }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</section>

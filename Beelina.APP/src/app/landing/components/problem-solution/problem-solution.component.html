@@ -1,0 +1,54 @@
+<section class="problem-solution-section" id="problem-solution">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ 'LANDING_PAGE.PROBLEM_SOLUTION.TITLE' | translate }}
+      </h2>
+      <p class="section-subtitle">
+        {{ 'LANDING_PAGE.PROBLEM_SOLUTION.SUBTITLE' | translate }}
+      </p>
+    </div>
+
+    <div class="problem-solutions-grid">
+      <mat-card class="problem-solution-card" *ngFor="let item of problemSolutions; let i = index">
+        <div class="card-header">
+          <div class="icon-container">
+            <mat-icon class="solution-icon">{{ item.icon }}</mat-icon>
+          </div>
+        </div>
+
+        <mat-card-content>
+          <div class="problem-section">
+            <h4 class="problem-title">{{ 'LANDING_PAGE.PROBLEM_SOLUTION.PROBLEMS.TITLE' | translate }}</h4>
+            <p class="problem-text">{{ item.problem }}</p>
+          </div>
+
+          <div class="solution-section">
+            <h4 class="solution-title">{{ 'LANDING_PAGE.PROBLEM_SOLUTION.SOLUTIONS.TITLE' | translate }}</h4>
+            <p class="solution-text">{{ item.solution }}</p>
+          </div>
+
+          <div class="benefits-section">
+            <h4 class="benefits-title">{{ 'LANDING_PAGE.PROBLEM_SOLUTION.BENEFITS.TITLE' | translate }}</h4>
+            <ul class="benefits-list">
+              <li class="benefit-item" *ngFor="let benefit of item.benefits">
+                <mat-icon class="check-icon">check_circle</mat-icon>
+                <span>{{ benefit }}</span>
+              </li>
+            </ul>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="cta-section">
+      <h3 class="cta-title">{{ 'LANDING_PAGE.PROBLEM_SOLUTION.CTA.TITLE' | translate }}</h3>
+      <p class="cta-subtitle">
+        {{ 'LANDING_PAGE.PROBLEM_SOLUTION.CTA.SUBTITLE' | translate }}
+      </p>
+      <button mat-raised-button color="primary" class="cta-button">
+        {{ 'LANDING_PAGE.PROBLEM_SOLUTION.CTA.BUTTON' | translate }}
+      </button>
+    </div>
+  </div>
+</section>
