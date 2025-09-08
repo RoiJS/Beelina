@@ -283,7 +283,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   }
 
   manageProductStockAudit() {
-    this.router.navigate([`product-catalogue/edit-product/${this._productId}/manage-product-stock-audit`], { state: { productSource: this._productSource } });
+    this.router.navigate([`/app/product-catalogue/edit-product/${this._productId}/manage-product-stock-audit`], { state: { productSource: this._productSource } });
   }
 
   saveProduct() {

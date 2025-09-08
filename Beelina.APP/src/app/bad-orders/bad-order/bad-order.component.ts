@@ -103,7 +103,7 @@ export class BadOrderComponent extends BaseComponent implements OnInit, OnDestro
   goToTransaction(transaction: Transaction) {
     if (this.multipleItemsService.selectMultipleActive()) return;
 
-    this.router.navigate([`bad-orders/transactions/${this._transactionDate}/${transaction.id}`], {
+    this.router.navigate([`/app/bad-orders/transactions/${this._transactionDate}/${transaction.id}`], {
       state: {
         isLocalTransaction: transaction.isLocal
       }

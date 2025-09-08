@@ -122,7 +122,7 @@ export class ReportsComponent extends BaseComponent implements OnInit {
   }
 
   goToReportInformation(reportId: number) {
-    this.router.navigate(['/reports', reportId]);
+    this.router.navigate(['/app/reports', reportId]);
   }
 
   get reports(): Array<Report> {

@@ -766,3 +766,14 @@ button[color="primary"] {
     background: $from-color-gradiant;
   }
 }
+
+/* Contact Form Snackbar Styles */
+.success-snackbar {
+  background: #4caf50 !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background: #f44336 !important;
+  color: white !important;
+}

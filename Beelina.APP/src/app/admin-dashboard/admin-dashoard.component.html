@@ -4,20 +4,20 @@
 <div>
   <router-outlet name="adminDashboard"></router-outlet>
   <mat-toolbar class="bottom-nav-container">
-    <button mat-flat-button (click)="goToPage('/dashboard')" routerLinkActive="active-link" outlet="adminDashboard" class="nav-button nav-button--home">
+    <button mat-flat-button (click)="goToPage('/app/dashboard')" routerLinkActive="active-link" outlet="adminDashboard" class="nav-button nav-button--home">
       <mat-icon>home</mat-icon>
       @if (!isHandset) {
         <span>{{ "DASHBOARD_ADMIN.MAIN_MENU.HOME" | translate }}</span>
       }
     </button>
-    <button mat-flat-button (click)="goToPage('/dashboard/distribution')" routerLinkActive="active-link" outlet="adminDashboard" class="nav-button nav-button--distribution">
+    <button mat-flat-button (click)="goToPage('/app/dashboard/distribution')" routerLinkActive="active-link" outlet="adminDashboard" class="nav-button nav-button--distribution">
       <mat-icon>shopping_cart</mat-icon>
 
       @if (!isHandset) {
         <span>{{ "DASHBOARD_ADMIN.MAIN_MENU.DISTRIBUTION" | translate }}</span>
       }
     </button>
-    <button mat-flat-button (click)="goToPage('/dashboard/insights')" routerLinkActive="active-link" outlet="adminDashboard" class="nav-button nav-button--insights">
+    <button mat-flat-button (click)="goToPage('/app/dashboard/insights')" routerLinkActive="active-link" outlet="adminDashboard" class="nav-button nav-button--insights">
       <mat-icon>bar_chart</mat-icon>
 
       @if (!isHandset) {

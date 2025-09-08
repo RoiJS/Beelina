@@ -92,7 +92,7 @@ export class BadOrdersComponent
   goToTransactionDate(transactionDate: Date) {
     if (this.multipleItemsService.selectMultipleActive()) return;
     const date = DateFormatter.format(transactionDate);
-    this.router.navigate([`bad-orders/transactions/${date}`]);
+    this.router.navigate([`/app/bad-orders/transactions/${date}`]);
   }
 
   openFilter() {

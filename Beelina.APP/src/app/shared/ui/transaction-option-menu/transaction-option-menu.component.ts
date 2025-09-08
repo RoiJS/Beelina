@@ -61,7 +61,7 @@ export class TransactionOptionMenuComponent extends BaseComponent {
 
   registerOrder() {
     const transactionDate = DateFormatter.format(this.transaction().transactionDate);
-    this.router.navigate([`transaction-history/transactions/${transactionDate}/${this.transaction().id}/payments`], {
+    this.router.navigate([`/app/transaction-history/transactions/${transactionDate}/${this.transaction().id}/payments`], {
       state: {
         openRegisterDialog: true
       }

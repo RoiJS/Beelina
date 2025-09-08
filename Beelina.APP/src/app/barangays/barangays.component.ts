@@ -136,7 +136,7 @@ export class BarangaysComponent
   }
 
   goToCustomers(barangay: string) {
-    this.router.navigate([`customer-accounts/${barangay}`]);
+    this.router.navigate([`/app/customer-accounts/${barangay}`]);
   }
 
   get dataSource(): BarangaysDataSource {

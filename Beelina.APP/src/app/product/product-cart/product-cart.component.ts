@@ -254,7 +254,7 @@ export class ProductCartComponent
             this.productTransactions().length === 0 &&
             this._transactionId() === 0
           ) {
-            this.router.navigate(['/product-catalogue/product-list']);
+            this.router.navigate(['/app/product-catalogue/product-list']);
           }
 
           this._totalAmount.set(this.productTransactions().reduce(
@@ -417,7 +417,7 @@ export class ProductCartComponent
           this.store.dispatch(
             ProductTransactionActions.resetProductTransactionState()
           );
-          this.router.navigate(['/product-catalogue']);
+          this.router.navigate(['/app/product-catalogue']);
         }
       });
   }
@@ -543,9 +543,9 @@ export class ProductCartComponent
             );
 
             if (this._transactionId() === 0) {
-              this.router.navigate(['/product-catalogue']);
+              this.router.navigate(['/app/product-catalogue']);
             } else {
-              this.router.navigate(['/draft-transactions']);
+              this.router.navigate(['/app/draft-transactions']);
             }
           }
         });
@@ -636,7 +636,7 @@ export class ProductCartComponent
                     })
                   );
                   this.notificationService.openSuccessNotification(successMessage);
-                  this.router.navigate(['/order-transactions']);
+                  this.router.navigate(['/app/order-transactions']);
                 },
 
                 error: () => {
@@ -802,7 +802,7 @@ export class ProductCartComponent
                       ProductTransactionActions.resetProductTransactionState()
                     );
 
-                    this.router.navigate(['/order-transactions']);
+                    this.router.navigate(['/app/order-transactions']);
                   },
 
                   error: () => {
@@ -827,7 +827,7 @@ export class ProductCartComponent
 
   registerPayment() {
     const transactionDate = DateFormatter.format(this.transaction().transactionDate);
-    this.router.navigate([`transaction-history/transactions/${transactionDate}/${this._transactionId()}/payments`], {
+    this.router.navigate([`/app/transaction-history/transactions/${transactionDate}/${this._transactionId()}/payments`], {
       state: {
         openRegisterDialog: true
       }
@@ -836,7 +836,7 @@ export class ProductCartComponent
 
   goToPaymentHistory() {
     const transactionDate = DateFormatter.format(this.transaction().transactionDate);
-    this.router.navigate([`transaction-history/transactions/${transactionDate}/${this._transactionId()}/payments`], {
+    this.router.navigate([`/app/transaction-history/transactions/${transactionDate}/${this._transactionId()}/payments`], {
       state: {
         openRegisterDialog: false
       }
@@ -1161,9 +1161,9 @@ export class ProductCartComponent
     );
 
     if (this._transactionId() === 0) {
-      this.router.navigate(['/product-catalogue']);
+      this.router.navigate(['/app/product-catalogue']);
     } else {
-      this.router.navigate(['/draft-transactions']);
+      this.router.navigate(['/app/draft-transactions']);
     }
   }
 
@@ -1233,7 +1233,7 @@ export class ProductCartComponent
                       'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                     )
                   );
-                  this.router.navigate(['/order-transactions']);
+                  this.router.navigate(['/app/order-transactions']);
                 },
                 error: () => {
                   this.store.dispatch(
@@ -1262,7 +1262,7 @@ export class ProductCartComponent
                     'TRANSACTION_OPTION_MENU.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                   )
                 );
-                this.router.navigate(['/order-transactions']);
+                this.router.navigate(['/app/order-transactions']);
               })
               .catch(() => {
                 this.store.dispatch(

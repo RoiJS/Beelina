@@ -146,7 +146,7 @@ export class EditCustomerDetailsComponent implements OnInit {
                       state: false,
                     })
                   );
-                  this.router.navigate([`/customer-accounts/${this._barangay}`]);
+                  this.router.navigate([`/app/customer-accounts/${this._barangay}`]);
                 },
 
                 error: () => {

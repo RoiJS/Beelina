@@ -110,7 +110,7 @@ export class DraftTransactionComponent
   goToTransaction(transaction: Transaction) {
     if (this.multipleItemsService.selectMultipleActive()) return;
 
-    this.router.navigate([`product-catalogue/product-cart/${transaction.id}`], {
+    this.router.navigate([`/app/product-catalogue/product-cart/${transaction.id}`], {
       state: {
         isLocalTransaction: transaction.isLocal
       }

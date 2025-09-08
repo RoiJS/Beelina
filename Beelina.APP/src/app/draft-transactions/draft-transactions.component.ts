@@ -92,7 +92,7 @@ export class DraftTransactionsComponent
   goToTransactionDate(transactionDate: Date) {
     if (this.multipleItemsService.selectMultipleActive()) return;
     const date = DateFormatter.format(transactionDate);
-    this.router.navigate([`draft-transactions/transactions/${date}`]);
+    this.router.navigate([`/app/draft-transactions/transactions/${date}`]);
   }
 
   openFilter() {

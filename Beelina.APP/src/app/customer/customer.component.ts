@@ -66,11 +66,11 @@ export class CustomerComponent
   }
 
   goToTransactionHistory(id: number) {
-    this.router.navigate([`customer-accounts/${this._barangay}/${id}/transactions`]);
+    this.router.navigate([`/app/customer-accounts/${this._barangay}/${id}/transactions`]);
   }
 
   openDetails(id: number) {
-    this.router.navigate([`customer-accounts/${this._barangay}/${id}`]);
+    this.router.navigate([`/app/customer-accounts/${this._barangay}/${id}`]);
   }
 
   deleteStore(storeId: number) {
@@ -108,7 +108,7 @@ export class CustomerComponent
 
   addCustomer() {
     if (this.clientSubscriptionDetails.customersMax === 0 || this._dataSource.data.length <= this.clientSubscriptionDetails.customersMax) {
-      this.router.navigate([`/customer-accounts/${this._barangay}/add-customer`]);
+      this.router.navigate([`/app/customer-accounts/${this._barangay}/add-customer`]);
     } else {
       this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.CUSTOMER_LIMIT_ERROR", { customersMax: this.clientSubscriptionDetails.customersMax }));
     }
@@ -131,7 +131,7 @@ export class CustomerComponent
   }
 
   onGoBack() {
-    this.router.navigate([`/customer-accounts`]);
+    this.router.navigate([`/app/customer-accounts`]);
   }
 
   get dataSource(): CustomerStoreDataSource {

@@ -235,7 +235,7 @@ export class OrderTransactionsComponent extends BaseComponent implements OnDestr
   viewTransaction(transaction: Transaction) {
     this.validRoute = true;
     this.storageService.storeString('currentSalesAgentId', transaction.createdById.toString());
-    this.router.navigate([`product-catalogue/product-cart/${transaction.id}`], {
+    this.router.navigate([`/app/product-catalogue/product-cart/${transaction.id}`], {
       state: {
         dateUpdated: transaction.finalDateUpdatedFormatted,
         updatedBy: transaction.detailsUpdatedBy

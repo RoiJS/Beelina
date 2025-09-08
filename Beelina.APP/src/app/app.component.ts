@@ -63,6 +63,7 @@ export class AppComponent
   pageLoaded = signal<boolean>(false);
   isOnline = signal<boolean>(true);
   isOfflineModeAvailable = signal<boolean>(false);
+  isLandingPage = signal<boolean>(false);
 
   isAppOnline = computed(() => {
     const result = this.isOnline() || (!this.isOnline() && this.isOfflineModeAvailable());
@@ -248,6 +249,9 @@ export class AppComponent
       .pipe(filter((event: any) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.activatedUrl.set(event.urlAfterRedirects);
+
+        // Check if we're on the landing page
+        this.isLandingPage.set(event.urlAfterRedirects === '/' || event.urlAfterRedirects === '');
 
         if (!this.networkService.isOnline.value) return;
 

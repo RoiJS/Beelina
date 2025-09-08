@@ -16,19 +16,19 @@ export class SettingsComponent implements OnInit {
       icon: 'assignment',
       label: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.ORDER_TRANSACTION.LABEL'),
       description: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.ORDER_TRANSACTION.DESCRIPTION'),
-      url: '/settings/order-transactions'
+      url: '/app/settings/order-transactions'
     },
     {
       icon: 'bar_chart',
       label: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.REPORTS.LABEL'),
       description: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.REPORTS.DESCRIPTION'),
-      url: '/settings/reports'
+      url: '/app/settings/reports'
     },
     {
       icon: 'person_pin',
       label: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.PROFILE.LABEL'),
       description: this.translateService.instant('SETTINGS_PAGE.MODULE_LIST.PROFILE.DESCRIPTION'),
-      url: '/profile'
+      url: '/app/profile'
     },
   ];
 

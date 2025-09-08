@@ -186,7 +186,7 @@ export class ProductEffects {
             }),
             tap(() => {
               this.storageService.remove("textOrder");
-              this.router.navigate([`product-catalogue/product-cart`]);
+              this.router.navigate([`/app/product-catalogue/product-cart`]);
             })
           )
         }
@@ -201,7 +201,7 @@ export class ProductEffects {
           }),
           tap(() => {
             this.storageService.remove("textOrder");
-            this.router.navigate([`product-catalogue/product-cart`]);
+            this.router.navigate([`/app/product-catalogue/product-cart`]);
           }),
           catchError((error) =>
             of(

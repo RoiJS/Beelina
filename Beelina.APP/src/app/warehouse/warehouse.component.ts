@@ -200,7 +200,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   editProduct(id: number) {
-    this.router.navigate([`product-catalogue/edit-product/${id}`], { state: { productSource: ProductSourceEnum.Warehouse } });
+    this.router.navigate([`/app/product-catalogue/edit-product/${id}`], { state: { productSource: ProductSourceEnum.Warehouse } });
   }
 
   deleteProduct(id: number) {
@@ -235,7 +235,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   addProductStockQuantity() {
-    this.router.navigate(['/purchase-orders/add']);
+    this.router.navigate(['/app/purchase-orders/add']);
   }
 
   transferProductInventory(productId: number) {
@@ -253,7 +253,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
 
   addProduct() {
     if (this.clientSubscriptionDetails.productSKUMax === 0 || this.totalProducts() <= this.clientSubscriptionDetails.productSKUMax) {
-      this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Warehouse } });
+      this.router.navigate(['/app/product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Warehouse } });
     } else {
       this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", { productSKUMax: this.clientSubscriptionDetails.productSKUMax }));
     }
@@ -376,7 +376,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
 
 
   productImport() {
-    this.router.navigate(['warehouse-products/product-import'], { state: { productSource: ProductSourceEnum.Warehouse } });
+    this.router.navigate(['/app/warehouse-products/product-import'], { state: { productSource: ProductSourceEnum.Warehouse } });
   }
 
   get dataSource(): WarehouseProductDataSource {

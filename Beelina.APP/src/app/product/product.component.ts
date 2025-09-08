@@ -268,7 +268,7 @@ export class ProductComponent
   }
 
   goToCart() {
-    this.router.navigate([`product-catalogue/product-cart`], {
+    this.router.navigate([`/app/product-catalogue/product-cart`], {
       state: {
         isLocalTransaction: !this.networkService.isOnline.value,
       }
@@ -276,11 +276,11 @@ export class ProductComponent
   }
 
   goToPriceAssignment() {
-    this.router.navigate(['product-catalogue/product-price-assignment']);
+    this.router.navigate(['/app/product-catalogue/product-price-assignment']);
   }
 
   editProduct(id: number) {
-    this.router.navigate([`product-catalogue/edit-product/${id}`], { state: { productSource: ProductSourceEnum.Panel } });
+    this.router.navigate([`/app/product-catalogue/edit-product/${id}`], { state: { productSource: ProductSourceEnum.Panel } });
   }
 
   deleteProduct(id: number) {
@@ -316,7 +316,7 @@ export class ProductComponent
 
   addProduct() {
     if (this.clientSubscriptionDetails.productSKUMax === 0 || this.totalProductCount() <= this.clientSubscriptionDetails.productSKUMax) {
-      this.router.navigate(['product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Panel } });
+      this.router.navigate(['/app/product-catalogue/add-product'], { state: { productSource: ProductSourceEnum.Panel } });
     } else {
       this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.PRODUCT_REGISTRATION_LIMIT_ERROR", { productSKUMax: this.clientSubscriptionDetails.productSKUMax }));
     }
@@ -462,10 +462,10 @@ export class ProductComponent
 
   openTextParserDialog() {
     if (this.currentUserPermission < this.getPermissionLevel(PermissionLevelEnum.Manager)) {
-      this.router.navigate(['product-catalogue/text-order']);
+      this.router.navigate(['/app/product-catalogue/text-order']);
     } else {
       if (this.currentSalesAgentId > 0) {
-        this.router.navigate(['product-catalogue/text-inventories']);
+        this.router.navigate(['/app/product-catalogue/text-inventories']);
       } else {
         this.dialogService.openAlert(
           this.translateService.instant(
@@ -622,7 +622,7 @@ export class ProductComponent
   }
 
   addProductStockQuantity() {
-    this.router.navigate(['/purchase-orders']);
+    this.router.navigate(['/app/purchase-orders']);
   }
 
   get currentUserPermission(): number {

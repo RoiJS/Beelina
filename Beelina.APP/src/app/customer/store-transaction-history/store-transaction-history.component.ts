@@ -44,7 +44,7 @@ export class StoreTransactionHistoryComponent extends BaseComponent {
 
   goToTransaction(transaction: Transaction) {
     this.router.navigate([
-      `/transaction-history/transactions/${DateFormatter.format(transaction.transactionDate, 'YYYY-MM-DD')}/${transaction.id}`
+      `/app/transaction-history/transactions/${DateFormatter.format(transaction.transactionDate, 'YYYY-MM-DD')}/${transaction.id}`
     ]);
   }
 }

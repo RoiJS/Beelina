@@ -1978,5 +1978,200 @@
     "CONFIRM_MESSAGE": "Are you sure you want to assign '{{productName}}' to {{agentCount}} sales agent(s)?",
     "SUCCESS_MESSAGE": "Product successfully assigned to {{count}} sales agent(s)",
     "ERROR_MESSAGE": "Failed to assign product to sales agents. Please try again."
+  },
+  "LANDING_PAGE": {
+    "BRAND": {
+      "NAME": "Bizual",
+      "TAGLINE": "Transforming Distribution Excellence"
+    },
+    "NAVIGATION": {
+      "FEATURES": "Features",
+      "SOLUTIONS": "Solutions",
+      "CONTACT": "Contact",
+      "LOGIN": "Login"
+    },
+    "HERO": {
+      "TITLE": "Transform Your Distribution Business with",
+      "BRAND_HIGHLIGHT": "Bizual",
+      "SUBTITLE": "Streamline operations, optimize inventory, and boost sales with our comprehensive distribution management platform designed for modern businesses.",
+      "CTA_PRIMARY": "Get Started Today",
+      "CTA_SECONDARY": "Request Demo",
+      "DASHBOARD_PREVIEW": {
+        "TITLE": "Distribution Dashboard",
+        "METRICS": {
+          "USERS": {
+            "VALUE": "2,847",
+            "LABEL": "Active Users"
+          },
+          "ORDERS": {
+            "VALUE": "18,392",
+            "LABEL": "Orders Processed"
+          },
+          "REVENUE": {
+            "VALUE": "₱4.2M",
+            "LABEL": "Monthly Revenue"
+          },
+          "EFFICIENCY": {
+            "VALUE": "96%",
+            "LABEL": "System Efficiency"
+          }
+        }
+      }
+    },
+    "FEATURES": {
+      "TITLE": "Powerful Features for Modern Distribution",
+      "SUBTITLE": "Everything you need to run and grow your distribution business efficiently.",
+      "SHOWCASE": {
+        "TITLE": "See Bizual in Action",
+        "DESCRIPTION": "Experience how our integrated platform transforms distribution operations with seamless workflows and intelligent automation.",
+        "STATS": {
+          "ACTIVE_USERS": {
+            "VALUE": "15,000+",
+            "LABEL": "Active Users"
+          },
+          "ORDERS_PROCESSED": {
+            "VALUE": "2.5M+",
+            "LABEL": "Orders Processed"
+          },
+          "REVENUE_GROWTH": {
+            "VALUE": "180%",
+            "LABEL": "Avg Revenue Growth"
+          },
+          "CUSTOMER_SATISFACTION": {
+            "VALUE": "98%",
+            "LABEL": "Customer Satisfaction"
+          }
+        }
+      }
+    },
+    "PROBLEM_SOLUTION": {
+      "TITLE": "Why Choose Bizual?",
+      "SUBTITLE": "We understand the challenges of modern distribution and have built solutions that work.",
+      "PROBLEMS": {
+        "TITLE": "Common Distribution Challenges"
+      },
+      "SOLUTIONS": {
+        "TITLE": "Our Solutions"
+      },
+      "BENEFITS": {
+        "TITLE": "Key Benefits"
+      },
+      "CTA": {
+        "TITLE": "Ready to Transform Your Distribution Business?",
+        "SUBTITLE": "Join hundreds of distribution companies that have streamlined their operations with Bizual.",
+        "BUTTON": "Start Your Free Trial"
+      }
+    },
+    "CONTACT_FORM": {
+      "TITLE": "Ready to Transform Your Distribution Business?",
+      "SUBTITLE": "Get started with Bizual today and experience the difference modern distribution management can make.",
+      "FORM": {
+        "SUBTITLE": "Tell us about your distribution business",
+        "CONTACT_PERSON": {
+          "LABEL": "First Name",
+          "PLACEHOLDER": "Enter your first name"
+        },
+        "LAST_NAME": {
+          "LABEL": "Last Name",
+          "PLACEHOLDER": "Enter your last name"
+        },
+        "EMAIL": {
+          "LABEL": "Email Address",
+          "PLACEHOLDER": "Enter your email address"
+        },
+        "COMPANY_NAME": {
+          "LABEL": "Company Name",
+          "PLACEHOLDER": "Enter your company name"
+        },
+        "PHONE": {
+          "LABEL": "Phone Number",
+          "PLACEHOLDER": "Enter your phone number"
+        },
+        "BUSINESS_TYPE": {
+          "LABEL": "Business Type",
+          "OPTIONS": {
+            "WHOLESALE": "Wholesale Distribution",
+            "RETAIL": "Retail Distribution",
+            "MANUFACTURING": "Manufacturing",
+            "PHARMACY": "Pharmacy/Medical",
+            "FOOD": "Food & Beverage",
+            "OTHER": "Other"
+          }
+        },
+        "MESSAGE": {
+          "LABEL": "Tell us about your business needs",
+          "PLACEHOLDER": "What challenges are you facing with your current distribution process?"
+        },
+        "SEND_MESSAGE_BUTTON": "Send Message",
+        "SENDING_BUTTON": "Sending...",
+        "SUCCESS_MESSAGE": "Thank you for your interest! We'll get back to you soon.",
+        "ERROR_MESSAGE": "Failed to send message. Please try again later."
+      },
+      "CONTACT_INFO": {
+        "TITLE": "Get in Touch",
+        "CONNECT_TITLE": "Let's Connect",
+        "EMAIL": {
+          "LABEL": "Email Us",
+          "VALUE": "hello@beelina.com"
+        },
+        "PHONE": {
+          "LABEL": "Call Us",
+          "VALUE": "+63 917 123 4567"
+        },
+        "ADDRESS": {
+          "LABEL": "Visit Us",
+          "VALUE": "Makati City, Metro Manila, Philippines"
+        },
+        "BUSINESS_HOURS": {
+          "TITLE": "Business Hours",
+          "WEEKDAYS": "Monday - Friday: 9:00 AM - 6:00 PM",
+          "WEEKENDS": "Saturday: 9:00 AM - 12:00 PM"
+        }
+      }
+    },
+    "FOOTER": {
+      "BRAND_DESCRIPTION": "Empowering distribution companies with intelligent automation, real-time insights, and seamless operations management.",
+      "PRODUCT": {
+        "TITLE": "Product",
+        "FEATURES": "Features",
+        "SOLUTIONS": "Solutions",
+        "PRICING": "Pricing",
+        "INTEGRATIONS": "Integrations",
+        "API_DOCS": "API Documentation"
+      },
+      "COMPANY": {
+        "TITLE": "Company",
+        "ABOUT": "About Us",
+        "CAREERS": "Careers",
+        "NEWS": "News & Updates",
+        "CUSTOMER_STORIES": "Customer Stories",
+        "PARTNERS": "Partners"
+      },
+      "SUPPORT": {
+        "TITLE": "Support",
+        "HELP_CENTER": "Help Center",
+        "DOCUMENTATION": "Documentation",
+        "CONTACT": "Contact Support",
+        "TRAINING": "Training",
+        "SYSTEM_STATUS": "System Status"
+      },
+      "ACCESS": {
+        "TITLE": "Access",
+        "LOGIN": "Login to Bizual",
+        "REQUEST_DEMO": "Request Demo",
+        "GET_STARTED": "Get Started",
+        "DOWNLOAD_APP": "Download App"
+      },
+      "LEGAL": {
+        "TITLE": "Legal",
+        "PRIVACY": "Privacy Policy",
+        "TERMS": "Terms of Service",
+        "SECURITY": "Security",
+        "COMPLIANCE": "Compliance",
+        "COOKIES": "Cookie Policy"
+      },
+      "COPYRIGHT": "All rights reserved.",
+      "BACK_TO_TOP": "Back to Top"
+    }
   }
 }

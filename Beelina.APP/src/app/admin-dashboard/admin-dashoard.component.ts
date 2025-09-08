@@ -50,7 +50,7 @@ export class AdminDashoardComponent extends SharedComponent implements OnInit {
 
   goToPage(url: string) {
 
-    if (url === '/dashboard/distribution') {
+    if (url === '/app/dashboard/distribution') {
       if (!this.clientSubscriptionDetails.dashboardDistributionPageActive) {
         this.applySubscriptionService.open(this.translateService.instant("SUBSCRIPTION_TEXTS.DASHBOARD_DISTRIBUTION_PAGE_ACTIVE_NO_ACCESS_ERROR"));
         return;

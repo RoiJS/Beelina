@@ -44,11 +44,11 @@ export class TransactionDateOptionMenuComponent {
 
     let baseUrl = '';
     if (this.data.transactionStatus === TransactionStatusEnum.CONFIRMED) {
-      baseUrl = 'transaction-history/transactions';
+      baseUrl = '/app/transaction-history/transactions';
     } else if (this.data.transactionStatus === TransactionStatusEnum.BAD_ORDER) {
-      baseUrl = 'bad-orders/transactions';
+      baseUrl = '/app/bad-orders/transactions';
     } else if (this.data.transactionStatus === TransactionStatusEnum.DRAFT) {
-      baseUrl = 'draft-transactions/transactions';
+      baseUrl = '/app/draft-transactions/transactions';
     }
 
     // Construct the URL for the transaction history page

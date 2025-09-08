@@ -265,7 +265,7 @@ export class ManageUserAccountDetailsComponent extends BaseComponent implements 
                   this._isLoading = false;
                   this._userDetails = user;
                   this.notificationService.openSuccessNotification(this.translateService.instant(successMessage));
-                  this.router.navigate(['/accounts']);
+                  this.router.navigate(['/app/accounts']);
                 },
                 error: (error) => {
                   this._isLoading = false;

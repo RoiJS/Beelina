@@ -113,11 +113,11 @@ export class ProductWithdrawalsComponent implements AfterViewInit {
   }
 
   goToProductWithdrawal(id: number) {
-    this.router.navigate([`product-withdrawals/${id}`]);
+    this.router.navigate([`/app/product-withdrawals/${id}`]);
   }
 
   addNewProductWithdrawal() {
-    this.router.navigate([`product-withdrawals/add`]);
+    this.router.navigate([`/app/product-withdrawals/add`]);
   }
 
   removeProductWithdrawal(id: number) {

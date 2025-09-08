@@ -304,7 +304,7 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
                 if (this._productWithdrawalId > 0) {
                   window.location.reload();
                 } else {
-                  this.router.navigate([`product-withdrawals`]);
+                  this.router.navigate([`/app/product-withdrawals`]);
                 }
               },
               error: () => {
@@ -331,7 +331,7 @@ export class ProductWithdrawalDetailsComponent extends BaseComponent implements 
             .subscribe({
               next: () => {
                 this.notificationService.openSuccessNotification(this.translateService.instant("PRODUCT_WITHDRAWAL_DETAILS_PAGE.DELETE_PRODUCT_WITHDRAWAL_ITEMS_DIALOG.SUCCESS_MESSAGE"));
-                this.router.navigate([`product-withdrawals`]);
+                this.router.navigate([`/app/product-withdrawals`]);
               },
               error: () => {
                 this.notificationService.openErrorNotification(

@@ -52,7 +52,7 @@ export class SidedrawerService {
     const availableMenus = [
       {
         name: 'MAIN_MENU.SALES',
-        url: '/sales',
+        url: '/app/sales',
         icon: 'monetization_on',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -61,7 +61,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.TOP_PRODUCTS',
-        url: '/product-catalogue/top-products',
+        url: '/app/product-catalogue/top-products',
         icon: 'trending_up',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -70,7 +70,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.PRODUCTS_CATALOGUE',
-        url: '/product-catalogue/product-list',
+        url: '/app/product-catalogue/product-list',
         icon: 'add_shopping_cart',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: managerPermissionLevel,
@@ -79,7 +79,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.DRAFT_ORDERS',
-        url: '/draft-transactions',
+        url: '/app/draft-transactions',
         icon: 'archive',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -88,7 +88,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.CONFIRMED_ORDERS',
-        url: '/transaction-history',
+        url: '/app/transaction-history',
         icon: 'check_circle_outline',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -97,7 +97,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.BAD_ORDERS',
-        url: '/bad-orders',
+        url: '/app/bad-orders',
         icon: 'remove_shopping_cart',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -106,7 +106,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.CUSTOMER_ACCOUNTS',
-        url: '/customer-accounts',
+        url: '/app/customer-accounts',
         icon: 'place',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -115,7 +115,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.DASHBOARD',
-        url: '/dashboard',
+        url: '/app/dashboard',
         icon: 'bar_chart',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
@@ -124,7 +124,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.WAREHOUSE_PRODUCTS',
-        url: '/warehouse-products',
+        url: '/app/warehouse-products',
         icon: 'add_shopping_cart',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
@@ -133,7 +133,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.PURCHASE_ORDERS',
-        url: '/purchase-orders',
+        url: '/app/purchase-orders',
         icon: 'description',
         minimumPermissionLevel: managerPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
@@ -142,7 +142,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.PRODUCT_WITHDRAWALS',
-        url: '/product-withdrawals',
+        url: '/app/product-withdrawals',
         icon: 'description',
         minimumPermissionLevel: managerPermissionLevel,
         maximumPermissionLevel: managerPermissionLevel,
@@ -151,7 +151,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.ORDER_TRANSACTIONS',
-        url: '/order-transactions',
+        url: '/app/order-transactions',
         icon: 'assignment',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
@@ -160,7 +160,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.SUPPLIERS',
-        url: '/suppliers',
+        url: '/app/suppliers',
         icon: 'local_mall',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
@@ -169,7 +169,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.ACCOUNTS',
-        url: '/accounts',
+        url: '/app/accounts',
         icon: 'person_pin',
         minimumPermissionLevel: administratorPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
@@ -178,7 +178,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.REPORTS',
-        url: '/reports',
+        url: '/app/reports',
         icon: 'bar_chart',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: administratorPermissionLevel,
@@ -187,7 +187,7 @@ export class SidedrawerService {
       },
       {
         name: 'MAIN_MENU.SETTINGS',
-        url: '/settings',
+        url: '/app/settings',
         icon: 'settings',
         minimumPermissionLevel: userPermissionLevel,
         maximumPermissionLevel: userPermissionLevel,
@@ -204,7 +204,7 @@ export class SidedrawerService {
       // },
       {
         name: 'MAIN_MENU.LOGOUT',
-        url: '/logout',
+        url: '/app/logout',
         icon: 'remove_circle_outline',
         supportOffline: true,
         visible: true,

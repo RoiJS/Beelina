@@ -69,7 +69,7 @@ export class TransactionHistoryComponent
     const formattedDate = DateFormatter.format(transactionDate);
 
     // Construct the URL for the transaction history page
-    const url = `transaction-history/transactions/${formattedDate}`;
+    const url = `/app/transaction-history/transactions/${formattedDate}`;
 
     // Navigate to the transaction history page
     this.router.navigate([url]);

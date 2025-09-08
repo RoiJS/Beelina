@@ -30,6 +30,9 @@ services.Configure<ApplicationSettings>(configuration.GetSection("AppSettings"))
 // Register IOptions pattern for EmailServerSettings section
 services.Configure<EmailServerSettings>(configuration.GetSection("EmailServerSettings"));
 
+// Register IOptions pattern for ContactFormSettings section
+services.Configure<ContactFormSettings>(configuration.GetSection("ContactFormSettings"));
+
 // Register IOptions pattern for AppHostInfo section
 services.Configure<AppHostInfo>(configuration.GetSection("AppHostInfo"));
 

@@ -165,17 +165,17 @@ export class AuthComponent extends SharedComponent implements OnInit, OnDestroy 
   // sales page for user account with User or Administrator Permission.
   // We will revisit this later on to make this landing page configurable.
   private getDefaultLandingPage() {
-    let defaultLandingPage = '/sales';
+    let defaultLandingPage = '/app/sales';
     const userPermission = this.authService.user.value.getModulePrivilege(
       ModuleEnum.Distribution
     ).value;
 
     if (userPermission === getPermissionLevelEnum(PermissionLevelEnum.Manager)) {
-      defaultLandingPage = '/product-catalogue';
+      defaultLandingPage = '/app/product-catalogue';
     }
 
     if (userPermission === getPermissionLevelEnum(PermissionLevelEnum.Administrator)) {
-      defaultLandingPage = '/dashboard';
+      defaultLandingPage = '/app/dashboard';
     }
 
     return defaultLandingPage;

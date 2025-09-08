@@ -313,7 +313,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
                 if (this._purchaseOrderId > 0) {
                   window.location.reload();
                 } else {
-                  this.router.navigate([`purchase-orders`]);
+                  this.router.navigate([`/app/purchase-orders`]);
                 }
               },
               error: () => {
@@ -340,7 +340,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
             .subscribe({
               next: () => {
                 this.notificationService.openSuccessNotification(this.translateService.instant("PURCHASE_ORDER_DETAILS_PAGE.DELETE_PURCHASE_ORDER_ITEMS_DIALOG.SUCCESS_MESSAGE"));
-                this.router.navigate([`purchase-orders`]);
+                this.router.navigate([`/app/purchase-orders`]);
               },
               error: () => {
                 this.notificationService.openSuccessNotification(this.translateService.instant("PURCHASE_ORDER_DETAILS_PAGE.DELETE_PURCHASE_ORDER_ITEMS_DIALOG.ERROR_MESSAGE"));

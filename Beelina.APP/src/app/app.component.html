@@ -1,3 +1,10 @@
+<!-- Landing Page Router Outlet (outside sidenav container) -->
+@if (isLandingPage()) {
+<router-outlet></router-outlet>
+}
+
+<!-- Main App with Sidenav (for authenticated pages) -->
+@if (!isLandingPage()) {
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="isHandset ? 'dialog' : 'navigation'"
     [mode]="isHandset ? 'over' : 'side'" [opened]="!isHandset && isAuthenticated()">
@@ -74,3 +81,4 @@
 
   </mat-sidenav-content>
 </mat-sidenav-container>
+}

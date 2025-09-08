@@ -115,11 +115,11 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
   }
 
   goToPurchaseOrder(id: number) {
-    this.router.navigate([`purchase-orders/${id}`]);
+    this.router.navigate([`/app/purchase-orders/${id}`]);
   }
 
   addNewPurchasOrder() {
-    this.router.navigate([`purchase-orders/add`]);
+    this.router.navigate([`/app/purchase-orders/add`]);
   }
 
   removePurchaseOrder(id: number) {

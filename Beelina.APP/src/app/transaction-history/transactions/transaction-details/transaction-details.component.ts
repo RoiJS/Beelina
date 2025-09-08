@@ -130,7 +130,7 @@ export class TransactionDetailsComponent
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'TRANSACTION_DETAILS_PAGE.UPDATE_MODE_OF_PAYMENT_DIALOG.SUCCESS_MESSAGE'
                 ));
-                this.router.navigate(['transaction-history']);
+                this.router.navigate(['/app/transaction-history']);
               },
 
               error: () => {
@@ -163,7 +163,7 @@ export class TransactionDetailsComponent
               next: () => {
                 this._isLoading = false;
                 this.notificationService.openSuccessNotification(successMessage);
-                this.router.navigate(['transaction-history']);
+                this.router.navigate(['/app/transaction-history']);
               },
 
               error: () => {
@@ -176,7 +176,7 @@ export class TransactionDetailsComponent
   }
 
   registerPayment() {
-    this.router.navigate([`transaction-history/transactions/${this._transactionDate}/${this._transactionId}/payments`], {
+    this.router.navigate([`/app/transaction-history/transactions/${this._transactionDate}/${this._transactionId}/payments`], {
       state: {
         openRegisterDialog: true
       }
@@ -184,7 +184,7 @@ export class TransactionDetailsComponent
   }
 
   goToPaymentHistory() {
-    this.router.navigate([`transaction-history/transactions/${this._transactionDate}/${this._transactionId}/payments`], {
+    this.router.navigate([`/app/transaction-history/transactions/${this._transactionDate}/${this._transactionId}/payments`], {
       state: {
         openRegisterDialog: false
       }
@@ -276,7 +276,7 @@ export class TransactionDetailsComponent
       )
     );
     // Redirect to product cart as new order
-    this.router.navigate([`product-catalogue/product-cart`], {
+    this.router.navigate([`/app/product-catalogue/product-cart`], {
       state: {
         isLocalTransaction: !this.networkService.isOnline.value,
       }

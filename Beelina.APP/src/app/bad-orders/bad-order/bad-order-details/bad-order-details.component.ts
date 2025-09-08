@@ -91,7 +91,7 @@ export class BadOrderDetailsComponent extends BaseComponent implements AfterView
                   this.notificationService.openSuccessNotification(this.translateService.instant(
                     'BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                   ));
-                  this.router.navigate([`bad-orders`]);
+                  this.router.navigate([`/app/bad-orders`]);
                 },
 
                 error: () => {
@@ -108,7 +108,7 @@ export class BadOrderDetailsComponent extends BaseComponent implements AfterView
                 this.notificationService.openSuccessNotification(this.translateService.instant(
                   'BAD_ORDER_DETAILS_PAGE.DELETE_TRANSACTION_DIALOG.SUCCESS_MESSAGE'
                 ));
-                this.router.navigate([`bad-orders`]);
+                this.router.navigate([`/app/bad-orders`]);
 
               }).catch(() => {
                 this._isLoading = false;
@@ -136,7 +136,7 @@ export class BadOrderDetailsComponent extends BaseComponent implements AfterView
           ));
 
           this._isLoading = false;
-          this.router.navigate([`bad-orders`]);
+          this.router.navigate([`/app/bad-orders`]);
         }
       });
   }

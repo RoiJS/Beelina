@@ -55,7 +55,7 @@ export class TransactionsComponent
 
   goToTransaction(transactionId: number) {
     this.router.navigate([
-      `transaction-history/transactions/${this._transactionDate}/${transactionId}`,
+      `/app/transaction-history/transactions/${this._transactionDate}/${transactionId}`,
     ]);
   }
 

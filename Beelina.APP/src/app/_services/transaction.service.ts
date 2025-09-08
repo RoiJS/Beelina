@@ -31,7 +31,6 @@ import {
 } from '../product/top-products/store/selectors';
 
 import { environment } from 'src/environments/environment';
-import { OutletTypeEnum } from '../_enum/outlet-type.enum';
 import { ISendInvoiceTransactionOutput } from '../_interfaces/outputs/isend-invoice-transaction.output';
 import { ITransactionPayload } from '../_interfaces/payloads/itransaction.payload';
 import { DateRange } from '../_models/date-range';

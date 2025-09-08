@@ -105,11 +105,11 @@ export class AccountsComponent extends BaseComponent implements OnInit, OnDestro
       }
     }
 
-    this.router.navigate(['/accounts/manage-user-account-details']);
+    this.router.navigate(['/app/accounts/manage-user-account-details']);
   }
 
   editUserAccount(user: User) {
-    this.router.navigate([`/accounts/manage-user-account-details/${user.id}`]);
+    this.router.navigate([`/app/accounts/manage-user-account-details/${user.id}`]);
   }
 
   deleteUser(user: User) {

@@ -192,7 +192,7 @@ export class TextInventoriesComponent extends BaseComponent implements OnInit {
                 this.store.dispatch(ProductActions.resetTextInventoriesState());
                 this.store.dispatch(ProductActions.setUpdateProductLoadingState({ state: false }));
                 this.notificationService.openSuccessNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.SUCCESS_MESSAGE'));
-                this.router.navigate([`product-catalogue/product-list`]);
+                this.router.navigate([`/app/product-catalogue/product-list`]);
               },
               error: () => {
                 this.notificationService.openErrorNotification(this.translateService.instant('TEXT_INVENTORIES_DIALOG.CONFIRM_ORDERS_DIALOG.ERROR_MESSAGE'));
