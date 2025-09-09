@@ -11,26 +11,29 @@ namespace Beelina.LIB.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                    SET IDENTITY_INSERT ProductWithdrawalEntries ON
-                    INSERT INTO ProductWithdrawalEntries (
-                        Id
-                        , StockEntryDate
-                        , WithdrawalSlipNo
-                        , Notes
-                        , DeletedById
-                        , UpdatedById
-                        , CreatedById
-                        , DeactivatedById
-                        , IsActive
-                        , IsDelete
-                        , DateCreated
-                        , DateUpdated
-                        , DateDeleted
-                        , DateDeactivated
-                    ) VALUES (
-                        1,  GETDATE(), 'PW-0001', '', NULL, NULL, NULL, NULL, 1, 0, '0001-01-01 00:00:00.0000000', '0001-01-01 00:00:00.0000000', '0001-01-01 00:00:00.0000000', '0001-01-01 00:00:00.0000000'
-                    ) 
-                    SET IDENTITY_INSERT ProductWithdrawalEntries OFF
+                    IF EXISTS (SELECT 1 FROM ProductStockAudits)
+                    BEGIN
+                        SET IDENTITY_INSERT ProductWithdrawalEntries ON
+                        INSERT INTO ProductWithdrawalEntries (
+                            Id
+                            , StockEntryDate
+                            , WithdrawalSlipNo
+                            , Notes
+                            , DeletedById
+                            , UpdatedById
+                            , CreatedById
+                            , DeactivatedById
+                            , IsActive
+                            , IsDelete
+                            , DateCreated
+                            , DateUpdated
+                            , DateDeleted
+                            , DateDeactivated
+                        ) VALUES (
+                            1,  GETDATE(), 'PW-0001', '', NULL, NULL, NULL, NULL, 1, 0, '0001-01-01 00:00:00.0000000', '0001-01-01 00:00:00.0000000', '0001-01-01 00:00:00.0000000', '0001-01-01 00:00:00.0000000'
+                        ) 
+                        SET IDENTITY_INSERT ProductWithdrawalEntries OFF
+                    END
             ");
         }
 

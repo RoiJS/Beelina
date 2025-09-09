@@ -29,7 +29,12 @@ namespace Beelina.LIB.Migrations
                 principalColumn: "Id");
 
             // Insert default user account id
-            migrationBuilder.Sql(@"UPDATE ProductWithdrawalEntries SET UserAccountId = 1 WHERE Id = 1;");
+            migrationBuilder.Sql(@"
+                IF EXISTS (SELECT 1 FROM ProductWithdrawalEntries WHERE Id = 1)
+                BEGIN
+                    UPDATE ProductWithdrawalEntries SET UserAccountId = 1 WHERE Id = 1;
+                END
+            ");
         }
 
         /// <inheritdoc />
