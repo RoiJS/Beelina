@@ -307,6 +307,10 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
       product.parent = this._productForm.get('parent').value;
       product.productParentGroupId = this._productForm.get('productParentGroupId').value;
 
+      if (product.parent) {
+        product.productParentGroupId = null;
+      }
+
       this._productForm.markAllAsTouched();
 
       if (this._productForm.valid) {

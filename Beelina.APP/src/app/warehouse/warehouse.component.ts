@@ -347,6 +347,8 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
           });
         } else {
           // If no validTo date setting needed, proceed directly with copy creation
+          copyProduct.productParentGroupId = null; // Reset parent group to avoid grouping
+          copyProduct.parent = true; // The copy is a parent itself
           this.proceedWithWarehouseProductCopy(copyProduct);
         }
       }
