@@ -402,6 +402,8 @@ export class ProductComponent
               this.updateOriginalProductAndCreateCopy(copyProduct);
             } else {
               // Either user doesn't want validTo date or products are not in same group
+              copyProduct.productParentGroupId = null; // Reset parent group to avoid grouping
+              copyProduct.parent = true; // The copy is a parent itself
               this.createProductCopyDirectly(copyProduct);
             }
           }

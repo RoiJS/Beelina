@@ -11,6 +11,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
+-- (1) Add Report Parameter
 INSERT INTO ReportParameters (
     ReportControlId,
     Name,
