@@ -11,36 +11,7 @@ namespace Beelina.LIB.Migrations.BeelinaData
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
--- (1) Add Report Control
-SET IDENTITY_INSERT ReportControls ON
-INSERT INTO ReportControls(
-    Id
-    , Name	
-    , ParentContainerName	
-    , CustomCSSClasses	
-    , IsActive	
-    , IsDelete	
-    , DateCreated	
-    , DateUpdated	
-    , DateDeleted	
-    , DateDeactivated
-    , LabelIdentifier
-)
-SELECT 
-	11
-	,'ActiveStatusDropdown'
-	, 'mainPageContainer'
-	, ''
-	, 1
-	, 0
-	, GETDATE()
-	, '0001-01-01 00:00:00.0000000'
-	, '0001-01-01 00:00:00.0000000'
-	, '0001-01-01 00:00:00.0000000'
-	, 'REPORT_DETAILS_PAGE.CONTROL_INFORMATION.ACTIVE_STATUS_CONTROL.LABEL'
-SET IDENTITY_INSERT ReportControls OFF
-
--- (2) Add Report Parameter
+-- (1) Add Report Parameter
 INSERT INTO ReportParameters (
     ReportControlId,
     Name,
