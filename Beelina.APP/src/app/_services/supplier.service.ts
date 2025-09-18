@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ApolloQueryResult } from '@apollo/client/core';
 
 import { Apollo, MutationResult, gql } from 'apollo-angular';
-import { map } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 
@@ -11,6 +11,8 @@ import { Supplier } from '../_models/supplier';
 import { ISupplierOutput } from '../_interfaces/outputs/isupplier.output';
 import { ISupplierInformationQueryPayload } from '../_interfaces/payloads/isupplier-information-query.payload';
 import { CheckSupplierCodeInformationResult } from '../_models/results/check-supplier-code-information-result';
+import { TopSupplierBySales } from '../_models/top-supplier-by-sales';
+import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 
 const UPDATE_SUPPLIER_MUTATION = gql`
   mutation($supplierInput: SupplierInput!) {
@@ -77,6 +79,34 @@ const CHECK_SUPPLIER_CODE = gql`
       ... on CheckSupplierCodeInformationResult {
         exists
       }
+    }
+  }
+`;
+
+const GET_TOP_SUPPLIERS_BY_SALES = gql`
+  query($fromDate: String, $toDate: String, $cursor: String, $sortOrder: SortEnumType!) {
+    topSuppliersBySales(
+      fromDate: $fromDate,
+      toDate: $toDate,
+      after: $cursor,
+      order: [{totalSalesAmount : $sortOrder }]
+    ) {
+     nodes {
+        supplierId
+        supplierName
+        supplierCode
+        totalSalesAmount
+        totalProductsSold
+        totalTransactions
+        totalSalesAmountFormatted
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
     }
   }
 `;
@@ -243,6 +273,56 @@ export class SupplierService {
             return false;
           }
         )
+      );
+  }
+
+  getTopSuppliersBySales(fromDate: string, toDate: string, cursor: string, sortOrder: SortOrderOptionsEnum) {
+    return this.apollo
+      .watchQuery({
+        query: GET_TOP_SUPPLIERS_BY_SALES,
+        variables: {
+          fromDate,
+          toDate,
+          sortOrder,
+          cursor
+        }
+      })
+      .valueChanges.pipe(
+        map((result: ApolloQueryResult<{ topSuppliersBySales: IBaseConnection }>) => {
+          const data = result.data.topSuppliersBySales;
+          const errors = result.errors;
+          const endCursor = data.pageInfo.endCursor;
+          const hasNextPage = data.pageInfo.hasNextPage;
+          const totalCount = data.totalCount;
+          const topSupplierBySale = <Array<TopSupplierBySales>>data.nodes;
+
+          const topSupplierBySales: Array<TopSupplierBySales> = topSupplierBySale.map((topSupplierBySaleFromServer: TopSupplierBySales) => {
+            const topSupplierBySale = new TopSupplierBySales();
+            topSupplierBySale.supplierId = topSupplierBySaleFromServer.supplierId;
+            topSupplierBySale.supplierName = topSupplierBySaleFromServer.supplierName;
+            topSupplierBySale.supplierCode = topSupplierBySaleFromServer.supplierCode;
+            topSupplierBySale.totalSalesAmount = topSupplierBySaleFromServer.totalSalesAmount;
+            topSupplierBySale.totalProductsSold = topSupplierBySaleFromServer.totalProductsSold;
+            topSupplierBySale.totalTransactions = topSupplierBySaleFromServer.totalTransactions;
+            topSupplierBySale.totalSalesAmountFormatted = topSupplierBySaleFromServer.totalSalesAmountFormatted;
+            return topSupplierBySale;
+          });
+
+          if (topSupplierBySales) {
+            return {
+              endCursor,
+              hasNextPage,
+              totalCount,
+              topSupplierBySales,
+            };
+          }
+
+          if (errors && errors.length > 0) {
+            throw new Error(errors[0].message);
+          }
+
+          return null;
+        })
       );
   }
 }

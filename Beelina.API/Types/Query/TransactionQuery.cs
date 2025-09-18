@@ -278,7 +278,11 @@ namespace Beelina.API.Types.Query
 		}
 
 		[Authorize]
-		public async Task<List<CustomerSale>> GetTopCustomerSales([Service] ITransactionRepository<Transaction> transactionRepository, int storeId, string fromDate, string toDate)
+		[UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+		[UseProjection]
+		[UseFiltering]
+		[UseSorting]
+		public async Task<List<CustomerSale>> GetTopCustomerSales([Service] ITransactionRepository<Transaction> transactionRepository, int storeId, string? fromDate, string? toDate)
 		{
 			return await transactionRepository.GetTopCustomerSales(storeId, fromDate, toDate);
 		}

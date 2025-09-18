@@ -11,6 +11,7 @@ import * as TopSellingProductActions from '../product/top-products/store/actions
 
 import { SortOrderOptionsEnum } from '../_enum/sort-order-options.enum';
 import { TopSellingProduct } from './transaction.service';
+import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,11 @@ export class TopSellingProductsFilterService extends BaseFilterAndSortService<To
 
   override setPropsSubscriptions(defaultSortOrder: string, defaultFromDate: string, defaultToDate: string) {
     this.subscription = new Subscription();
+
+    // Always Set to current month: first day and last day
+    const currentMonthDatePeriod = DateFormatter.currentMonthDatePeriod();
+    defaultFromDate = currentMonthDatePeriod.fromDate;
+    defaultToDate = currentMonthDatePeriod.toDate;
 
     this.subscription.add(
       this.store.select(fromDateSelector).subscribe((fromDate) => {

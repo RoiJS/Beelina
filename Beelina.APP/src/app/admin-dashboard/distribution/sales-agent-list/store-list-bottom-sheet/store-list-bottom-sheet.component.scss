@@ -1,0 +1,208 @@
+@import "../../../../../_app-variables";
+
+.store-list-bottom-sheet-container {
+  max-height: 80vh;
+  min-height: 300px;
+
+  .dialog-form-container__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $border-light;
+
+    span {
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+
+    mat-icon {
+      cursor: pointer;
+      color: $text-muted;
+      transition: $transition-normal;
+
+      &:hover {
+        color: $primary;
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .dialog-form-container__body {
+    flex: 1;
+    overflow: hidden;
+
+    .agent-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-lg;
+      padding: $spacing-md;
+      background: $card-gradient;
+      border-radius: $border-radius-md;
+      border: 1px solid rgba($primary, $opacity-light);
+
+      .agent-name {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: $primary;
+      }
+
+      .store-count {
+        font-size: 0.9em;
+        color: $text-secondary;
+        background: rgba($primary, $opacity-light);
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $border-radius-sm;
+      }
+    }
+
+    .no-stores-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: $spacing-xxl;
+      color: $text-muted;
+      text-align: center;
+
+      mat-icon {
+        font-size: 3em;
+        width: 3em;
+        height: 3em;
+        margin-bottom: $spacing-md;
+        opacity: $opacity-medium;
+      }
+
+      span {
+        font-size: 1.1em;
+      }
+    }
+
+    .store-list {
+      height: 400px;
+      max-height: 50vh;
+
+      .store-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $spacing-md;
+        margin-bottom: $spacing-xs;
+        background: $white;
+        border-radius: $border-radius-md;
+        border: 1px solid $border-light;
+        transition: $transition-cubic;
+        cursor: pointer;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: $shadow-md;
+          border-color: rgba($primary, 0.3);
+          background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba($primary, 0.02) 100%);
+        }
+
+        .store-info {
+          flex: 1;
+
+          .store-name {
+            font-size: 1em;
+            font-weight: 600;
+            color: $text-primary;
+            margin-bottom: $spacing-xs;
+            line-height: 1.2;
+          }
+
+          .store-details {
+            display: flex;
+            flex-direction: column;
+            gap: $spacing-xs;
+
+            .store-address {
+              font-size: 0.85em;
+              color: $text-secondary;
+              line-height: 1.3;
+            }
+
+            .order-count {
+              font-size: 0.8em;
+              color: $primary;
+              font-weight: 600;
+              background: rgba($primary, $opacity-light);
+              padding: 2px $spacing-xs;
+              border-radius: $border-radius-sm;
+              align-self: flex-start;
+            }
+          }
+        }
+
+        .store-icon {
+          color: $primary;
+          opacity: $opacity-medium;
+          transition: $transition-normal;
+        }
+
+        &:hover .store-icon {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
+  .dialog-form-container__footer {
+    margin-top: $spacing-lg;
+    padding-top: $spacing-md;
+    border-top: 1px solid $border-light;
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: $spacing-md;
+
+      button {
+        min-width: 120px;
+        border-radius: $border-radius-lg;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .store-list-bottom-sheet-container {
+    padding: $spacing-md;
+
+    .dialog-form-container__body {
+      .agent-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $spacing-xs;
+      }
+
+      .store-list {
+        height: 300px;
+
+        .store-item {
+          padding: $spacing-sm;
+
+          .store-info {
+            .store-name {
+              font-size: 0.95em;
+            }
+
+            .store-details {
+              .store-address {
+                font-size: 0.8em;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -20,6 +20,52 @@ import { IStoreInput } from '../_interfaces/inputs/istore.input';
 import { CustomerStore } from '../_models/customer-store';
 import { IBaseConnection } from '../_interfaces/connections/ibase.connection';
 import { OutletTypeEnum } from '../_enum/outlet-type.enum';
+import { DateFilterEnum, DateFilterEnumLabels } from '../_enum/date-filter.enum';
+import { ISalesAgentStoreOrder } from '../_interfaces/outputs/isales-agent-store-order.output';
+
+const GET_SALES_AGENT_STORE_WITH_ORDERS = gql`
+  query (
+    $salesAgentIds: [Int!]!
+    $fromDate: String!
+    $toDate: String!
+  ) {
+    salesAgentStoreWithOrders(
+      salesAgentIds: $salesAgentIds
+      fromDate: $fromDate
+      toDate: $toDate
+    ) {
+      salesAgentId
+      storeOrders {
+        storeId
+        name
+        barangayName
+      }
+    }
+  }
+`;
+
+const GET_SALES_AGENT_STORE_WITHOUT_ORDERS = gql`
+  query (
+    $salesAgentIds: [Int!]!
+    $dateFilterEnum: DateFilterEnum!
+    $fromDate: String!
+    $toDate: String!
+  ) {
+    salesAgentStoreWithoutOrders(
+      salesAgentIds: $salesAgentIds
+      dateFilterEnum: $dateFilterEnum
+      fromDate: $fromDate
+      toDate: $toDate
+    ) {
+      salesAgentId
+      storeOrders {
+        storeId
+        name
+        barangayName
+      }
+    }
+  }
+`;
 
 const UPDATE_STORE_MUTATION = gql`
   mutation ($storeInput: StoreInput!) {
@@ -413,7 +459,7 @@ export class CustomerStoreService {
    * @param {string} pageContext - The page context for translations ('ADD_CUSTOMER_DETAILS_PAGE' or 'EDIT_CUSTOMER_DETAILS_PAGE')
    * @returns {Array<{value: OutletTypeEnum, label: string}>} Array of outlet type options
    */
-  getOutletTypeOptions(pageContext: string = 'ADD_CUSTOMER_DETAILS_PAGE'): Array<{value: OutletTypeEnum, label: string}> {
+  getOutletTypeOptions(pageContext: string = 'ADD_CUSTOMER_DETAILS_PAGE'): Array<{ value: OutletTypeEnum, label: string }> {
     return [
       {
         value: OutletTypeEnum.KEY_ACCOUNT,
@@ -456,5 +502,91 @@ export class CustomerStoreService {
         label: this.translateService.instant(`${pageContext}.FORM_CONTROL_SECTION.OUTLET_TYPE_CONTROL.OPTIONS.GASOLINE_STATION`)
       }
     ];
+  }
+
+  /**
+   * Gets stores with orders for specific sales agents within a date range
+   * @param {number[]} salesAgentIds - Array of sales agent IDs
+   * @param {string} fromDate - Start date (YYYY-MM-DD format)
+   * @param {string} toDate - End date (YYYY-MM-DD format)
+   * @returns {Observable<ISalesAgentStoreOrder[]>} Observable of sales agent store orders
+   */
+  getSalesAgentStoreWithOrders(
+    salesAgentIds: number[],
+    fromDate: string,
+    toDate: string
+  ) {
+    return this.apollo
+      .watchQuery({
+        query: GET_SALES_AGENT_STORE_WITH_ORDERS,
+        variables: {
+          salesAgentIds,
+          fromDate,
+          toDate,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (result: ApolloQueryResult<{ salesAgentStoreWithOrders: ISalesAgentStoreOrder[] }>) => {
+            const data = result.data.salesAgentStoreWithOrders;
+            const errors = result.errors;
+
+            if (data) {
+              return data;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return [];
+          }
+        )
+      );
+  }
+
+  /**
+   * Gets stores without orders for specific sales agents based on previous period analysis
+   * This returns stores that had orders in the previous period but don't have orders in the current period
+   * @param {number[]} salesAgentIds - Array of sales agent IDs
+   * @param {DateFilterEnum} dateFilterEnum - The date filter type (Daily, Weekly, Monthly, Custom)
+   * @param {string} fromDate - Start date of current period (YYYY-MM-DD format)
+   * @param {string} toDate - End date of current period (YYYY-MM-DD format)
+   * @returns {Observable<ISalesAgentStoreOrder[]>} Observable of sales agent store orders from previous period
+   */
+  getSalesAgentStoreWithoutOrders(
+    salesAgentIds: number[],
+    dateFilterEnum: DateFilterEnum,
+    fromDate: string,
+    toDate: string
+  ) {
+    return this.apollo
+      .watchQuery({
+        query: GET_SALES_AGENT_STORE_WITHOUT_ORDERS,
+        variables: {
+          salesAgentIds,
+          dateFilterEnum: DateFilterEnumLabels[dateFilterEnum],
+          fromDate,
+          toDate,
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (result: ApolloQueryResult<{ salesAgentStoreWithoutOrders: ISalesAgentStoreOrder[] }>) => {
+            const data = result.data.salesAgentStoreWithoutOrders;
+            const errors = result.errors;
+
+            if (data) {
+              return data;
+            }
+
+            if (errors && errors.length > 0) {
+              throw new Error(errors[0].message);
+            }
+
+            return [];
+          }
+        )
+      );
   }
 }

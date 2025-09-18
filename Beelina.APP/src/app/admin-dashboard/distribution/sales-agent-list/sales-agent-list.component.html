@@ -5,66 +5,110 @@
         "DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_LIST_SECTION.TITLE"
         | translate
         }}</label>
+      <span class="spacer"></span>
     </div>
     <div class="panel__body-section">
+
+      @if(isLoading) {
+      <!-- Loading skeleton cards -->
+      <div *ngFor="let item of [1,2,3,4,5]; index as i" class="sales-agent-list__item-section loading"
+        [style.animation-delay.ms]="i * 100">
+        <div class="item-container">
+          <div class="item-container__user-image">
+            <div class="skeleton-circle"></div>
+          </div>
+          <div class="item-container__user-info">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line skeleton-line--small"></div>
+          </div>
+          <div class="skeleton-icon"></div>
+        </div>
+      </div>
+      }
+
+      @if(!isLoading) {
       <app-list-container [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="salesAgents?.length">
-        <cdk-virtual-scroll-viewport itemSize="10" class="list-container sales-agent-list">
-
-          @if(isLoading) {
-          <!-- Loading skeleton cards -->
-          <ng-container>
-            <div *ngFor="let item of [1,2,3,4,5]; index as i" class="sales-agent-list__item-section loading"
-              [style.animation-delay.ms]="i * 100">
-              <div class="item-container">
-                <div class="item-container__user-image">
-                  <div class="skeleton-circle"></div>
-                </div>
-                <div class="item-container__user-info">
-                  <div class="skeleton-line"></div>
-                  <div class="skeleton-line skeleton-line--small"></div>
-                </div>
-                <div class="skeleton-icon"></div>
-              </div>
-            </div>
-          </ng-container>
-          }
-
-          @if(!isLoading) {
+        <div class="list-container sales-agent-list" [class.initialized]="!isLoading">
           <!-- Actual sales agent cards -->
-          <ng-container>
-            <div *cdkVirtualFor="let salesAgent of salesAgents; index as i">
-              <div matRipple [ngClass]="{
+          <div *ngFor="let salesAgent of salesAgents; index as i; trackBy: trackById">
+            <div matRipple [ngClass]="{
                   'sales-agent-list__item-section--active': salesAgent?.id === currentSalesAgent,
-                  'transition-color-animation': salesAgent?.id === currentSalesAgent
-                }"
-                class="sales-agent-list__item-section list-container__item-section list-container__item-section--justify-content-space-between"
-                (click)="selectSalesAgentEvent(salesAgent)" [attr.data-index]="i">
-                <div class="item-container">
+                  'transition-color-animation': salesAgent?.id === currentSalesAgent,
+                  'moved': isMoved(salesAgent?.id),
+                  'moved--up': isMoved(salesAgent?.id) && moveDir(salesAgent?.id) === 'up',
+                  'moved--down': isMoved(salesAgent?.id) && moveDir(salesAgent?.id) === 'down'
+                }" [style.animation-delay.ms]="isMoved(salesAgent?.id) ? i * 100 : 0"
+              class="sales-agent-list__item-section list-container__item-section list-container__item-section--justify-content-space-between"
+              (click)="selectSalesAgentEvent(salesAgent)" [attr.data-index]="i" [attr.data-rank]="i + 1">
+              <div class="item-container">
+                <div class="item-container__user-image-wrapper">
+                  <!-- Medal icons for top 3 -->
+                  @if(i === 0) {
+                  <div class="medal-badge medal-gold" aria-label="1st place">
+                    <mat-icon>emoji_events</mat-icon>
+                  </div>
+                  } @else if(i === 1) {
+                  <div class="medal-badge medal-silver" aria-label="2nd place">
+                    <mat-icon>emoji_events</mat-icon>
+                  </div>
+                  } @else if(i === 2) {
+                  <div class="medal-badge medal-bronze" aria-label="3rd place">
+                    <mat-icon>emoji_events</mat-icon>
+                  </div>
+                  }
                   <div class="item-container__user-image">
                     <img src="assets/icons/user-icon.png" alt="" loading="lazy" />
                   </div>
-                  <div class="item-container__user-info">
-                    <div class="item-container__user-name">{{ salesAgent.fullname }}</div>
-
-                    @if(salesAgent.username) {
-                    <div class="item-container__user-username">
-                      {{ '@' + salesAgent.username }}
-                    </div>
-                    } @else {
-                    <div class="item-container__user-username">
-                      {{ salesAgent.emailAddress }}
-                    </div>
-                    }
-                  </div>
-                  <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
                 </div>
+                <div class="item-container__user-info">
+                  <div class="item-container__user-name">{{ salesAgent.fullname }}</div>
+
+                  @if(salesAgent.username) {
+                  <div class="item-container__user-username">
+                    {{ '@' + salesAgent.username }}
+                  </div>
+                  } @else {
+                  <div class="item-container__user-username">
+                    {{ salesAgent.emailAddress }}
+                  </div>
+                  }
+
+                  <!-- Sales amount display -->
+                  <div class="item-container__sales-amount">
+                    {{
+                    'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.SALES_INFORMATION_CONTAINER.SALES_AMOUNT'
+                    | translate }}: {{ getFormattedSalesAmountForAgent(salesAgent.id) }}
+                  </div>
+
+                  <!-- Store counts display -->
+                  <div class="item-container__store-counts">
+                    <div class="store-count">
+                      <span class="store-count__label">{{
+                        'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.SALES_INFORMATION_CONTAINER.STORES_WITH_ORDERS'
+                        | translate }}:</span>
+                      <span class="store-count__value store-count__value--clickable"
+                        (click)="showStoresWithOrders(salesAgent.id, $event)" [attr.title]="'Click to view stores'">
+                        {{ getStoresWithOrdersCount(salesAgent.id) }}
+                      </span>
+                    </div>
+                    <div class="store-count">
+                      <span class="store-count__label">{{
+                        'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.SALES_INFORMATION_CONTAINER.STORES_WITHOUT_ORDERS'
+                        | translate }}:</span>
+                      <span class="store-count__value store-count__value--clickable"
+                        (click)="showStoresWithoutOrders(salesAgent.id, $event)" [attr.title]="'Click to view stores'">
+                        {{ getStoresWithoutOrdersCount(salesAgent.id) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
               </div>
             </div>
-          </ng-container>
-          }
-
-        </cdk-virtual-scroll-viewport>
+          </div>
+        </div>
       </app-list-container>
+      }
     </div>
   </div>
 

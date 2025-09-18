@@ -1,18 +1,32 @@
 @import "../../../../app-variables";
 
 .top-products-list-container {
-  height: 25vh;
+  height: 55vh;
+  min-height: 400px;
 
   &__item-section {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md $spacing-sm;
+    border-bottom: 1px solid $gray-200;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: $gray-50;
+      cursor: pointer;
+    }
 
     .product-information {
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 0.95em;
+      color: $text-primary;
     }
 
     .product-number-of-transaction {
       min-width: 100px;
+      font-weight: 600;
+      color: $text-primary;
     }
   }
 }

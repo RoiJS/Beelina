@@ -16,7 +16,9 @@ import { TopSellingProductEffects } from 'src/app/product/top-products/store/eff
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { TopSellingProductsChartComponent } from './top-selling-products-chart/top-selling-products-chart.component';
 import { TopSellingProductsListComponent } from './top-selling-products-list/top-selling-products-list.component';
+import { TopSuppliersListComponent } from './top-suppliers-list/top-suppliers-list.component';
 import { TopCustomerSalesComponent } from './top-customer-sales/top-customer-sales.component';
+import { InsightSkeletonModule } from 'src/app/shared/ui/insight-skeleton/insight-skeleton.module';
 
 @NgModule({
   imports: [
@@ -27,6 +29,7 @@ import { TopCustomerSalesComponent } from './top-customer-sales/top-customer-sal
     MatNativeDateModule,
     MatDatepickerModule,
     MatRippleModule,
+    InsightSkeletonModule,
     StoreModule.forFeature('topSellingProducts', TopSellingProductReducers.reducers),
     EffectsModule.forFeature([
       TopSellingProductEffects,
@@ -44,6 +47,7 @@ import { TopCustomerSalesComponent } from './top-customer-sales/top-customer-sal
     InsightsComponent,
     TopSellingProductsChartComponent,
     TopSellingProductsListComponent,
+    TopSuppliersListComponent,
     TopCustomerSalesComponent
   ]
 })
