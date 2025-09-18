@@ -3,14 +3,27 @@
 .sales-agent-container {
   height: 100%;
 
+  .panel__header-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+  }
+
   .sales-agent-list {
     height: 65vh;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 
     &__item-section {
       margin: $spacing-sm;
       cursor: pointer;
       border-radius: $border-radius-lg;
-      padding: 1.2em;
+      padding: $spacing-lg;
       background: $card-gradient;
       border: 1px solid rgba($primary, $opacity-light);
       transition: $transition-cubic;
@@ -34,47 +47,68 @@
 
       // Subtle background pattern
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(45deg, transparent 40%, rgba($primary, 0.02) 50%, transparent 60%);
+        background: linear-gradient(
+          45deg,
+          transparent 40%,
+          rgba($primary, 0.02) 50%,
+          transparent 60%
+        );
         pointer-events: none;
         transition: $transition-normal;
         opacity: 0;
       }
 
-      &--active {
-        background: $primary-gradient;
-        box-shadow: $shadow-primary-lg;
-        transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, $opacity-medium);
+        &--active {
+          background: $primary-gradient;
+          box-shadow: $shadow-primary-lg;
+          transform: translateY(-2px);
+          border-color: rgba($white, $opacity-medium);
 
-        &::before {
-          opacity: 1;
-        }
-
-        .item-container {
-          &__user-image {
-            border-color: $white;
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+          &::before {
+            opacity: 1;
           }
 
-          &__user-info {
-            .item-container__user-name {
-              color: $white;
-              font-weight: 600;
+          .item-container {
+            &__user-image {
+              border-color: $white;
+              transform: scale(1.05);
+              box-shadow: 0 4px 20px rgba($white, 0.3);
             }
 
-            .item-container__user-username {
-              color: rgba(255, 255, 255, 0.9);
-            }
-          }
+            &__user-info {
+              .item-container__user-name {
+                color: $white;
+                font-weight: 600;
+              }
 
-          mat-icon {
+              .item-container__user-username {
+                color: rgba($white, 0.9);
+              }
+
+              .item-container__sales-amount {
+                color: rgba($white, 0.95);
+              }
+
+              .item-container__store-counts {
+                .store-count {
+                  &__label {
+                    color: rgba($white, 0.8);
+                  }
+
+                  &__value {
+                    color: $white;
+                    background: rgba($white, 0.2);
+                    border: 1px solid rgba($white, 0.3);
+                  }
+                }
+              }
+            }          mat-icon {
             color: $white;
             animation: arrowBounce 2s ease-in-out infinite;
           }
@@ -84,7 +118,11 @@
       &:hover:not(&--active) {
         transform: translateY(-4px);
         box-shadow: $shadow-xl;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba($primary, 0.05) 100%);
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 1) 0%,
+          rgba($primary, 0.05) 100%
+        );
         border-color: rgba($primary, 0.2);
 
         &::before {
@@ -92,6 +130,21 @@
         }
 
         .item-container {
+          &__user-image-wrapper {
+            // Prevent medal badges from being affected by hover effects
+            .medal-badge {
+              transform: none !important;
+
+              mat-icon {
+                transform: none !important;
+              }
+            }
+
+            .rank-badge {
+              transform: none !important;
+            }
+          }
+
           &__user-image {
             transform: scale(1.08);
             box-shadow: 0 6px 25px rgba($primary, 0.2);
@@ -111,6 +164,20 @@
               color: rgba($primary, $opacity-overlay);
               transform: translateX(4px);
             }
+
+            .item-container__sales-amount {
+              color: darken($primary, 10%);
+              transform: translateX(4px);
+            }
+
+            .item-container__store-counts {
+              transform: translateX(4px);
+
+              .store-count__value {
+                background: rgba($primary, 0.2);
+                color: darken($primary, 15%);
+              }
+            }
           }
 
           mat-icon {
@@ -120,27 +187,34 @@
         }
       }
 
-      // Loading shimmer effect
-      &.loading {
-        background: linear-gradient(135deg, rgba($gray-50, 0.95) 0%, rgba($gray-200, 0.9) 100%);
-        border: 1px solid rgba($primary, 0.15);
-        cursor: default;
-        pointer-events: none;
-        animation: loadingPulse 1.5s ease-in-out infinite alternate;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-
-        .skeleton-circle {
+        // Loading shimmer effect
+        &.loading {
+          background: linear-gradient(
+            135deg,
+            rgba($gray-50, 0.95) 0%,
+            rgba($gray-200, 0.9) 100%
+          );
+          border: 1px solid rgba($primary, 0.15);
+          cursor: default;
+          pointer-events: none;
+          animation: loadingPulse 1.5s ease-in-out infinite alternate;
+          box-shadow: 0 4px 20px rgba($black, 0.05);        .skeleton-circle {
           width: 56px;
           height: 56px;
           border-radius: $border-radius-circle;
-          background: linear-gradient(90deg, $gray-300 25%, $gray-400 50%, $gray-300 75%);
+          background: linear-gradient(
+            90deg,
+            $gray-300 25%,
+            $gray-400 50%,
+            $gray-300 75%
+          );
           background-size: 200% 100%;
           animation: shimmer 1.8s infinite;
           border: 2px solid rgba($primary, 0.2);
           position: relative;
 
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 50%;
             left: 50%;
@@ -155,7 +229,12 @@
 
         .skeleton-line {
           border-radius: $border-radius-sm;
-          background: linear-gradient(90deg, $gray-300 25%, $gray-400 50%, $gray-300 75%);
+          background: linear-gradient(
+            90deg,
+            $gray-300 25%,
+            $gray-400 50%,
+            $gray-300 75%
+          );
           background-size: 200% 100%;
           animation: shimmer 1.8s infinite;
           margin-bottom: 6px;
@@ -175,13 +254,18 @@
           }
 
           &::before {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            background: linear-gradient(
+              90deg,
+              transparent,
+              rgba($white, 0.4),
+              transparent
+            );
             animation: shimmerOverlay 2s infinite;
           }
         }
@@ -190,13 +274,18 @@
           width: 28px;
           height: 28px;
           border-radius: $border-radius-sm;
-          background: linear-gradient(90deg, $gray-300 25%, $gray-400 50%, $gray-300 75%);
+          background: linear-gradient(
+            90deg,
+            $gray-300 25%,
+            $gray-400 50%,
+            $gray-300 75%
+          );
           background-size: 200% 100%;
           animation: shimmer 1.8s infinite;
           position: relative;
 
           &::after {
-            content: '>';
+            content: ">";
             position: absolute;
             top: 50%;
             left: 50%;
@@ -208,12 +297,92 @@
         }
       }
 
+      // Movement highlight when order changes
+      &.moved {
+        box-shadow: 0 8px 24px rgba($primary, 0.25);
+        border-color: rgba($primary, 0.45);
+        transition: box-shadow 300ms ease, border-color 300ms ease,
+          transform 300ms ease;
+      }
+
+      &.moved--up {
+        animation: movedUp 1000ms ease-out;
+        border-color: rgba($success, 0.6);
+        box-shadow: 0 8px 24px rgba($success, 0.3);
+      }
+
+      &.moved--down {
+        animation: movedDown 1000ms ease-out;
+        border-color: rgba($warning, 0.6);
+        box-shadow: 0 8px 24px rgba($warning, 0.3);
+      }
+
       .item-container {
         display: flex;
         align-items: center;
-        gap: 1.2em;
+        gap: $spacing-lg;
         justify-content: space-between;
         width: 100%;
+
+        &__user-image-wrapper {
+          position: relative;
+          display: inline-block;
+
+          // Rank badge overlay
+          .rank-badge {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            width: 28px;
+            height: 28px;
+            border-radius: $border-radius-circle;
+            background: $primary-gradient;
+            color: $white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba($primary, 0.4);
+            border: 2px solid $white;
+            z-index: 1;
+          }
+
+          // Medal badge for top 3 performers
+          .medal-badge {
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 32px;
+            height: 32px;
+            border-radius: $border-radius-circle;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba($black, 0.3);
+            border: 3px solid $white;
+            z-index: 2;
+            font-size: 1.1rem;
+
+            &.medal-gold {
+              background: linear-gradient(135deg, $medal-gold 0%, darken($medal-gold, 15%) 100%);
+              color: $medal-gold-dark;
+              box-shadow: 0 4px 16px rgba($medal-gold, 0.5);
+            }
+
+            &.medal-silver {
+              background: linear-gradient(135deg, lighten($medal-silver, 10%) 0%, $medal-silver 100%);
+              color: $medal-silver-dark;
+              box-shadow: 0 4px 16px rgba($medal-silver, 0.6);
+            }
+
+            &.medal-bronze {
+              background: linear-gradient(135deg, $medal-bronze 0%, darken($medal-bronze, 10%) 100%);
+              color: $medal-bronze-dark;
+              box-shadow: 0 4px 16px rgba($medal-bronze, 0.5);
+            }
+          }
+        }
 
         &__user-image {
           border: 3px $primary solid;
@@ -223,7 +392,11 @@
           overflow: hidden;
           transition: $transition-cubic;
           position: relative;
-          background: linear-gradient(135deg, $white 0%, rgba($primary, $opacity-light) 100%);
+          background: linear-gradient(
+            135deg,
+            $white 0%,
+            rgba($primary, $opacity-light) 100%
+          );
 
           img {
             width: 100%;
@@ -234,7 +407,7 @@
 
           // Glow effect for active state
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: -2px;
             left: -2px;
@@ -252,7 +425,7 @@
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 0.2em;
+          gap: $spacing-xs;
         }
 
         &__user-name {
@@ -273,6 +446,67 @@
           letter-spacing: 0.5px;
         }
 
+        &__sales-amount {
+          font-size: 0.9em;
+          font-weight: 600;
+          color: $primary;
+          margin-top: $spacing-xs;
+          letter-spacing: 0.3px;
+          transition: $transition-cubic;
+        }
+
+        &__store-counts {
+          display: flex;
+          gap: $spacing-md;
+          margin-top: $spacing-sm;
+          flex-wrap: wrap;
+
+          .store-count {
+            display: flex;
+            align-items: center;
+            gap: $spacing-xs;
+            font-size: 0.75em;
+
+            &__label {
+              color: $text-secondary;
+              font-weight: 400;
+              white-space: nowrap;
+            }
+
+            &__value {
+              color: $primary;
+              font-weight: 700;
+              background: rgba($primary, 0.1);
+              padding: 2px 6px;
+              border-radius: $border-radius-sm;
+              min-width: 20px;
+              text-align: center;
+              transition: $transition-normal;
+
+              &--clickable {
+                cursor: pointer;
+                border: 1px solid rgba($primary, 0.2);
+
+                &:hover {
+                  background: rgba($primary, 0.2);
+                  transform: scale(1.1);
+                  border-color: rgba($primary, 0.4);
+                  box-shadow: 0 2px 8px rgba($primary, 0.2);
+                }
+
+                &:active {
+                  transform: scale(0.95);
+                }
+              }
+            }
+
+            &:hover .store-count__value {
+              background: rgba($primary, 0.15);
+              transform: scale(1.05);
+            }
+          }
+        }
+
         mat-icon {
           color: $text-muted;
           transition: $transition-cubic;
@@ -285,7 +519,11 @@
 
 // Keyframe animations
 @keyframes arrowBounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateX(0);
   }
   40% {
@@ -297,7 +535,8 @@
 }
 
 @keyframes imagePulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -326,7 +565,8 @@
 }
 
 @keyframes innerPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: translate(-50%, -50%) scale(1);
   }
@@ -345,6 +585,36 @@
   }
 }
 
+@keyframes movedUp {
+  0% {
+    transform: translateY(20px);
+    box-shadow: 0 8px 24px rgba($primary, 0.4);
+  }
+  50% {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba($primary, 0.5);
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 8px 24px rgba($primary, 0.25);
+  }
+}
+
+@keyframes movedDown {
+  0% {
+    transform: translateY(-20px);
+    box-shadow: 0 8px 24px rgba($primary, 0.4);
+  }
+  50% {
+    transform: translateY(5px);
+    box-shadow: 0 12px 32px rgba($primary, 0.5);
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 8px 24px rgba($primary, 0.25);
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -357,30 +627,50 @@
 }
 
 // Staggered animation for list items
-.sales-agent-list .sales-agent-list__item-section {
+.sales-agent-list.initialized .sales-agent-list__item-section {
   animation: fadeInUp 0.6s ease-out;
   animation-fill-mode: both;
 
-  &:nth-child(1) { animation-delay: 0.1s; }
-  &:nth-child(2) { animation-delay: 0.2s; }
-  &:nth-child(3) { animation-delay: 0.3s; }
-  &:nth-child(4) { animation-delay: 0.4s; }
-  &:nth-child(5) { animation-delay: 0.5s; }
-  &:nth-child(6) { animation-delay: 0.6s; }
-  &:nth-child(7) { animation-delay: 0.7s; }
-  &:nth-child(8) { animation-delay: 0.8s; }
-  &:nth-child(9) { animation-delay: 0.9s; }
-  &:nth-child(10) { animation-delay: 1.0s; }
+  &:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  &:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  &:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+  &:nth-child(6) {
+    animation-delay: 0.6s;
+  }
+  &:nth-child(7) {
+    animation-delay: 0.7s;
+  }
+  &:nth-child(8) {
+    animation-delay: 0.8s;
+  }
+  &:nth-child(9) {
+    animation-delay: 0.9s;
+  }
+  &:nth-child(10) {
+    animation-delay: 1s;
+  }
 }
 
 // Responsive design
 @media (max-width: 768px) {
   .sales-agent-container .sales-agent-list__item-section {
-    margin: 0.3em;
-    padding: 1em;
+    margin: $spacing-xs;
+    padding: $spacing-md;
 
     .item-container {
-      gap: 1em;
+      gap: $spacing-md;
 
       &__user-image {
         width: 48px;
@@ -389,6 +679,23 @@
 
       &__user-name {
         font-size: 1em;
+      }
+
+      &__sales-amount {
+        font-size: 0.8em;
+      }
+
+      &__store-counts {
+        gap: $spacing-sm;
+
+        .store-count {
+          font-size: 0.7em;
+
+          &__value {
+            padding: 1px 4px;
+            min-width: 18px;
+          }
+        }
       }
     }
   }

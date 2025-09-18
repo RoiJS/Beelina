@@ -450,20 +450,33 @@ const GET_INVOICE_DATA_QUERY = gql`
 const GET_TOP_CUSTOMER_SALES_QUERY = gql`
   query(
     $storeId: Int!,
-    $fromDate: String!,
-    $toDate: String!
+    $fromDate: String,
+    $toDate: String,
+    $cursor: String,
+    $sortOrder: SortEnumType
   ) {
   topCustomerSales (
         storeId: $storeId
         fromDate: $fromDate
         toDate: $toDate
+        after: $cursor
+        order: { totalSalesAmount: $sortOrder }
     ) {
-        storeId
-        storeName
-        outletType
-        numberOfTransactions
-        totalSalesAmount
-    }
+      nodes {
+          storeId
+          storeName
+          outletType
+          numberOfTransactions
+          totalSalesAmount
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
+      }
   }
 `;
 
@@ -1282,32 +1295,56 @@ export class TransactionService {
       );
   }
 
-  getTopStoresSales(storeId: number = 0, fromDate: string = '', toDate: string = '') {
+  getTopStoresSales(storeId: number = 0, fromDate: string = '', toDate: string = '', cursor: string = '', sortOrder: SortOrderOptionsEnum = SortOrderOptionsEnum.DESCENDING) {
     return this.apollo
       .watchQuery({
         query: GET_TOP_CUSTOMER_SALES_QUERY,
-        variables: { storeId, fromDate, toDate },
+        variables: {
+          storeId,
+          fromDate,
+          toDate,
+          cursor,
+          sortOrder
+        },
       })
       .valueChanges.pipe(
         map(
-          (
+        (
             result: ApolloQueryResult<{
-              topCustomerSales: Array<CustomerSale>;
+              topCustomerSales: IBaseConnection;
             }>
           ) => {
             const data = result.data.topCustomerSales;
-            const customerSales = <Array<CustomerSale>>(
-              data.map((t: CustomerSale) => {
-                const customerSale = new CustomerSale();
-                customerSale.storeId = t.storeId;
-                customerSale.storeName = t.storeName;
-                customerSale.numberOfTransactions = t.numberOfTransactions;
-                customerSale.outletType = OutletTypeHelper.getOutletTypeDisplayText(t.outletType, this.translateService);
-                customerSale.totalSalesAmount = t.totalSalesAmount;
-                return customerSale;
-              })
-            )
-            return customerSales;
+            const endCursor = data.pageInfo.endCursor;
+            const hasNextPage = data.pageInfo.hasNextPage;
+            const totalCount = data.totalCount;
+            const customerSaleData = <Array<CustomerSale>>data.nodes;
+
+            const customerSales: Array<CustomerSale> = customerSaleData.map((t: CustomerSale) => {
+              const customerSale = new CustomerSale();
+              customerSale.storeId = t.storeId;
+              customerSale.storeName = t.storeName;
+              customerSale.numberOfTransactions = t.numberOfTransactions;
+              customerSale.outletType = OutletTypeHelper.getOutletTypeDisplayText(t.outletType, this.translateService);
+              customerSale.totalSalesAmount = t.totalSalesAmount;
+              return customerSale;
+            });
+
+            if (customerSales) {
+              return {
+                endCursor,
+                hasNextPage,
+                totalCount,
+                topCustomerSales: customerSales,
+              };
+            }
+
+            return {
+              endCursor: null,
+              hasNextPage: false,
+              totalCount: 0,
+              topCustomerSales: [],
+            };
           }
         )
       );

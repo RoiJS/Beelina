@@ -1,36 +1,112 @@
 @import "../../../../app-variables";
 
 .app-badge {
-  border-radius: 20px;
+  border-radius: 16px;
   border-style: solid;
-  border-width: 2px;
-  display: block;
-  font-size: 12px;
-  padding: 3px;
+  border-width: 1px;
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 12px;
   text-align: center;
   width: auto;
+  min-width: fit-content;
+  white-space: nowrap;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.025em;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
 
   &--error {
-    background-color: $error-bg-color;
+    background: linear-gradient(135deg, $error-bg-color, lighten($error-bg-color, 5%));
     border-color: $error-border-color;
-    color: $error-border-color;
+    color: darken($error-border-color, 10%);
+    
+    &:hover {
+      background: linear-gradient(135deg, darken($error-bg-color, 3%), $error-bg-color);
+    }
   }
 
   &--success {
-    background-color: $success-bg-color;
+    background: linear-gradient(135deg, $success-bg-color, lighten($success-bg-color, 5%));
     border-color: $success-border-color;
-    color: $success-border-color;
+    color: darken($success-border-color, 10%);
+    
+    &:hover {
+      background: linear-gradient(135deg, darken($success-bg-color, 3%), $success-bg-color);
+    }
   }
 
   &--info {
-    background-color: $info-bg-color;
+    background: linear-gradient(135deg, $info-bg-color, lighten($info-bg-color, 5%));
     border-color: $info-border-color;
-    color: $info-border-color;
+    color: darken($info-border-color, 10%);
+    
+    &:hover {
+      background: linear-gradient(135deg, darken($info-bg-color, 3%), $info-bg-color);
+    }
   }
 
   &--warning {
-    background-color: $warning-bg-color;
+    background: linear-gradient(135deg, $warning-bg-color, lighten($warning-bg-color, 5%));
     border-color: $warning-border-color;
-    color: $warning-border-color;
+    color: darken($warning-border-color, 10%);
+    
+    &:hover {
+      background: linear-gradient(135deg, darken($warning-bg-color, 3%), $warning-bg-color);
+    }
+  }
+
+  // Size variants
+  &--small {
+    font-size: 0.625rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
+
+  &--large {
+    font-size: 0.875rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+  }
+
+  // Style variants
+  &--outlined {
+    background: transparent !important;
+    border-width: 2px;
+    
+    &.app-badge--error {
+      color: $error-border-color;
+      border-color: $error-border-color;
+    }
+    
+    &.app-badge--success {
+      color: $success-border-color;
+      border-color: $success-border-color;
+    }
+    
+    &.app-badge--info {
+      color: $info-border-color;
+      border-color: $info-border-color;
+    }
+    
+    &.app-badge--warning {
+      color: $warning-border-color;
+      border-color: $warning-border-color;
+    }
+  }
+
+  &--flat {
+    border: none;
+    box-shadow: none;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
   }
 }

@@ -12,13 +12,7 @@ import {
 import { BaseComponent } from '../shared/components/base-component/base.component';
 import { AuthService } from '../_services/auth.service';
 import { DateRange } from '../_models/date-range';
-
-export enum DateFilterEnum {
-  Daily = 1,
-  Weekly = 2,
-  Monthly = 3,
-  Custom = 4,
-}
+import { DateFilterEnum } from '../_enum/date-filter.enum';
 
 @Component({
   selector: 'app-sales',
@@ -138,6 +132,7 @@ export class SalesComponent extends BaseComponent implements OnInit {
   getDateRange(filterOption: DateFilterEnum): {
     fromDate: string;
     toDate: string;
+    dateFilter: DateFilterEnum;
   } {
     let fromDate,
       toDate = null;
@@ -168,6 +163,7 @@ export class SalesComponent extends BaseComponent implements OnInit {
     return {
       fromDate: DateFormatter.format(fromDate),
       toDate: DateFormatter.format(toDate),
+      dateFilter: filterOption
     };
   }
 

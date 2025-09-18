@@ -7,15 +7,16 @@ import { TopSellingProductsDataSource } from 'src/app/_models/datasources/top-se
 import { AuthService } from 'src/app/_services/auth.service';
 import { TopSellingProductsFilterService } from 'src/app/_services/top-selling-products-filter.service';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { isLoadingSelector } from 'src/app/transaction-history/store/selectors';
 import * as TopSellingProductActions from '../../../product/top-products/store/actions';
+import { isLoadingSelector as topProductsLoadingSelector } from '../../../product/top-products/store/selectors';
+import { SkeletonTypeEnum } from 'src/app/shared/ui/insight-skeleton/insight-skeleton.component';
 
 @Component({
   selector: 'app-top-selling-products-list',
   templateUrl: './top-selling-products-list.component.html',
   styleUrls: ['./top-selling-products-list.component.scss']
 })
-export class TopSellingProductsListComponent extends BaseComponent implements OnInit, OnDestroy {
+export class TopSellingProductsListComponent extends BaseComponent implements OnDestroy {
 
   authService = inject(AuthService);
   store = inject(Store<AppStateInterface>);
@@ -25,7 +26,7 @@ export class TopSellingProductsListComponent extends BaseComponent implements On
   constructor() {
     super();
 
-    this.$isLoading = this.store.pipe(select(isLoadingSelector));
+    this.$isLoading = this.store.pipe(select(topProductsLoadingSelector));
 
     this.topSellingProductsFilterService
       .setBottomSheet(this.bottomSheet)
@@ -40,9 +41,6 @@ export class TopSellingProductsListComponent extends BaseComponent implements On
           this.authService.userId
         )
       );
-  }
-
-  ngOnInit() {
   }
 
   ngOnDestroy() {
@@ -62,5 +60,9 @@ export class TopSellingProductsListComponent extends BaseComponent implements On
 
   get isFilterActive(): boolean {
     return this.topSellingProductsFilterService.isFilterActive;
+  }
+
+  get skeletonTypeEnum() {
+    return SkeletonTypeEnum;
   }
 }

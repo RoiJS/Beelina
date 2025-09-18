@@ -54,7 +54,13 @@
     "COPY_OF": "Copy of",
     "COPY_PRODUCT_PRICE_ASSIGNMENTS": "Copy Price Assignments",
     "TRANSACTION_HISTORY": "Transaction History",
-    "REORDER": "Re-order"
+    "REORDER": "Re-order",
+    "PRODUCTS": "Products",
+    "TRANSACTIONS": "Transactions",
+    "FILTER": "Filter",
+    "ACTIVE": "Active",
+    "CUSTOMIZE": "Customize",
+    "APPLY": "Apply"
   },
   "MAIN_MENU": {
     "SALES": "Sales",
@@ -1884,7 +1890,22 @@
       },
       "SALES_AGENT_DETAILS_SECTION": {
         "TITLE": " Sales Agent Distribution Data",
-        "SALES_INFORMATION_CONTAINER": {},
+        "SALES_INFORMATION_CONTAINER": {
+          "SALES_AMOUNT": "Sales Amount",
+          "STORES_WITH_ORDERS": "Stores with Orders",
+          "STORES_WITHOUT_ORDERS": "Stores without Orders",
+          "NO_STORES_FOUND": "No stores found",
+          "ORDER_COUNT": {
+            "=0": "no orders",
+            "=1": "one order",
+            "other": "{{count}} orders"
+          },
+          "STORE_COUNT": {
+            "=0": "no stores",
+            "=1": "one store",
+            "other": "{{count}} stores"
+          }
+        },
         "PRODUCT_LIST_CONTAINER": {
           "TITLE": "Product List",
           "DESCRIPTION": "The list below shows the available products assigned to the selected sales agent."
@@ -1904,11 +1925,14 @@
       "TOP_SELLING_PRODUCTS_LIST_SECTION": {
         "TITLE": "Top Selling Products"
       },
+      "TOP_SUPPLIERS_LIST_SECTION": {
+        "TITLE": "Top Suppliers by Sales"
+      },
       "TOP_CUSTOMER_STORE_LIST_SECTION": {
         "TITLE": "Top Customer Sales",
         "BODY_CONTAINER": {
           "INFO_BANNER": {
-            "TITLE": "Click on store to see top products sold.",
+            "TITLE": "Click any store to see top products sold.",
             "TITLE_2": "Click back button to see top store sales."
           }
         }

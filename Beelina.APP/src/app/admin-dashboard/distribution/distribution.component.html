@@ -22,7 +22,8 @@
               <!-- Sales Tab View -->
               <mat-tab label="Sales">
                 <app-loader-layout [busy]="salesChartViewLoading">
-                  <app-sales-information (salesChartViewLoadingState)="salesChartViewLoading = $event"
+                  <app-sales-information (dateFilterChange)="dateFilterChange($event)"
+                    (salesChartViewLoadingState)="salesChartViewLoading = $event"
                     class="distribution-container__chart-filter-section"></app-sales-information>
                 </app-loader-layout>
               </mat-tab>

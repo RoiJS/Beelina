@@ -27,4 +27,15 @@ export class DateFormatter {
   static nowDate() {
     return moment().format('YYYY-MM-DD');
   }
+
+  static currentMonthDatePeriod() {
+    const currentDate = moment();
+    let fromDate = currentDate.clone().startOf('month').format('YYYY-MM-DD');
+    let toDate = currentDate.clone().endOf('month').format('YYYY-MM-DD');
+
+    return {
+      fromDate,
+      toDate
+    };
+  }
 }

@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatListModule } from '@angular/material/list';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,6 +25,7 @@ import { ProductTransactionsEffects } from 'src/app/product/add-to-cart-product/
 
 import { DistributionComponent } from './distribution.component';
 import { SalesAgentListComponent } from './sales-agent-list/sales-agent-list.component';
+import { StoreListBottomSheetComponent } from './sales-agent-list/store-list-bottom-sheet/store-list-bottom-sheet.component';
 
 import { CustomUISharedModule } from 'src/app/shared/custom-ui-shared.module';
 import { SalesInformationComponent } from './sales-information/sales-information.component';
@@ -36,14 +37,14 @@ import { ProductStockAuditComponent } from './product-stock-audit/product-stock-
     CommonModule,
     CustomUISharedModule,
     MatListModule,
-    ScrollingModule,
     MatRippleModule,
     MatIconModule,
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatBottomSheetModule,
+  MatBottomSheetModule,
+  ScrollingModule,
     MatTabsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
@@ -70,6 +71,7 @@ import { ProductStockAuditComponent } from './product-stock-audit/product-stock-
   declarations: [
     DistributionComponent,
     SalesAgentListComponent,
+    StoreListBottomSheetComponent,
     SalesInformationComponent,
     ProductListComponent,
     ProductStockAuditComponent

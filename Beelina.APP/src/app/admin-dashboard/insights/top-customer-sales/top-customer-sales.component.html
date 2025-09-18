@@ -1,62 +1,70 @@
-<div class="top-store-header-container">
-  @if (customerSalesProducts.length > 0) {
-  <button mat-button mat-raised-button color="primary"
-    (click)="goBack()"><mat-icon>keyboard_arrow_left</mat-icon>Back</button>
+<div>
+  <app-filter-card [filterLabel]="'GENERAL_TEXTS.FILTER' | translate" [isActive]="isFilterActive"
+    (filterAction)="openFilter()">
+  </app-filter-card>
+
+  <div class="top-store-header-container">
+    @if (customerSalesProducts.length > 0) {
+    <button mat-button mat-raised-button color="primary"
+      (click)="goBack()"><mat-icon>keyboard_arrow_left</mat-icon>{{ 'GENERAL_TEXTS.BACK' | translate }}</button>
+    <div class="top-store-header-container__info-banner">
+      <app-banner [type]="_bannerType.INFO">{{
+        "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE_2" | translate
+        }}</app-banner>
+    </div>
+    }
+
+    @if (customerSalesProducts.length === 0) {
+    <div class="top-store-header-container__info-banner">
+      <app-banner [type]="_bannerType.INFO">{{
+        "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE" | translate
+        }}</app-banner>
+    </div>
+    }
+  </div>
+
+  @if(isLoading) {
+  <!-- Loading skeleton using reusable component -->
+  <app-insight-skeleton [skeletonType]="skeletonTypeEnum.CUSTOMER"
+                        [itemCount]="10"
+                        [animationDelay]="100">
+  </app-insight-skeleton>
+  }
+
+  @if (!isLoading && customerSalesProducts.length === 0) {
+  <app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
+    [count]="dataSource?.itemCount">
+    <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
+      <div *cdkVirtualFor="let item of dataSource">
+        <div matRipple (click)="showTopProducts(item.storeId)"
+          class="list-container__item-section top-store-list-container__item-section">
+
+          <span class="product-information">{{ item.storeName }} <span class="alt-label">({{
+              item.outletType }})</span>
+          </span>
+
+          <app-badge class="product-total-sales-amount" [type]="bannerTypeEnum.SUCCESS"
+            [label]="item.totalSalesAmountFormatted"></app-badge>
+
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </app-list-container>
   }
 
   @if (customerSalesProducts.length > 0) {
-  <div class="top-store-header-container__info-banner">
-    <app-banner [type]="_bannerType.INFO">{{
-      "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE_2" | translate
-      }}</app-banner>
-  </div>
-  }
-
-  @if (customerSalesProducts.length === 0) {
-  <div class="top-store-header-container__info-banner">
-    <app-banner [type]="_bannerType.INFO">{{
-      "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.BODY_CONTAINER.INFO_BANNER.TITLE" | translate
-      }}</app-banner>
-  </div>
+  <app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
+    [count]="customerSalesProducts?.length">
+    <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
+      <div *cdkVirtualFor="let item of customerSalesProducts">
+        <div class="list-container__item-section top-store-list-container__item-section">
+          <span class="product-information">{{ item.productCode }}: {{ item.productName }} <span class="alt-label">({{
+              item.unit }})</span></span>
+          <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.SUCCESS"
+            [label]="item.totalSalesAmountFormatted"></app-badge>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </app-list-container>
   }
 </div>
-
-@if (customerSalesProducts.length === 0) {
-<app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
-  [count]="customerSales?.length">
-  <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
-    <div *cdkVirtualFor="let item of customerSales">
-      <div matRipple (click)="showTopProducts(item.storeId)"
-        class="list-container__item-section top-store-list-container__item-section">
-
-        <span class="product-information">{{ item.storeName }} <span class="alt-label">({{
-            item.outletType }})</span>
-        </span>
-
-        <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.WARNING"
-          [label]="item.numberOfTransactions"></app-badge>
-
-        <app-badge class="product-total-sales-amount" [type]="bannerTypeEnum.SUCCESS"
-          [label]="item.totalSalesAmountFormatted"></app-badge>
-
-      </div>
-    </div>
-  </cdk-virtual-scroll-viewport>
-</app-list-container>
-}
-
-@if (customerSalesProducts.length > 0) {
-<app-list-container [templateSize]="_templateSize.SMALL" [templateType]="emptyEntityTemplateEnum.CUSTOMERS"
-  [count]="customerSales?.length">
-  <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-store-list-container">
-    <div *cdkVirtualFor="let item of customerSalesProducts">
-      <div class="list-container__item-section top-store-list-container__item-section">
-        <span class="product-information">{{ item.productCode }}: {{ item.productName }} <span class="alt-label">({{
-            item.unit }})</span></span>
-        <app-badge class="product-number-of-transaction" [type]="bannerTypeEnum.SUCCESS"
-          [label]="item.totalSalesAmountFormatted"></app-badge>
-      </div>
-    </div>
-  </cdk-virtual-scroll-viewport>
-</app-list-container>
-}

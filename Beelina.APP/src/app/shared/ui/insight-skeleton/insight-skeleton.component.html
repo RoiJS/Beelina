@@ -1,0 +1,53 @@
+<div class="insight-skeleton-container">
+  <div *ngFor="let item of skeletonItems; index as i"
+       class="skeleton-item"
+       [class]="'skeleton-item--' + skeletonType"
+       [style.animation-delay.ms]="i * animationDelay">
+
+    <!-- Supplier skeleton layout -->
+    @if(skeletonType === skeletonTypeEnum.SUPPLIER) {
+      <div class="skeleton-main-info">
+        <div class="skeleton-header">
+          <div class="skeleton-line skeleton-line--primary"></div>
+          <div class="skeleton-line skeleton-line--secondary"></div>
+        </div>
+      </div>
+      <div class="skeleton-badge-section">
+        <div class="skeleton-badge"></div>
+      </div>
+    }
+
+    <!-- Customer skeleton layout -->
+    @if(skeletonType === skeletonTypeEnum.CUSTOMER) {
+      <div class="skeleton-main-info">
+        <div class="skeleton-text-content">
+          <div class="skeleton-line skeleton-line--primary"></div>
+          <div class="skeleton-line skeleton-line--secondary"></div>
+        </div>
+      </div>
+      <div class="skeleton-metrics">
+        <div class="skeleton-metric">
+          <div class="skeleton-line skeleton-line--small"></div>
+        </div>
+        <div class="skeleton-metric">
+          <div class="skeleton-line skeleton-line--medium"></div>
+        </div>
+      </div>
+    }
+
+    <!-- Product skeleton layout -->
+    @if(skeletonType === skeletonTypeEnum.PRODUCT) {
+      <div class="skeleton-main-info">
+        <div class="skeleton-text-content">
+          <div class="skeleton-line skeleton-line--primary"></div>
+        </div>
+      </div>
+      <div class="skeleton-metrics">
+        <div class="skeleton-metric">
+          <div class="skeleton-line skeleton-line--small"></div>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

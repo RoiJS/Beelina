@@ -1,0 +1,19 @@
+<div class="filter-card" [ngClass]="{'filter-card--active': isActive}">
+  <div class="filter-info">
+    <div class="filter-status">
+      <span class="filter-title">{{ filterLabel | translate }}</span>
+      <div class="filter-badge" *ngIf="isActive">
+        <span class="filter-badge-text">{{ activeLabel | translate }}</span>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button mat-stroked-button
+              class="filter-action-btn"
+              [color]="isActive ? 'warn' : 'primary'"
+              (click)="onFilterClick()">
+        <mat-icon>{{ isActive ? 'filter_list_off' : 'tune' }}</mat-icon>
+        {{ isActive ? (resetLabel | translate) : (customizeLabel | translate) }}
+      </button>
+    </div>
+  </div>
+</div>
