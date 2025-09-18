@@ -745,6 +745,10 @@ const EXTRACT_PRODUCT_FILE_QUERY = `
           supplierId
           description
           isTransferable
+          validFrom
+          validTo
+          parent
+          productParentGroupId
           originalName
           unit
           price

@@ -6,6 +6,10 @@ export interface IMapExtractedProductPayload {
   supplierCode: string;
   description: string;
   isTransferable: boolean;
+  validFrom?: Date;
+  validTo?: Date;
+  parent?: boolean;
+  productParentGroupId?: number;
   price: number;
   unit: string;
   quantity: number;

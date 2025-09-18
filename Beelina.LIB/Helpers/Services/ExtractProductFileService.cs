@@ -92,7 +92,7 @@ namespace Beelina.LIB.Helpers.Services
                         {
                             if (double.TryParse(worksheet.Cells[row, COLUMN_PRICE_INDEX].Value?.ToString(), out double price))
                             {
-                                successExtractedProduct.Price = (float)price;
+                                successExtractedProduct.Price = Math.Round(price, 2);
                             }
                             else
                             {
@@ -188,7 +188,7 @@ namespace Beelina.LIB.Helpers.Services
         public string Code { get; set; }
         public string Name { get; set; }
         public string SupplierCode { get; set; }
-        public float? Price { get; set; } = null;
+        public double? Price { get; set; } = null;
         public string Unit { get; set; }
         public int Quantity { get; set; }
         public int? NumberOfUnits { get; set; } = null;
@@ -219,7 +219,11 @@ namespace Beelina.LIB.Helpers.Services
         public string SupplierCode { get; set; }
         public string Description { get; set; }
         public bool IsTransferable { get; set; }
-        public float? Price { get; set; }
+        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
+        public bool Parent { get; set; }
+        public int? ProductParentGroupId { get; set; }
+        public double? Price { get; set; }
         public string Unit { get; set; }
         public int? NumberOfUnits { get; set; }
         public int Quantity { get; set; }

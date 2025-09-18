@@ -181,6 +181,10 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
         product.numberOfUnits = extractedProduct.numberOfUnits || extractedProduct.originalNumberOfUnits;
         product.pricePerUnit = extractedProduct.price || extractedProduct.originalPrice;
         product.productUnit.name = extractedProduct.unit || extractedProduct.originalUnit;
+        product.validFrom = extractedProduct.validFrom;
+        product.validTo = extractedProduct.validTo;
+        product.parent = extractedProduct.parent;
+        product.productParentGroupId = extractedProduct.productParentGroupId;
         return product;
       });
 
