@@ -1,12 +1,12 @@
 import { Component, OnInit, output, viewChild, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
 import { User } from 'src/app/_models/user.model';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionSales, TransactionService } from 'src/app/_services/transaction.service';
-import { DateFilterEnum, SalesComponent } from 'src/app/sales/sales.component';
+import { SalesComponent } from 'src/app/sales/sales.component';
 import { SalesChartViewComponent } from '../../home/sales-chart-view/sales-chart-view.component';
+import { DateFilterEnum } from 'src/app/_enum/date-filter.enum';
 
 @Component({
   selector: 'app-sales-information',
@@ -18,6 +18,7 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
 
   salesChartView = viewChild(SalesChartViewComponent);
   salesChartViewLoadingState = output<boolean>();
+  dateFilterChange = output<{ fromDate: string; toDate: string; dateFilter: DateFilterEnum }>();
   salesChartViewLoading: boolean;
 
   constructor(
@@ -49,6 +50,9 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
     this.salesChartView().loadTotalSalesChart(this._currentSalesAgent.id, this.dateRanges(), () => {
       this.salesChartViewLoadingState.emit(false);
     });
+
+    const dateFilters = this.getDateRange(this._currentFilterOption);
+    this.dateFilterChange.emit(dateFilters);
   }
 
   calculateTotalSales(salesAgent: User) {
@@ -78,6 +82,8 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
           this._badOrders = transactionSales.badOrderAmount;
           this._accountReceivables = transactionSales.accountReceivables;
           this._isLoading = false
+
+          this.dateFilterChange.emit(dateFilters);
         },
         error: (error) => {
           console.error('SalesInformationComponent: Error fetching transaction sales:', error);
@@ -87,7 +93,7 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
           this._chequeOnHand = 0;
           this._badOrders = 0;
           this._accountReceivables = 0;
-          this._isLoading = false
+          this._isLoading = false;
         }
       });
   }

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDividerModule } from '@angular/material/divider';
@@ -21,6 +22,7 @@ import { SalesChartViewComponent } from '../admin-dashboard/home/sales-chart-vie
 import { SalesPerAgentViewComponent } from '../admin-dashboard/home/sales-per-agent-view/sales-per-agent-view.component';
 import { CopyProductConfirmationComponent } from '../product/copy-product-confirmation/copy-product-confirmation.component';
 import { ProductCardItemComponent } from '../product/product-card-item/product-card-item.component';
+import { FilterCardComponent } from './components/filter-card/filter-card.component';
 import { TextInputAutocompleteContainerComponent } from './text-input-autocomplete/text-input-autocomplete-container.component';
 import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/text-input-autocomplete-menu.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
@@ -45,6 +47,7 @@ import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/tra
     BannerModule,
     BadgeModule,
     MatBadgeModule,
+    MatButtonModule,
     MatIconModule,
     MatToolbarModule,
     MatDividerModule,
@@ -61,6 +64,7 @@ import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/tra
   ],
   declarations: [
     FilterAndSortComponent,
+    FilterCardComponent,
     TransactionDateOptionMenuComponent,
     TransactionOptionMenuComponent,
     LoaderLayoutComponent,
@@ -80,6 +84,7 @@ import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/tra
   ],
   exports: [
     FilterAndSortComponent,
+    FilterCardComponent,
     TransactionDateOptionMenuComponent,
     TransactionOptionMenuComponent,
     LoaderLayoutComponent,

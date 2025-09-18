@@ -9,17 +9,9 @@
     </div>
 
     <div class="insights-container">
-      <div class="panel panel--full-width insights-container__panel">
-        <div class="panel__header-section">
-          <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_SELLING_PRODUCTS_CHART_SECTION.TITLE" | translate }}</label>
-        </div>
-        <div class="panel__body-section">
-          <app-top-selling-products-chart></app-top-selling-products-chart>
-        </div>
-      </div>
 
-      <div class="insights-container__panel insights-container__page-container">
-        <div class="panel panel--full-width insights-container__top-sales-container-panel">
+      <div class="insights-container__analytics-grid">
+        <div class="panel panel--full-width analytics-grid__panel">
           <div class="panel__header-section">
             <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_CUSTOMER_STORE_LIST_SECTION.TITLE" | translate }}</label>
           </div>
@@ -27,7 +19,17 @@
             <app-top-customer-sales></app-top-customer-sales>
           </div>
         </div>
-        <div class="panel panel--full-width insights-container__top-selling-products-container-panel">
+
+        <div class="panel panel--full-width analytics-grid__panel">
+          <div class="panel__header-section">
+            <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_SUPPLIERS_LIST_SECTION.TITLE" | translate }}</label>
+          </div>
+          <div class="panel__body-section">
+            <app-top-suppliers-list></app-top-suppliers-list>
+          </div>
+        </div>
+
+        <div class="panel panel--full-width analytics-grid__panel">
           <div class="panel__header-section">
             <label>{{ "DASHBOARD_ADMIN.INSIGHTS_PAGE.TOP_SELLING_PRODUCTS_LIST_SECTION.TITLE" | translate }}</label>
           </div>

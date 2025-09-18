@@ -1,0 +1,35 @@
+<div>
+  <app-filter-card [filterLabel]="'GENERAL_TEXTS.FILTER' | translate" [isActive]="isFilterActive"
+    (filterAction)="openFilter()">
+  </app-filter-card>
+
+  @if(isLoading) {
+  <!-- Loading skeleton using reusable component -->
+  <app-insight-skeleton [skeletonType]="skeletonTypeEnum.SUPPLIER"
+                        [itemCount]="10"
+                        [animationDelay]="100">
+  </app-insight-skeleton>
+  }
+
+  @if(!isLoading) {
+  <!-- Actual supplier data -->
+  <app-list-container [templateType]="emptyEntityTemplateEnum.CUSTOMERS" [count]="dataSource?.itemCount">
+    <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-suppliers-list-container">
+      <div *cdkVirtualFor="let item of dataSource">
+        <div class="list-container__item-section top-suppliers-list-container__item-section">
+          <div class="supplier-main-info">
+            <div class="supplier-header">
+              <span class="supplier-name">{{ item.supplierName }}</span>
+              <span class="supplier-code">[{{ item.supplierCode }}]</span>
+            </div>
+          </div>
+          <div class="supplier-sales-section">
+            <app-badge class="supplier-sales-amount" [type]="bannerTypeEnum.SUCCESS"
+              [label]="item.totalSalesAmountFormatted"></app-badge>
+          </div>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </app-list-container>
+  }
+</div>

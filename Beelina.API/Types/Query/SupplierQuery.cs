@@ -29,5 +29,18 @@ namespace Beelina.API.Types.Query
             var supplierFromRepo = await supplierRepository.GetSupplierByUniqueCode(supplierId, supplierCode);
             return new CheckSupplierCodeInformationResult(supplierFromRepo != null);
         }
+
+        [Authorize]
+		[UsePaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+		[UseProjection]
+		[UseFiltering]
+		[UseSorting]
+        public async Task<List<TopSupplierBySales>> GetTopSuppliersBySales(
+            [Service] ISupplierRepository<Supplier> supplierRepository, 
+            string? fromDate, 
+            string? toDate)
+        {
+            return await supplierRepository.GetTopSuppliersBySales(fromDate, toDate);
+        }
     }
 }

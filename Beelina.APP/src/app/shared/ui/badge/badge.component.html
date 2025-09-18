@@ -1,1 +1,9 @@
-<span class="app-badge app-badge--{{ type() }}"><b>{{ text }}</b></span>
+<span
+  class="app-badge app-badge--{{ type() }}"
+  [class.app-badge--small]="size() === 'small'"
+  [class.app-badge--large]="size() === 'large'"
+  [class.app-badge--outlined]="variant() === 'outlined'"
+  [class.app-badge--flat]="variant() === 'flat'"
+>
+  <b>{{ text }}</b>
+</span>

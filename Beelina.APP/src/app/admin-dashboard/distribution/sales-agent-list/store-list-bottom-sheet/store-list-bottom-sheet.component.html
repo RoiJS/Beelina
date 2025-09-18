@@ -1,0 +1,45 @@
+<div class="store-list-bottom-sheet-container">
+  <div class="dialog-form-container__header">
+    <span>{{ title }}</span>
+    <mat-icon (click)="onClose()">close</mat-icon>
+  </div>
+
+  <div class="dialog-form-container__body">
+    <div class="agent-info">
+      <span class="agent-name">{{ agentName }}</span>
+      <span class="store-count">{{ getStoreCountText(stores.length) }}</span>
+    </div>
+
+    @if (stores.length === 0) {
+      <div class="no-stores-message">
+        <mat-icon>store</mat-icon>
+        <span>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.SALES_INFORMATION_CONTAINER.NO_STORES_FOUND' | translate }}</span>
+      </div>
+    } @else {
+      <cdk-virtual-scroll-viewport itemSize="60" class="list-container store-list">
+        <div *cdkVirtualFor="let store of stores; index as i">
+          <div matRipple class="store-item list-container__item-section">
+            <div class="store-info">
+              <div class="store-name">{{ store.name }}</div>
+              <div class="store-details">
+                <span class="store-address">{{ store.address }}</span>
+                @if (showOrders && store.orderCount !== undefined) {
+                  <span class="order-count">{{ getOrderCountText(store.orderCount) }}</span>
+                }
+              </div>
+            </div>
+            <mat-icon class="store-icon">store</mat-icon>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    }
+  </div>
+
+  <div class="dialog-form-container__footer">
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="onClose()">
+        {{ "GENERAL_TEXTS.CLOSE" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

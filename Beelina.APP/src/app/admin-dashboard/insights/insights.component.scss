@@ -2,19 +2,107 @@
 
 .insights-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 1em;
+  flex-direction: column;
+  gap: $spacing-lg;
+  height: calc(100vh - 220px); // Account for toolbar and page header
 
-  &__panel {
-    height: 78vh;
-    width: 50%;
+  &__analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: $spacing-lg;
+    height: 100%;
+    align-items: stretch;
+
+    .analytics-grid__panel {
+      height: auto;
+      min-height: calc(100vh - 225px); // Full available height minus margins
+      background: $card-white-gradient;
+      border-radius: $border-radius-md;
+      box-shadow: $shadow-md;
+      transition: $transition-normal;
+      border: 1px solid $border-light;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      border-left: 4px solid $primary;
+
+      .panel__header-section label {
+        color: $primary;
+      }
+
+      &:hover {
+        box-shadow: $shadow-lg;
+        transform: translateY(-2px);
+        border-color: $primary;
+      }
+
+      .panel__header-section {
+        padding: $spacing-md $spacing-lg;
+        border-bottom: 1px solid $border-light;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(248, 249, 250, 0.6) 100%
+        );
+        flex-shrink: 0;
+
+        label {
+          font-weight: 600;
+          font-size: 1.1em;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      .panel__body-section {
+        padding: $spacing-md $spacing-lg;
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0; // Allow flex child to shrink below content size
+      }
+    }
   }
+}
 
-  &__page-container {
-    background: $white;
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
+// Responsive design
+@media (max-width: 1200px) {
+  .insights-container {
+    &__analytics-grid {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+
+      .analytics-grid__panel {
+        min-height: calc(100vh - 200px);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .insights-container {
+    height: calc(100vh - 120px); // Smaller margins on mobile
+
+    &__analytics-grid {
+      grid-template-columns: 1fr;
+      gap: $spacing-md;
+
+      .analytics-grid__panel {
+        min-height: calc(33vh - 40px); // Divide height equally among 3 panels
+        margin-bottom: $spacing-sm;
+
+        .panel__header-section {
+          padding: $spacing-sm $spacing-md;
+
+          label {
+            font-size: 1em;
+          }
+        }
+
+        .panel__body-section {
+          padding: $spacing-sm $spacing-md;
+        }
+      }
+    }
   }
 }

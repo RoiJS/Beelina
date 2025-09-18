@@ -9,14 +9,16 @@ import { SalesInformationComponent } from './sales-information/sales-information
 import { ProductListComponent } from './product-list/product-list.component';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { ProductStockAuditComponent } from './product-stock-audit/product-stock-audit.component';
+import { SalesAgentListComponent } from './sales-agent-list/sales-agent-list.component';
 
 @Component({
   selector: 'app-distribution',
   templateUrl: './distribution.component.html',
   styleUrls: ['./distribution.component.scss']
 })
-export class DistributionComponent extends BaseComponent implements OnInit {
+export class DistributionComponent extends BaseComponent {
 
+  salesAgentListComponent = viewChild(SalesAgentListComponent);
   salesInformationComponent = viewChild(SalesInformationComponent);
   productListComponent = viewChild(ProductListComponent);
   productStockAuditComponent = viewChild(ProductStockAuditComponent);
@@ -33,7 +35,9 @@ export class DistributionComponent extends BaseComponent implements OnInit {
     this._currentLoggedInUser = this.authService.user.value;
   }
 
-  ngOnInit() {
+
+  dateFilterChange(e: { fromDate: string, toDate: string, dateFilter: number }) {
+    this.salesAgentListComponent().setDateFilter(e);
   }
 
   initDefaultSalesAgent(user: User) {

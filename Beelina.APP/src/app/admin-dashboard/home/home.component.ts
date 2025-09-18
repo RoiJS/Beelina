@@ -5,13 +5,14 @@ import { catchError, finalize, take } from 'rxjs/operators';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
-import { DateFilterEnum, SalesComponent } from 'src/app/sales/sales.component';
+import { SalesComponent } from 'src/app/sales/sales.component';
 import { SalesChartViewComponent } from './sales-chart-view/sales-chart-view.component';
 import { SalesPerAgentViewComponent } from './sales-per-agent-view/sales-per-agent-view.component';
 import { LocalClientSubscriptionDbService } from 'src/app/_services/local-db/local-client-subscription-db.service';
 import { ClientSubscriptionDetails } from 'src/app/_models/client-subscription-details.model';
 import { SubscriptionFeatureHideDashboardWidget } from 'src/app/_models/subscription-feature-hide-dashboard-widget.model';
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
+import { DateFilterEnum } from 'src/app/_enum/date-filter.enum';
 
 @Component({
   selector: 'app-home',

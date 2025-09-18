@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Errors;
 using Beelina.LIB.GraphQL.Results;
 using Beelina.LIB.Interfaces;
@@ -51,6 +52,27 @@ namespace Beelina.API.Types.Query
             }
 
             return storeResult;
+        }
+
+        [Authorize]
+        public async Task<IList<SalesAgentStoreOrder>> GetSalesAgentStoreWithOrders(
+            [Service] IStoreRepository<Store> storeRepository, 
+            List<int> salesAgentIds,
+            string fromDate, 
+            string toDate)
+        {
+            return await storeRepository.GetSalesAgentStoreWithOrders(salesAgentIds, fromDate, toDate);
+        }
+
+        [Authorize]
+        public async Task<IList<SalesAgentStoreOrder>> GetSalesAgentStoreWithoutOrders(
+            [Service] IStoreRepository<Store> storeRepository, 
+            List<int> salesAgentIds, 
+            DateFilterEnum dateFilterEnum,
+            string fromDate, 
+            string toDate)
+        {
+            return await storeRepository.GetSalesAgentStoreWithoutOrders(salesAgentIds, dateFilterEnum, fromDate, toDate);
         }
     }
 }

@@ -12,6 +12,8 @@ export class BadgeComponent {
   type = input<BannerTypeEnum>(BannerTypeEnum.INFO);
   textIdentifier = input<string>('');
   label = input<string>('');
+  size = input<'small' | 'medium' | 'large'>('medium');
+  variant = input<'filled' | 'outlined' | 'flat'>('filled');
 
   private translateService = inject(TranslateService);
 

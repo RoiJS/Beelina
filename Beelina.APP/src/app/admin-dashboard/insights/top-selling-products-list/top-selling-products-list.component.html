@@ -1,10 +1,15 @@
 <div>
-  <button mat-icon-button class="toolbar-option" (click)="openFilter()">
-    <mat-icon [ngClass]="{
-        'icon-active': isFilterActive
-      }" matBadgeColor="warn">filter_list</mat-icon>
-  </button>
+  <app-filter-card [filterLabel]="'GENERAL_TEXTS.FILTER' | translate" [isActive]="isFilterActive"
+    (filterAction)="openFilter()">
+  </app-filter-card>
 
+  @if(($isLoading | async)) {
+  <!-- Loading skeleton using reusable component -->
+  <app-insight-skeleton [skeletonType]="skeletonTypeEnum.PRODUCT" [itemCount]="8" [animationDelay]="100">
+  </app-insight-skeleton>
+  }
+
+  @if(!($isLoading | async)) {
   <app-list-container [templateType]="emptyEntityTemplateEnum.TOP_PRODUCTS" [count]="dataSource?.itemCount">
     <cdk-virtual-scroll-viewport itemSize="10" class="list-container top-products-list-container">
       <div *cdkVirtualFor="let item of dataSource">
@@ -17,4 +22,5 @@
       </div>
     </cdk-virtual-scroll-viewport>
   </app-list-container>
+  }
 </div>

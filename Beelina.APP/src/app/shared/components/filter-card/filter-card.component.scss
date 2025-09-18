@@ -1,0 +1,99 @@
+@import "../../../../app-variables";
+
+.filter-card {
+  background: white;
+  border-radius: 12px;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid $gray-200;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &--active {
+    border-color: $primary;
+    box-shadow: 0 4px 12px rgba($primary, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .filter-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+
+    .filter-status {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+
+      .filter-title {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: $text-primary;
+        letter-spacing: -0.025em;
+      }
+
+      .filter-badge {
+        background: linear-gradient(135deg, $primary, lighten($primary, 10%));
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba($primary, 0.3);
+        animation: slideIn 0.3s ease-out;
+
+        .filter-badge-text {
+          display: block;
+        }
+      }
+    }
+
+    .filter-actions {
+      .filter-action-btn {
+        font-weight: 500;
+        border-radius: 8px;
+        text-transform: none;
+        letter-spacing: 0.25px;
+        min-width: 120px;
+        height: 40px;
+
+        mat-icon {
+          margin-right: $spacing-xs;
+          font-size: 1.1em;
+        }
+
+        &.mat-warn {
+          border-color: $warning;
+          color: $warning;
+
+          &:hover {
+            background: rgba($warning, 0.04);
+          }
+        }
+
+        &.mat-primary {
+          border-color: $primary;
+          color: $primary;
+
+          &:hover {
+            background: rgba($primary, 0.04);
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
