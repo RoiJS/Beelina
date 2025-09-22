@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, pairwise, startWith, Subscription } from 'rxjs';
-import { MatPaginator } from '@angular/material/paginator';
 
 import { DateFormatter } from 'src/app/_helpers/formatters/date-formatter.helper';
 
@@ -13,23 +14,27 @@ import { PurchaseOrderStatusEnum } from 'src/app/_enum/purchase-order-status.enu
 import { StockAuditSourceEnum } from 'src/app/_enum/stock-audit-source.enum';
 import { Product } from 'src/app/_models/product';
 import { ProductStockWarehouseAudit } from 'src/app/_models/product-stock-warehouse-audit';
+import { ProductWarehouseStockReceiptDiscount } from 'src/app/_models/product-warehouse-stock-receipt-discount.model';
 import { ProductWarehouseStockReceiptEntry } from 'src/app/_models/product-warehouse-stock-receipt-entry';
 import { PurchaseOrderItemDetails } from 'src/app/_models/purchase-order-item-details.model';
 import { ProductWarehouseStockReceiptEntryResult } from 'src/app/_models/results/product-warehouse-stock-receipt-entry-result';
 import { Supplier } from 'src/app/_models/supplier';
 
+import { DiscountCalculationHelper } from 'src/app/_helpers/discount-calculation.helper';
 import { ProductService } from 'src/app/_services/product.service';
 import { SupplierService } from 'src/app/_services/supplier.service';
 import { DialogService } from 'src/app/shared/ui/dialog/dialog.service';
 import { NotificationService } from 'src/app/shared/ui/notification/notification.service';
 
-import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
-import { UniquePurchaseOrderCodeValidator } from 'src/app/_validators/unique-purchase-order-code.validator';
-import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
-import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
 import { PriceStatusEnum } from 'src/app/_enum/price-status.enum';
-import { ProductsFilter } from 'src/app/_models/filters/products.filter';
 import { ProductActiveStatusEnum } from 'src/app/_enum/product-active-status.enum';
+import { StockStatusEnum } from 'src/app/_enum/stock-status.enum';
+import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
+import { ProductsFilter } from 'src/app/_models/filters/products.filter';
+import { UniquePurchaseOrderCodeValidator } from 'src/app/_validators/unique-purchase-order-code.validator';
+
+import { DiscountManagementDialogComponent } from 'src/app/shared/components/discount-management-dialog/discount-management-dialog.component';
+import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -40,10 +45,14 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
 
   private _purchaseOrderId: number = 0;
   private _purchaseOrderDetails: ProductWarehouseStockReceiptEntryResult;
+  private _discounts: ProductWarehouseStockReceiptDiscount[] = [];
   private _warehouseProductsDatasource: Array<Product>;
   private _supplierDatasource: Array<Supplier>;
   private _productItemId: number = 0;
   private _latestPurchaseOrderReferenceCode: string;
+
+  // UI state for collapsible summary
+  isCalculationExpanded: boolean = false;
 
   private _subscription: Subscription = new Subscription();
 
@@ -55,6 +64,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
 
   activatedRoute = inject(ActivatedRoute);
   dialogService = inject(DialogService);
+  matDialog = inject(MatDialog);
   notificationService = inject(NotificationService);
   formBuilder = inject(FormBuilder);
   productService = inject(ProductService);
@@ -82,7 +92,6 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
       plateNo: [''],
       notes: [''],
       // New fields for purchase order report
-      discount: [0],
       invoiceNo: [''],
       invoiceDate: [''],
       dateEncoded: [DateFormatter.format(new Date())],
@@ -179,7 +188,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
       this.purchaseOrderDetailsForm.get('plateNo').setValue(this._purchaseOrderDetails.plateNo);
       this.purchaseOrderDetailsForm.get('notes').setValue(this._purchaseOrderDetails.notes);
       // Set new fields
-      this.purchaseOrderDetailsForm.get('discount').setValue(this._purchaseOrderDetails.discount || 0);
+      this._discounts = this._purchaseOrderDetails.discounts || [];
       this.purchaseOrderDetailsForm.get('invoiceNo').setValue(this._purchaseOrderDetails.invoiceNo || '');
       this.purchaseOrderDetailsForm.get('invoiceDate').setValue(this._purchaseOrderDetails.invoiceDate ? DateFormatter.format(this._purchaseOrderDetails.invoiceDate) : '');
       this.purchaseOrderDetailsForm.get('dateEncoded').setValue(this._purchaseOrderDetails.dateEncoded ? DateFormatter.format(this._purchaseOrderDetails.dateEncoded) : DateFormatter.format(new Date()));
@@ -270,7 +279,6 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           const referenceNoControl = this.purchaseOrderDetailsForm.get('referenceNo');
           const plateNoControl = this.purchaseOrderDetailsForm.get('plateNo');
           const notesControl = this.purchaseOrderDetailsForm.get('notes');
-          const discountControl = this.purchaseOrderDetailsForm.get('discount');
           const invoiceNoControl = this.purchaseOrderDetailsForm.get('invoiceNo');
           const invoiceDateControl = this.purchaseOrderDetailsForm.get('invoiceDate');
           const dateEncodedControl = this.purchaseOrderDetailsForm.get('dateEncoded');
@@ -285,7 +293,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
           purchaseOrder.referenceNo = referenceNoControl.value;
           purchaseOrder.plateNo = plateNoControl.value;
           purchaseOrder.notes = notesControl.value;
-          purchaseOrder.discount = discountControl.value;
+          purchaseOrder.discounts = this._discounts;
           purchaseOrder.invoiceNo = invoiceNoControl.value;
           purchaseOrder.invoiceDate = invoiceDateControl.value;
           purchaseOrder.dateEncoded = dateEncodedControl.value;
@@ -422,22 +430,87 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
   }
 
   get discountPercentage() {
-    return this.purchaseOrderDetailsForm.get('discount')?.value || 0;
+    return DiscountCalculationHelper.calculateTotalDiscountPercentage(this._discounts);
   }
 
   get discountAmount() {
     const gross = this.calculateGrossTotal();
-    const discountPercent = this.discountPercentage;
-    const discount = (gross * discountPercent) / 100;
-    return NumberFormatter.formatCurrency(discount);
+    const discountAmount = DiscountCalculationHelper.calculateTotalDiscountAmount(gross, this._discounts);
+    return NumberFormatter.formatCurrency(discountAmount);
   }
 
   get netTotal() {
     const gross = this.calculateGrossTotal();
-    const discountPercent = this.discountPercentage;
-    const discount = (gross * discountPercent) / 100;
-    const net = gross - discount;
+    const net = DiscountCalculationHelper.calculateNetAmount(gross, this._discounts);
     return NumberFormatter.formatCurrency(net);
+  }
+
+  getDiscountBreakdown(): Array<{ step: number, description: string, percentage: number, amountBefore: number, discountAmount: number, amountAfter: number }> {
+    if (!this._discounts || this._discounts.length === 0) {
+      return [];
+    }
+
+    // Sort discounts by order to ensure proper sequential application
+    const orderedDiscounts = this._discounts
+      .filter(d => d.discountPercentage > 0)
+      .sort((a, b) => a.discountOrder - b.discountOrder);
+
+    const breakdown: Array<{ step: number, description: string, percentage: number, amountBefore: number, discountAmount: number, amountAfter: number }> = [];
+    let currentAmount = this.calculateGrossTotal();
+
+    for (let i = 0; i < orderedDiscounts.length; i++) {
+      const discount = orderedDiscounts[i];
+      const discountAmount = currentAmount * (discount.discountPercentage / 100);
+      const amountAfter = currentAmount - discountAmount;
+
+      breakdown.push({
+        step: i + 1,
+        description: discount.description || `Discount ${i + 1}`,
+        percentage: discount.discountPercentage,
+        amountBefore: Math.round(currentAmount * 100) / 100,
+        discountAmount: Math.round(discountAmount * 100) / 100,
+        amountAfter: Math.round(amountAfter * 100) / 100
+      });
+
+      currentAmount = amountAfter;
+    }
+
+    return breakdown;
+  }
+
+  toggleCalculationExpansion(): void {
+    this.isCalculationExpanded = !this.isCalculationExpanded;
+  }
+
+  getCurrentDiscounts(): ProductWarehouseStockReceiptDiscount[] {
+    return this._discounts.filter(discount => discount.discountPercentage > 0);
+  }
+
+  openDiscountDialog() {
+    const dialogRef = this.matDialog.open(DiscountManagementDialogComponent, {
+      data: {
+        discounts: [...this._discounts],
+        grossAmount: this.calculateGrossTotal()
+      },
+      panelClass: 'discount-management-dialog-container',
+      hasBackdrop: true,
+      disableClose: false,
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.discounts) {
+        this._discounts = result.discounts;
+      }
+    });
+  }
+
+  get discounts() {
+    return this._discounts;
+  }
+
+  get totalDiscountItems() {
+    return this._discounts.length;
   }
 
   displayedColumns: string[] = ['product', 'unit', 'code', 'quantity', 'unitPrice', 'amount', 'actions'];

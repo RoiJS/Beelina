@@ -5,6 +5,7 @@ import { catchError, finalize, take } from 'rxjs/operators';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { TransactionService } from 'src/app/_services/transaction.service';
+import { ProductService } from 'src/app/_services/product.service';
 import { SalesComponent } from 'src/app/sales/sales.component';
 import { SalesChartViewComponent } from './sales-chart-view/sales-chart-view.component';
 import { SalesPerAgentViewComponent } from './sales-per-agent-view/sales-per-agent-view.component';
@@ -22,6 +23,7 @@ import { DateFilterEnum } from 'src/app/_enum/date-filter.enum';
 export class HomeComponent extends SalesComponent implements OnInit, AfterViewInit {
   private userId: number;
   protected _profit: number = 0;
+  protected _warehouseInventoryValue: number = 0;
 
   salesChartView = viewChild(SalesChartViewComponent);
   salesPerAgentChartView = viewChild(SalesPerAgentViewComponent);
@@ -30,6 +32,7 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
   salesPerAgentChartViewLoading: boolean;
 
   localClientSubscriptionDbService = inject(LocalClientSubscriptionDbService);
+  productService = inject(ProductService);
 
   DASHBOARD_WIDGET_ID = 1;
   hideSalesAgentDistributionWidget = signal<boolean>(false);
@@ -111,9 +114,10 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
   override getTransactionSales(filterOption: DateFilterEnum) {
     const userId = this.authService.userId;
     const dateFilters = this.getDateRange(filterOption);
+    const warehouseId = 1; // Default warehouse - adjust as needed for your business logic
     this._isLoading = true;
 
-    // Combine sales and profit data with error handling
+    // Combine sales, profit, and warehouse inventory data with error handling
     // Note: Consider switching to switchMap/takeUntilDestroyed if cancelling in-flight requests on rapid filter changes is desired
     forkJoin({
       sales: this.transactionService
@@ -133,6 +137,12 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
         .pipe(
           take(1), // Ensure the observable completes for forkJoin
           catchError(() => of(0))
+        ),
+      warehouseInventory: this.productService
+        .getWarehouseTotalInventoryValue(warehouseId)
+        .pipe(
+          take(1), // Ensure the observable completes for forkJoin
+          catchError(() => of(0))
         )
     }).pipe(
       finalize(() => this._isLoading = false)
@@ -143,10 +153,15 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
       this._accountReceivables = result.sales.accountReceivables;
       this._badOrders = result.sales.badOrderAmount;
       this._profit = result.profit;
+      this._warehouseInventoryValue = result.warehouseInventory;
     });
   }
 
   get profit(): string {
     return NumberFormatter.formatCurrency(this._profit);
+  }
+
+  get warehouseInventoryValue(): string {
+    return NumberFormatter.formatCurrency(this._warehouseInventoryValue);
   }
 }

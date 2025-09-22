@@ -1,0 +1,173 @@
+<div class="discount-management-dialog">
+  <h2 mat-dialog-title>
+    {{ (readonly ? 'DISCOUNT_MANAGEMENT_DIALOG.TITLE_VIEW' : 'DISCOUNT_MANAGEMENT_DIALOG.TITLE_MANAGE') | translate }}
+    <mat-icon class="dialog-icon">local_offer</mat-icon>
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <!-- Gross Amount Display -->
+    <div class="amount-summary">
+      <span class="label">{{ 'DISCOUNT_MANAGEMENT_DIALOG.GROSS_AMOUNT' | translate }}:</span>
+      <span class="amount">{{ grossAmount | currency:'PHP':'symbol':'1.2-2' }}</span>
+    </div>
+
+    <!-- Add Discount Buttons -->
+    @if (!readonly) {
+    <div class="add-discount-section">
+      <button mat-raised-button color="primary" (click)="addDiscount()" class="add-discount-btn">
+        <mat-icon>add</mat-icon>
+        {{ 'DISCOUNT_MANAGEMENT_DIALOG.ACTIONS.ADD_DISCOUNT' | translate }}
+      </button>
+
+      @if (discountsArray.length > 0) {
+      <button mat-raised-button color="warn" (click)="onClearAll()" class="clear-all-btn">
+        <mat-icon>clear_all</mat-icon>
+        {{ 'DISCOUNT_MANAGEMENT_DIALOG.ACTIONS.CLEAR_ALL' | translate }}
+      </button>
+      }
+    </div>
+    }
+
+    <!-- Scrollable Content Area -->
+    <div class="scrollable-content">
+      <!-- Discounts Form -->
+      <form [formGroup]="discountForm" class="discounts-form">
+        <div formArrayName="discounts" class="discounts-container">
+
+          <!-- No Discounts Message -->
+          @if (discountsArray.length === 0) {
+          <div class="no-discounts">
+            <mat-icon>info</mat-icon>
+            <span>{{ 'DISCOUNT_MANAGEMENT_DIALOG.NO_DISCOUNTS_MESSAGE' | translate }}</span>
+          </div>
+          }
+
+          <!-- Discount Items -->
+          @for (discountGroup of discountsArray.controls; track discountGroup; let i = $index) {
+          <div [formGroupName]="i" class="discount-item" [class.readonly]="readonly">
+
+            <!-- Discount Header -->
+            <div class="discount-header">
+              <span class="discount-number">{{ 'DISCOUNT_MANAGEMENT_DIALOG.DISCOUNT_NUMBER' | translate:{ number: i + 1
+                } }}</span>
+            </div>
+
+            <!-- Discount Form Fields -->
+            <div class="discount-fields">
+              <mat-form-field appearance="outline" class="percentage-field">
+                <mat-label>{{ 'DISCOUNT_MANAGEMENT_DIALOG.FIELDS.DISCOUNT_PERCENTAGE' | translate }}</mat-label>
+                <input matInput type="number" formControlName="discountPercentage" [readonly]="readonly" min="0"
+                  max="100" step="0.01"
+                  [placeholder]="'DISCOUNT_MANAGEMENT_DIALOG.FIELDS.DISCOUNT_PERCENTAGE_PLACEHOLDER' | translate">
+              </mat-form-field>
+
+              @if (!readonly) {
+              <div class="discount-actions">
+                <mat-icon class="delete-icon" (click)="removeDiscount(i)">highlight_off</mat-icon>
+              </div>
+              }
+            </div>
+
+            <!-- Discount Errors -->
+            @if (getDiscountErrors(i).length > 0) {
+            <div class="discount-errors">
+              @for (error of getDiscountErrors(i); track error) {
+              <mat-error>{{ error | translate }}</mat-error>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </form>
+      <!-- Form Validation Messages -->
+      @if (!readonly && discountForm.invalid && discountForm.touched) {
+      <div class="form-validation">
+        <mat-error>{{ 'DISCOUNT_MANAGEMENT_DIALOG.VALIDATION.FIX_ERRORS' | translate }}</mat-error>
+      </div>
+      }
+    </div> <!-- End scrollable-content -->
+
+    <!-- Calculation Summary -->
+    @if (getCurrentDiscounts().length > 0) {
+    <div class="calculation-summary">
+      <div class="summary-title" (click)="toggleCalculationExpansion()" [class.expanded]="isCalculationExpanded">
+        <mat-icon>calculate</mat-icon>
+        <span>{{ 'DISCOUNT_MANAGEMENT_DIALOG.CALCULATION_SUMMARY.TITLE' | translate }}</span>
+        <mat-icon class="expand-icon">{{ isCalculationExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </div>
+
+      <!-- Collapsed View - Net Total Only -->
+      @if (!isCalculationExpanded) {
+      <div class="summary-collapsed">
+        <div class="summary-row final">
+          <span class="label">{{ 'DISCOUNT_MANAGEMENT_DIALOG.CALCULATION_SUMMARY.NET_AMOUNT' | translate }}:</span>
+          <span class="value net-amount">{{ getNetAmount() | currency:'PHP':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+      }
+
+      <!-- Expanded View - Full Breakdown -->
+      @if (isCalculationExpanded) {
+      <!-- Step-by-step Breakdown -->
+      <div class="breakdown-section">
+        <div class="breakdown-header">
+          <span class="gross-amount-row">
+            <span class="label">{{ 'DISCOUNT_MANAGEMENT_DIALOG.GROSS_AMOUNT' | translate }}:</span>
+            <span class="amount">{{ grossAmount | currency:'PHP':'symbol':'1.2-2' }}</span>
+          </span>
+        </div>
+
+        @for (step of getDiscountBreakdown(); track step.step) {
+        <div class="breakdown-step">
+          <div class="step-header">
+            <span class="step-number">{{ 'DISCOUNT_MANAGEMENT_DIALOG.CALCULATION_SUMMARY.STEP' | translate:{ number: step.step } }}</span>
+            <span class="step-description">{{ step.description }}</span>
+          </div>
+          <div class="step-calculation">
+            <span class="calculation-line">
+              {{ step.amountBefore | currency:'PHP':'symbol':'1.2-2' }} -
+              ({{ step.amountBefore | currency:'PHP':'symbol':'1.2-2' }} × {{ step.percentage }}%) =
+              <strong>{{ step.amountAfter | currency:'PHP':'symbol':'1.2-2' }}</strong>
+            </span>
+            <span class="discount-amount">{{ 'DISCOUNT_MANAGEMENT_DIALOG.CALCULATION_SUMMARY.DISCOUNT_APPLIED' | translate }} {{ step.discountAmount | currency:'PHP':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Final Summary -->
+      <div class="summary-rows">
+        <div class="summary-row">
+          <span class="label">{{ 'DISCOUNT_MANAGEMENT_DIALOG.CALCULATION_SUMMARY.TOTAL_DISCOUNT_PERCENTAGE' | translate
+            }}:</span>
+          <span class="value">{{ getTotalDiscountPercentage() | number:'1.2-2' }}%</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">{{ 'DISCOUNT_MANAGEMENT_DIALOG.CALCULATION_SUMMARY.TOTAL_DISCOUNT_AMOUNT' | translate
+            }}:</span>
+          <span class="value discount-amount">{{ getTotalDiscountAmount() | currency:'PHP':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="summary-row final">
+          <span class="label">{{ 'DISCOUNT_MANAGEMENT_DIALOG.CALCULATION_SUMMARY.NET_AMOUNT' | translate }}:</span>
+          <span class="value net-amount">{{ getNetAmount() | currency:'PHP':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-btn">
+      {{ (readonly ? 'DISCOUNT_MANAGEMENT_DIALOG.ACTIONS.CLOSE' : 'DISCOUNT_MANAGEMENT_DIALOG.ACTIONS.CANCEL') |
+      translate }}
+    </button>
+
+    @if (!readonly) {
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!isFormValid()" class="save-btn">
+      {{ 'DISCOUNT_MANAGEMENT_DIALOG.ACTIONS.SAVE' | translate }}
+    </button>
+    }
+  </mat-dialog-actions>
+</div>

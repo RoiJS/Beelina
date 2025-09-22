@@ -5,16 +5,19 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { MatListModule } from '@angular/material/list';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { LongPressDirective } from '../_directives/long-press.directive';
 import { TextInputAutocompleteDirective } from '../_directives/text-input-autocomplete-menu.directive';
@@ -22,6 +25,7 @@ import { SalesChartViewComponent } from '../admin-dashboard/home/sales-chart-vie
 import { SalesPerAgentViewComponent } from '../admin-dashboard/home/sales-per-agent-view/sales-per-agent-view.component';
 import { CopyProductConfirmationComponent } from '../product/copy-product-confirmation/copy-product-confirmation.component';
 import { ProductCardItemComponent } from '../product/product-card-item/product-card-item.component';
+import { DiscountManagementDialogComponent } from './components/discount-management-dialog/discount-management-dialog.component';
 import { FilterCardComponent } from './components/filter-card/filter-card.component';
 import { TextInputAutocompleteContainerComponent } from './text-input-autocomplete/text-input-autocomplete-container.component';
 import { TextInputAutocompleteMenuComponent } from './text-input-autocomplete/text-input-autocomplete-menu.component';
@@ -59,6 +63,9 @@ import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/tra
     MatTooltipModule,
     NgApexchartsModule,
     MatSlideToggleModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
   ],
@@ -80,7 +87,8 @@ import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/tra
     TextInputAutocompleteMenuComponent,
     SalesChartViewComponent,
     SalesPerAgentViewComponent,
-    CopyProductConfirmationComponent
+    CopyProductConfirmationComponent,
+    DiscountManagementDialogComponent
   ],
   exports: [
     FilterAndSortComponent,
@@ -105,7 +113,8 @@ import { TransactionOptionMenuComponent } from './ui/transaction-option-menu/tra
     SalesChartViewComponent,
     SalesPerAgentViewComponent,
     NgApexchartsModule,
-    CopyProductConfirmationComponent
+    CopyProductConfirmationComponent,
+    DiscountManagementDialogComponent
   ],
 })
 export class CustomUISharedModule { }

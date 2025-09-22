@@ -16,6 +16,7 @@ $black: black;
 $error: #ff4a1d;
 $warning: #ff961d;
 $success: #00d555;
+$info: #0073ff;
 
 // Success color variations
 $success-light: #00b347;
@@ -106,6 +107,14 @@ $success-gradient: linear-gradient(
   $success-light 25%,
   $success-medium 75%,
   $success-dark 100%
+);
+
+$info-gradient: linear-gradient(
+  135deg,
+  $info-border-color 0%,
+  lighten($info-border-color, 10%) 25%,
+  $info-bg-color 75%,
+  lighten($info-bg-color, 5%) 100%
 );
 
 $primary-sales-gradient: linear-gradient(

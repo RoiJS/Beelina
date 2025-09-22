@@ -148,6 +148,31 @@
             </div>
 
             <div class="panel panel--full-width sales-information-panel">
+
+              <!-- Warehouse Inventory Section -->
+              <div class="warehouse-inventory-section">
+                <div class="summary-card" tabindex="0" role="button"
+                     [attr.aria-label]="'DASHBOARD_ADMIN.HOME_PAGE.WAREHOUSE_INVENTORY_PANEL.LABEL' | translate">
+                  <div class="summary-card__icon">
+                    <mat-icon>inventory</mat-icon>
+                  </div>
+                  <div class="summary-card__content">
+                    <div class="summary-card__label">
+                      {{ "DASHBOARD_ADMIN.HOME_PAGE.WAREHOUSE_INVENTORY_PANEL.LABEL" | translate }}
+                    </div>
+                    @if(!isLoading) {
+                    <div class="summary-card__amount scale-in-center-animation">
+                      {{ warehouseInventoryValue }}
+                    </div>
+                    } @else {
+                    <div class="summary-card__loading">
+                      <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+
               <div class="financial-summary-grid">
                 <!-- Profit Section -->
                 <div class="summary-card summary-card--profit">
