@@ -1,0 +1,156 @@
+@import '../../../../../app-variables';
+
+.sales-breakdown-dialog {
+  min-width: 450px;
+  max-width: 550px;
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5em 1.5em 1em 1.5em;
+    border-bottom: 1px solid rgba($primary, 0.1);
+
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+
+      .dialog-icon {
+        color: $primary;
+        font-size: 1.5em;
+      }
+
+      h2 {
+        margin: 0;
+        color: $primary;
+        font-size: 1.3em;
+        font-weight: 600;
+      }
+    }
+
+    .close-button {
+      color: rgba($text-primary, 0.6);
+      
+      &:hover {
+        color: $primary;
+        background-color: rgba($primary, 0.1);
+      }
+    }
+  }
+
+  .dialog-content {
+    padding: 1.5em;
+
+    .agent-info {
+      text-align: center;
+      margin-bottom: 1.5em;
+
+      h3 {
+        margin: 0;
+        color: $primary;
+        font-size: 1.2em;
+        font-weight: 600;
+      }
+    }
+
+    .breakdown-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+
+      .breakdown-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8em;
+        border-radius: $border-radius-sm;
+        background-color: rgba($primary, 0.02);
+
+        .item-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
+          
+          mat-icon {
+            color: rgba($primary, 0.7);
+            font-size: 1.2em;
+          }
+
+          span {
+            font-weight: 500;
+            color: rgba($text-primary, 0.8);
+          }
+        }
+
+        .item-value {
+          font-weight: 600;
+          font-size: 1.1em;
+          color: $primary;
+
+          &.primary {
+            color: $primary;
+            font-size: 1.3em;
+            font-weight: 700;
+          }
+
+          &.discount {
+            color: $warning;
+          }
+
+          &.bad-orders {
+            color: $error;
+          }
+        }
+
+        &.total-sales {
+          background-color: rgba($primary, 0.08);
+          border: 1px solid rgba($primary, 0.2);
+          padding: 1em;
+        }
+      }
+
+      .breakdown-divider {
+        height: 1px;
+        background-color: rgba($primary, 0.15);
+        margin: 0.5em 0;
+      }
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: center;
+    padding: 1em 1.5em 1.5em 1.5em;
+
+    .close-action-button {
+      min-width: 120px;
+      color: $primary;
+      border: 1px solid rgba($primary, 0.3);
+
+      &:hover {
+        background-color: rgba($primary, 0.1);
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .sales-breakdown-dialog {
+    min-width: 320px;
+    max-width: 90vw;
+
+    .dialog-header {
+      padding: 1em;
+    }
+
+    .dialog-content {
+      padding: 1em;
+    }
+
+    .dialog-actions {
+      padding: 1em;
+    }
+  }
+}

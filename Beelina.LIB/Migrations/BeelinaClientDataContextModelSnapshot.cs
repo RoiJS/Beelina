@@ -790,6 +790,71 @@ namespace Beelina.LIB.Migrations
                     b.ToTable("ProductUnits");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptDiscount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeactivatedById")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeletedById")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DiscountOrder")
+                        .HasColumnType("int");
+
+                    b.Property<double>("DiscountPercentage")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductWarehouseStockReceiptEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DeactivatedById");
+
+                    b.HasIndex("DeletedById");
+
+                    b.HasIndex("ProductWarehouseStockReceiptEntryId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("ProductWarehouseStockReceiptDiscounts");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
                 {
                     b.Property<int>("Id")
@@ -821,9 +886,6 @@ namespace Beelina.LIB.Migrations
 
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
-
-                    b.Property<double>("Discount")
-                        .HasColumnType("float");
 
                     b.Property<DateTime?>("InvoiceDate")
                         .HasColumnType("datetime2");
@@ -1023,6 +1085,58 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("UserAccountId");
 
                     b.ToTable("ReportNotificationEmailAddresses");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SalesTarget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PeriodType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SalesAgentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TargetAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SalesAgentId");
+
+                    b.ToTable("SalesTargets");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -1789,6 +1903,41 @@ namespace Beelina.LIB.Migrations
                     b.Navigation("ProductTransaction");
                 });
 
+            modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptDiscount", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeactivatedBy")
+                        .WithMany()
+                        .HasForeignKey("DeactivatedById");
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "DeletedBy")
+                        .WithMany()
+                        .HasForeignKey("DeletedById");
+
+                    b.HasOne("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", "ProductWarehouseStockReceiptEntry")
+                        .WithMany("Discounts")
+                        .HasForeignKey("ProductWarehouseStockReceiptEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("DeactivatedBy");
+
+                    b.Navigation("DeletedBy");
+
+                    b.Navigation("ProductWarehouseStockReceiptEntry");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
                 {
                     b.HasOne("Beelina.LIB.Models.UserAccount", "CreatedBy")
@@ -1876,6 +2025,18 @@ namespace Beelina.LIB.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SalesTarget", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "SalesAgent")
+                        .WithMany()
+                        .HasForeignKey("SalesAgentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_SalesTarget_SalesAgentId_UserAccounts_Id");
+
+                    b.Navigation("SalesAgent");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -2039,6 +2200,8 @@ namespace Beelina.LIB.Migrations
 
             modelBuilder.Entity("Beelina.LIB.Models.ProductWarehouseStockReceiptEntry", b =>
                 {
+                    b.Navigation("Discounts");
+
                     b.Navigation("ProductStockWarehouseAudits");
                 });
 

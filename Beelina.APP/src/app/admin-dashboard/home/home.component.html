@@ -148,46 +148,87 @@
             </div>
 
             <div class="panel panel--full-width sales-information-panel">
-              <div class="financial-summary-grid">
-                <!-- Profit Section -->
-                <div class="summary-card summary-card--profit">
-                  <div class="summary-card__icon">
-                    <mat-icon>trending_up</mat-icon>
-                  </div>
-                  <div class="summary-card__content">
-                    <div class="summary-card__label">
-                      {{ "DASHBOARD_ADMIN.HOME_PAGE.PROFIT_PANEL.LABEL" | translate }}
+
+              <!-- New Layout Container -->
+              <div class="dashboard-summary-container">
+                <!-- Left Side: Profit Section -->
+                <div class="left-section">
+                  <div class="summary-card summary-card--profit">
+                    <div class="summary-card__icon">
+                      <mat-icon>trending_up</mat-icon>
                     </div>
-                    @if(!isLoading) {
-                    <div class="summary-card__amount scale-in-center-animation">
-                      {{ profit }}
+                    <div class="summary-card__content">
+                      <div class="summary-card__label">
+                        {{ "DASHBOARD_ADMIN.HOME_PAGE.PROFIT_PANEL.LABEL" | translate }}
+                      </div>
+                      @if(!isLoading) {
+                      <div class="profit-breakdown scale-in-center-animation">
+                        <!-- Supplier's discount (PO Discount) -->
+                        <div class="profit-breakdown__supplier-discount">
+                          <span class="profit-breakdown__supplier-amount">+ {{ purchaseOrderDiscountProfit }}</span>
+                          <span class="profit-breakdown__supplier-label">Supplier's discount</span>
+                        </div>
+                        <!-- Sales Profit (Main amount) -->
+                        <div class="profit-breakdown__sales-profit">
+                          {{ salesProfit }}
+                        </div>
+                      </div>
+                      } @else {
+                      <div class="summary-card__loading">
+                        <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
+                      </div>
+                      }
                     </div>
-                    } @else {
-                    <div class="summary-card__loading">
-                      <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
-                    </div>
-                    }
                   </div>
                 </div>
 
-                <!-- Sales Section -->
-                <div class="summary-card summary-card--sales">
-                  <div class="summary-card__icon">
-                    <mat-icon>payment</mat-icon>
+                <!-- Right Side: Warehouse Inventory and Sales -->
+                <div class="right-section">
+                  <!-- Warehouse Inventory Section (Top) -->
+                  <div class="warehouse-inventory-section">
+                    <div class="summary-card"
+                      [attr.aria-label]="'DASHBOARD_ADMIN.HOME_PAGE.WAREHOUSE_INVENTORY_PANEL.LABEL' | translate">
+                      <div class="summary-card__icon">
+                        <mat-icon>inventory</mat-icon>
+                      </div>
+                      <div class="summary-card__content">
+                        <div class="summary-card__label">
+                          {{ "DASHBOARD_ADMIN.HOME_PAGE.WAREHOUSE_INVENTORY_PANEL.LABEL" | translate }}
+                        </div>
+                        @if(!isLoading) {
+                        <div class="summary-card__amount scale-in-center-animation">
+                          {{ warehouseInventoryValue }}
+                        </div>
+                        } @else {
+                        <div class="summary-card__loading">
+                          <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
+                        </div>
+                        }
+                      </div>
+                    </div>
                   </div>
-                  <div class="summary-card__content">
-                    <div class="summary-card__label">
-                      {{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}
+
+                  <!-- Sales Section (Bottom) -->
+                  <div class="sales-section">
+                    <div class="summary-card summary-card--sales">
+                      <div class="summary-card__icon">
+                        <mat-icon>payment</mat-icon>
+                      </div>
+                      <div class="summary-card__content">
+                        <div class="summary-card__label">
+                          {{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}
+                        </div>
+                        @if(!isLoading) {
+                        <div class="summary-card__amount scale-in-center-animation">
+                          {{ sales }}
+                        </div>
+                        } @else {
+                        <div class="summary-card__loading">
+                          <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
+                        </div>
+                        }
+                      </div>
                     </div>
-                    @if(!isLoading) {
-                    <div class="summary-card__amount scale-in-center-animation">
-                      {{ sales }}
-                    </div>
-                    } @else {
-                    <div class="summary-card__loading">
-                      <span class="loading-text">{{ "LOADER_LAYOUT.LOADING_TEXT" | translate }}</span>
-                    </div>
-                    }
                   </div>
                 </div>
               </div>

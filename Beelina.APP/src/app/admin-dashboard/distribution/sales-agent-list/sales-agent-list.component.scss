@@ -75,6 +75,7 @@
           }
 
           .item-container {
+
             &__user-image {
               border-color: $white;
               transform: scale(1.05);
@@ -91,10 +92,6 @@
                 color: rgba($white, 0.9);
               }
 
-              .item-container__sales-amount {
-                color: rgba($white, 0.95);
-              }
-
               .item-container__store-counts {
                 .store-count {
                   &__label {
@@ -106,6 +103,38 @@
                     background: rgba($white, 0.2);
                     border: 1px solid rgba($white, 0.3);
                   }
+                }
+              }
+
+              .item-container__target-info {
+                .target-label {
+                  color: rgba($white, 0.8);
+                }
+
+                .target-value {
+                  color: $white;
+                  font-weight: 600;
+
+                  &.target-met {
+                    color: lighten($success, 10%);
+                  }
+
+                  &.target-overdue {
+                    color: lighten($error, 15%);
+                  }
+                }
+              }
+
+              .item-container__sales-info {
+                background: rgba($white, 0.15);
+                border-color: rgba($white, 0.3);
+
+                .sales-amount {
+                  color: rgba($white, 0.95);
+                }
+
+                .completion-percentage {
+                  color: $white;
                 }
               }
             }          mat-icon {
@@ -165,17 +194,48 @@
               transform: translateX(4px);
             }
 
-            .item-container__sales-amount {
-              color: darken($primary, 10%);
-              transform: translateX(4px);
-            }
-
             .item-container__store-counts {
               transform: translateX(4px);
 
               .store-count__value {
                 background: rgba($primary, 0.2);
                 color: darken($primary, 15%);
+              }
+            }
+
+            .item-container__target-info {
+              transform: translateX(4px);
+
+              .target-label {
+                color: rgba($primary, 0.8);
+              }
+
+              .target-value {
+                color: darken($primary, 10%);
+                font-weight: 600;
+
+                &.target-met {
+                  color: darken($success, 5%);
+                }
+
+                &.target-overdue {
+                  color: darken($error, 5%);
+                }
+              }
+            }
+
+            .item-container__sales-info {
+              transform: translateX(4px);
+              background: rgba($primary, 0.15);
+              border-color: rgba($primary, 0.25);
+              box-shadow: 0 2px 8px rgba($primary, 0.2);
+
+              .sales-amount {
+                color: darken($primary, 10%);
+              }
+
+              .completion-percentage {
+                color: darken($primary, 5%);
               }
             }
           }
@@ -362,7 +422,10 @@
             box-shadow: 0 4px 16px rgba($black, 0.3);
             border: 3px solid $white;
             z-index: 2;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1;
 
             &.medal-gold {
               background: linear-gradient(135deg, $medal-gold 0%, darken($medal-gold, 15%) 100%);
@@ -446,15 +509,6 @@
           letter-spacing: 0.5px;
         }
 
-        &__sales-amount {
-          font-size: 0.9em;
-          font-weight: 600;
-          color: $primary;
-          margin-top: $spacing-xs;
-          letter-spacing: 0.3px;
-          transition: $transition-cubic;
-        }
-
         &__store-counts {
           display: flex;
           gap: $spacing-md;
@@ -503,6 +557,53 @@
             &:hover .store-count__value {
               background: rgba($primary, 0.15);
               transform: scale(1.05);
+            }
+          }
+        }
+
+        // Sales information display section
+        &__sales-info {
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-sm;
+          align-items: center;
+          // padding: $spacing-sm;
+          // border-radius: $border-radius-md;
+          // background: rgba($primary, 0.05);
+          // border: 1px solid rgba($primary, 0.1);
+          // min-width: 120px;
+          transition: $transition-normal;
+
+          .sales-amount {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: $primary;
+            text-align: center;
+            line-height: 1.2;
+            letter-spacing: 0.3px;
+          }
+
+          .completion-percentage {
+            font-size: 2.5em;
+            font-weight: 500;
+            color: $text-primary;
+            text-align: center;
+            line-height: 1;
+            transition: $transition-normal;
+
+            &--high {
+              color: $success;
+              font-weight: 600;
+            }
+
+            &--medium {
+              color: $warning;
+              font-weight: 600;
+            }
+
+            &--low {
+              color: $error;
+              font-weight: 600;
             }
           }
         }
@@ -681,10 +782,6 @@
         font-size: 1em;
       }
 
-      &__sales-amount {
-        font-size: 0.8em;
-      }
-
       &__store-counts {
         gap: $spacing-sm;
 
@@ -696,6 +793,72 @@
             min-width: 18px;
           }
         }
+      }
+    }
+  }
+}
+
+// Target information styles - simplified
+.item-container__target-info {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin: $spacing-xs/2 0;
+  font-size: 0.85em;
+
+  .target-label {
+    color: rgba($text-primary, 0.7);
+    font-weight: 500;
+  }
+
+  .target-value {
+    font-weight: 600;
+    color: $primary;
+
+    &.target-met {
+      color: $success;
+    }
+
+    &.target-overdue {
+      color: $error;
+    }
+  }
+
+  .completion-percentage {
+    font-size: 0.9em;
+    font-weight: 500;
+    color: rgba($text-primary, 0.8);
+
+    &.completion-met {
+      color: $success;
+      font-weight: 600;
+    }
+
+    &.completion-overdue {
+      color: $error;
+      font-weight: 600;
+    }
+  }
+}
+
+// Responsive adjustments for target info
+@media (max-width: 768px) {
+  .item-container__target-info {
+    font-size: 0.75em;
+    gap: $spacing-xs/2;
+  }
+
+  .sales-agent-container .sales-agent-list__item-section .item-container {
+    &__sales-info {
+      min-width: 90px;
+      gap: $spacing-xs;
+
+      .sales-amount {
+        font-size: 0.8em;
+      }
+
+      .completion-percentage {
+        font-size: 2em;
       }
     }
   }

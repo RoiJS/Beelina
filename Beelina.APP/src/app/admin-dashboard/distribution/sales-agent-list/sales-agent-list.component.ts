@@ -1,21 +1,23 @@
 import { Component, inject, OnDestroy, output } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
-import { User } from 'src/app/_models/user.model';
 import { CustomerStore } from 'src/app/_models/customer-store';
 import { TransactionSalesPerSalesAgent } from 'src/app/_models/sales-per-agent';
+import { SalesTargetProgress } from 'src/app/_models/sales-target-progress.model';
+import { User } from 'src/app/_models/user.model';
 
-import { ProductService } from 'src/app/_services/product.service';
-import { UIService } from 'src/app/_services/ui.service';
-import { TransactionService } from 'src/app/_services/transaction.service';
+import { DateFilterEnum } from 'src/app/_enum/date-filter.enum';
 import { CustomerStoreService } from 'src/app/_services/customer-store.service';
 import { ListShufflerService, ShuffleResult } from 'src/app/_services/list-shuffler.service';
-import { DateFilterEnum } from 'src/app/_enum/date-filter.enum';
+import { ProductService } from 'src/app/_services/product.service';
+import { TransactionService } from 'src/app/_services/transaction.service';
+import { UIService } from 'src/app/_services/ui.service';
+import { SalesTargetStore } from 'src/app/_stores/sales-target.store';
 
-import { SharedComponent } from 'src/app/shared/components/shared/shared.component';
-import { StoreListBottomSheetComponent, StoreListBottomSheetData } from './store-list-bottom-sheet/store-list-bottom-sheet.component';
 import { ISalesAgentStoreOrder } from 'src/app/_interfaces/outputs/isales-agent-store-order.output';
 import { IStoreOrder } from 'src/app/_interfaces/outputs/istore-order.output';
+import { SharedComponent } from 'src/app/shared/components/shared/shared.component';
+import { StoreListBottomSheetComponent, StoreListBottomSheetData } from './store-list-bottom-sheet/store-list-bottom-sheet.component';
 
 @Component({
   selector: 'app-sales-agent-list',
@@ -34,6 +36,7 @@ export class SalesAgentListComponent extends SharedComponent implements OnDestro
   private _transactionService = inject(TransactionService);
   private _customerStoreService = inject(CustomerStoreService);
   private _listShufflerService = inject(ListShufflerService);
+  private _salesTargetStore = inject(SalesTargetStore);
   private _bottomSheet = inject(MatBottomSheet);
 
   // Store data properties
@@ -45,6 +48,11 @@ export class SalesAgentListComponent extends SharedComponent implements OnDestro
 
   // Sales data properties
   private _currentSalesData: TransactionSalesPerSalesAgent[] = [];
+
+  // Computed properties from SalesTargetStore
+  get salesTargetProgress(): SalesTargetProgress[] {
+    return this._salesTargetStore.salesTargetProgress();
+  }
 
   // Movement tracking helpers
   private _clearMovedTimeoutId?: any;
@@ -64,6 +72,11 @@ export class SalesAgentListComponent extends SharedComponent implements OnDestro
 
         // Initialize index map for movement tracking
         this._prevIndexMap = this._listShufflerService.buildIndexMap(this._salesAgents);
+
+        // Load initial sales target progress if dates are available
+        if (this._currentFromDate && this._currentToDate) {
+          this._loadSalesTargetProgress();
+        }
       },
     });
   }
@@ -81,11 +94,17 @@ export class SalesAgentListComponent extends SharedComponent implements OnDestro
     this._currentToDate = e.toDate;
     this._dateFilter = e.dateFilter;
 
+    // Set the date range in the sales target store
+    this._salesTargetStore.setSelectedDateRange(new Date(e.fromDate), new Date(e.toDate));
+
     // Reload sales ranking with new date range
     this._loadSalesPerAgent();
 
     // Reload store data with new date range
     this._loadStoreData();
+
+    // Load sales target progress for all agents
+    this._loadSalesTargetProgress();
   }
 
   trackById(index: number, item: User) {
@@ -193,6 +212,15 @@ export class SalesAgentListComponent extends SharedComponent implements OnDestro
     });
   }
 
+  private _loadSalesTargetProgress() {
+    if (!this._salesAgents?.length) {
+      return;
+    }
+
+    const salesAgentIds = this._salesAgents.map(agent => agent.id);
+    this._salesTargetStore.getSalesTargetProgress(salesAgentIds);
+  }
+
   get salesAgents(): User[] {
     return this._salesAgents;
   }
@@ -231,6 +259,58 @@ export class SalesAgentListComponent extends SharedComponent implements OnDestro
   getStoresWithoutOrdersCount(agentId: number): number {
     const agentStoreData = this._storesWithoutOrders.find(s => s.salesAgentId === agentId);
     return agentStoreData?.storeOrders?.length || 0;
+  }
+
+  // Method to get sales target progress for a specific sales agent
+  getSalesTargetProgressForAgent(agentId: number): SalesTargetProgress | null {
+    return this.salesTargetProgress.find(progress => progress.salesAgentId === agentId) || null;
+  }
+
+  // Method to get formatted target amount for a specific sales agent
+  getFormattedTargetAmountForAgent(agentId: number): string {
+    const progress = this.getSalesTargetProgressForAgent(agentId);
+    if (!progress) return 'No target set';
+    return `₱${progress.targetAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  // Method to get completion percentage for a specific sales agent
+  getCompletionPercentageForAgent(agentId: number): number {
+    const progress = this.getSalesTargetProgressForAgent(agentId);
+    return progress ? Math.round(progress.completionPercentage) : 0;
+  }
+
+  // Method to get performance level class for completion percentage styling
+  getCompletionPercentageClass(agentId: number): string {
+    const percentage = this.getCompletionPercentageForAgent(agentId);
+
+    if (percentage >= 80) {
+      return 'completion-percentage--high';
+    } else if (percentage >= 50) {
+      return 'completion-percentage--medium';
+    } else {
+      return 'completion-percentage--low';
+    }
+
+  }
+
+  // Method to get remaining sales for a specific sales agent
+  getFormattedRemainingSalesForAgent(agentId: number): string {
+    const progress = this.getSalesTargetProgressForAgent(agentId);
+    if (!progress) return '₱0.00';
+    const remainingSales = Math.max(0, progress.remainingSales); // Don't show negative remaining sales
+    return `₱${remainingSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  // Method to check if target is met for a specific sales agent
+  isTargetMetForAgent(agentId: number): boolean {
+    const progress = this.getSalesTargetProgressForAgent(agentId);
+    return progress ? progress.isTargetMet : false;
+  }
+
+  // Method to check if target is overdue for a specific sales agent
+  isTargetOverdueForAgent(agentId: number): boolean {
+    const progress = this.getSalesTargetProgressForAgent(agentId);
+    return progress ? progress.isOverdue : false;
   }
 
   // Method to show stores with orders in bottom sheet

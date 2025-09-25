@@ -1,0 +1,533 @@
+@import "../../../../app-variables";
+
+.discount-management-dialog {
+  min-width: 480px;
+  max-width: 520px;
+  width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+
+  // Dialog title styling
+  h2[mat-dialog-title] {
+    flex-shrink: 0;
+    padding: 0.5em;
+    border-bottom: 1px solid $border-light;
+
+    .dialog-icon {
+      margin-left: $spacing-xs;
+      vertical-align: middle;
+      color: $primary;
+      font-size: 1.1rem;
+      height: 1.1rem;
+      width: 1.1rem;
+    }
+  }
+
+  .dialog-content {
+    padding: 0.5em !important;
+    max-height: calc(80vh - 120px);
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    .amount-summary {
+      background: $gray-50;
+      border-radius: $border-radius-sm;
+      padding: $spacing-sm $spacing-md;
+      margin-bottom: $spacing-md;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+      .label {
+        font-weight: 500;
+        color: $text-secondary;
+        font-size: 0.9rem;
+      }
+
+      .amount {
+        font-size: 1rem;
+        font-weight: 600;
+        color: $text-primary;
+      }
+    }
+
+    .scrollable-content {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      padding-top: $spacing-xs;
+    }
+
+    .add-discount-section {
+      display: flex;
+      gap: $spacing-sm;
+      margin: $spacing-sm 0;
+      padding: $spacing-xs 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+      .add-discount-btn,
+      .clear-all-btn {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        min-width: 0;
+        height: 32px;
+        padding: $spacing-xs $spacing-md;
+        font-size: 0.85rem;
+
+        mat-icon {
+          font-size: 1rem;
+          height: 1rem;
+          width: 1rem;
+          margin: 0;
+        }
+      }
+    }
+
+    .calculation-summary {
+      background: rgba($primary, $opacity-light);
+      border-radius: $border-radius-sm;
+      padding: $spacing-md;
+      margin: $spacing-xs 0 0 0;
+      border: 1px solid rgba($primary, $opacity-medium);
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+
+      .summary-title {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        margin-bottom: $spacing-sm;
+        font-weight: 600;
+        color: $primary;
+        font-size: 0.9rem;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: rgba($primary, 0.05);
+        }
+
+        &.expanded {
+          margin-bottom: $spacing-sm;
+        }
+
+        mat-icon {
+          color: $primary;
+          font-size: 1rem;
+          height: 1rem;
+          width: 1rem;
+        }
+
+        .expand-icon {
+          margin-left: auto;
+          transition: transform 0.2s ease;
+        }
+      }
+
+      .summary-collapsed {
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 4px 0;
+          font-size: 0.9rem;
+
+          .label {
+            color: $text-secondary;
+            font-weight: 500;
+          }
+
+          .value {
+            font-weight: 600;
+
+            &.net-amount {
+              color: $success;
+              font-weight: 600;
+            }
+          }
+
+          &.final {
+            padding-top: 0;
+            font-size: 0.95rem;
+          }
+        }
+      }
+
+      .breakdown-section {
+        margin-bottom: $spacing-sm;
+
+        .breakdown-header {
+          margin-bottom: $spacing-xs;
+
+          .gross-amount-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: $text-primary;
+            font-size: 0.9rem;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba($primary, $opacity-light);
+
+            .label {
+              color: $text-secondary;
+            }
+
+            .amount {
+              color: $primary;
+            }
+          }
+        }
+
+        .breakdown-step {
+          margin: $spacing-xs 0;
+          padding: $spacing-xs;
+          background: rgba(255, 255, 255, 0.6);
+          border-radius: 4px;
+          border: 1px solid rgba($primary, $opacity-light);
+
+          .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+
+            .step-number {
+              font-weight: 600;
+              color: $primary;
+              font-size: 0.8rem;
+            }
+
+            .step-description {
+              font-size: 0.8rem;
+              color: $text-secondary;
+              font-style: italic;
+            }
+          }
+
+          .step-calculation {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            .calculation-line {
+              font-size: 0.8rem;
+              color: $text-primary;
+              font-family: monospace;
+              word-break: break-all;
+
+              strong {
+                color: $success;
+                font-weight: 600;
+              }
+            }
+
+            .discount-amount {
+              font-size: 0.75rem;
+              color: $error;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+
+      .summary-rows {
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 2px 0;
+          font-size: 0.85rem;
+
+          .label {
+            color: $text-secondary;
+            font-weight: 500;
+          }
+
+          .value {
+            font-weight: 600;
+
+            &.discount-amount {
+              color: $error;
+            }
+
+            &.net-amount {
+              color: $success;
+              font-weight: 600;
+            }
+          }
+
+          &.final {
+            border-top: 1px solid rgba($primary, $opacity-medium);
+            padding-top: $spacing-xs;
+            margin-top: $spacing-xs;
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    .discounts-form {
+      .discounts-container {
+        .no-discounts {
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          padding: $spacing-md;
+          color: $text-secondary;
+          background: $gray-50;
+          border-radius: $border-radius-sm;
+          border: 2px dashed $border-light;
+          font-size: 0.9rem;
+
+          mat-icon {
+            color: $text-muted;
+            font-size: 1.1rem;
+            height: 1.1rem;
+            width: 1.1rem;
+          }
+        }
+
+        .discount-item {
+          border: 1px solid $border-light;
+          border-radius: $border-radius-sm;
+          margin-bottom: $spacing-sm;
+          background: $white;
+          padding: $spacing-md;
+
+          &.readonly {
+            background: $gray-50;
+            border-color: $border-medium;
+          }
+
+          .discount-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: $spacing-sm;
+
+            .discount-number {
+              font-weight: 600;
+              color: $text-primary;
+              font-size: 0.9rem;
+            }
+          }
+
+          .discount-fields {
+            display: flex;
+            gap: $spacing-sm;
+            margin: 0;
+            align-items: flex-start;
+
+            .percentage-field {
+              flex: 1 120px;
+            }
+
+            .description-field {
+              flex: 1;
+            }
+
+            .discount-actions {
+              display: flex;
+              align-items: center;
+              margin-top: 8px;
+
+              .delete-icon {
+                color: $error;
+                cursor: pointer;
+                transition: color 0.2s;
+
+                &:hover {
+                  color: darken($error, 10%);
+                }
+              }
+
+              button {
+                width: 28px;
+                height: 28px;
+
+                mat-icon {
+                  font-size: 1rem;
+                  width: 1rem;
+                  height: 1rem;
+                }
+
+                &:disabled {
+                  opacity: $opacity-disabled;
+                }
+              }
+            }
+          }
+
+          .discount-errors {
+            margin-top: $spacing-xs;
+
+            mat-error {
+              display: block;
+              margin-bottom: 2px;
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+
+    .form-validation {
+      margin: $spacing-sm 0 0 0;
+      position: sticky;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      padding: $spacing-xs;
+      z-index: 10;
+
+      mat-error {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .dialog-actions {
+    padding: $spacing-md !important;
+    border: none;
+    gap: $spacing-sm;
+    margin: 0;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;
+
+    .cancel-btn,
+    .save-btn {
+      min-width: 80px;
+      height: 36px;
+      padding: $spacing-xs $spacing-lg;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Responsive design for smaller screens
+@media (max-width: 768px) {
+  ::ng-deep {
+    .discount-management-dialog-container {
+      .cdk-overlay-pane {
+        right: 4px !important;
+        bottom: 4px !important;
+        max-width: calc(100vw - 8px);
+        max-height: calc(100vh - 8px);
+      }
+    }
+  }
+
+  .discount-management-dialog {
+    min-width: 320px;
+    max-width: 400px;
+    width: 100%;
+
+    .dialog-content {
+      .discounts-form {
+        .discounts-container {
+          .discount-item {
+            .discount-fields {
+              flex-direction: column;
+              gap: $spacing-xs;
+
+              .percentage-field {
+                flex: none;
+              }
+            }
+          }
+        }
+
+        .add-discount-section {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+
+      .calculation-summary {
+        .summary-rows {
+          .summary-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark theme support
+.dark-theme {
+  .discount-management-dialog {
+    .dialog-content {
+      .amount-summary {
+        background: $gray-800;
+        color: $white;
+
+        .label {
+          color: $gray-400;
+        }
+
+        .amount {
+          color: $white;
+        }
+      }
+
+      .discounts-form {
+        .discounts-container {
+          .no-discounts {
+            background: $gray-800;
+            border-color: $gray-600;
+            color: $gray-400;
+          }
+
+          .discount-item {
+            background: $gray-800;
+            border-color: $gray-600;
+
+            &.readonly {
+              background: $gray-900;
+            }
+
+            .discount-header {
+              .discount-number {
+                color: $white;
+              }
+            }
+          }
+        }
+      }
+
+      .calculation-summary {
+        background: rgba($primary, $opacity-medium);
+        border-color: $primary;
+
+        .summary-title {
+          color: $white;
+        }
+
+        .summary-rows {
+          .summary-row {
+            .label {
+              color: $gray-300;
+            }
+          }
+        }
+      }
+    }
+  }
+}

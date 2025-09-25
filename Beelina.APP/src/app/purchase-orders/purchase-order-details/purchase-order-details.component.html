@@ -46,12 +46,23 @@
 
                     <div class="biz-form-container__form-control">
                       <label>{{
-                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.DISCOUNT_CONTROL.LABEL"
+                        "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_GENERAL_INFO_PANEL.FORM_CONTROL_SECTION.DISCOUNTS_CONTROL.LABEL"
                         | translate }}</label>
-                      <div class="input-with-suffix">
-                        <input type="number" class="discount-control" formControlName="discount" min="0" max="100"
-                          step="0.01">
-                        <span class="input-suffix">%</span>
+                      <div class="discount-management-container">
+                        <div class="discount-summary">
+                          <span class="discount-count">{{ 'PURCHASE_ORDER_DETAILS_PAGE.DISCOUNT_SUMMARY.COUNT_MESSAGE' | translate:{ count: totalDiscountItems } }}</span>
+                          @if (discountPercentage > 0) {
+                            <span class="discount-percentage">
+                              ({{ 'PURCHASE_ORDER_DETAILS_PAGE.DISCOUNT_SUMMARY.TOTAL_PERCENTAGE' | translate:{ percentage: (discountPercentage | number:'1.2-2') } }})
+                            </span>
+                          }
+                        </div>
+                        <button mat-raised-button color="primary"
+                                (click)="openDiscountDialog()"
+                                class="manage-discounts-btn">
+                          <mat-icon>local_offer</mat-icon>
+                          {{ 'PURCHASE_ORDER_DETAILS_PAGE.ACTIONS.MANAGE_DISCOUNTS' | translate }}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -301,16 +312,83 @@
 
           <br>
           <!-- Purchase Order Summary Section -->
+          @if (getCurrentDiscounts().length > 0) {
+          <div class="purchase-order-summary">
+            <div class="summary-title" (click)="toggleCalculationExpansion()" [class.expanded]="isCalculationExpanded">
+              <mat-icon>calculate</mat-icon>
+              <span>{{ 'PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.TITLE' | translate }}</span>
+              <mat-icon class="expand-icon">{{ isCalculationExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </div>
+
+            <!-- Collapsed View - Net Total Only -->
+            @if (!isCalculationExpanded) {
+            <div class="summary-collapsed">
+              <div class="summary-row">
+                <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.GROSS_TOTAL" |
+                  translate }}:</span>
+                <span class="summary-value">{{ grossTotal }}</span>
+              </div>
+              <div class="summary-row total-row">
+                <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.NET_TOTAL" | translate
+                  }}:</span>
+                <span class="summary-value total-value">{{ netTotal }}</span>
+              </div>
+            </div>
+            }
+
+            <!-- Expanded View - Full Breakdown -->
+            @if (isCalculationExpanded) {
+            <!-- Step-by-step Breakdown -->
+            <div class="breakdown-section">
+              <div class="breakdown-header">
+                <span class="gross-amount-row">
+                  <span class="label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.GROSS_TOTAL" | translate }}:</span>
+                  <span class="amount">{{ grossTotal }}</span>
+                </span>
+              </div>
+
+              @for (step of getDiscountBreakdown(); track step.step) {
+              <div class="breakdown-step">
+                <div class="step-header">
+                  <span class="step-number">{{ 'PURCHASE_ORDER_DETAILS_PAGE.CALCULATION_BREAKDOWN.STEP' | translate:{ number: step.step } }}</span>
+                  <span class="step-description">{{ step.description }}</span>
+                </div>
+                <div class="step-calculation">
+                  <span class="calculation-line">
+                    {{ step.amountBefore | currency:'PHP':'symbol':'1.2-2' }} -
+                    ({{ step.amountBefore | currency:'PHP':'symbol':'1.2-2' }} × {{ step.percentage }}%) =
+                    <strong>{{ step.amountAfter | currency:'PHP':'symbol':'1.2-2' }}</strong>
+                  </span>
+                  <span class="discount-amount">{{ 'PURCHASE_ORDER_DETAILS_PAGE.CALCULATION_BREAKDOWN.DISCOUNT_APPLIED' | translate }} {{ step.discountAmount | currency:'PHP':'symbol':'1.2-2' }}</span>
+                </div>
+              </div>
+              }
+            </div>
+
+            <!-- Final Summary -->
+            <div class="summary-rows">
+              <div class="summary-row">
+                <span class="summary-label">{{ 'PURCHASE_ORDER_DETAILS_PAGE.CALCULATION_BREAKDOWN.TOTAL_DISCOUNT_PERCENTAGE' | translate }}:</span>
+                <span class="summary-value">{{ discountPercentage | number:'1.2-2' }}%</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">{{ 'PURCHASE_ORDER_DETAILS_PAGE.CALCULATION_BREAKDOWN.TOTAL_DISCOUNT_AMOUNT' | translate }}:</span>
+                <span class="summary-value discount-value">-{{ discountAmount }}</span>
+              </div>
+              <div class="summary-row total-row">
+                <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.NET_TOTAL" | translate }}:</span>
+                <span class="summary-value total-value">{{ netTotal }}</span>
+              </div>
+            </div>
+            }
+          </div>
+          } @else {
+          <!-- Original Summary (when no discounts) -->
           <div class="purchase-order-summary">
             <div class="summary-row">
               <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.GROSS_TOTAL" |
                 translate }}:</span>
               <span class="summary-value">{{ grossTotal }}</span>
-            </div>
-            <div class="summary-row discount-row">
-              <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.DISCOUNT" | translate
-                }} ({{ discountPercentage }}%):</span>
-              <span class="summary-value discount-value">-{{ discountAmount }}</span>
             </div>
             <div class="summary-row total-row">
               <span class="summary-label">{{ "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_SUMMARY.NET_TOTAL" | translate
@@ -318,6 +396,7 @@
               <span class="summary-value total-value">{{ netTotal }}</span>
             </div>
           </div>
+          }
         </div>
       </div>
     </div>

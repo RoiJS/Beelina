@@ -239,18 +239,114 @@ namespace Beelina.LIB.BusinessLogic
 
         public async Task<double> GetProfit(int userId, string fromDate, string toDate)
         {
-            // Use existing GetSales method to get total sales amount
-            var salesData = await GetSales(userId, fromDate, toDate);
-            var totalSalesAmount = salesData.TotalSalesAmount;
+            // Calculate profit from four sources:
+            // 1. Purchase order discounts (discounts obtained become profit)
+            // 2. Price difference profit from sales (agent price - warehouse price) * quantity
+            // 3. Transaction-level discounts applied to sales
+            // 4. Bad order amounts deducted from confirmed transactions
+            // 
+            // Access Control:
+            // - Sales Agents (User permission): Only access transactions they created
+            // - Managers and Administrators: Can access all transactions
 
-            // Get total purchase order amount for the date range
-            var totalPurchaseOrderAmount = await GetTotalPurchaseOrderAmount(fromDate, toDate);
+            // Get purchase order discount profit
+            var purchaseOrderDiscountProfit = await GetPurchaseOrderDiscountProfit(fromDate, toDate);
 
-            // Calculate profit: Total Sales - Total Purchase Orders
-            return totalSalesAmount - totalPurchaseOrderAmount;
+            // Get sales price difference profit
+            var salesPriceProfit = await GetSalesPriceProfit(userId, fromDate, toDate);
+
+            // Total profit = Purchase Order Discounts + Sales Price Differences
+            return purchaseOrderDiscountProfit + salesPriceProfit;
+        }
+
+        public async Task<ProfitBreakdown> GetProfitBreakdown(int userId, string fromDate, string toDate)
+        {
+            // Calculate profit breakdown from two main sources:
+            // 1. Purchase order discounts (discounts obtained from suppliers become profit)
+            // 2. Price difference profit from sales (agent price - warehouse price) * quantity
+            // 
+            // Access Control:
+            // - Sales Agents (User permission): Only access transactions they created
+            // - Managers and Administrators: Can access all transactions
+
+            // Get purchase order discount profit
+            var purchaseOrderDiscountProfit = await GetPurchaseOrderDiscountProfit(fromDate, toDate);
+
+            // Get sales price difference profit
+            var salesPriceProfit = await GetSalesPriceProfit(userId, fromDate, toDate);
+
+            return new ProfitBreakdown
+            {
+                PurchaseOrderDiscountProfit = purchaseOrderDiscountProfit,
+                SalesPriceProfit = salesPriceProfit
+            };
         }
 
         private async Task<double> GetTotalPurchaseOrderAmount(string fromDate, string toDate)
+        {
+            var purchaseOrdersQuery = (from pore in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
+                                       join pswa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
+                                       on pore.Id equals pswa.ProductWarehouseStockReceiptEntryId
+
+                                       join psw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
+                                       on pswa.ProductStockPerWarehouseId equals psw.Id
+
+                                       where
+                                           pore.IsActive
+                                           && !pore.IsDelete
+                                           && pswa.IsActive
+                                           && !pswa.IsDelete
+
+                                       select new
+                                       {
+                                           PurchaseOrder = pore,
+                                           Quantity = pswa.Quantity,
+                                           PricePerUnit = psw.PricePerUnit
+                                       });
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                var fromDateTime = Convert.ToDateTime(fromDate).Date;
+                var toDateTime = Convert.ToDateTime(toDate).Date.AddDays(1).AddSeconds(-1);
+
+                purchaseOrdersQuery = purchaseOrdersQuery.Where(p =>
+                        p.PurchaseOrder.StockEntryDate >= fromDateTime
+                        && p.PurchaseOrder.StockEntryDate <= toDateTime
+                );
+            }
+
+            // Calculate total purchase order amount with discount applied
+            var purchaseOrdersWithAmounts = await purchaseOrdersQuery
+                        .GroupBy(p => p.PurchaseOrder.Id)
+                        .Select(g => new
+                        {
+                            PurchaseOrderId = g.Key,
+                            PurchaseOrder = g.First().PurchaseOrder,
+                            GrossTotal = g.Sum(p => p.Quantity * p.PricePerUnit)
+                        })
+                        .AsNoTracking()
+                        .ToListAsync();
+
+            // Load discounts for all purchase orders
+            var purchaseOrderIds = purchaseOrdersWithAmounts.Select(p => p.PurchaseOrderId).ToList();
+            var discounts = await _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptDiscounts
+                .Where(d => purchaseOrderIds.Contains(d.ProductWarehouseStockReceiptEntryId) && d.IsActive && !d.IsDelete)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var totalPurchaseOrderAmount = 0.0;
+            
+            foreach (var purchaseOrder in purchaseOrdersWithAmounts)
+            {
+                var purchaseOrderDiscounts = discounts.Where(d => d.ProductWarehouseStockReceiptEntryId == purchaseOrder.PurchaseOrderId).ToList();
+                var netAmount = Helpers.DiscountCalculationHelper.CalculateNetAmount((decimal)purchaseOrder.GrossTotal, purchaseOrderDiscounts);
+                totalPurchaseOrderAmount += (double)netAmount;
+            }
+
+            return totalPurchaseOrderAmount;
+        }
+
+        private async Task<double> GetPurchaseOrderDiscountProfit(string fromDate, string toDate)
         {
             var purchaseOrdersQuery = (from pore in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
                                        join pswa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
@@ -284,19 +380,127 @@ namespace Beelina.LIB.BusinessLogic
             }
 
             // Calculate total purchase order amount with discount applied
-            var purchaseOrdersWithAmounts = purchaseOrdersQuery
-                        .GroupBy(p => new { p.PurchaseOrder.Id, p.PurchaseOrder.Discount })
+            var purchaseOrdersWithAmounts = await purchaseOrdersQuery
+                        .GroupBy(p => p.PurchaseOrder.Id)
                         .Select(g => new
                         {
-                            PurchaseOrderId = g.Key.Id,
-                            Discount = g.Key.Discount,
+                            PurchaseOrderId = g.Key,
+                            PurchaseOrder = g.First().PurchaseOrder,
                             GrossTotal = g.Sum(p => p.Quantity * p.PricePerUnit)
-                        });
+                        })
+                        .AsNoTracking()
+                        .ToListAsync();
 
-            var totalPurchaseOrderAmount = await purchaseOrdersWithAmounts
-                .SumAsync(p => p.GrossTotal - (p.GrossTotal * p.Discount / 100));
+            // Load discounts for all purchase orders
+            var purchaseOrderIds = purchaseOrdersWithAmounts.Select(p => p.PurchaseOrderId).ToList();
+            var discounts = await _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptDiscounts
+                .Where(d => purchaseOrderIds.Contains(d.ProductWarehouseStockReceiptEntryId) && d.IsActive && !d.IsDelete)
+                .ToListAsync();
 
-            return (double)totalPurchaseOrderAmount;
+            var totalDiscountProfit = 0.0;
+            
+            foreach (var purchaseOrder in purchaseOrdersWithAmounts)
+            {
+                var purchaseOrderDiscounts = discounts.Where(d => d.ProductWarehouseStockReceiptEntryId == purchaseOrder.PurchaseOrderId).ToList();
+                var grossAmount = (decimal)purchaseOrder.GrossTotal;
+                var netAmount = Helpers.DiscountCalculationHelper.CalculateNetAmount(grossAmount, purchaseOrderDiscounts);
+                var discountAmount = grossAmount - netAmount;
+                totalDiscountProfit += (double)discountAmount;
+            }
+
+            return totalDiscountProfit;
+        }
+
+        private async Task<double> GetSalesPriceProfit(int userId, string fromDate, string toDate)
+        {
+            // Get current user's permission level to determine access scope
+            var userRetailModulePermission = await _userAccountRepository.GetCurrentUsersPermissionLevel(userId, ModulesEnum.Distribution);
+
+            // Get all confirmed transactions for the date range
+            // Filter by userId only for sales agents (User permission level)
+            // Managers and administrators can see all transactions
+            var transactionsQuery = from t in _beelinaRepository.ClientDbContext.Transactions
+                                   join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                   on t.Id equals pt.TransactionId
+                                   join p in _beelinaRepository.ClientDbContext.Products
+                                   on pt.ProductId equals p.Id
+                                   join psw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
+                                   on new { ProductId = pt.ProductId } equals new { ProductId = psw.ProductId }
+                                   
+                                   where
+                                       t.Status == Enums.TransactionStatusEnum.Confirmed
+                                       // Get all transactions if current user is Manager or Administrator
+                                       && (
+                                           userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                           (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                       )
+                                       && t.IsActive
+                                       && !t.IsDelete
+                                       && pt.IsActive
+                                       && !pt.IsDelete
+                                       && psw.IsActive
+                                       && !psw.IsDelete
+
+                                   select new
+                                   {
+                                       TransactionDate = t.TransactionDate,
+                                       TransactionId = t.Id,
+                                       InvoiceNo = t.InvoiceNo,
+                                       StoreId = t.StoreId,
+                                       CreatedById = t.CreatedById,
+                                       TransactionDiscount = t.Discount, // Transaction-level discount percentage
+                                       SalesPrice = pt.Price, // This comes from ProductStockPerPanel
+                                       WarehousePrice = psw.PricePerUnit, // This is the cost price
+                                       Quantity = pt.Quantity
+                                   };
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                var fromDateTime = Convert.ToDateTime(fromDate).Date;
+                var toDateTime = Convert.ToDateTime(toDate).Date.AddDays(1).AddSeconds(-1);
+
+                transactionsQuery = transactionsQuery.Where(t =>
+                        t.TransactionDate >= fromDateTime
+                        && t.TransactionDate <= toDateTime
+                );
+            }
+
+            var transactionData = await transactionsQuery.AsNoTracking().ToListAsync();
+
+            // Group by transaction to calculate profit per transaction, then deduct bad orders
+            var transactionGroups = transactionData.GroupBy(t => new 
+            { 
+                t.TransactionId, 
+                t.InvoiceNo, 
+                t.StoreId, 
+                t.CreatedById, 
+                t.TransactionDiscount 
+            });
+
+            var totalPriceProfit = 0.0;
+
+            foreach (var transactionGroup in transactionGroups)
+            {
+                // Calculate gross profit for this transaction
+                var grossProfit = transactionGroup.Sum(t => 
+                    ((t.SalesPrice - (double)t.WarehousePrice)) * t.Quantity);
+
+                // Apply transaction discount to the gross profit
+                var discountedProfit = grossProfit - (grossProfit * (transactionGroup.Key.TransactionDiscount / 100));
+
+                // Calculate and deduct bad order amount for this transaction
+                var badOrderAmount = await GetBadOrderAmount(
+                    transactionGroup.Key.InvoiceNo, 
+                    transactionGroup.Key.StoreId, 
+                    transactionGroup.Key.CreatedById);
+
+                // Final profit = discounted profit - bad orders
+                var finalProfit = discountedProfit - badOrderAmount;
+
+                totalPriceProfit += finalProfit;
+            }
+
+            return totalPriceProfit;
         }
 
         public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent(string fromDate, string toDate)
@@ -1154,6 +1358,7 @@ namespace Beelina.LIB.BusinessLogic
 
             return transactionPayments;
         }
+
 
         public async Task DeleteOrderTransactions(List<int> transactionIds)
         {

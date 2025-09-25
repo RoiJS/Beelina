@@ -24,6 +24,7 @@ namespace Beelina.API.Helpers.MapperProfile
             CreateMap<ProductWithdrawalEntryInput, ProductWithdrawalEntry>();
             CreateMap<ProductStockWarehouseAuditInput, ProductStockWarehouseAudit>();
             CreateMap<ProductStockAuditInput, ProductStockAudit>();
+            CreateMap<SalesTargetInput, SalesTarget>();
 
             CreateMap<Client, ClientInformationResult>();
             CreateMap<Store, StoreInformationResult>();

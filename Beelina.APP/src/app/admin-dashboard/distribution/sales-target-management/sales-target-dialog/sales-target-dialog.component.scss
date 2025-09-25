@@ -1,0 +1,25 @@
+.sales-target-dialog {
+  width: 500px;
+  max-width: 90vw;
+}
+
+.sales-target-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.date-range-container {
+  display: flex;
+  gap: 16px;
+}
+
+.date-range-container mat-form-field {
+  flex: 1;
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}

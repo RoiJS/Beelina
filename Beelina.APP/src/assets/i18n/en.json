@@ -1299,6 +1299,8 @@
         "REFERENCE_NO_FIELD": "Reference No.",
         "PLATE_NO_FIELD": "Plate No",
         "SUPPLIER_FIELD": "Supplier",
+        "DISCOUNT_INFO_FIELD": "Discount Info",
+        "NET_AMOUNT_FIELD": "Net Amount",
         "NOTES_FIELD": "Notes"
       }
     },
@@ -1339,6 +1341,9 @@
         "NOTES_CONTROL": {
           "LABEL": "Notes"
         },
+        "DISCOUNTS_CONTROL": {
+          "LABEL": "Discounts"
+        },
         "DISCOUNT_CONTROL": {
           "LABEL": "Discount (%)"
         },
@@ -1377,9 +1382,23 @@
       }
     },
     "PURCHASE_ORDER_SUMMARY": {
+      "TITLE": "Order Summary",
       "GROSS_TOTAL": "Gross Total",
       "DISCOUNT": "Discount",
       "NET_TOTAL": "Net Total"
+    },
+    "CALCULATION_BREAKDOWN": {
+      "STEP": "Step {{number}}",
+      "DISCOUNT_APPLIED": "Discount applied:",
+      "TOTAL_DISCOUNT_PERCENTAGE": "Total Discount",
+      "TOTAL_DISCOUNT_AMOUNT": "Total Discount Amount"
+    },
+    "DISCOUNT_SUMMARY": {
+      "COUNT_MESSAGE": "{{count}} discount(s)",
+      "TOTAL_PERCENTAGE": "{{percentage}}%"
+    },
+    "ACTIONS": {
+      "MANAGE_DISCOUNTS": "Manage Discounts"
     },
     "RESET_PURCHASE_ORDER_ITEMS_DIALOG": {
       "TITLE": "Reset items",
@@ -1870,6 +1889,9 @@
       "PROFIT_PANEL": {
         "LABEL": "Total Profit"
       },
+      "WAREHOUSE_INVENTORY_PANEL": {
+        "LABEL": "Warehouse Inventory Value"
+      },
       "CHART_SECTION": {
         "TITLE": "Sales Date Distribution Chart",
         "SALES_LABEL": "Sales",
@@ -1892,8 +1914,8 @@
         "TITLE": " Sales Agent Distribution Data",
         "SALES_INFORMATION_CONTAINER": {
           "SALES_AMOUNT": "Sales Amount",
-          "STORES_WITH_ORDERS": "Stores with Orders",
-          "STORES_WITHOUT_ORDERS": "Stores without Orders",
+          "STORES_WITH_ORDERS": "Calls",
+          "STORES_WITHOUT_ORDERS": "No Calls",
           "NO_STORES_FOUND": "No stores found",
           "ORDER_COUNT": {
             "=0": "no orders",
@@ -1914,6 +1936,23 @@
           "TITLE": "Product Stock Audit",
           "DESCRIPTION": "The list below shows the product stock audit data for the selected product on the left panel."
         }
+      },
+      "SALES_TARGET": {
+        "TITLE": "Sales Targets",
+        "ADD_NEW": "Add New Target",
+        "EDIT_TARGET": "Edit Sales Target",
+        "SALES_AGENT": "Sales Agent",
+        "TARGET_AMOUNT": "Target Amount (₱)",
+        "PERIOD": "Period",
+        "DATE_RANGE": "Date Range",
+        "START_DATE": "Start Date",
+        "END_DATE": "End Date",
+        "DESCRIPTION": "Description",
+        "STATUS": "Status",
+        "ACTIONS": "Actions",
+        "IS_ACTIVE": "Is Active",
+        "NO_TARGETS": "No sales targets found",
+        "SELECT_AGENT_FIRST": "Please select a sales agent to view their targets"
       }
     },
     "INSIGHTS_PAGE": {
@@ -2002,5 +2041,44 @@
     "CONFIRM_MESSAGE": "Are you sure you want to assign '{{productName}}' to {{agentCount}} sales agent(s)?",
     "SUCCESS_MESSAGE": "Product successfully assigned to {{count}} sales agent(s)",
     "ERROR_MESSAGE": "Failed to assign product to sales agents. Please try again."
+  },
+  "DISCOUNT_MANAGEMENT_DIALOG": {
+    "TITLE_MANAGE": "Manage Discounts",
+    "TITLE_VIEW": "View Discounts",
+    "GROSS_AMOUNT": "Gross Amount",
+    "NO_DISCOUNTS_MESSAGE": "No discounts added yet",
+    "DISCOUNT_NUMBER": "Discount {{number}}",
+    "FIELDS": {
+      "DISCOUNT_PERCENTAGE": "Discount (%)",
+      "DISCOUNT_PERCENTAGE_PLACEHOLDER": "Enter discount (%)",
+      "DESCRIPTION": "Description",
+      "DESCRIPTION_PLACEHOLDER": "Enter discount description (optional)"
+    },
+    "ACTIONS": {
+      "ADD_DISCOUNT": "Add Discount",
+      "REMOVE": "Remove discount",
+      "MOVE_UP": "Move up",
+      "MOVE_DOWN": "Move down",
+      "CLEAR_ALL": "Clear All",
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "CLOSE": "Close"
+    },
+    "CALCULATION_SUMMARY": {
+      "TITLE": "Calculation Summary",
+      "STEP": "Step {{number}}",
+      "DISCOUNT_APPLIED": "Discount applied:",
+      "TOTAL_DISCOUNT_PERCENTAGE": "Total Discount",
+      "TOTAL_DISCOUNT_AMOUNT": "Total Discount Amount",
+      "NET_AMOUNT": "Net Amount"
+    },
+    "VALIDATION": {
+      "FIX_ERRORS": "Please fix the errors above before saving",
+      "UNIQUE_DESCRIPTIONS": "Discount descriptions must be unique",
+      "DISCOUNT_PERCENTAGE_REQUIRED": "Discount percentage is required",
+      "DISCOUNT_PERCENTAGE_MIN": "Discount percentage must be greater than 0",
+      "DISCOUNT_PERCENTAGE_MAX": "Discount percentage cannot exceed 100%",
+      "DESCRIPTION_MAX_LENGTH": "Description cannot exceed 255 characters"
+    }
   }
 }

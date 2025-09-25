@@ -1,0 +1,94 @@
+<div class="sales-target-management">
+  <div class="sales-target-management__header">
+    <div class="sales-target-management__title-section">
+      <h3>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.TITLE' | translate }}</h3>
+    </div>
+    <button mat-raised-button color="primary" (click)="openAddDialog()" *ngIf="selectedSalesAgent()" [disabled]="!selectedSalesAgent()">
+      <mat-icon>add</mat-icon>
+      {{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.ADD_NEW' | translate }}
+    </button>
+  </div>
+
+  <div class="sales-target-management__table">
+    <table mat-table [dataSource]="salesTargets()" matSort (matSortChange)="onSortChange($event)" class="mat-elevation-z2">
+
+      <!-- Target Amount Column -->
+      <ng-container matColumnDef="targetAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="targetAmount">
+          {{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.TARGET_AMOUNT' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let target">
+          {{ target.targetAmount | currency:'PHP':'symbol':'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <!-- Period Column -->
+      <ng-container matColumnDef="period">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="periodType">
+          {{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.PERIOD' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let target">
+          {{ getPeriodTypeDisplay(target.periodType) }}
+        </td>
+      </ng-container>
+
+      <!-- Date Range Column -->
+      <ng-container matColumnDef="dateRange">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="startDate">
+          {{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.DATE_RANGE' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let target">
+          {{ target.startDate | date:'shortDate' }} - {{ target.endDate | date:'shortDate' }}
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="isActive">
+          {{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.STATUS' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let target">
+          <span [class]="'status-badge status-badge--' + (target.isActive ? 'active' : 'inactive')">
+            {{ (target.isActive ? 'ACTIVE' : 'INACTIVE') | translate }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.ACTIONS' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let target">
+          <button mat-icon-button (click)="openEditDialog(target)" [title]="'EDIT' | translate">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="deleteSalesTarget(target)" [title]="'DELETE' | translate">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator
+      [pageSize]="50"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      [length]="totalCount()"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <div class="sales-target-management__empty" *ngIf="salesTargets().length === 0 && selectedSalesAgent() && !isLoading()">
+    <mat-icon>assignment</mat-icon>
+    <p>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.NO_TARGETS' | translate }}</p>
+  </div>
+
+  <div class="sales-target-management__no-agent" *ngIf="!selectedSalesAgent()">
+    <mat-icon>person</mat-icon>
+    <p>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.SELECT_AGENT_FIRST' | translate }}</p>
+  </div>
+</div>

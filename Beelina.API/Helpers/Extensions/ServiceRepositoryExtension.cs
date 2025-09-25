@@ -33,6 +33,7 @@ namespace Beelina.API.Helpers.Extensions
             services.AddScoped(typeof(IProductTransactionRepository<ProductTransaction>), typeof(ProductTransactionRepository));
             services.AddScoped(typeof(IBarangayRepository<Barangay>), typeof(BarangayRepository));
             services.AddScoped(typeof(ISupplierRepository<Supplier>), typeof(SupplierRepository));
+            services.AddScoped(typeof(ISalesTargetRepository<SalesTarget>), typeof(SalesTargetRepository));
             services.AddScoped(typeof(IPaymentRepository<Payment>), typeof(PaymentRepository));
             services.AddScoped(typeof(IReportRepository<Report>), typeof(ReportRepository));
             services.AddScoped(typeof(IGeneralInformationRepository<GeneralInformation>), typeof(GeneralInformationRepository));

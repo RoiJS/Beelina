@@ -12,7 +12,6 @@ namespace Beelina.LIB.Models
         public string PlateNo { get; set; }
         public string Notes { get; set; }
         public int WarehouseId { get; set; }
-        public double Discount { get; set; }
         public string InvoiceNo { get; set; }
         public DateTime? InvoiceDate { get; set; }
         public DateTime? DateEncoded { get; set; }
@@ -20,6 +19,7 @@ namespace Beelina.LIB.Models
         public string Location { get; set; }
 
         public List<ProductStockWarehouseAudit> ProductStockWarehouseAudits { get; set; }
+        public List<ProductWarehouseStockReceiptDiscount> Discounts { get; set; }
         public virtual Supplier Supplier { get; set; }
 
         public int? DeletedById { get; set; }

@@ -192,6 +192,17 @@ namespace Beelina.API.Types.Query
             return new CheckPurchaseOrderCodeInformationResult(purchaseOrderFromRepo != null);
         }
 
+        [Authorize]
+        public async Task<double> GetInventoryWarehouseTotalValue(
+            [Service] IProductRepository<Product> productRepository,
+            [Service] IHttpContextAccessor httpContextAccessor,
+            int warehouseId)
+        {
+            var productsFromRepo = await productRepository.GetWarehouseProducts(warehouseId, 0, "", null, httpContextAccessor?.HttpContext?.RequestAborted ?? default);
+            var inventoryTotalValue = productsFromRepo.Sum(x => x.StockQuantity * x.Price);
+            return inventoryTotalValue;
+        }
+
         private static async Task SetProductStockWarehouses(ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput, int warehouseId, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
         {
             foreach (var productStockWarehouseAudit in productWarehouseStockReceiptEntryInput.ProductStockWarehouseAuditInputs)

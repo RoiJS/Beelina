@@ -1,0 +1,77 @@
+<div class="sales-breakdown-dialog">
+  <div class="dialog-header">
+    <div class="dialog-title">
+      <mat-icon class="dialog-icon">assessment</mat-icon>
+      <h2>Sales Breakdown</h2>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div class="agent-info">
+      <h3>{{ data.salesAgentName }}</h3>
+    </div>
+
+    <div class="breakdown-section">
+      <div class="breakdown-item total-sales">
+        <div class="item-label">
+          <mat-icon>monetization_on</mat-icon>
+          <span>Total Sales Amount</span>
+        </div>
+        <div class="item-value primary">
+          {{ data.totalSalesAmount | currency:'PHP':'symbol':'1.2-2' }}
+        </div>
+      </div>
+
+      <div class="breakdown-divider"></div>
+
+      <div class="breakdown-item">
+        <div class="item-label">
+          <mat-icon>payments</mat-icon>
+          <span>Cash on Hand</span>
+        </div>
+        <div class="item-value">
+          {{ data.cashOnHand | currency:'PHP':'symbol':'1.2-2' }}
+        </div>
+      </div>
+
+      <div class="breakdown-item">
+        <div class="item-label">
+          <mat-icon>account_balance</mat-icon>
+          <span>Cheque on Hand</span>
+        </div>
+        <div class="item-value">
+          {{ data.chequeOnHand | currency:'PHP':'symbol':'1.2-2' }}
+        </div>
+      </div>
+
+      <div class="breakdown-item">
+        <div class="item-label">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <span>Account Receivables</span>
+        </div>
+        <div class="item-value">
+          {{ data.accountReceivables | currency:'PHP':'symbol':'1.2-2' }}
+        </div>
+      </div>
+
+      <div class="breakdown-item">
+        <div class="item-label">
+          <mat-icon>warning</mat-icon>
+          <span>Bad Orders</span>
+        </div>
+        <div class="item-value bad-orders">
+          {{ data.badOrders | currency:'PHP':'symbol':'1.2-2' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="close()" class="close-action-button">
+      Close
+    </button>
+  </div>
+</div>

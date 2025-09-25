@@ -43,6 +43,7 @@ namespace Beelina.LIB.BusinessLogic
                                     .ProductWarehouseStockReceiptEntries
                                     .Where((p) => p.Id == productWarehouseStockReceiptEntryId)
                                     .Include((p) => p.ProductStockWarehouseAudits)
+                                    .Include((p) => p.Discounts)
                                     .FirstOrDefaultAsync();
 
             var productStockPerWarehouse = await _beelinaRepository.ClientDbContext.ProductStockPerWarehouse.ToListAsync();
@@ -72,12 +73,12 @@ namespace Beelina.LIB.BusinessLogic
                 Notes = productStockPerWarehouseFromRepo.Notes,
                 PlateNo = productStockPerWarehouseFromRepo.PlateNo,
                 WarehouseId = productStockPerWarehouseFromRepo.WarehouseId,
-                Discount = productStockPerWarehouseFromRepo.Discount,
                 InvoiceNo = productStockPerWarehouseFromRepo.InvoiceNo,
                 InvoiceDate = productStockPerWarehouseFromRepo.InvoiceDate,
                 DateEncoded = productStockPerWarehouseFromRepo.DateEncoded,
                 PurchaseOrderStatus = productStockPerWarehouseFromRepo.PurchaseOrderStatus,
                 Location = productStockPerWarehouseFromRepo.Location,
+                Discounts = productStockPerWarehouseFromRepo.Discounts,
                 ProductStockWarehouseAuditsResult = productStockWarehouseAuditResults,
             };
 
@@ -90,6 +91,7 @@ namespace Beelina.LIB.BusinessLogic
                                     .ClientDbContext
                                     .ProductWarehouseStockReceiptEntries
                                     .Include(t => t.Supplier)
+                                    .Include(t => t.Discounts)
                                     .Where((p) =>
                                         (productReceiptEntryFilter == null ||
                                             (productReceiptEntryFilter != null &&
@@ -126,7 +128,7 @@ namespace Beelina.LIB.BusinessLogic
                             WarehouseId = t.WarehouseId,
                             Notes = t.Notes,
                             StockEntryDate = t.StockEntryDate, // TODO: Apply timezone conversion here
-                            Discount = t.Discount,
+                            Discounts = t.Discounts,
                             InvoiceNo = t.InvoiceNo,
                             InvoiceDate = t.InvoiceDate,
                             DateEncoded = t.DateEncoded,
@@ -180,7 +182,7 @@ namespace Beelina.LIB.BusinessLogic
 
                 var stockEntryFromRepo = await _beelinaRepository
                                             .GetEntity(input.Id)
-                                            .Includes(s => s.ProductStockWarehouseAudits)
+                                            .Includes(s => s.ProductStockWarehouseAudits, s => s.Discounts)
                                             .ToObjectAsync();
 
                 await SetProductStockWarehouses(input, warehouseId, _productRepository, cancellationToken);
@@ -189,8 +191,10 @@ namespace Beelina.LIB.BusinessLogic
                 {
                     var newStockEntry = MapInputToEntity(input);
                     var newStockEntryItems = MapAuditInputsToEntities(input.ProductStockWarehouseAuditInputs, 0);
+                    var newDiscounts = MapDiscountInputsToEntities(input.Discounts, 0);
 
                     newStockEntry.ProductStockWarehouseAudits = newStockEntryItems;
+                    newStockEntry.Discounts = newDiscounts;
 
                     await AddEntity(newStockEntry);
                     updatedEntries.Add(newStockEntry);
@@ -199,6 +203,7 @@ namespace Beelina.LIB.BusinessLogic
                 {
                     MapInputToEntity(input, stockEntryFromRepo);
                     stockEntryFromRepo.ProductStockWarehouseAudits = MapAuditEntities(input.ProductStockWarehouseAuditInputs, stockEntryFromRepo.ProductStockWarehouseAudits, stockEntryFromRepo.Id);
+                    stockEntryFromRepo.Discounts = MapDiscountEntities(input.Discounts, stockEntryFromRepo.Discounts, stockEntryFromRepo.Id);
                     updatedEntries.Add(stockEntryFromRepo);
                 }
             }
@@ -218,7 +223,6 @@ namespace Beelina.LIB.BusinessLogic
                 PlateNo = input.PlateNo,
                 WarehouseId = input.WarehouseId,
                 Notes = input.Notes,
-                Discount = input.Discount,
                 InvoiceNo = input.InvoiceNo,
                 InvoiceDate = DateTime.TryParse(input.InvoiceDate, out var invoiceDate) ? invoiceDate : null,
                 DateEncoded = DateTime.TryParse(input.DateEncoded, out var dateEncoded) ? dateEncoded : null,
@@ -239,7 +243,6 @@ namespace Beelina.LIB.BusinessLogic
             entity.PlateNo = input.PlateNo;
             entity.WarehouseId = input.WarehouseId;
             entity.Notes = input.Notes;
-            entity.Discount = input.Discount;
             entity.InvoiceNo = input.InvoiceNo;
             entity.InvoiceDate = DateTime.TryParse(input.InvoiceDate, out var invoiceDate) ? invoiceDate : entity.InvoiceDate;
             entity.DateEncoded = DateTime.TryParse(input.DateEncoded, out var dateEncoded) ? dateEncoded : entity.DateEncoded;
@@ -324,6 +327,64 @@ namespace Beelina.LIB.BusinessLogic
 
                 productStockWarehouseAudit.ProductStockPerWarehouseId = productStockPerWarehouse.Id;
             }
+        }
+
+        private static List<ProductWarehouseStockReceiptDiscount> MapDiscountInputsToEntities(List<ProductWarehouseStockReceiptDiscountInput> inputs, int parentId = 0)
+        {
+            if (inputs == null || !inputs.Any())
+                return new List<ProductWarehouseStockReceiptDiscount>();
+
+            return inputs.Select(input => new ProductWarehouseStockReceiptDiscount
+            {
+                Id = input.Id,
+                ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : 0, // Will be set later for new entries
+                DiscountPercentage = input.DiscountPercentage,
+                DiscountOrder = input.DiscountOrder,
+                Description = input.Description
+            }).ToList();
+        }
+
+        private static List<ProductWarehouseStockReceiptDiscount> MapDiscountEntities(List<ProductWarehouseStockReceiptDiscountInput> inputs, List<ProductWarehouseStockReceiptDiscount> existingEntities, int parentId = 0)
+        {
+            if (inputs == null)
+                inputs = new List<ProductWarehouseStockReceiptDiscountInput>();
+
+            if (existingEntities == null)
+                existingEntities = new List<ProductWarehouseStockReceiptDiscount>();
+
+            var updatedEntities = new List<ProductWarehouseStockReceiptDiscount>();
+
+            // Update existing entities and add new ones
+            foreach (var input in inputs)
+            {
+                var existingEntity = existingEntities.FirstOrDefault(e => e.Id == input.Id);
+                if (existingEntity != null)
+                {
+                    // Update existing entity
+                    existingEntity.ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : input.Id;
+                    existingEntity.DiscountPercentage = input.DiscountPercentage;
+                    existingEntity.DiscountOrder = input.DiscountOrder;
+                    existingEntity.Description = input.Description;
+                    updatedEntities.Add(existingEntity);
+                }
+                else
+                {
+                    // Add new entity
+                    var newEntity = new ProductWarehouseStockReceiptDiscount
+                    {
+                        Id = input.Id,
+                        ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : 0,
+                        DiscountPercentage = input.DiscountPercentage,
+                        DiscountOrder = input.DiscountOrder,
+                        Description = input.Description,
+                    };
+                    updatedEntities.Add(newEntity);
+                }
+            }
+
+            var finalEntities = updatedEntities.Where(x => existingEntities.Exists(y => y.Id == x.Id) || x.Id == 0).ToList();
+
+            return finalEntities;
         }
     }
 }

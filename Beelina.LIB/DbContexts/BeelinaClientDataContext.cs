@@ -38,8 +38,10 @@ namespace Beelina.LIB.DbContexts
         public DbSet<ProductStockPerWarehouse> ProductStockPerWarehouse { get; set; }
         public DbSet<ProductStockWarehouseAudit> ProductStockWarehouseAudit { get; set; }
         public DbSet<ProductWarehouseStockReceiptEntry> ProductWarehouseStockReceiptEntries { get; set; }
+        public DbSet<ProductWarehouseStockReceiptDiscount> ProductWarehouseStockReceiptDiscounts { get; set; }
         public DbSet<ProductWithdrawalEntry> ProductWithdrawalEntries { get; set; }
         public DbSet<GeneralSetting> GeneralSettings { get; set; }
+        public DbSet<SalesTarget> SalesTargets { get; set; }
 
         #endregion
 
@@ -171,6 +173,20 @@ namespace Beelina.LIB.DbContexts
                 .WithMany(fk => fk.DeactivatedProductTransactions)
                 .HasForeignKey(fk => fk.DeactivatedById)
                 .HasConstraintName("FK_ProductTransaction_DeactivatedById_Accounts_AccountId");
+            });
+
+            modelBuilder.Entity<SalesTarget>(a =>
+            {
+                a.HasOne(field => field.SalesAgent)
+                .WithMany()
+                .HasForeignKey(fk => fk.SalesAgentId)
+                .HasConstraintName("FK_SalesTarget_SalesAgentId_UserAccounts_Id");
+
+                a.Property(field => field.TargetAmount)
+                .HasColumnType("decimal(18,2)");
+
+                a.Property(field => field.Description)
+                .HasMaxLength(500);
             });
         }
 

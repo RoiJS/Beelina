@@ -266,6 +266,12 @@ namespace Beelina.API.Types.Query
 		}
 
 		[Authorize]
+		public async Task<ProfitBreakdown> GetProfitBreakdown([Service] ITransactionRepository<Transaction> transactionRepository, int userId, string fromDate, string toDate)
+		{
+			return await transactionRepository.GetProfitBreakdown(userId, fromDate, toDate);
+		}
+
+		[Authorize]
 		public async Task<List<TransactionSalesPerSalesAgent>> GetSalesForAllSalesAgent([Service] ITransactionRepository<Transaction> transactionRepository, string fromDate, string toDate)
 		{
 			return await transactionRepository.GetSalesForAllSalesAgent(fromDate, toDate);

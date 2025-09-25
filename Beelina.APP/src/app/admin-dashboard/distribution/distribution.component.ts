@@ -10,6 +10,7 @@ import { ProductListComponent } from './product-list/product-list.component';
 import { BaseComponent } from 'src/app/shared/components/base-component/base.component';
 import { ProductStockAuditComponent } from './product-stock-audit/product-stock-audit.component';
 import { SalesAgentListComponent } from './sales-agent-list/sales-agent-list.component';
+import { SalesTargetManagementComponent } from './sales-target-management/sales-target-management.component';
 
 @Component({
   selector: 'app-distribution',
@@ -22,10 +23,11 @@ export class DistributionComponent extends BaseComponent {
   salesInformationComponent = viewChild(SalesInformationComponent);
   productListComponent = viewChild(ProductListComponent);
   productStockAuditComponent = viewChild(ProductStockAuditComponent);
+  salesTargetManagementComponent = viewChild(SalesTargetManagementComponent);
 
   salesChartViewLoading: boolean;
 
-  private _currentSalesAgent: User;
+  currentSalesAgent: User;
   private storageService = inject(StorageService);
   private translateService = inject(TranslateService);
   private authService = inject(AuthService)
@@ -41,7 +43,7 @@ export class DistributionComponent extends BaseComponent {
   }
 
   initDefaultSalesAgent(user: User) {
-    this._currentSalesAgent = user;
+    this.currentSalesAgent = user;
     this.storeCurrentSalesAgentId();
     this.salesInformationComponent().calculateTotalSales(user);
     this.productListComponent().initProductList();
@@ -50,12 +52,12 @@ export class DistributionComponent extends BaseComponent {
   storeCurrentSalesAgentId() {
     this.storageService.storeString(
       'currentSalesAgentId',
-      this._currentSalesAgent.id.toString()
+      this.currentSalesAgent.id.toString()
     );
   }
 
   showDetailsForSalesAgent(user: User) {
-    this._currentSalesAgent = user;
+    this.currentSalesAgent = user;
     this.storeCurrentSalesAgentId();
     this.salesInformationComponent().calculateTotalSales(user);
     this.productListComponent().initProductList();
@@ -63,11 +65,11 @@ export class DistributionComponent extends BaseComponent {
   }
 
   showStockAudit(id: number) {
-    this.productStockAuditComponent().initStockAuditList(id, this._currentSalesAgent.id);
+    this.productStockAuditComponent().initStockAuditList(id, this.currentSalesAgent.id);
   }
 
   get salesAgentDetails(): string {
-    const salesAgentName = this._currentSalesAgent?.fullname;
+    const salesAgentName = this.currentSalesAgent?.fullname;
     const label = `${this.translateService.instant('DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.TITLE')} - ${salesAgentName}`;
     return label;
   }

@@ -50,6 +50,7 @@ import { IProductTransactionInput } from '../_interfaces/inputs/iproduct-transac
 import { ProductWarehouseStockReceiptEntry } from '../_models/product-warehouse-stock-receipt-entry';
 import { ProductWithdrawalEntry } from '../_models/product-withdrawal-entry';
 import { IProductWarehouseStockReceiptEntryInput } from '../_interfaces/inputs/iproduct-warehouse-stock-receipt-entry.input';
+import { IProductWarehouseStockReceiptDiscountInput } from '../_interfaces/inputs/product-warehouse-stock-receipt-discount-input.interface';
 import { IProductWithdrawalEntryInput } from '../_interfaces/inputs/iproduct-withdrawal-entry.input';
 import { IProductStockWarehouseAuditInput } from '../_interfaces/inputs/iproduct-stock-warehouse-audit.input';
 import { IProductStockAuditInput } from '../_interfaces/inputs/iproduct-stock-audit.input';
@@ -74,6 +75,12 @@ import { ProductActiveStatusEnum } from '../_enum/product-active-status.enum';
 const GET_PRODUCT_TOTAL_INVENTORY_VALUE = gql`
   query($userAccountId: Int!) {
     inventoryPanelTotalValue(userAccountId: $userAccountId)
+  }
+`;
+
+const GET_WAREHOUSE_TOTAL_INVENTORY_VALUE = gql`
+  query($warehouseId: Int!) {
+    inventoryWarehouseTotalValue(warehouseId: $warehouseId)
   }
 `;
 
@@ -203,7 +210,12 @@ const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT = gql`
           notes
           plateNo
           warehouseId
-          discount
+          discounts {
+              id
+              discountPercentage
+              discountOrder
+              description
+          }
           invoiceNo
           invoiceDate
           dateEncoded
@@ -280,7 +292,12 @@ const GET_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
                 plateNo
                 warehouseId
                 notes
-                discount
+                discounts {
+                    id
+                    discountPercentage
+                    discountOrder
+                    description
+                }
                 invoiceNo
                 invoiceDate
                 dateEncoded
@@ -385,7 +402,12 @@ const UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
       referenceNo
       supplierId
       warehouseId
-      discount
+      discounts {
+          id
+          discountPercentage
+          discountOrder
+          description
+      }
       invoiceNo
       invoiceDate
       dateEncoded
@@ -1310,7 +1332,7 @@ export class ProductService {
             productWarehouseStockReceiptEntry.plateNo = productWarehouseStockReceiptEntryDto.plateNo;
             productWarehouseStockReceiptEntry.warehouseId = productWarehouseStockReceiptEntryDto.warehouseId;
             productWarehouseStockReceiptEntry.notes = productWarehouseStockReceiptEntryDto.notes;
-            productWarehouseStockReceiptEntry.discount = productWarehouseStockReceiptEntryDto.discount;
+            productWarehouseStockReceiptEntry.discounts = productWarehouseStockReceiptEntryDto.discounts || [];
             productWarehouseStockReceiptEntry.invoiceNo = productWarehouseStockReceiptEntryDto.invoiceNo;
             productWarehouseStockReceiptEntry.invoiceDate = productWarehouseStockReceiptEntryDto.invoiceDate;
             productWarehouseStockReceiptEntry.dateEncoded = productWarehouseStockReceiptEntryDto.dateEncoded;
@@ -1549,7 +1571,16 @@ export class ProductService {
         plateNo: p.plateNo,
         notes: p.notes,
         warehouseId: this._warehouseId,
-        discount: p.discount || 0,
+        discounts: p.discounts?.map((discount) => {
+          const discountInput: IProductWarehouseStockReceiptDiscountInput = {
+            id: discount.id <= 0 ? 0 : discount.id,
+            discountPercentage: discount.discountPercentage,
+            discountOrder: discount.discountOrder,
+            description: discount.description || ''
+          };
+
+          return discountInput;
+        }) || [],
         invoiceNo: p.invoiceNo || '',
         invoiceDate: p.invoiceDate,
         dateEncoded: p.dateEncoded,
@@ -2696,6 +2727,28 @@ export class ProductService {
         }),
         catchError((error) => {
           throw new Error(error.message || 'Failed to assign product to sales agents');
+        })
+      );
+  }
+
+  getWarehouseTotalInventoryValue(warehouseId: number) {
+    return this.apollo
+      .watchQuery({
+        query: GET_WAREHOUSE_TOTAL_INVENTORY_VALUE,
+        variables: { warehouseId },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              inventoryWarehouseTotalValue: number;
+            }>
+          ) => {
+            return result.data.inventoryWarehouseTotalValue;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error.message || 'Failed to get warehouse total inventory value');
         })
       );
   }

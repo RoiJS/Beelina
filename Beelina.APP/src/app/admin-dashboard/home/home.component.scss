@@ -96,7 +96,7 @@
     }
 
     .sales-information-panel {
-      padding: 1em;
+      padding-bottom: 1em;
       display: flex;
       justify-content: space-between;
       flex-direction: column;
@@ -115,16 +115,342 @@
         }
       }
 
+      // New Dashboard Summary Container Layout
+      .dashboard-summary-container {
+        display: flex;
+        gap: $spacing-lg;
+        margin-bottom: $spacing-lg;
+        max-height: 17em;
+
+        .left-section {
+          flex: 1;
+
+          .summary-card {
+            // height: 100%;
+            min-height: 200px;
+            background: $background-gradient;
+            border-radius: $border-radius-md;
+            padding: 1em;
+            box-shadow: $shadow-md;
+            display: flex;
+            align-items: center;
+            gap: $spacing-md;
+            transition: $transition-cubic;
+
+            &:hover {
+              transform: translateY(-4px) scale(1.02);
+              box-shadow: $shadow-lg;
+            }
+
+            // Profit card specific styling
+            &.summary-card--profit {
+              background: $success-gradient;
+              border: 1px solid rgba($success, $opacity-medium);
+              color: white;
+              position: relative;
+              overflow: hidden;
+
+              &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(
+                  45deg,
+                  transparent 30%,
+                  rgba(255, 255, 255, 0.1) 50%,
+                  transparent 70%
+                );
+                animation: homeShimmer 3s ease-in-out infinite;
+              }
+
+              .summary-card__icon mat-icon {
+                color: rgba(255, 255, 255, 0.9);
+                animation: homeIconPulse 2s ease-in-out infinite, homeIconGlow 3s ease-in-out infinite;
+              }
+
+              &:hover .summary-card__icon mat-icon {
+                animation: homeIconBounce 0.6s ease-in-out, homeIconGlow 3s ease-in-out infinite;
+              }
+
+              // Profit breakdown styles
+              .profit-breakdown {
+                display: flex !important;
+                flex-direction: column !important;
+
+                &__supplier-discount {
+                  display: flex !important;
+                  align-items: baseline !important;
+                  gap: 0.8em !important;
+                  padding: 0.4em 0.6em;
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: $border-radius-sm;
+                  border-left: 3px solid rgba(255, 255, 255, 0.3);
+                  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                  position: relative;
+                  overflow: hidden;
+
+                  &:hover {
+                    background: rgba(255, 255, 255, 0.15);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    border-left-color: rgba(255, 255, 255, 0.5);
+                  }
+                }
+
+                &__supplier-amount {
+                  font-size: 1.3em !important;
+                  font-weight: 800 !important;
+                  color: #00ff88 !important;
+                  line-height: 1.2;
+                  text-shadow: 0 2px 6px rgba(0, 255, 136, 0.4) !important;
+                  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                  filter: brightness(1.2) !important;
+                }
+
+                &__supplier-label {
+                  font-size: 0.9em !important;
+                  font-weight: 700 !important;
+                  color: rgba(255, 255, 255, 0.95) !important;
+                  text-transform: uppercase;
+                  letter-spacing: 0.8px;
+                  line-height: 1;
+                  white-space: nowrap;
+                  position: relative;
+                  font-style: italic !important;
+
+                  &::before {
+                    content: '•';
+                    margin-right: 0.3em;
+                    color: rgba(255, 255, 255, 0.7);
+                    font-size: 0.8em;
+                  }
+                }
+
+                &__sales-profit {
+                  font-size: 2.8em !important;
+                  font-weight: 700 !important;
+                  line-height: 1.1;
+                  color: white !important;
+                  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4) !important;
+                  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                  letter-spacing: -0.5px;
+                  margin-top: 0.4em;
+                  position: relative;
+                  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+                  &:hover {
+                    transform: scale(1.02);
+                    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+                  }
+                }
+
+                // Enhanced hover effects for the entire breakdown
+                &:hover {
+                  .profit-breakdown__supplier-discount {
+                    .profit-breakdown__supplier-amount,
+                    .profit-breakdown__supplier-label {
+                      filter: brightness(1.2) !important;
+                    }
+                  }
+
+                  .profit-breakdown__sales-profit {
+                    filter: brightness(1.1) !important;
+                  }
+                }
+              }
+            }
+
+            // Common summary card elements
+            &__icon {
+              flex-shrink: 0;
+
+              mat-icon {
+                font-size: 2.5em;
+                width: auto;
+                height: 2.5em;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: homeIconPulse 2s ease-in-out infinite;
+                transition: transform 0.3s ease;
+              }
+
+              &:hover mat-icon {
+                animation: homeIconBounce 0.6s ease-in-out;
+                transform: scale(1.1);
+              }
+            }
+
+            &__content {
+              flex: 1;
+            }
+
+            &__label {
+              font-size: 1.1em;
+              font-weight: 500;
+              margin-bottom: 0.5em;
+              opacity: 0.9;
+            }
+
+            &__amount {
+              font-size: 2.2em;
+              font-weight: 700;
+              line-height: 1;
+            }
+
+            &__loading {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 2.2em;
+
+              .loading-text {
+                font-style: italic;
+                opacity: 0.7;
+              }
+            }
+          }
+        }
+
+        .right-section {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-md;
+
+          .warehouse-inventory-section,
+          .sales-section {
+            flex: 1;
+
+            .summary-card {
+              // height: 100%;
+              // min-height: 90px;
+              border-radius: $border-radius-md;
+              padding: 1em;
+              box-shadow: $shadow-md;
+              display: flex;
+              align-items: center;
+              gap: $spacing-md;
+              transition: $transition-cubic;
+              color: white;
+              position: relative;
+              overflow: hidden;
+              cursor: pointer;
+              outline: none;
+
+              &:hover {
+                transform: translateY(-4px) scale(1.02);
+                box-shadow: $shadow-lg;
+              }
+
+              &:focus-visible {
+                outline: 2px solid rgba(255, 255, 255, 0.8);
+                outline-offset: 2px;
+                transform: translateY(-2px) scale(1.01);
+              }
+
+              &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(
+                  45deg,
+                  transparent 30%,
+                  rgba(255, 255, 255, 0.15) 50%,
+                  transparent 70%
+                );
+                animation: homeShimmer 4s ease-in-out infinite;
+              }
+
+              &__icon {
+                flex-shrink: 0;
+
+                mat-icon {
+                  font-size: 2.5em;
+                  width: auto;
+                  height: 2.5em;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: rgba(255, 255, 255, 0.95);
+                  animation: homeIconPulse 2.5s ease-in-out infinite;
+                  transition: transform 0.3s ease;
+                }
+              }
+
+              &:hover &__icon mat-icon {
+                animation: homeIconBounce 0.6s ease-in-out, homeIconGlow 3s ease-in-out infinite;
+                transform: scale(1.1);
+              }
+
+              &__content {
+                flex: 1;
+
+                .summary-card__label {
+                  font-size: 1.1em;
+                  font-weight: 500;
+                  margin-bottom: 0.5em;
+                  opacity: 0.9;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                }
+
+                .summary-card__amount {
+                  font-size: 1.8em;
+                  font-weight: 700;
+                  line-height: 1;
+                }
+
+                .summary-card__loading {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  height: 2.2em;
+
+                  .loading-text {
+                    font-style: italic;
+                    opacity: 0.7;
+                    font-size: 1em;
+                  }
+                }
+              }
+            }
+          }
+
+          // Warehouse inventory specific styling (info theme)
+          .warehouse-inventory-section .summary-card {
+            background: $info-gradient !important;
+            border: 1px solid rgba($info, $opacity-medium);
+          }
+
+          // Sales section specific styling (primary theme)
+          .sales-section .summary-card {
+            background: $primary-gradient !important;
+            border: 1px solid rgba($primary, $opacity-medium);
+
+            &:hover &__icon mat-icon {
+              animation: homeIconRotate 1s ease-in-out, homeIconPulse 2.5s ease-in-out infinite;
+            }
+          }
+        }
+      }
+
       .financial-summary-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: $spacing-lg;
-        margin-bottom: $spacing-xl;
+        margin-bottom: 1em;
 
         .summary-card {
           background: $background-gradient;
           border-radius: $border-radius-md;
-          padding: $spacing-lg;
+          padding: 1em;
           box-shadow: $shadow-md;
           display: flex;
           align-items: center;
@@ -167,11 +493,95 @@
             &:hover .summary-card__icon mat-icon {
               animation: homeIconBounce 0.6s ease-in-out, homeIconGlow 3s ease-in-out infinite;
             }
+
+            // Profit breakdown styles
+            .profit-breakdown {
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 0.8em !important;
+
+              &__supplier-discount {
+                display: flex !important;
+                align-items: baseline !important;
+                gap: 0.8em !important;
+                padding: 0.4em 0.6em;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: $border-radius-sm;
+                border-left: 3px solid rgba(255, 255, 255, 0.3);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+
+                &:hover {
+                  background: rgba(255, 255, 255, 0.15);
+                  transform: translateY(-1px);
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                  border-left-color: rgba(255, 255, 255, 0.5);
+                }
+              }
+
+              &__supplier-amount {
+                font-size: 1.1em !important;
+                font-weight: 700 !important;
+                line-height: 1.2;
+                text-shadow: 0 2px 6px rgba(0, 255, 136, 0.4) !important;
+                font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                filter: brightness(1.2) !important;
+              }
+
+              &__supplier-label {
+                font-size: 0.8em !important;
+                font-weight: 700 !important;
+                color: rgba(255, 255, 255, 0.95) !important;
+                letter-spacing: 0.8px;
+                line-height: 1;
+                white-space: nowrap;
+                position: relative;
+                font-style: italic !important;
+
+                &::before {
+                  content: '•';
+                  margin-right: 0.3em;
+                  color: rgba(255, 255, 255, 0.7);
+                  font-size: 0.8em;
+                }
+              }
+
+              &__sales-profit {
+                font-size: 2.4em !important;
+                font-weight: 700 !important;
+                line-height: 1.1;
+                color: white !important;
+                font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                letter-spacing: -0.5px;
+                position: relative;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+                &:hover {
+                  transform: scale(1.02);
+                  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+                }
+              }
+
+              // Enhanced hover effects for the entire breakdown
+              &:hover {
+                .profit-breakdown__supplier-discount {
+                  .profit-breakdown__supplier-amount,
+                  .profit-breakdown__supplier-label {
+                    filter: brightness(1.2) !important;
+                  }
+                }
+
+                .profit-breakdown__sales-profit {
+                  filter: brightness(1.1) !important;
+                }
+              }
+            }
           }
 
           &--sales {
-            background: $sales-red-gradient;
-            border: 1px solid rgba(#dc3545, $opacity-medium);
+            background: $primary-gradient;
+            border: 1px solid rgba($primary, $opacity-medium);
             color: white;
             position: relative;
             overflow: hidden;
@@ -248,6 +658,107 @@
             .loading-text {
               font-style: italic;
               opacity: 0.7;
+            }
+          }
+        }
+      }
+
+      .warehouse-inventory-section {
+        // margin-bottom: $spacing-lg;
+
+        .summary-card {
+          background: $info-gradient;
+          border-radius: $border-radius-md;
+          padding: 1em;
+          box-shadow: $shadow-md;
+          display: flex;
+          align-items: center;
+          gap: $spacing-md;
+          transition: $transition-cubic;
+          border: 1px solid rgba($info, $opacity-medium);
+          color: white;
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          outline: none;
+
+          &:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: $shadow-lg;
+          }
+
+          &:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.8);
+            outline-offset: 2px;
+            transform: translateY(-2px) scale(1.01);
+          }
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+              45deg,
+              transparent 30%,
+              rgba(255, 255, 255, 0.15) 50%,
+              transparent 70%
+            );
+            animation: homeShimmer 4s ease-in-out infinite;
+          }
+
+          .summary-card__icon {
+            flex-shrink: 0;
+
+            mat-icon {
+              font-size: 2em;
+              width: auto;
+              height: 2em;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: rgba(255, 255, 255, 0.95);
+              animation: homeIconPulse 2.5s ease-in-out infinite;
+              transition: transform 0.3s ease;
+            }
+          }
+
+          &:hover .summary-card__icon mat-icon {
+            animation: homeIconBounce 0.6s ease-in-out, homeIconGlow 3s ease-in-out infinite;
+            transform: scale(1.1);
+          }
+
+          .summary-card__content {
+            flex: 1;
+
+            .summary-card__label {
+              font-size: 0.9em;
+              font-weight: 500;
+              margin-bottom: 0.2em;
+              opacity: 0.9;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .summary-card__amount {
+              font-size: 1.8em;
+              font-weight: 700;
+              line-height: 1;
+            }
+
+            .summary-card__loading {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 1.8em;
+
+              .loading-text {
+                font-style: italic;
+                opacity: 0.7;
+                font-size: 1em;
+              }
             }
           }
         }
@@ -461,8 +972,71 @@
 
     &__chart-filter-section {
       .sales-information-panel {
+        // New Dashboard Summary Container responsive design
+        .dashboard-summary-container {
+          flex-direction: column;
+
+          .left-section,
+          .right-section {
+            width: 100%;
+          }
+
+          .right-section {
+            gap: $spacing-sm;
+          }
+        }
+
+        .warehouse-inventory-section {
+          .summary-card {
+            flex-direction: column;
+            text-align: center;
+            gap: $spacing-sm;
+
+            .summary-card__icon mat-icon {
+              font-size: 2em;
+              height: 2em;
+            }
+
+            .summary-card__content {
+              .summary-card__amount {
+                font-size: 1.8em;
+              }
+            }
+          }
+        }
+
         .financial-summary-grid {
           grid-template-columns: 1fr;
+
+          .summary-card {
+            &--profit {
+              .profit-breakdown {
+                gap: 1em;
+
+                &__supplier-discount {
+                  flex-direction: column;
+                  align-items: flex-start;
+                  gap: 0.4em;
+                  padding: 0.8em 1em;
+                  text-align: left;
+                }
+
+                &__supplier-amount {
+                  font-size: 1.4em;
+                }
+
+                &__supplier-label {
+                  font-size: 0.85em;
+                  letter-spacing: 0.6px;
+                }
+
+                &__sales-profit {
+                  font-size: 2.2em;
+                  margin-top: 0.4em;
+                }
+              }
+            }
+          }
         }
 
         .payment-breakdown-grid {
@@ -629,6 +1203,21 @@
     }
   }
 
+  // Warehouse inventory accessibility
+  .warehouse-inventory-section {
+    .summary-card {
+      &:hover .summary-card__icon mat-icon {
+        transform: scale(1.05) !important;
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.8) !important;
+        outline-offset: 2px !important;
+        transform: scale(1.01) !important;
+      }
+    }
+  }
+
   // Preserve payment breakdown hover effects
   .payment-breakdown-grid {
     .breakdown-item {
@@ -657,7 +1246,8 @@
 
   // Remove shimmer effects but keep gradients
   .summary-card--profit::before,
-  .summary-card--sales::before {
+  .summary-card--sales::before,
+  .warehouse-inventory-section .summary-card::before {
     display: none !important;
   }
 
