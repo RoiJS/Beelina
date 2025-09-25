@@ -12,6 +12,7 @@ import { SalesPerAgentViewComponent } from './sales-per-agent-view/sales-per-age
 import { LocalClientSubscriptionDbService } from 'src/app/_services/local-db/local-client-subscription-db.service';
 import { ClientSubscriptionDetails } from 'src/app/_models/client-subscription-details.model';
 import { SubscriptionFeatureHideDashboardWidget } from 'src/app/_models/subscription-feature-hide-dashboard-widget.model';
+import { ProfitBreakdown } from 'src/app/_models/profit-breakdown.model';
 import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 import { DateFilterEnum } from 'src/app/_enum/date-filter.enum';
 
@@ -22,7 +23,7 @@ import { DateFilterEnum } from 'src/app/_enum/date-filter.enum';
 })
 export class HomeComponent extends SalesComponent implements OnInit, AfterViewInit {
   private userId: number;
-  protected _profit: number = 0;
+  protected _profitBreakdown: ProfitBreakdown = new ProfitBreakdown();
   protected _warehouseInventoryValue: number = 0;
 
   salesChartView = viewChild(SalesChartViewComponent);
@@ -133,10 +134,10 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
           }))
         ),
       profit: this.transactionService
-        .getProfit(userId, dateFilters.fromDate, dateFilters.toDate)
+        .getProfitBreakdown(userId, dateFilters.fromDate, dateFilters.toDate)
         .pipe(
           take(1), // Ensure the observable completes for forkJoin
-          catchError(() => of(0))
+          catchError(() => of(new ProfitBreakdown()))
         ),
       warehouseInventory: this.productService
         .getWarehouseTotalInventoryValue(warehouseId)
@@ -152,13 +153,21 @@ export class HomeComponent extends SalesComponent implements OnInit, AfterViewIn
       this._chequeOnHand = result.sales.chequeAmountOnHand;
       this._accountReceivables = result.sales.accountReceivables;
       this._badOrders = result.sales.badOrderAmount;
-      this._profit = result.profit;
+      this._profitBreakdown = result.profit;
       this._warehouseInventoryValue = result.warehouseInventory;
     });
   }
 
-  get profit(): string {
-    return NumberFormatter.formatCurrency(this._profit);
+  get salesProfit(): string {
+    return NumberFormatter.formatCurrency(this._profitBreakdown.salesPriceProfit);
+  }
+
+  get purchaseOrderDiscountProfit(): string {
+    return NumberFormatter.formatCurrency(this._profitBreakdown.purchaseOrderDiscountProfit);
+  }
+
+  get totalProfit(): string {
+    return NumberFormatter.formatCurrency(this._profitBreakdown.totalProfit);
   }
 
   get warehouseInventoryValue(): string {

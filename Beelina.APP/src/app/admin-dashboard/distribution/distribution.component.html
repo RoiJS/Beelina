@@ -21,11 +21,14 @@
             <mat-tab-group mat-stretch-tabs="true" mat-align-tabs="start">
               <!-- Sales Tab View -->
               <mat-tab label="Sales">
-                <app-loader-layout [busy]="salesChartViewLoading">
-                  <app-sales-information (dateFilterChange)="dateFilterChange($event)"
-                    (salesChartViewLoadingState)="salesChartViewLoading = $event"
-                    class="distribution-container__chart-filter-section"></app-sales-information>
-                </app-loader-layout>
+                <app-sales-information (dateFilterChange)="dateFilterChange($event)"
+                  (salesChartViewLoadingState)="salesChartViewLoading = $event"
+                  class="distribution-container__chart-filter-section"></app-sales-information>
+              </mat-tab>
+
+              <!-- Sales Target Tab View -->
+              <mat-tab label="Sales Targets">
+                <app-sales-target-management [selectedSalesAgent]="currentSalesAgent"></app-sales-target-management>
               </mat-tab>
 
               <!-- Panel Tab View -->

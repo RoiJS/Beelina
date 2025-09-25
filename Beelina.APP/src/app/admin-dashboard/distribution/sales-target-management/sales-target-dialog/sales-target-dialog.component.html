@@ -1,0 +1,73 @@
+<div class="sales-target-dialog">
+  <h2 mat-dialog-title>
+    {{ (data.isEdit ? 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.EDIT_TARGET' : 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.ADD_NEW') | translate }}
+  </h2>
+
+  <mat-dialog-content>
+    <!-- Server-side validation error display -->
+    <div *ngIf="serverError" class="server-error-container" style="margin-bottom: 16px;">
+      <mat-error style="display: block; background-color: #ffebee; padding: 8px 12px; border-radius: 4px; border-left: 4px solid #f44336;">
+        {{ serverError }}
+      </mat-error>
+    </div>
+
+    <form [formGroup]="salesTargetForm" class="sales-target-form">
+      <!-- Sales Agent field - hidden but still in form for validation -->
+      <input type="hidden" formControlName="salesAgentId">
+
+      <!-- Period Type field - hidden but still in form with Monthly default -->
+      <input type="hidden" formControlName="periodType">
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.TARGET_AMOUNT' | translate }}</mat-label>
+        <input matInput type="number" formControlName="targetAmount" required min="0" step="0.01">
+        <mat-error *ngIf="salesTargetForm.get('targetAmount')?.hasError('required')">
+          Target amount is required
+        </mat-error>
+        <mat-error *ngIf="salesTargetForm.get('targetAmount')?.hasError('min')">
+          Target amount must be greater than 0
+        </mat-error>
+      </mat-form-field>
+
+      <div class="date-range-container">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.START_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate" required>
+          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+          <mat-error *ngIf="salesTargetForm.get('startDate')?.hasError('required')">
+            Start date is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.END_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate" required>
+          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+          <mat-error *ngIf="salesTargetForm.get('endDate')?.hasError('required')">
+            End date is required
+          </mat-error>
+          <mat-error *ngIf="salesTargetForm.get('endDate')?.hasError('invalidRange')">
+            End date must be after start date
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_TARGET.DESCRIPTION' | translate }}</mat-label>
+        <textarea matInput formControlName="description" rows="3" placeholder="Optional description..."></textarea>
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">
+      {{ 'CANCEL' | translate }}
+    </button>
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="salesTargetForm.invalid">
+      {{ 'SAVE' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

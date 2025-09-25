@@ -1914,8 +1914,8 @@
         "TITLE": " Sales Agent Distribution Data",
         "SALES_INFORMATION_CONTAINER": {
           "SALES_AMOUNT": "Sales Amount",
-          "STORES_WITH_ORDERS": "Stores with Orders",
-          "STORES_WITHOUT_ORDERS": "Stores without Orders",
+          "STORES_WITH_ORDERS": "Calls",
+          "STORES_WITHOUT_ORDERS": "No Calls",
           "NO_STORES_FOUND": "No stores found",
           "ORDER_COUNT": {
             "=0": "no orders",
@@ -1936,6 +1936,23 @@
           "TITLE": "Product Stock Audit",
           "DESCRIPTION": "The list below shows the product stock audit data for the selected product on the left panel."
         }
+      },
+      "SALES_TARGET": {
+        "TITLE": "Sales Targets",
+        "ADD_NEW": "Add New Target",
+        "EDIT_TARGET": "Edit Sales Target",
+        "SALES_AGENT": "Sales Agent",
+        "TARGET_AMOUNT": "Target Amount (₱)",
+        "PERIOD": "Period",
+        "DATE_RANGE": "Date Range",
+        "START_DATE": "Start Date",
+        "END_DATE": "End Date",
+        "DESCRIPTION": "Description",
+        "STATUS": "Status",
+        "ACTIONS": "Actions",
+        "IS_ACTIVE": "Is Active",
+        "NO_TARGETS": "No sales targets found",
+        "SELECT_AGENT_FIRST": "Please select a sales agent to view their targets"
       }
     },
     "INSIGHTS_PAGE": {

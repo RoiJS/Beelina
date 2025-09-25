@@ -42,18 +42,18 @@
               (click)="selectSalesAgentEvent(salesAgent)" [attr.data-index]="i" [attr.data-rank]="i + 1">
               <div class="item-container">
                 <div class="item-container__user-image-wrapper">
-                  <!-- Medal icons for top 3 -->
+                  <!-- Medal badges for top 3 -->
                   @if(i === 0) {
                   <div class="medal-badge medal-gold" aria-label="1st place">
-                    <mat-icon>emoji_events</mat-icon>
+                    1
                   </div>
                   } @else if(i === 1) {
                   <div class="medal-badge medal-silver" aria-label="2nd place">
-                    <mat-icon>emoji_events</mat-icon>
+                    2
                   </div>
                   } @else if(i === 2) {
                   <div class="medal-badge medal-bronze" aria-label="3rd place">
-                    <mat-icon>emoji_events</mat-icon>
+                    3
                   </div>
                   }
                   <div class="item-container__user-image">
@@ -63,21 +63,13 @@
                 <div class="item-container__user-info">
                   <div class="item-container__user-name">{{ salesAgent.fullname }}</div>
 
-                  @if(salesAgent.username) {
-                  <div class="item-container__user-username">
-                    {{ '@' + salesAgent.username }}
-                  </div>
-                  } @else {
-                  <div class="item-container__user-username">
-                    {{ salesAgent.emailAddress }}
-                  </div>
-                  }
-
-                  <!-- Sales amount display -->
-                  <div class="item-container__sales-amount">
-                    {{
-                    'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.SALES_INFORMATION_CONTAINER.SALES_AMOUNT'
-                    | translate }}: {{ getFormattedSalesAmountForAgent(salesAgent.id) }}
+                  <!-- Simplified Sales Target Information -->
+                  <div class="item-container__target-info">
+                    <span class="target-label">Target:</span>
+                    <span class="target-value" [class.target-met]="isTargetMetForAgent(salesAgent.id)"
+                      [class.target-overdue]="isTargetOverdueForAgent(salesAgent.id)">
+                      {{ getFormattedTargetAmountForAgent(salesAgent.id) }}
+                    </span>
                   </div>
 
                   <!-- Store counts display -->
@@ -101,6 +93,11 @@
                       </span>
                     </div>
                   </div>
+                </div>
+                <div class="item-container__sales-info">
+                  <div class="sales-amount">{{ getFormattedSalesAmountForAgent(salesAgent.id) }}</div>
+                  <div class="completion-percentage" [ngClass]="getCompletionPercentageClass(salesAgent.id)">{{
+                    getCompletionPercentageForAgent(salesAgent.id) }}%</div>
                 </div>
                 <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
               </div>

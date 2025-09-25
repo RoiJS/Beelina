@@ -887,9 +887,6 @@ namespace Beelina.LIB.Migrations
                     b.Property<int?>("DeletedById")
                         .HasColumnType("int");
 
-                    b.Property<double>("Discount")
-                        .HasColumnType("float");
-
                     b.Property<DateTime?>("InvoiceDate")
                         .HasColumnType("datetime2");
 
@@ -1088,6 +1085,58 @@ namespace Beelina.LIB.Migrations
                     b.HasIndex("UserAccountId");
 
                     b.ToTable("ReportNotificationEmailAddresses");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SalesTarget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeactivated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PeriodType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SalesAgentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TargetAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SalesAgentId");
+
+                    b.ToTable("SalesTargets");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>
@@ -1976,6 +2025,18 @@ namespace Beelina.LIB.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Beelina.LIB.Models.SalesTarget", b =>
+                {
+                    b.HasOne("Beelina.LIB.Models.UserAccount", "SalesAgent")
+                        .WithMany()
+                        .HasForeignKey("SalesAgentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_SalesTarget_SalesAgentId_UserAccounts_Id");
+
+                    b.Navigation("SalesAgent");
                 });
 
             modelBuilder.Entity("Beelina.LIB.Models.Store", b =>

@@ -56,42 +56,428 @@
   }
 
   .sales-information-panel {
-    padding: 1.5em;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
+    border-radius: $border-radius-lg;
+    box-shadow: 0 4px 20px rgba($primary, 0.08);
 
-    &__amount-container {
+    .panel-header {
       display: flex;
-      width: 100%;
       justify-content: space-between;
+      align-items: stretch;
+      gap: 3em;
 
-      label {
-        font-size: 1.5em;
+      .sales-amount-section {
+        flex: 1;
+        min-width: 300px;
+        display: flex;
+        align-items: stretch;
+
+        .amount-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1em;
+          padding: 1.5em;
+          background: linear-gradient(135deg, rgba($primary, 0.08) 0%, rgba($primary, 0.12) 100%);
+          border-radius: $border-radius-md;
+          border-left: 4px solid $primary;
+          position: relative;
+          overflow: hidden;
+          width: 100%;
+          min-height: 140px;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba($primary, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(20px, -20px);
+          }
+
+          .amount-label {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            margin-bottom: 0.5em;
+
+            .amount-icon {
+              color: $primary;
+              font-size: 1.8em;
+              opacity: 0.8;
+            }
+
+            label {
+              font-size: 1.1em;
+              color: rgba($text-primary, 0.8);
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+          }
+
+          .amount-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1em;
+
+            .amount-value {
+              font-size: 2.8em;
+              color: $primary;
+              font-weight: 700;
+              text-shadow: 0 2px 4px rgba($primary, 0.1);
+              line-height: 1;
+              flex: 1;
+            }
+
+            .amount-actions {
+              .details-button {
+                background: rgba($primary, 0.1);
+                color: $primary;
+                border: 2px solid rgba($primary, 0.2);
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:hover {
+                  background: rgba($primary, 0.2);
+                  border-color: rgba($primary, 0.4);
+                  transform: scale(1.1);
+                  box-shadow: 0 4px 12px rgba($primary, 0.2);
+                }
+
+                mat-icon {
+                  font-size: 20px;
+                  width: 20px;
+                  height: 20px;
+                  line-height: 20px;
+                }
+              }
+            }
+          }
+
+          .amount-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+
+            mat-spinner {
+              --mdc-circular-progress-active-indicator-color: #{$primary};
+            }
+          }
+        }
       }
 
-      span {
-        font-size: 2em;
-        color: $primary;
+      .target-section {
+        flex: 1;
+        min-width: 320px;
+        display: flex;
+        align-items: stretch;
+
+        .target-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1.2em;
+          padding: 1.5em;
+          background: linear-gradient(135deg, rgba($success, 0.05) 0%, rgba($success, 0.08) 100%);
+          border-radius: $border-radius-md;
+          border-left: 4px solid $success;
+          position: relative;
+          overflow: hidden;
+          width: 100%;
+          min-height: 140px;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba($success, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(20px, -20px);
+          }
+
+          .target-label {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+
+            .target-icon {
+              color: $success;
+              font-size: 1.8em;
+
+              &.target-met {
+                color: $success;
+                animation: pulse 2s infinite;
+              }
+
+              &.target-overdue {
+                color: $error;
+                background: linear-gradient(135deg, rgba($error, 0.05) 0%, rgba($error, 0.08) 100%);
+              }
+            }
+
+            label {
+              font-size: 1.1em;
+              color: rgba($text-primary, 0.8);
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+          }
+
+          .target-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5em;
+
+            .target-amounts {
+              display: flex;
+              gap: 2em;
+              flex: 1;
+
+              .target-amount-wrapper,
+              .progress-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3em;
+
+                .target-label-text,
+                .progress-label-text {
+                  font-size: 0.85em;
+                  color: rgba($text-primary, 0.6);
+                  font-weight: 500;
+                  text-transform: uppercase;
+                  letter-spacing: 0.3px;
+                }
+
+                .target-amount {
+                  font-size: 1.6em;
+                  font-weight: 700;
+                  color: $success;
+
+                  &.target-met {
+                    color: $success;
+                  }
+
+                  &.target-overdue {
+                    color: $error;
+                  }
+                }
+
+                .progress-percentage {
+                  font-size: 1.6em;
+                  font-weight: 700;
+                  color: $primary;
+
+                  &.target-met {
+                    color: $success;
+                  }
+
+                  &.target-overdue {
+                    color: $error;
+                  }
+                }
+              }
+            }
+
+            .target-actions {
+              .details-button {
+                background: rgba($success, 0.1);
+                color: $success;
+                border: 2px solid rgba($success, 0.2);
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:hover {
+                  background: rgba($success, 0.2);
+                  border-color: rgba($success, 0.4);
+                  transform: scale(1.1);
+                  box-shadow: 0 4px 12px rgba($success, 0.2);
+                }
+
+                mat-icon {
+                  font-size: 20px;
+                  width: 20px;
+                  height: 20px;
+                  line-height: 20px;
+                }
+              }
+            }
+          }
+
+          .progress-bar-container {
+            position: relative;
+            height: 12px;
+            background-color: rgba($primary, 0.1);
+            border-radius: 6px;
+            overflow: visible;
+            box-shadow: inset 0 2px 4px rgba($primary, 0.1);
+
+            .progress-bar {
+              height: 100%;
+              background: linear-gradient(90deg, $primary 0%, lighten($primary, 10%) 100%);
+              border-radius: 6px;
+              transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+              position: relative;
+              box-shadow: 0 2px 8px rgba($primary, 0.3);
+
+              &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(90deg, transparent 0%, rgba(white, 0.3) 50%, transparent 100%);
+                border-radius: 6px;
+                animation: shimmer 2s infinite;
+              }
+
+              &.progress-met {
+                background: linear-gradient(90deg, $success 0%, lighten($success, 10%) 100%);
+                box-shadow: 0 2px 8px rgba($success, 0.3);
+              }
+
+              &.progress-overdue {
+                background: linear-gradient(90deg, $error 0%, lighten($error, 10%) 100%);
+                box-shadow: 0 2px 8px rgba($error, 0.3);
+              }
+            }
+          }
+
+          // Target overdue styling
+          &.target-overdue {
+            background: linear-gradient(135deg, rgba($error, 0.05) 0%, rgba($error, 0.08) 100%);
+            border-left-color: $error;
+
+            &::before {
+              background: radial-gradient(circle, rgba($error, 0.15) 0%, transparent 70%);
+            }
+
+            .target-icon {
+              color: $error;
+            }
+
+            .target-actions .details-button {
+              background: rgba($error, 0.1);
+              color: $error;
+              border-color: rgba($error, 0.2);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              &:hover {
+                background: rgba($error, 0.2);
+                border-color: rgba($error, 0.4);
+                box-shadow: 0 4px 12px rgba($error, 0.2);
+              }
+
+              mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+              }
+            }
+          }
+        }
+      }
+
+      .no-target-section {
+        flex: 1;
+        min-width: 320px;
+
+        .no-target-container {
+          display: flex;
+          align-items: center;
+          min-height: 130px;
+          gap: 1.5em;
+          padding: 2em;
+          background: linear-gradient(135deg, rgba($text-primary, 0.02) 0%, rgba($text-primary, 0.05) 100%);
+          border-radius: $border-radius-md;
+          border-left: 4px solid rgba($text-primary, 0.3);
+          border: 1px dashed rgba($text-primary, 0.2);
+
+          .no-target-icon {
+            color: rgba($text-primary, 0.3);
+          }
+
+          .no-target-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3em;
+
+            .no-target-title {
+              font-size: 1.2em;
+              font-weight: 600;
+              color: rgba($text-primary, 0.7);
+            }
+
+            .no-target-text {
+              font-size: 0.9em;
+              color: rgba($text-primary, 0.5);
+            }
+          }
+        }
       }
     }
+  }
 
-    &__amount-breakdown-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 2em;
+  // Animations
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
 
-      .amount-information {
-        display: flex;
-        gap: 1em;
-        justify-content: space-between;
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
 
-        label {
-          font-weight: 500;
+  // Responsive design
+  @media (max-width: 768px) {
+    .sales-information-panel {
+      padding: 1em;
+
+      .panel-header {
+        flex-direction: column;
+        gap: 1.5em;
+        align-items: stretch;
+
+        .sales-amount-section,
+        .target-section,
+        .no-target-section {
+          min-width: unset;
         }
 
-        span {
-          color: $primary;
+        .target-section .target-container {
+          .target-display {
+            flex-direction: column;
+            gap: 1em;
+
+            .target-amounts {
+              justify-content: space-between;
+              gap: 1em;
+            }
+
+            .target-actions {
+              align-self: center;
+            }
+          }
         }
       }
     }

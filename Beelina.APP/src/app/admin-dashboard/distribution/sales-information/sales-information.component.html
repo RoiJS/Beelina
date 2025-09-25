@@ -100,48 +100,82 @@
 
     </div>
     <div class="panel panel--full-width sales-information-panel">
-      <div class="sales-information-panel__amount-container">
-        <label>{{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}:</label>
-
-        @if (!isLoading) {
-        <span class="scale-in-center-animation">{{
-          sales
-          }}</span>
-        }
-
-      </div>
-
-      @if (!isLoading) {
-      <div class="sales-information-panel__amount-breakdown-container">
-        <div></div>
-        <div>
-          <div class="amount-information">
-            <label>{{ "SALES_PAGE.SALES_PANEL.CASH_ON_HAND_LABEL" | translate }}:</label>
-            <span class="scale-in-center-animation">{{
-              cashOnHand
-              }}</span>
-          </div>
-          <div class="amount-information">
-            <label>{{ "SALES_PAGE.SALES_PANEL.CHEQUE_ON_HAND_LABEL" | translate }}:</label>
-            <span class="scale-in-center-animation">{{
-              chequeOnHand
-              }}</span>
-          </div>
-          <div class="amount-information">
-            <label>{{ "SALES_PAGE.SALES_PANEL.ACCOUNT_RECEIVABLES_LABEL" | translate }}:</label>
-            <span class="scale-in-center-animation">{{
-              accountReceivables
-              }}</span>
-          </div>
-          <div class="amount-information">
-            <label>{{ "SALES_PAGE.SALES_PANEL.BAD_ORDERS_LABEL" | translate }}:</label>
-            <span class="scale-in-center-animation">{{
-              badOrders
-              }}</span>
+      <div class="panel-header">
+        <div class="sales-amount-section">
+          <div class="amount-container">
+            <div class="amount-label">
+              <mat-icon class="amount-icon">monetization_on</mat-icon>
+              <label>{{ "SALES_PAGE.SALES_PANEL.LABEL" | translate }}</label>
+            </div>
+            @if (!isLoading) {
+            <div class="amount-display">
+              <span class="amount-value scale-in-center-animation">{{ sales }}</span>
+              <div class="amount-actions">
+                <button mat-icon-button class="details-button" (click)="openSalesBreakdownDialog()" 
+                        matTooltip="View detailed sales breakdown">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </div>
+            } @else {
+            <div class="amount-loading">
+              <mat-spinner diameter="24"></mat-spinner>
+            </div>
+            }
           </div>
         </div>
+
+        @if (currentSalesTargetProgress && !isLoading) {
+        <div class="target-section">
+          <div class="target-container">
+            <div class="target-label">
+              <mat-icon class="target-icon" [class.target-met]="isTargetMet()" [class.target-overdue]="isTargetOverdue()">
+                {{ isTargetMet() ? 'check_circle' : isTargetOverdue() ? 'schedule' : 'track_changes' }}
+              </mat-icon>
+              <label>Sales Target</label>
+            </div>
+            <div class="target-display">
+              <div class="target-amounts">
+                <div class="target-amount-wrapper">
+                  <span class="target-label-text">Target</span>
+                  <span class="target-amount" [class.target-met]="isTargetMet()" [class.target-overdue]="isTargetOverdue()">
+                    {{ getFormattedTargetAmount() }}
+                  </span>
+                </div>
+                <div class="progress-wrapper">
+                  <span class="progress-label-text">Progress</span>
+                  <span class="progress-percentage" [class.target-met]="isTargetMet()" [class.target-overdue]="isTargetOverdue()">
+                    {{ getCompletionPercentage() }}%
+                  </span>
+                </div>
+              </div>
+              <div class="target-actions">
+                <button mat-icon-button class="details-button" (click)="openTargetDetailsDialog()" 
+                        matTooltip="View detailed target information">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" [style.width.%]="getCompletionPercentage()" 
+                   [class.progress-met]="isTargetMet()" 
+                   [class.progress-overdue]="isTargetOverdue()">
+              </div>
+            </div>
+          </div>
+        </div>
+        } @else if (!isLoading) {
+        <div class="no-target-section">
+          <div class="no-target-container">
+            <mat-icon class="no-target-icon">info_outline</mat-icon>
+            <div class="no-target-content">
+              <span class="no-target-title">No Active Target</span>
+              <span class="no-target-text">Set a sales target to track progress</span>
+            </div>
+          </div>
+        </div>
+        }
       </div>
-      }
     </div>
   </div>
 </div>

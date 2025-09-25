@@ -1,0 +1,141 @@
+<div class="sales-target-details-dialog">
+  <div class="dialog-header">
+    <div class="dialog-title">
+      <mat-icon class="dialog-icon" [class]="data.isTargetMet ? 'target-met' : (data.isTargetOverdue ? 'target-overdue' : '')">
+        {{ data.isTargetMet ? 'check_circle' : (data.isTargetOverdue ? 'schedule' : 'track_changes') }}
+      </mat-icon>
+      <h2>Sales Target Details</h2>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div class="agent-info">
+      <h3>{{ data.salesAgentName }}</h3>
+    </div>
+
+    <!-- Target Overview -->
+    <div class="target-overview">
+      <div class="overview-item target-amount">
+        <div class="item-label">Target Amount</div>
+        <div class="item-value primary">{{ data.targetAmount | currency:'PHP':'symbol':'1.2-2' }}</div>
+      </div>
+      <div class="overview-item achieved-amount">
+        <div class="item-label">Achieved Amount</div>
+        <div class="item-value achieved">{{ data.achievedAmount | currency:'PHP':'symbol':'1.2-2' }}</div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="progress-label">Progress</span>
+        <span class="progress-percentage" [class]="data.isTargetMet ? 'target-met' : (data.isTargetOverdue ? 'target-overdue' : '')">
+          {{ data.progressPercentage }}%
+        </span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar"
+             [style.width.%]="data.progressPercentage > 100 ? 100 : data.progressPercentage"
+             [class]="data.isTargetMet ? 'progress-met' : (data.isTargetOverdue ? 'progress-overdue' : '')">
+        </div>
+      </div>
+    </div>
+
+    <!-- Target Details -->
+    <div class="details-section">
+      <div class="detail-row">
+        <div class="detail-item">
+          <div class="item-label">
+            <mat-icon>trending_up</mat-icon>
+            <span>Remaining Amount</span>
+          </div>
+          <div class="item-value" [class]="data.remainingAmount <= 0 ? 'target-exceeded' : 'remaining-amount'">
+            {{ data.remainingAmount | currency:'PHP':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-item">
+          <div class="item-label">
+            <mat-icon>date_range</mat-icon>
+            <span>Target Period</span>
+          </div>
+          <div class="item-value">
+            {{ data.startDate }} - {{ data.endDate }}
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-item">
+          <div class="item-label">
+            <mat-icon>schedule</mat-icon>
+            <span>Days Left</span>
+          </div>
+          <div class="item-value" [class]="'days-' + getDaysLeftStatus()">
+            {{ data.daysLeft > 0 ? data.daysLeft + ' days' : (data.daysLeft === 0 ? 'Last day' : 'Overdue') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-item">
+          <div class="item-label">
+            <mat-icon>today</mat-icon>
+            <span>Target Sales Per Day</span>
+          </div>
+          <div class="item-value target-per-day">
+            {{ data.targetSalesPerDay | currency:'PHP':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-item">
+          <div class="item-label">
+            <mat-icon>store</mat-icon>
+            <span>Target Sales Per Store</span>
+          </div>
+          <div class="item-value target-per-store">
+            {{ data.targetSalesPerStore | currency:'PHP':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-item">
+          <div class="item-label">
+            <mat-icon>storefront</mat-icon>
+            <span>Total Stores</span>
+          </div>
+          <div class="item-value total-stores">
+            {{ data.totalStores }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div class="status-banner" *ngIf="data.isTargetMet || data.isTargetOverdue">
+      <div class="status-item target-achievement" *ngIf="data.isTargetMet">
+        <mat-icon class="achievement-icon">check_circle</mat-icon>
+        <span class="achievement-text">Target Achieved!</span>
+      </div>
+
+      <div class="status-item target-overdue-notice" *ngIf="data.isTargetOverdue">
+        <mat-icon class="overdue-icon">schedule</mat-icon>
+        <span class="overdue-text">Target Period Overdue</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="close()" class="close-action-button">
+      Close
+    </button>
+  </div>
+</div>

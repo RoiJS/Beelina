@@ -401,4 +401,62 @@ public class TransactionRepositoryTests
         Assert.False(double.IsNaN(result), "Result should not be NaN");
         Assert.False(double.IsInfinity(result), "Result should not be infinity");
     }
+
+    [Fact]
+    public async Task GetProfitBreakdown_Returns_Correct_Breakdown_Components()
+    {
+        // Arrange
+        var repo = CreateRepositoryWithSeededData(FieldAgent.Id);
+        var fromDate = DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
+        var toDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        // Act
+        var result = await repo.GetProfitBreakdown(FieldAgent.Id, fromDate, toDate);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(!double.IsNaN(result.PurchaseOrderDiscountProfit) && !double.IsInfinity(result.PurchaseOrderDiscountProfit), 
+            "PurchaseOrderDiscountProfit should be a valid number");
+        Assert.True(!double.IsNaN(result.SalesPriceProfit) && !double.IsInfinity(result.SalesPriceProfit), 
+            "SalesPriceProfit should be a valid number");
+        Assert.True(!double.IsNaN(result.TotalProfit) && !double.IsInfinity(result.TotalProfit), 
+            "TotalProfit should be a valid number");
+        
+        // Verify that TotalProfit equals the sum of individual components
+        var expectedTotal = result.PurchaseOrderDiscountProfit + result.SalesPriceProfit;
+        Assert.Equal(expectedTotal, result.TotalProfit);
+        
+        // Verify percentage calculations
+        if (result.TotalProfit > 0)
+        {
+            Assert.True(result.PurchaseOrderDiscountProfitPercentage >= 0 && result.PurchaseOrderDiscountProfitPercentage <= 100,
+                "PurchaseOrderDiscountProfitPercentage should be between 0 and 100");
+            Assert.True(result.SalesPriceProfitPercentage >= 0 && result.SalesPriceProfitPercentage <= 100,
+                "SalesPriceProfitPercentage should be between 0 and 100");
+        }
+        else
+        {
+            Assert.Equal(0, result.PurchaseOrderDiscountProfitPercentage);
+            Assert.Equal(0, result.SalesPriceProfitPercentage);
+        }
+    }
+
+    [Fact]
+    public async Task GetProfitBreakdown_WithNoDates_Returns_AllTimeBreakdown()
+    {
+        // Arrange
+        var repo = CreateRepositoryWithSeededData(FieldAgent.Id);
+
+        // Act
+        var result = await repo.GetProfitBreakdown(FieldAgent.Id, "", "");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.False(double.IsNaN(result.TotalProfit), "TotalProfit should not be NaN");
+        Assert.False(double.IsInfinity(result.TotalProfit), "TotalProfit should not be infinity");
+        
+        // Verify that TotalProfit matches the sum of components
+        var expectedTotal = result.PurchaseOrderDiscountProfit + result.SalesPriceProfit;
+        Assert.Equal(expectedTotal, result.TotalProfit);
+    }
 }

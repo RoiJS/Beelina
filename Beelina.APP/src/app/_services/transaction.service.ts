@@ -40,6 +40,7 @@ import { GeneralSettings } from '../_models/general-settings.model';
 import { TransactionSalesPerSalesAgent } from '../_models/sales-per-agent';
 import { SalesPerDateRange } from '../_models/sales-per-date-range';
 import { User } from '../_models/user.model';
+import { ProfitBreakdown } from '../_models/profit-breakdown.model';
 
 const REGISTER_TRANSACTION_QUERY = gql`
   query ($transactionInput: TransactionInput!) {
@@ -360,6 +361,18 @@ const GET_TRANSACTION_SALES_FOR_ALL_PER_DATE_RANGE_QUERY = gql`
 const GET_PROFIT_QUERY = gql`
   query ($userId: Int!, $fromDate: String!, $toDate: String!) {
     profit(userId: $userId, fromDate: $fromDate, toDate: $toDate)
+  }
+`;
+
+const GET_PROFIT_BREAKDOWN_QUERY = gql`
+  query ($userId: Int!, $fromDate: String!, $toDate: String!) {
+    profitBreakdown(userId: $userId, fromDate: $fromDate, toDate: $toDate) {
+      purchaseOrderDiscountProfit
+      salesPriceProfit
+      totalProfit
+      purchaseOrderDiscountProfitPercentage
+      salesPriceProfitPercentage
+    }
   }
 `;
 
@@ -1239,6 +1252,28 @@ export class TransactionService {
             }>
           ) => {
             return result.data.profit;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
+  getProfitBreakdown(userId: number, fromDate: string, toDate: string) {
+    return this.apollo
+      .watchQuery({
+        query: GET_PROFIT_BREAKDOWN_QUERY,
+        variables: { userId, fromDate, toDate },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              profitBreakdown: ProfitBreakdown;
+            }>
+          ) => {
+            return result.data.profitBreakdown;
           }
         ),
         catchError((error) => {

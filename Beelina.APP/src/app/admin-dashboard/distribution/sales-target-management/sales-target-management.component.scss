@@ -1,0 +1,88 @@
+.sales-target-management {
+  padding: 20px;
+}
+
+.sales-target-management__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.sales-target-management__title-section {
+  flex: 1;
+}
+
+.sales-target-management__header h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.sales-target-management__agent-info {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.sales-target-management__agent-info mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  color: #666;
+}
+
+.sales-target-management__table {
+  width: 100%;
+}
+
+.sales-target-management__table table {
+  width: 100%;
+}
+
+.sales-target-management__empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.sales-target-management__empty mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.sales-target-management__no-agent {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.sales-target-management__no-agent mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge--active {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.status-badge--inactive {
+  background-color: #ffebee;
+  color: #d32f2f;
+}

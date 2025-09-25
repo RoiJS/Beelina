@@ -1,0 +1,332 @@
+@import '../../../../../app-variables';
+
+.sales-target-details-dialog {
+  min-width: 450px;
+  max-width: 550px;
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5em 1.5em 1em 1.5em;
+    border-bottom: 1px solid rgba($primary, 0.1);
+
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+
+      .dialog-icon {
+        color: $primary;
+        font-size: 1.5em;
+
+        &.target-met {
+          color: $success;
+        }
+
+        &.target-overdue {
+          color: $error;
+        }
+      }
+
+      h2 {
+        margin: 0;
+        color: $primary;
+        font-size: 1.3em;
+        font-weight: 600;
+      }
+    }
+
+    .close-button {
+      color: rgba($text-primary, 0.6);
+      
+      &:hover {
+        color: $primary;
+        background-color: rgba($primary, 0.1);
+      }
+    }
+  }
+
+  .dialog-content {
+    padding: 1.5em;
+
+    .agent-info {
+      text-align: center;
+      margin-bottom: 1.5em;
+
+      h3 {
+        margin: 0;
+        color: $primary;
+        font-size: 1.2em;
+        font-weight: 600;
+      }
+    }
+
+    .target-overview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+      margin-bottom: 1.5em;
+
+      .overview-item {
+        text-align: center;
+        padding: 1em;
+        border-radius: $border-radius-sm;
+        background-color: rgba($primary, 0.05);
+
+        .item-label {
+          font-size: 0.9em;
+          color: rgba($text-primary, 0.7);
+          margin-bottom: 0.5em;
+        }
+
+        .item-value {
+          font-size: 1.3em;
+          font-weight: 700;
+
+          &.primary {
+            color: $primary;
+          }
+
+          &.achieved {
+            color: $success;
+          }
+        }
+
+        &.target-amount {
+          border-left: 3px solid $primary;
+        }
+
+        &.achieved-amount {
+          border-left: 3px solid $success;
+        }
+      }
+    }
+
+    .progress-section {
+      margin-bottom: 1.5em;
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5em;
+
+        .progress-label {
+          font-weight: 500;
+          color: rgba($text-primary, 0.8);
+        }
+
+        .progress-percentage {
+          font-weight: 600;
+          font-size: 1.1em;
+          color: $primary;
+
+          &.target-met {
+            color: $success;
+          }
+
+          &.target-overdue {
+            color: $error;
+          }
+        }
+      }
+
+      .progress-bar-container {
+        height: 10px;
+        background-color: rgba($primary, 0.1);
+        border-radius: 5px;
+        overflow: hidden;
+
+        .progress-bar {
+          height: 100%;
+          background-color: $primary;
+          border-radius: 5px;
+          transition: width 0.3s ease;
+
+          &.progress-met {
+            background-color: $success;
+          }
+
+          &.progress-overdue {
+            background-color: $error;
+          }
+        }
+      }
+    }
+
+    .details-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      margin-bottom: 1.5em;
+
+      .detail-row {
+        .detail-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.8em;
+          border-radius: $border-radius-sm;
+          background-color: rgba($primary, 0.02);
+
+          .item-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+
+            mat-icon {
+              color: rgba($primary, 0.7);
+              font-size: 1.1em;
+            }
+
+            span {
+              font-weight: 500;
+              color: rgba($text-primary, 0.8);
+            }
+          }
+
+          .item-value {
+            font-weight: 600;
+            color: $primary;
+
+            &.remaining-amount {
+              color: $warning;
+            }
+
+            &.target-exceeded {
+              color: $success;
+            }
+
+            &.days-critical {
+              color: $error;
+              font-weight: 700;
+            }
+
+            &.days-warning {
+              color: $warning;
+              font-weight: 600;
+            }
+
+            &.days-overdue {
+              color: $error;
+              font-weight: 700;
+            }
+
+            &.days-normal {
+              color: $primary;
+            }
+
+            &.target-per-day {
+              color: $success;
+              font-weight: 700;
+            }
+
+            &.target-per-store {
+              color: $primary;
+              font-weight: 700;
+            }
+
+            &.total-stores {
+              color: rgba($text-primary, 0.8);
+              font-weight: 600;
+            }
+
+            &.stores-without-orders {
+              font-weight: 700;
+
+              &.warning {
+                color: $error;
+              }
+
+              &.success {
+                color: $success;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .status-banner {
+      .status-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        padding: 1em;
+        border-radius: $border-radius-sm;
+
+        &.target-achievement {
+          background-color: rgba($success, 0.1);
+          border: 1px solid rgba($success, 0.3);
+
+          .achievement-icon {
+            color: $success;
+            font-size: 1.2em;
+          }
+
+          .achievement-text {
+            color: $success;
+            font-weight: 600;
+          }
+        }
+
+        &.target-overdue-notice {
+          background-color: rgba($error, 0.1);
+          border: 1px solid rgba($error, 0.3);
+
+          .overdue-icon {
+            color: $error;
+            font-size: 1.2em;
+          }
+
+          .overdue-text {
+            color: $error;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: center;
+    padding: 1em 1.5em 1.5em 1.5em;
+
+    .close-action-button {
+      min-width: 120px;
+      color: $primary;
+      border: 1px solid rgba($primary, 0.3);
+
+      &:hover {
+        background-color: rgba($primary, 0.1);
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 520px) {
+  .sales-target-details-dialog {
+    min-width: 320px;
+    max-width: 90vw;
+
+    .dialog-header {
+      padding: 1em;
+    }
+
+    .dialog-content {
+      padding: 1em;
+
+      .target-overview {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dialog-actions {
+      padding: 1em;
+    }
+  }
+}

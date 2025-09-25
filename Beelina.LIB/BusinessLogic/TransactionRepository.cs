@@ -259,6 +259,29 @@ namespace Beelina.LIB.BusinessLogic
             return purchaseOrderDiscountProfit + salesPriceProfit;
         }
 
+        public async Task<ProfitBreakdown> GetProfitBreakdown(int userId, string fromDate, string toDate)
+        {
+            // Calculate profit breakdown from two main sources:
+            // 1. Purchase order discounts (discounts obtained from suppliers become profit)
+            // 2. Price difference profit from sales (agent price - warehouse price) * quantity
+            // 
+            // Access Control:
+            // - Sales Agents (User permission): Only access transactions they created
+            // - Managers and Administrators: Can access all transactions
+
+            // Get purchase order discount profit
+            var purchaseOrderDiscountProfit = await GetPurchaseOrderDiscountProfit(fromDate, toDate);
+
+            // Get sales price difference profit
+            var salesPriceProfit = await GetSalesPriceProfit(userId, fromDate, toDate);
+
+            return new ProfitBreakdown
+            {
+                PurchaseOrderDiscountProfit = purchaseOrderDiscountProfit,
+                SalesPriceProfit = salesPriceProfit
+            };
+        }
+
         private async Task<double> GetTotalPurchaseOrderAmount(string fromDate, string toDate)
         {
             var purchaseOrdersQuery = (from pore in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
@@ -1335,6 +1358,7 @@ namespace Beelina.LIB.BusinessLogic
 
             return transactionPayments;
         }
+
 
         public async Task DeleteOrderTransactions(List<int> transactionIds)
         {
