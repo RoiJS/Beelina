@@ -208,7 +208,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     if (selectedProductDetails) {
       purchaseOrderDetails.code = selectedProductDetails.code;
       purchaseOrderDetails.unit = selectedProductDetails.productUnit.name;
-      purchaseOrderDetails.unitPrice = selectedProductDetails.pricePerUnit;
+      purchaseOrderDetails.unitPrice = NumberFormatter.roundToDecimalPlaces(selectedProductDetails.price, 2);
       purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.unitPrice;
     }
   }
