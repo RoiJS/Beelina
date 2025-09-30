@@ -12,6 +12,7 @@ import { SalesComponent } from 'src/app/sales/sales.component';
 import { SalesChartViewComponent } from '../../home/sales-chart-view/sales-chart-view.component';
 import { SalesBreakdownData, SalesBreakdownDialogComponent } from './sales-breakdown-dialog/sales-breakdown-dialog.component';
 import { SalesTargetDetailsData, SalesTargetDetailsDialogComponent } from './sales-target-details-dialog/sales-target-details-dialog.component';
+import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 
 @Component({
   selector: 'app-sales-information',
@@ -185,7 +186,7 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
 
   getCompletionPercentage(): number {
     const progress = this.currentSalesTargetProgress;
-    return progress ? Math.round(progress.completionPercentage) : 0;
+    return progress ? NumberFormatter.roundToDecimalPlaces(progress.completionPercentage, 2) : 0;
   }
 
   getFormattedRemainingSales(): string {
@@ -255,7 +256,7 @@ export class SalesInformationComponent extends SalesComponent implements OnInit 
       targetAmount: progress.targetAmount,
       achievedAmount: progress.currentSales,
       remainingAmount: progress.remainingSales,
-      progressPercentage: Math.round(progress.completionPercentage),
+      progressPercentage: NumberFormatter.roundToDecimalPlaces(progress.completionPercentage, 2),
       startDate: new Date(progress.startDate).toLocaleDateString(),
       endDate: new Date(progress.endDate).toLocaleDateString(),
       daysLeft: progress.daysRemaining,

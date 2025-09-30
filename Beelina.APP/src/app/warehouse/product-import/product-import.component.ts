@@ -96,23 +96,30 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
             purchaseOrder.notes = this.translateService.instant("WAREHOUSE_PRODUCT_IMPORT_PAGE.AUTO_REGISTER_PURCHASE_ORDER.DEFAULT_NOTES");
 
             supplierProducts.forEach((product: Product) => {
-              const productDetails = this.extractedProducts.find((extractedProduct: Product) => extractedProduct.id === product.id);
-              if (productDetails) {
+              const extractedProductDetails = this.extractedProducts.find((extractedProduct: Product) => extractedProduct.code === product.code);
+              const importedProductDetails = importedProducts.find((importedProduct: Product) => importedProduct.code === product.code);
+
+              // Only add to stock receipt entry if the imported product has stock quantity > 0
+              // This is to avoid creating stock receipt entries with 0 quantity which may cause confusion
+              if (extractedProductDetails && extractedProductDetails.stockQuantity !== 0) {
                 const productStockWarehouseAudit = new ProductStockWarehouseAudit();
                 productStockWarehouseAudit.id = 0;
-                productStockWarehouseAudit.productId = productDetails.id;
-                productStockWarehouseAudit.quantity = productDetails.stockQuantity;
-                productStockWarehouseAudit.pricePerUnit = productDetails.pricePerUnit;
+                productStockWarehouseAudit.productId = importedProductDetails.id;
+                productStockWarehouseAudit.quantity = extractedProductDetails.stockQuantity;
+                productStockWarehouseAudit.pricePerUnit = extractedProductDetails.pricePerUnit;
                 productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
 
                 purchaseOrder.productStockWarehouseAuditInputs.push(productStockWarehouseAudit);
               }
             });
 
-            purchaseOrders.push(purchaseOrder);
+            if (purchaseOrder.productStockWarehouseAuditInputs.length > 0) {
+              purchaseOrders.push(purchaseOrder);
+            }
           });
-
-          firstValueFrom(this.productService.updateWarehouseStockReceiptEntries(purchaseOrders));
+          if (purchaseOrders.length > 0) {
+            firstValueFrom(this.productService.updateWarehouseStockReceiptEntries(purchaseOrders));
+          }
         }
       });
   }

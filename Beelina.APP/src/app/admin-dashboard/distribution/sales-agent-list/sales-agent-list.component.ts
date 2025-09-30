@@ -18,6 +18,7 @@ import { ISalesAgentStoreOrder } from 'src/app/_interfaces/outputs/isales-agent-
 import { IStoreOrder } from 'src/app/_interfaces/outputs/istore-order.output';
 import { SharedComponent } from 'src/app/shared/components/shared/shared.component';
 import { StoreListBottomSheetComponent, StoreListBottomSheetData } from './store-list-bottom-sheet/store-list-bottom-sheet.component';
+import { NumberFormatter } from 'src/app/_helpers/formatters/number-formatter.helper';
 
 @Component({
   selector: 'app-sales-agent-list',
@@ -276,7 +277,7 @@ export class SalesAgentListComponent extends SharedComponent implements OnDestro
   // Method to get completion percentage for a specific sales agent
   getCompletionPercentageForAgent(agentId: number): number {
     const progress = this.getSalesTargetProgressForAgent(agentId);
-    return progress ? Math.round(progress.completionPercentage) : 0;
+    return progress ? NumberFormatter.roundToDecimalPlaces(progress.completionPercentage, 2) : 0;
   }
 
   // Method to get performance level class for completion percentage styling

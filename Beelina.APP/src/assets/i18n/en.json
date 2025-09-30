@@ -176,28 +176,28 @@
     },
     "ADD_CUSTOMER_ACCOUNT_DIALOG": {
       "FORM_CONTROL_SECTION": {
-        "HEADER_TITLE": "Add New Customer Account",
+        "HEADER_TITLE": "Add Area Name",
         "NAME_CONTROL": {
           "LABEL": "Name",
-          "HINT": "Please enter customer account name"
+          "HINT": "Please enter area name"
         }
       },
-      "TITLE": "Add Customer Account",
-      "CONFIRM": "Are you sure to add new customer account?",
-      "SUCCESS_MESSAGE": "New customer account has been successfully added!",
-      "ERROR_MESSAGE": "Adding new customer account failed. Please again later."
+      "TITLE": "Add Area Name",
+      "CONFIRM": "Are you sure to add new area?",
+      "SUCCESS_MESSAGE": "New area has been successfully added!",
+      "ERROR_MESSAGE": "Adding new area failed. Please again later."
     },
     "UPDATE_CUSTOMER_ACCOUNT_DIALOG": {
       "FORM_CONTROL_SECTION": {
         "NAME_CONTROL": {
           "LABEL": "Name",
-          "HINT": "Please enter customer account name"
+          "HINT": "Please enter area name"
         }
       },
-      "TITLE": "Update Customer Account",
-      "CONFIRM": "Are you sure to update customer account?",
-      "SUCCESS_MESSAGE": "Selected customer account has been successfully updated!",
-      "ERROR_MESSAGE": "Updating customer account failed. Please again later."
+      "TITLE": "Update Area Name",
+      "CONFIRM": "Are you sure to update area?",
+      "SUCCESS_MESSAGE": "Selected area has been successfully updated!",
+      "ERROR_MESSAGE": "Updating area failed. Please again later."
     }
   },
   "SUPPLIERS_PAGE": {

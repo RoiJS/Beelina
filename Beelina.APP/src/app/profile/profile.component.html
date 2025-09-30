@@ -1,8 +1,4 @@
-<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
-  <button mat-icon-button class="toolbar-option" (click)="saveProfile()">
-    <mat-icon>save</mat-icon>
-  </button>
-</app-tool-bar>
+<app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate"></app-tool-bar>
 
 <app-loader-layout [busy]="isLoading">
   <div class="page-container slide-in-left-animation">
@@ -14,7 +10,7 @@
     </div>
 
     <div class="panel">
-      <div [formGroup]="profileForm" class="panel__details-group-panel">
+      <div [formGroup]="profileForm" class="panel__details-group-panel profile-details-container">
         <div class="panel__header-section">
           <label>{{
             "PROFILE_PAGE.FORM_CONTROL_SECTION.HEADER_TITLE" | translate
@@ -98,6 +94,11 @@
             }
 
           </mat-form-field>
+        </div>
+        <div class="panel__footer-section profile-details-container__footer-section">
+          <button mat-raised-button color="primary" (click)="saveProfile()">
+            {{ "GENERAL_TEXTS.SAVE" | translate }}
+          </button>
         </div>
       </div>
     </div>

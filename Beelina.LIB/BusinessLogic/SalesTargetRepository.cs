@@ -203,7 +203,7 @@ namespace Beelina.LIB.BusinessLogic
             var remainingSales = Math.Max(0, target.TargetAmount - currentSales);
             var completionPercentage = target.TargetAmount > 0 ? (double)(currentSales / target.TargetAmount * 100) : 0;
             var targetSalesPerDay = daysRemaining > 0 ? remainingSales / daysRemaining : 0;
-            var targetSalesPerStore = storesWithoutOrders > 0 ? remainingSales / storesWithoutOrders : 0;
+            var targetSalesPerStore = totalStores > 0 ? remainingSales / totalStores : 0;
             var dailyAverageSales = daysElapsed > 0 ? currentSales / daysElapsed : 0;
 
             return new SalesTargetProgressDto

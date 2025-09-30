@@ -1,10 +1,14 @@
-<div matRipple class="product-item list-container__card-item" [ngClass]="{'product-item--inactive': !productItem()?.isCurrentlyActive}">
+<div matRipple class="product-item list-container__card-item"
+  [ngClass]="{'product-item--inactive': !productItem()?.isCurrentlyActive}">
 
   @if (!hideHeader()) {
   <div class="list-container__card-item-header product-item__header">
-    <mat-icon [ngClass]="{ 'no-visibility': hideDeductionCounterIcon() }" [matBadge]="productItem()?.deductedStock"
-      [matBadgeHidden]="productItem()?.deductedStock === 0" matBadgeColor="warn"
-      aria-hidden="false">add_shopping_cart</mat-icon>
+    @if(productItem()?.deductedStock !== 0) {
+    <app-badge [ngClass]="{ 'no-visibility': hideDeductionCounterIcon() }" [type]="bannerTypeEnum.ERROR" class="deduction-badge"
+      [label]="productItem()?.deductedStock?.toString()"></app-badge>
+    } @else {
+    <span></span>
+    }
 
     @if (!hideHeaderOptions()) {
     <div class="product-item__header-options">
@@ -66,13 +70,9 @@
   <div (click)="addItemToCart(productItem().id)" class="product-item__body-container">
 
     @if (!hideImage()) {
-      <div class="list-container__card-item-body product-item__body">
-        <img
-          [src]="getProductPhoto(productItem()?.name)"
-          [attr.alt]="productItem()?.name"
-          loading="lazy"
-        />
-      </div>    
+    <div class="list-container__card-item-body product-item__body">
+      <img [src]="getProductPhoto(productItem()?.name)" [attr.alt]="productItem()?.name" loading="lazy" />
+    </div>
     }
 
     <div class="list-container__card-item-footer product-item__footer">

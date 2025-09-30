@@ -61,33 +61,36 @@
                   </div>
                 </div>
                 <div class="item-container__user-info">
-                  <div class="item-container__user-name">{{ salesAgent.fullname }}</div>
+                  <div class="item-container__user-name" [class.active-text]="salesAgent?.id === currentSalesAgent">{{ salesAgent.fullname }}</div>
 
                   <!-- Simplified Sales Target Information -->
-                  <div class="item-container__target-info">
-                    <span class="target-label">Target:</span>
+                  <div class="item-container__target-info" [class.active-text]="salesAgent?.id === currentSalesAgent">
+                    <span class="target-label" [class.active-text]="salesAgent?.id === currentSalesAgent">Target:</span>
                     <span class="target-value" [class.target-met]="isTargetMetForAgent(salesAgent.id)"
-                      [class.target-overdue]="isTargetOverdueForAgent(salesAgent.id)">
+                      [class.target-overdue]="isTargetOverdueForAgent(salesAgent.id)"
+                      [class.active-text]="salesAgent?.id === currentSalesAgent">
                       {{ getFormattedTargetAmountForAgent(salesAgent.id) }}
                     </span>
                   </div>
 
                   <!-- Store counts display -->
-                  <div class="item-container__store-counts">
+                  <div class="item-container__store-counts" [class.active-text]="salesAgent?.id === currentSalesAgent">
                     <div class="store-count">
-                      <span class="store-count__label">{{
+                      <span class="store-count__label" [class.active-text]="salesAgent?.id === currentSalesAgent">{{
                         'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.SALES_INFORMATION_CONTAINER.STORES_WITH_ORDERS'
                         | translate }}:</span>
                       <span class="store-count__value store-count__value--clickable"
+                        [class.active-text]="salesAgent?.id === currentSalesAgent"
                         (click)="showStoresWithOrders(salesAgent.id, $event)" [attr.title]="'Click to view stores'">
                         {{ getStoresWithOrdersCount(salesAgent.id) }}
                       </span>
                     </div>
                     <div class="store-count">
-                      <span class="store-count__label">{{
+                      <span class="store-count__label" [class.active-text]="salesAgent?.id === currentSalesAgent">{{
                         'DASHBOARD_ADMIN.DISTRIBUTION_PAGE.SALES_AGENT_DETAILS_SECTION.SALES_INFORMATION_CONTAINER.STORES_WITHOUT_ORDERS'
                         | translate }}:</span>
                       <span class="store-count__value store-count__value--clickable"
+                        [class.active-text]="salesAgent?.id === currentSalesAgent"
                         (click)="showStoresWithoutOrders(salesAgent.id, $event)" [attr.title]="'Click to view stores'">
                         {{ getStoresWithoutOrdersCount(salesAgent.id) }}
                       </span>
@@ -95,8 +98,8 @@
                   </div>
                 </div>
                 <div class="item-container__sales-info">
-                  <div class="sales-amount">{{ getFormattedSalesAmountForAgent(salesAgent.id) }}</div>
-                  <div class="completion-percentage" [ngClass]="getCompletionPercentageClass(salesAgent.id)">{{
+                  <div class="sales-amount" [class.active-text]="salesAgent?.id === currentSalesAgent">{{ getFormattedSalesAmountForAgent(salesAgent.id) }}</div>
+                  <div class="completion-percentage" [ngClass]="getCompletionPercentageClass(salesAgent.id)" [class.active-text]="salesAgent?.id === currentSalesAgent">{{
                     getCompletionPercentageForAgent(salesAgent.id) }}%</div>
                 </div>
                 <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
