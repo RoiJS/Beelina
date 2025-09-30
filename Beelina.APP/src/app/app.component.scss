@@ -60,10 +60,7 @@ mat-tree-node[aria-level="1"] {
   filter: drop-shadow(0 1px 3px rgba($black, $opacity-light));
 }
 
-.mat-tree-node:hover mat-icon,
-.mat-tree-node:focus mat-icon {
-  animation: iconFloatGentle 3s ease-in-out infinite;
-}
+// Hover animations removed for better UX
 
 .mat-tree-node:hover {
   background: $primary-gradient;
@@ -71,9 +68,8 @@ mat-tree-node[aria-level="1"] {
   transition: $transition-normal;
 
   mat-icon {
-    animation: iconBounceMenu 0.6s ease-in-out, iconGlowMenu 2s ease-in-out infinite;
-    transform: scale(1.05) rotate(3deg); /* Reduced scale and rotation to prevent overflow */
-    filter: drop-shadow(0 2px 6px rgba($black, $opacity-medium));
+    // Animations removed for better UX - only keep simple styling
+    color: $white;
   }
 }
 
@@ -90,8 +86,7 @@ mat-tree-node:hover {
   width: calc(100% - 25px); /* Reduce width to accommodate border radius */
 
   mat-icon {
-    animation: iconPulseActive 2s ease-in-out infinite, iconGlowMenu 2s ease-in-out infinite;
-    transform: scale(1.1); /* Reduced from 1.15 to prevent overflow */
+    // Animations removed for better UX - keep simple styling
     color: rgba($white, 0.95);
   }
 }
@@ -132,11 +127,6 @@ mat-tree-node:hover {
       font-size: 18px;
       transition: $transition-normal;
       // Animation removed from default state for accessibility
-
-      &:hover {
-        animation: iconBounceSmall 0.4s ease-in-out, iconFloatSubtle 5s ease-in-out infinite;
-        transform: scale(1.1);
-      }
     }
 
     &__offline-banner {
@@ -198,12 +188,6 @@ mat-tree-node:hover {
     mat-icon {
       transition: $transition-normal;
       // Animation removed from default state for accessibility
-    }
-
-    &:hover mat-icon,
-    &:focus mat-icon {
-      animation: iconSpinToggle 0.5s ease-in-out, iconFloatSubtle 4s ease-in-out infinite;
-      transform: scale(1.05); /* Reduced from 1.1 to prevent overflow */
     }
   }
 }
