@@ -361,6 +361,7 @@ export class ProductComponent
     copyProduct.isTransferable = this.selectedProduct().isTransferable;
     copyProduct.numberOfUnits = this.selectedProduct().numberOfUnits;
     copyProduct.pricePerUnit = this.selectedProduct().pricePerUnit;
+    copyProduct.costPrice = this.selectedProduct().costPrice || 0;
     copyProduct.supplierId = this.selectedProduct().supplierId;
     copyProduct.productUnit.name = this.selectedProduct().productUnit.name;
 

@@ -16,7 +16,7 @@ export class CopyProductConfirmationComponent {
 
   constructor() {
     this._copyProductConfirmationForm = this.formBuilder.group({
-      setValidToDate: [true] // Default to true
+      setValidToDate: [false] // Default to false
     });
   }
 

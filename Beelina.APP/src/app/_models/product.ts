@@ -10,7 +10,9 @@ export class Product extends Entity implements IModelNode {
   public supplierId: number;
   public stockQuantity: number;
   public pricePerUnit: number;
+  public costPrice: number;
   public price: number;
+  public cost: number;
   public productUnit: ProductUnit;
   public deductedStock: number;
   public withdrawalSlipNo: string;
@@ -25,6 +27,10 @@ export class Product extends Entity implements IModelNode {
 
   get priceFormatted(): string {
     return NumberFormatter.formatCurrency(this.price);
+  }
+
+  get costFormatted(): string {
+    return NumberFormatter.formatCurrency(this.cost);
   }
 
   get nameWithUnit() {

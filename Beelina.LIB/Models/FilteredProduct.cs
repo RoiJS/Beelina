@@ -14,6 +14,7 @@ namespace Beelina.LIB.Models
         public int NumberOfUnits { get; set; }
         public string Description { get; set; }
         public float PricePerUnit { get; set; }
+        public float CostPrice { get; set; }
         public int ProductUnitId { get; set; }
         public ProductUnit ProductUnit { get; set; }
         public int SupplierId { get; set; }

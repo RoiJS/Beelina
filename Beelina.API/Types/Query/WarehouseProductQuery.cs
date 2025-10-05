@@ -202,26 +202,5 @@ namespace Beelina.API.Types.Query
             var inventoryTotalValue = productsFromRepo.Sum(x => x.StockQuantity * x.Price);
             return inventoryTotalValue;
         }
-
-        private static async Task SetProductStockWarehouses(ProductWarehouseStockReceiptEntryInput productWarehouseStockReceiptEntryInput, int warehouseId, IProductRepository<Product> productRepository, CancellationToken cancellationToken)
-        {
-            foreach (var productStockWarehouseAudit in productWarehouseStockReceiptEntryInput.ProductStockWarehouseAuditInputs)
-            {
-                var product = new Product
-                {
-                    Id = productStockWarehouseAudit.ProductId
-                };
-
-                var productInput = new ProductInput
-                {
-                    Id = productStockWarehouseAudit.ProductId,
-                    PricePerUnit = productStockWarehouseAudit.PricePerUnit
-                };
-
-                var productStockPerWarehouse = await productRepository.ManageProductStockPerWarehouse(product, productInput, warehouseId, cancellationToken);
-
-                productStockWarehouseAudit.ProductStockPerWarehouseId = productStockPerWarehouse.Id;
-            }
-        }
     }
 }

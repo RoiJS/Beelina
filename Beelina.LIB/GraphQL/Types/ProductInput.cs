@@ -10,6 +10,7 @@ namespace Beelina.LIB.GraphQL.Types
         public string Description { get; set; }
         public int StockQuantity { get; set; }
         public float PricePerUnit { get; set; }
+        public float CostPrice { get; set; }
         public string WithdrawalSlipNo { get; set; }
         public string PlateNo { get; set; }
         public bool IsTransferable { get; set; }

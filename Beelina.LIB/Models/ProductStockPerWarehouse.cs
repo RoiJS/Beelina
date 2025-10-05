@@ -8,12 +8,20 @@ namespace Beelina.LIB.Models
         public int ProductId { get; set; }
         public int WarehouseId { get; set; }
         public float PricePerUnit { get; set; }
+        public float CostPrice { get; set; }
         public List<ProductStockWarehouseAudit> ProductStockWarehouseAudits { get; set; }
         public double Price
         {
             get
             {
                 return Math.Round(PricePerUnit, 2);
+            }
+        }
+        public double Cost
+        {
+            get
+            {
+                return Math.Round(CostPrice, 2);
             }
         }
 

@@ -100,6 +100,7 @@ const GET_PRODUCTS_QUERY = gql`
         description
         stockQuantity
         pricePerUnit
+        costPrice
         price
         numberOfUnits
         isTransferable
@@ -141,7 +142,9 @@ const GET_WAREHOUSE_PRODUCTS_QUERY = gql`
         description
         stockQuantity
         pricePerUnit
+        costPrice
         price
+        cost
         numberOfUnits
         isTransferable
         supplierId
@@ -179,6 +182,8 @@ const GET_PRODUCT_STORE = gql`
         stockQuantity
         pricePerUnit
         price
+        costPrice
+        cost
         numberOfUnits
         isTransferable
         supplierId
@@ -354,6 +359,8 @@ const GET_WAREHOUSE_PRODUCT_STORE = gql`
         stockQuantity
         pricePerUnit
         price
+        costPrice
+        cost
         numberOfUnits
         isTransferable
         supplierId
@@ -1053,6 +1060,8 @@ export class ProductService {
             product.description = productDto.description;
             product.stockQuantity = productDto.stockQuantity;
             product.pricePerUnit = productDto.pricePerUnit;
+            product.costPrice = productDto.costPrice;
+            product.cost = productDto.cost;
             product.price = productDto.price;
             product.isTransferable = productDto.isTransferable;
             product.numberOfUnits = productDto.numberOfUnits;
@@ -1468,6 +1477,7 @@ export class ProductService {
         supplierId: product.supplierId,
         stockQuantity: product.stockQuantity,
         pricePerUnit: product.pricePerUnit,
+        costPrice: product.costPrice,
         isTransferable: product.isTransferable,
         numberOfUnits: product.numberOfUnits,
         withdrawalSlipNo: product.withdrawalSlipNo,
@@ -1519,6 +1529,7 @@ export class ProductService {
         supplierId: product.supplierId,
         stockQuantity: product.stockQuantity,
         pricePerUnit: product.pricePerUnit,
+        costPrice: product.costPrice,
         isTransferable: product.isTransferable,
         numberOfUnits: product.numberOfUnits,
         withdrawalSlipNo: product.withdrawalSlipNo,
@@ -1591,6 +1602,7 @@ export class ProductService {
             id: (a.id <= 0 ? 0 : a.id),
             productId: a.productId,
             pricePerUnit: a.pricePerUnit,
+            costPrice: a.costPrice,
             quantity: a.quantity,
             productWarehouseStockReceiptEntryId: p.id,
             stockAuditSource: a.stockAuditSource,

@@ -10,6 +10,7 @@ namespace Beelina.LIB.GraphQL.Types
         public int Quantity { get; set; }
         public int ProductWarehouseStockReceiptEntryId { get; set; }
         public float PricePerUnit { get; set; }
+        public float CostPrice { get; set; }
         public StockAuditSourceEnum StockAuditSource { get; set; }
     }
 

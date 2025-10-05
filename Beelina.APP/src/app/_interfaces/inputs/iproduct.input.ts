@@ -8,6 +8,7 @@ export interface IProductInput {
   supplierId: number;
   stockQuantity: number;
   pricePerUnit: number;
+  costPrice: number;
   withdrawalSlipNo: string;
   plateNo: string;
   isTransferable: boolean;

@@ -66,6 +66,9 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit,
   private _productConnectionLabelText: string;
   private _productValidityLabelText: string;
 
+  // Expose enum to template
+  readonly ProductSourceEnum = ProductSourceEnum;
+
   bottomSheet = inject(MatBottomSheet);
   store = inject(Store<AppStateInterface>);
   dialogService = inject(DialogService);
@@ -111,6 +114,7 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit,
         additionalStockQuantity: [0],
         plateNo: [''],
         pricePerUnit: [null, Validators.required],
+        costPrice: [0],
         productUnit: ['', Validators.required],
         isTransferable: [false],
         numberOfUnits: [0],
@@ -212,6 +216,7 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit,
       product.isTransferable = this._productForm.get('isTransferable').value;
       product.numberOfUnits = this._productForm.get('numberOfUnits').value;
       product.pricePerUnit = this._productForm.get('pricePerUnit').value;
+      product.costPrice = this._productForm.get('costPrice').value;
       product.productUnit.name = this._productForm.get('productUnit').value;
       product.validFrom = this._productForm.get('validFrom').value;
       product.validTo = this._productForm.get('validTo').value;
@@ -263,6 +268,7 @@ export class AddProductDetailsComponent extends BaseComponent implements OnInit,
                       productStockWarehouseAudit.productId = products[0].id;
                       productStockWarehouseAudit.quantity = product.stockQuantity;
                       productStockWarehouseAudit.pricePerUnit = product.pricePerUnit;
+                      productStockWarehouseAudit.costPrice = product.costPrice;
                       productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
 
                       purchaseOrder.productStockWarehouseAuditInputs = [productStockWarehouseAudit];

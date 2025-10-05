@@ -289,6 +289,7 @@ export class WarehouseComponent extends BaseComponent implements OnInit, OnDestr
     copyProduct.isTransferable = this.selectedProduct().isTransferable;
     copyProduct.numberOfUnits = this.selectedProduct().numberOfUnits;
     copyProduct.pricePerUnit = this.selectedProduct().pricePerUnit;
+    copyProduct.costPrice = this.selectedProduct().costPrice;
     copyProduct.supplierId = this.selectedProduct().supplierId;
     copyProduct.validFrom = new Date();
     copyProduct.validTo = null;

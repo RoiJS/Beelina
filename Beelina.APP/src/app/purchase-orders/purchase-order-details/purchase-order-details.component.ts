@@ -140,6 +140,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
             purchaseOrderItem.productId = poItem.productId;
             purchaseOrderItem.productStockPerWarehouseId = poItem.productStockPerWarehouseId;
             purchaseOrderItem.quantity = poItem.quantity;
+            purchaseOrderItem.costPrice = NumberFormatter.roundToDecimalPlaces(poItem.costPrice, 2);
 
             const productDetails = this._warehouseProductsDatasource.find(p => p.id == poItem.productId);
 
@@ -148,9 +149,10 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
               purchaseOrderItem.code = productDetails.code;
               purchaseOrderItem.unit = productDetails.productUnit.name;
               purchaseOrderItem.unitPrice = NumberFormatter.roundToDecimalPlaces(productDetails.pricePerUnit, 2);
+              purchaseOrderItem.costPrice = NumberFormatter.roundToDecimalPlaces(productDetails.costPrice, 2);
             }
 
-            purchaseOrderItem.amount = poItem.quantity * purchaseOrderItem.unitPrice;
+            purchaseOrderItem.amount = poItem.quantity * purchaseOrderItem.costPrice;
 
             return purchaseOrderItem;
           });
@@ -209,18 +211,24 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
       purchaseOrderDetails.code = selectedProductDetails.code;
       purchaseOrderDetails.unit = selectedProductDetails.productUnit.name;
       purchaseOrderDetails.unitPrice = NumberFormatter.roundToDecimalPlaces(selectedProductDetails.price, 2);
-      purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.unitPrice;
+      purchaseOrderDetails.costPrice = NumberFormatter.roundToDecimalPlaces(selectedProductDetails.cost, 2);
+      purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.costPrice;
     }
   }
 
   onQuantityChange(quantity: number, purchaseOrderDetails: PurchaseOrderItemDetails) {
     purchaseOrderDetails.quantity = quantity;
-    purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.unitPrice;
+    purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.costPrice;
   }
 
   onUnitPriceChange(unitPrice: number, purchaseOrderDetails: PurchaseOrderItemDetails) {
     purchaseOrderDetails.unitPrice = unitPrice;
-    purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.unitPrice;
+    purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.costPrice;
+  }
+
+  onCostPriceChange(costPrice: number, purchaseOrderDetails: PurchaseOrderItemDetails) {
+    purchaseOrderDetails.costPrice = costPrice;
+    purchaseOrderDetails.amount = purchaseOrderDetails.quantity * purchaseOrderDetails.costPrice;
   }
 
   ngOnDestroy() {
@@ -307,6 +315,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
             productStockWarehouseAudit.productId = x.productId;
             productStockWarehouseAudit.quantity = x.quantity;
             productStockWarehouseAudit.pricePerUnit = x.unitPrice;
+            productStockWarehouseAudit.costPrice = x.costPrice;
             productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
 
             return productStockWarehouseAudit;
@@ -513,5 +522,5 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     return this._discounts.length;
   }
 
-  displayedColumns: string[] = ['product', 'unit', 'code', 'quantity', 'unitPrice', 'amount', 'actions'];
+  displayedColumns: string[] = ['product', 'unit', 'code', 'quantity', 'costPrice', 'amount', 'actions'];
 }

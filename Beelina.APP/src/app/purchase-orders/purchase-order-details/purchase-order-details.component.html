@@ -261,8 +261,8 @@
               <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
             </ng-container>
 
-            <!-- Unit -->
-            <ng-container matColumnDef="unitPrice">
+            <!-- Unit Price -->
+            <!-- <ng-container matColumnDef="unitPrice">
               <mat-header-cell *matHeaderCellDef> {{
                 "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.UNIT_PRICE_FIELD" |
                 translate }} </mat-header-cell>
@@ -273,9 +273,23 @@
                 </div>
               </mat-cell>
               <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
+            </ng-container> -->
+
+            <!-- Cost Price -->
+            <ng-container matColumnDef="costPrice">
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.COST_PRICE_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div class="biz-form-container__form-control">
+                  <input type="number" [(ngModel)]="element.costPrice"
+                    (ngModelChange)="onCostPriceChange($event, element)" />
+                </div>
+              </mat-cell>
+              <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
             </ng-container>
 
-            <!-- Unit -->
+            <!-- Amount -->
             <ng-container matColumnDef="amount">
               <mat-header-cell *matHeaderCellDef> {{
                 "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.AMOUNT_FIELD" |

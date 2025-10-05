@@ -4,6 +4,7 @@ export interface IProductStockWarehouseAuditInput {
   id: number;
   productId: number;
   pricePerUnit: number;
+  costPrice: number;
   quantity: number;
   stockAuditSource: StockAuditSourceEnum;
   productWarehouseStockReceiptEntryId: number;

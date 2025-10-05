@@ -9,10 +9,15 @@ export class PurchaseOrderItemDetails {
   public unit: string;
   public quantity: number = 0;
   public unitPrice: number = 0;
+  public costPrice: number = 0;
   public amount: number = 0;
 
   get formattedUnitPrice() {
     return NumberFormatter.formatCurrency(this.unitPrice);
+  }
+
+  get formattedCostPrice() {
+    return NumberFormatter.formatCurrency(this.costPrice);
   }
 
   get formattedAmount() {

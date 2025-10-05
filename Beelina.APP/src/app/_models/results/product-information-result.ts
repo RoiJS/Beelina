@@ -14,6 +14,8 @@ export class ProductInformationResult
   public stockQuantity: number;
   public pricePerUnit: number;
   public price: number;
+  public costPrice: number;
+  public cost: number;
   public isTransferable: boolean;
   public numberOfUnits: number;
   public productUnit: ProductUnit;

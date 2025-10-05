@@ -545,6 +545,14 @@
         "LABEL": "Price",
         "HINT": "Please specify price"
       },
+      "NET_PRICE_PER_UNIT_CONTROL": {
+        "LABEL": "Net Price",
+        "HINT": "Please specify net price"
+      },
+      "COST_PRICE_CONTROL": {
+        "LABEL": "Cost Price",
+        "HINT": "Please specify cost price"
+      },
       "UNIT_CONTROL": {
         "LABEL": "Unit",
         "HINT": "Please specify unit"
@@ -621,6 +629,14 @@
       "PRICE_PER_UNIT_CONTROL": {
         "LABEL": "Price",
         "HINT": "<b>NOTE:</b> Default value based on warehouse price."
+      },
+      "NET_PRICE_PER_UNIT_CONTROL": {
+        "LABEL": "Net Price",
+        "HINT": "Please specify net price"
+      },
+      "COST_PRICE_CONTROL": {
+        "LABEL": "Cost Price",
+        "HINT": "Please specify cost price"
       },
       "UNIT_CONTROL": {
         "LABEL": "Unit",
@@ -1373,7 +1389,8 @@
           "CODE_FIELD": "Code",
           "QUANTITY_FIELD": "Quantity",
           "UNIT_FIELD": "Unit",
-          "UNIT_PRICE_FIELD": "Unit Price",
+          "UNIT_PRICE_FIELD": "Net Price",
+          "COST_PRICE_FIELD": "Cost Price",
           "AMOUNT_FIELD": "Amount"
         },
         "FOOTER_DEFINITION": {

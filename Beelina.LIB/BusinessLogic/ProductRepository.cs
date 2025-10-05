@@ -144,6 +144,7 @@ namespace Beelina.LIB.BusinessLogic
                                         NumberOfUnits = p.NumberOfUnits,
                                         Description = p.Description,
                                         PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
+                                        CostPrice = 0f, // Panel products don't have cost price, always 0
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = pu,
                                         SupplierId = p.SupplierId,
@@ -171,6 +172,7 @@ namespace Beelina.LIB.BusinessLogic
                                           NumberOfUnits = p.NumberOfUnits,
                                           Description = p.Description,
                                           PricePerUnit = p.PricePerUnit,
+                                          CostPrice = p.CostPrice,
                                           ProductUnitId = p.ProductUnitId,
                                           ProductUnit = p.ProductUnit,
                                           SupplierId = p.SupplierId,
@@ -304,6 +306,7 @@ namespace Beelina.LIB.BusinessLogic
                                           Description = p.Description,
                                           IsTransferable = p.IsTransferable,
                                           PricePerUnit = (pp == null ? 0 : pp.PricePerUnit),
+                                          CostPrice = (pp == null ? 0 : pp.CostPrice),
                                           ProductUnitId = p.ProductUnitId,
                                           ProductUnit = pu,
                                           SupplierId = p.SupplierId,
@@ -328,6 +331,7 @@ namespace Beelina.LIB.BusinessLogic
                                         NumberOfUnits = p.NumberOfUnits,
                                         Description = p.Description,
                                         PricePerUnit = p.PricePerUnit,
+                                        CostPrice = p.CostPrice,
                                         ProductUnitId = p.ProductUnitId,
                                         ProductUnit = p.ProductUnit,
                                         IsTransferable = p.IsTransferable,
@@ -721,12 +725,14 @@ namespace Beelina.LIB.BusinessLogic
         {
           ProductId = product.Id,
           WarehouseId = warehouseId,
-          PricePerUnit = productInput.PricePerUnit
+          PricePerUnit = productInput.PricePerUnit,
+          CostPrice = productInput.CostPrice
         };
       }
       else
       {
         productStockPerWarehouseFromRepo.PricePerUnit = productInput.PricePerUnit;
+        productStockPerWarehouseFromRepo.CostPrice = productInput.CostPrice;
       }
 
       if (productStockPerWarehouseFromRepo.Id == 0)
@@ -1147,7 +1153,8 @@ namespace Beelina.LIB.BusinessLogic
           {
             ProductId = destinationProductId,
             WarehouseId = warehouseId,
-            PricePerUnit = destinationProductFromRepo[0].PricePerUnit
+            PricePerUnit = destinationProductFromRepo[0].PricePerUnit,
+            CostPrice = 0 // Default value for transferred stock
           };
 
           await _beelinaRepository.ClientDbContext.ProductStockPerWarehouse.AddAsync(destinationProductStockPerWarehouse);
@@ -1282,6 +1289,7 @@ namespace Beelina.LIB.BusinessLogic
                                      NumberOfUnits = p.NumberOfUnits,
                                      Description = p.Description,
                                      PricePerUnit = p.PricePerUnit,
+                                     CostPrice = wp.CostPrice, // Get cost price from warehouse product
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = wp.StockQuantity,
@@ -1336,6 +1344,7 @@ namespace Beelina.LIB.BusinessLogic
                                                    NumberOfUnits = p.NumberOfUnits,
                                                    Description = p.Description,
                                                    PricePerUnit = p.PricePerUnit,
+                                                   CostPrice = p.CostPrice,
                                                    ProductUnitId = p.ProductUnitId,
                                                    ProductUnit = p.ProductUnit,
                                                    SupplierId = p.SupplierId,
@@ -1388,6 +1397,7 @@ namespace Beelina.LIB.BusinessLogic
                                      NumberOfUnits = p.NumberOfUnits,
                                      Description = p.Description,
                                      PricePerUnit = p.PricePerUnit,
+                                     CostPrice = p.CostPrice,
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = p.StockAbsoluteQuantity - (pt == null ? 0 : pt.Quantity),
@@ -1588,6 +1598,7 @@ namespace Beelina.LIB.BusinessLogic
                                      NumberOfUnits = p.NumberOfUnits,
                                      Description = p.Description,
                                      PricePerUnit = p.PricePerUnit,
+                                     CostPrice = p.CostPrice,
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
                                      SupplierId = p.SupplierId,
@@ -1722,6 +1733,7 @@ namespace Beelina.LIB.BusinessLogic
                                      NumberOfUnits = p.NumberOfUnits,
                                      Description = p.Description,
                                      PricePerUnit = p.PricePerUnit,
+                                     CostPrice = p.CostPrice,
                                      ProductUnitId = p.ProductUnitId,
                                      ProductUnit = p.ProductUnit,
                                      StockQuantity = owsa.Quantity,

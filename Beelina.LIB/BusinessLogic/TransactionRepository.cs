@@ -365,7 +365,7 @@ namespace Beelina.LIB.BusinessLogic
                                        {
                                            PurchaseOrder = pore,
                                            Quantity = pswa.Quantity,
-                                           PricePerUnit = psw.PricePerUnit
+                                           CostPrice = psw.CostPrice
                                        });
 
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
@@ -386,7 +386,7 @@ namespace Beelina.LIB.BusinessLogic
                         {
                             PurchaseOrderId = g.Key,
                             PurchaseOrder = g.First().PurchaseOrder,
-                            GrossTotal = g.Sum(p => p.Quantity * p.PricePerUnit)
+                            GrossTotal = g.Sum(p => p.Quantity * p.CostPrice)
                         })
                         .AsNoTracking()
                         .ToListAsync();

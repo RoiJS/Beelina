@@ -80,6 +80,13 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
   private _productValidityLabelText: string;
   private _isParentSwitchDisabled: boolean = false;
 
+  // Expose enum to template
+  readonly ProductSourceEnum = ProductSourceEnum;
+
+  get productSource(): ProductSourceEnum {
+    return this._productSource;
+  }
+
   activatedRoute = inject(ActivatedRoute);
   authService = inject(AuthService);
   bottomSheet = inject(MatBottomSheet);
@@ -129,6 +136,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         additionalStockQuantity: [0],
         plateNo: [''],
         pricePerUnit: [null, Validators.required],
+        costPrice: [0],
         productUnit: ['', Validators.required],
         isTransferable: [false],
         numberOfUnits: [0],
@@ -218,6 +226,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
         } else {
           this._productForm.get('pricePerUnit').setValue(product.price);
         }
+        this._productForm.get('costPrice').setValue(product.cost);
       });
 
     this._productUnitOptionsSubscription = this.store
@@ -301,6 +310,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
       product.isTransferable = this._productForm.get('isTransferable').value;
       product.numberOfUnits = this._productForm.get('numberOfUnits').value;
       product.pricePerUnit = this._productForm.get('pricePerUnit').value;
+      product.costPrice = this._productForm.get('costPrice').value;
       product.productUnit.name = this._productForm.get('productUnit').value;
       product.validFrom = this._productForm.get('validFrom').value;
       product.validTo = this._productForm.get('validTo').value;
@@ -356,6 +366,7 @@ export class EditProductDetailsComponent extends BaseComponent implements OnInit
                       productStockWarehouseAudit.productId = this._productId;
                       productStockWarehouseAudit.quantity = product.stockQuantity;
                       productStockWarehouseAudit.pricePerUnit = product.pricePerUnit;
+                      productStockWarehouseAudit.costPrice = product.costPrice;
                       productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
 
                       purchaseOrder.productStockWarehouseAuditInputs = [productStockWarehouseAudit];

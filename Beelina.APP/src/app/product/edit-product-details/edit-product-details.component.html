@@ -97,6 +97,8 @@
                         }}</button>
                       }
                     </div>
+
+                    @if (productSource === ProductSourceEnum.Panel) {
                     <mat-form-field appearance="fill">
                       <mat-label>{{
                         "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRICE_PER_UNIT_CONTROL.LABEL"
@@ -109,6 +111,31 @@
                           [innerHTML]="translateService.instant('EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRICE_PER_UNIT_CONTROL.HINT')"></span></mat-hint>
                       }
                     </mat-form-field>
+                    }
+
+                    @if (productSource === ProductSourceEnum.Warehouse) {
+                    <mat-form-field appearance="fill">
+                      <mat-label>{{
+                        "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.COST_PRICE_CONTROL.LABEL"
+                        | translate
+                        }}:</mat-label>
+                      <input matInput type="number" formControlName="costPrice" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill">
+                      <mat-label>{{
+                        "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.NET_PRICE_PER_UNIT_CONTROL.LABEL"
+                        | translate
+                        }}:</mat-label>
+                      <input matInput type="number" formControlName="pricePerUnit" />
+
+                      @if (showDefaultPrice) {
+                      <mat-hint><span
+                          [innerHTML]="translateService.instant('EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.PRICE_PER_UNIT_CONTROL.HINT')"></span></mat-hint>
+                      }
+                    </mat-form-field>
+                    }
+
                     <mat-form-field appearance="fill">
                       <mat-label>{{
                         "EDIT_PRODUCT_DETAILS_PAGE.FORM_CONTROL_SECTION.UNIT_CONTROL.LABEL"

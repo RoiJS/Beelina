@@ -11,6 +11,7 @@ namespace Beelina.LIB.Models
         public string Description { get; set; }
         public int StockQuantity { get; set; }
         public float PricePerUnit { get; set; }
+        public float CostPrice { get; set; }
         public bool IsTransferable { get; set; }
         public int NumberOfUnits { get; set; }
         public DateTime ValidFrom { get; set; }
@@ -29,6 +30,14 @@ namespace Beelina.LIB.Models
             get
             {
                 return Math.Round(PricePerUnit, 2);
+            }
+        }
+
+        public double Cost
+        {
+            get
+            {
+                return Math.Round(CostPrice, 2);
             }
         }
 

@@ -5,6 +5,7 @@ import { Entity } from './entity.model';
 export class ProductStockWarehouseAudit extends Entity implements IModelNode {
   public productId: number;
   public pricePerUnit: number;
+  public costPrice: number;
 
   public productStockPerWarehouseId: number;
   public quantity: number;

@@ -320,7 +320,8 @@ namespace Beelina.LIB.BusinessLogic
                 var productInput = new ProductInput
                 {
                     Id = productStockWarehouseAudit.ProductId,
-                    PricePerUnit = productStockWarehouseAudit.PricePerUnit
+                    PricePerUnit = productStockWarehouseAudit.PricePerUnit,
+                    CostPrice = productStockWarehouseAudit.CostPrice
                 };
 
                 var productStockPerWarehouse = await productRepository.ManageProductStockPerWarehouse(product, productInput, warehouseId, cancellationToken);
