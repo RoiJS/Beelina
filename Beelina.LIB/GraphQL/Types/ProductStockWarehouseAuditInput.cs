@@ -11,6 +11,7 @@ namespace Beelina.LIB.GraphQL.Types
         public int ProductWarehouseStockReceiptEntryId { get; set; }
         public float PricePerUnit { get; set; }
         public float CostPrice { get; set; }
+        public DateTime? ExpirationDate { get; set; }
         public StockAuditSourceEnum StockAuditSource { get; set; }
     }
 

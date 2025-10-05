@@ -11,6 +11,7 @@ export class PurchaseOrderItemDetails {
   public unitPrice: number = 0;
   public costPrice: number = 0;
   public amount: number = 0;
+  public expirationDate?: string;
 
   get formattedUnitPrice() {
     return NumberFormatter.formatCurrency(this.unitPrice);

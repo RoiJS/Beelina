@@ -9,4 +9,5 @@ export interface IProductStockWarehouseAuditInput {
   stockAuditSource: StockAuditSourceEnum;
   productWarehouseStockReceiptEntryId: number;
   productStockPerWarehouseId: number;
+  expirationDate?: Date;
 }

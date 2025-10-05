@@ -1391,6 +1391,7 @@
           "UNIT_FIELD": "Unit",
           "UNIT_PRICE_FIELD": "Net Price",
           "COST_PRICE_FIELD": "Cost Price",
+          "EXPIRATION_DATE_FIELD": "Exp. Date",
           "AMOUNT_FIELD": "Amount"
         },
         "FOOTER_DEFINITION": {

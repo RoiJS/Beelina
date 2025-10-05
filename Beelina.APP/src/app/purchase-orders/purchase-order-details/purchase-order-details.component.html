@@ -289,6 +289,21 @@
               <mat-cell mat-footer-cell *matFooterCellDef></mat-cell>
             </ng-container>
 
+            <!-- Expiration Date -->
+            <ng-container matColumnDef="expirationDate">
+              <mat-header-cell *matHeaderCellDef> {{
+                "PURCHASE_ORDER_DETAILS_PAGE.PURCHASE_ORDER_ITEMS_PANEL.TABLE_GRID.COLUMN_DEFINITION.EXPIRATION_DATE_FIELD" |
+                translate }} </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div class="biz-form-container__form-control">
+                  <input type="date"
+                         [(ngModel)]="element.expirationDate"
+                         class="date-picker-control">
+                </div>
+              </mat-cell>
+              <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+            </ng-container>
+
             <!-- Amount -->
             <ng-container matColumnDef="amount">
               <mat-header-cell *matHeaderCellDef> {{

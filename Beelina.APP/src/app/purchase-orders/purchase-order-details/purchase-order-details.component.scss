@@ -138,7 +138,7 @@
 
     .mat-column-product {
       flex: none;
-      width: 600px;
+      width: 540px;
     }
 
     .mat-column-quantity {
@@ -150,6 +150,11 @@
     .mat-column-unitPrice {
       flex: none;
       width: 150px;
+    }
+
+    .mat-column-expirationDate {
+      flex: none;
+      width: 200px;
     }
 
     .product-dropdown {

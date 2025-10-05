@@ -10,6 +10,7 @@ export class ProductStockWarehouseAudit extends Entity implements IModelNode {
   public productStockPerWarehouseId: number;
   public quantity: number;
   public stockAuditSource: StockAuditSourceEnum = StockAuditSourceEnum.OrderFromSupplier;
+  public expirationDate?: Date;
 
   constructor() {
     super();

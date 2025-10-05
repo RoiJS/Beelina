@@ -61,7 +61,8 @@ namespace Beelina.LIB.BusinessLogic
                                                          ProductId = b.ProductId,
                                                          ProductStockPerWarehouseId = b.Id,
                                                          StockAuditSource = a.StockAuditSource,
-                                                         Quantity = a.Quantity
+                                                         Quantity = a.Quantity,
+                                                         ExpirationDate = a.ExpirationDate,
                                                      }).ToList();
 
             var productStockPerWarehouseResult = new ProductWarehouseStockReceiptEntryResult
@@ -260,6 +261,7 @@ namespace Beelina.LIB.BusinessLogic
                 ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : 0, // Will be set later for new entries
                 Quantity = input.Quantity,
                 StockAuditSource = input.StockAuditSource,
+                ExpirationDate = input.ExpirationDate,
                 IsActive = true,
                 IsDelete = false,
                 DateCreated = DateTime.Now,
@@ -281,6 +283,7 @@ namespace Beelina.LIB.BusinessLogic
                     existingEntity.ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : input.ProductWarehouseStockReceiptEntryId;
                     existingEntity.Quantity = input.Quantity;
                     existingEntity.StockAuditSource = input.StockAuditSource;
+                    existingEntity.ExpirationDate = input.ExpirationDate;
                     existingEntity.DateUpdated = DateTime.Now;
                     updatedEntities.Add(existingEntity);
                 }
@@ -294,6 +297,7 @@ namespace Beelina.LIB.BusinessLogic
                         ProductWarehouseStockReceiptEntryId = parentId > 0 ? parentId : input.ProductWarehouseStockReceiptEntryId,
                         Quantity = input.Quantity,
                         StockAuditSource = input.StockAuditSource,
+                        ExpirationDate = input.ExpirationDate,
                         IsActive = true,
                         IsDelete = false,
                         DateCreated = DateTime.Now,

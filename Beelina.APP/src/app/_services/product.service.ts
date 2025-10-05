@@ -233,6 +233,7 @@ const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT = gql`
               productWarehouseStockReceiptEntryId
               stockAuditSource
               quantity
+              expirationDate
           }
       }
 
@@ -426,6 +427,7 @@ const UPDATE_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
           productWarehouseStockReceiptEntryId
           stockAuditSource
           quantity
+          expirationDate
       }
     }
   }
@@ -1606,7 +1608,8 @@ export class ProductService {
             quantity: a.quantity,
             productWarehouseStockReceiptEntryId: p.id,
             stockAuditSource: a.stockAuditSource,
-            productStockPerWarehouseId: 0
+            productStockPerWarehouseId: 0,
+            expirationDate: a.expirationDate
           };
 
           return productStockWarehousAudit;

@@ -141,6 +141,7 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
             purchaseOrderItem.productStockPerWarehouseId = poItem.productStockPerWarehouseId;
             purchaseOrderItem.quantity = poItem.quantity;
             purchaseOrderItem.costPrice = NumberFormatter.roundToDecimalPlaces(poItem.costPrice, 2);
+            purchaseOrderItem.expirationDate = poItem.expirationDate ? DateFormatter.format(new Date(poItem.expirationDate), 'YYYY-MM-DD') : null;
 
             const productDetails = this._warehouseProductsDatasource.find(p => p.id == poItem.productId);
 
@@ -317,6 +318,8 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
             productStockWarehouseAudit.pricePerUnit = x.unitPrice;
             productStockWarehouseAudit.costPrice = x.costPrice;
             productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
+            // Convert string date back to Date object for server
+            productStockWarehouseAudit.expirationDate = x.expirationDate ? new Date(x.expirationDate) : null;
 
             return productStockWarehouseAudit;
           });
@@ -522,5 +525,5 @@ export class PurchaseOrderDetailsComponent extends BaseComponent implements OnIn
     return this._discounts.length;
   }
 
-  displayedColumns: string[] = ['product', 'unit', 'code', 'quantity', 'costPrice', 'amount', 'actions'];
+  displayedColumns: string[] = ['product', 'unit', 'code', 'quantity', 'costPrice', 'expirationDate', 'amount', 'actions'];
 }
