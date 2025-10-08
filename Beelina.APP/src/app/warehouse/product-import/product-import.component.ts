@@ -107,6 +107,7 @@ export class ProductImportComponent extends BaseComponent implements OnInit, OnD
                 productStockWarehouseAudit.productId = importedProductDetails.id;
                 productStockWarehouseAudit.quantity = extractedProductDetails.stockQuantity;
                 productStockWarehouseAudit.pricePerUnit = extractedProductDetails.pricePerUnit;
+                productStockWarehouseAudit.costPrice = extractedProductDetails.pricePerUnit;
                 productStockWarehouseAudit.stockAuditSource = StockAuditSourceEnum.OrderFromSupplier;
 
                 purchaseOrder.productStockWarehouseAuditInputs.push(productStockWarehouseAudit);
