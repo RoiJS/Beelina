@@ -1863,7 +1863,9 @@
   "PRINTING_RECEIPT_PAGE": {
     "HEADER_SECTION": {
       "TRANSACTION_NO": "Transaction No:",
-      "TRANSACTION_DATE": "Transaction Date:"
+      "TRANSACTION_DATE": "Transaction Date:",
+      "SALES_AGENT": "Sales Agent:",
+      "COMPANY": "Company:"
     },
     "BODY_SECTION": {
       "ITEM_GRID": {

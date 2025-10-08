@@ -1,6 +1,6 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
 
-  @if (isAdmin()) {
+  @if (!isUser()) {
   @if(userService.userSetting().allowOrderPayments) {
   <button mat-icon-button class="toolbar-option" (click)="goToPaymentHistory()">
     <mat-icon>payment</mat-icon>
@@ -73,7 +73,7 @@
           </div>
 
           @if(productTransactions().length > 0) {
-          @if (isAdmin()) {
+          @if (!isUser()) {
           <div class="product-transaction-total-amount-information-container">
             <span>{{ "GENERAL_TEXTS.BALANCE" | translate }}</span>
             <span>{{ transaction()?.balanceFormatted }}</span>
@@ -186,7 +186,7 @@
         </div>
         <div class="panel__footer-section product-transaction-information-container__button-options-section">
 
-          @if (!isAdmin()) {
+          @if (isUser()) {
 
             @if (networkService.isOnline | async) {
 
@@ -310,7 +310,7 @@
               {{ "GENERAL_TEXTS.SAVE_CHANGES" | translate }}
             </button>
 
-            @if (isAdmin() && transactionId > 0) {
+            @if (!isUser() && transactionId > 0) {
               <button mat-raised-button color="warn" (click)="deleteTransaction()">
                 <mat-icon>delete</mat-icon>
                 {{ "GENERAL_TEXTS.DELETE" | translate }}

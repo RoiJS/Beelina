@@ -84,6 +84,7 @@ export class ProductCartComponent
   private _orderForm: FormGroup;
   private _discountForm: FormGroup;
 
+  private _company = '';
   private _customerStoreOptions = signal<Array<CustomerStore>>([]);
   private _subscription: Subscription = new Subscription();
   private _selectedCustomer = signal<CustomerStore>(new CustomerStore());
@@ -137,7 +138,7 @@ export class ProductCartComponent
   translateService = inject(TranslateService);
   userService = inject(UserAccountService);
 
-  isAdmin = signal<boolean>(false);
+  isUser = signal<boolean>(false);
 
   grossTotalAmount = computed(() => {
     return NumberFormatter.formatCurrency(this._totalAmount());
@@ -164,7 +165,7 @@ export class ProductCartComponent
     this.isLocalTransaction.set(routerData?.isLocalTransaction);
 
     this._currentLoggedInUser = this.authService.user.value;
-    this.isAdmin.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.Administrator));
+    this.isUser.set(this.modulePrivilege(ModuleEnum.Distribution) === this.getPermissionLevel(PermissionLevelEnum.User));
 
     this._orderForm = this.formBuilder.group({
       invoiceNo: ['', Validators.required],
@@ -390,6 +391,10 @@ export class ProductCartComponent
         }
       })
     );
+
+    this._subscription.add(this.authService.company.subscribe((company: string) => {
+      this._company = company;
+    }));
   }
 
   clear() {
@@ -929,7 +934,7 @@ export class ProductCartComponent
   }
 
   async printReceiptViaPrinter() {
-    await this.bluetoothPrintInvoiceService.print(this.transaction());
+    await this.bluetoothPrintInvoiceService.print(this._company, this.transaction());
   }
 
   ngOnDestroy() {
@@ -1191,7 +1196,7 @@ export class ProductCartComponent
     return this._customerStoreOptions().filter((option) => {
       return (
         option.barangay?.name.toLowerCase().includes(currentBarangay) &&
-        (this.isAdmin() || this.authService.user.value.id === option.barangay.userAccountId)
+        (!this.isUser() || this.authService.user.value.id === option.barangay.userAccountId)
       );
     });
   };
