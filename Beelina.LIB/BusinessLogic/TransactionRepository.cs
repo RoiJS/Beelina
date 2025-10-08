@@ -1586,7 +1586,7 @@ namespace Beelina.LIB.BusinessLogic
                             TransactionId = transaction.Id,
                             Amount = transaction.Balance,
                             PaymentDate = DateTime.UtcNow,
-                            Notes = "Auto payment. Marked as paid by administrator."
+                            Notes = "Auto payment. Marked as paid by management."
                         };
 
                         await _paymentRepository.RegisterPayment(payment);
