@@ -82,6 +82,7 @@ namespace Beelina.LIB.BusinessLogic
                                                 )
                                             )
                                         )
+                                        && p.Id != 1 // Exclude default entry
                                     );
 
             if (!String.IsNullOrEmpty(productWithdrawalEntryFilter.DateFrom) || !String.IsNullOrEmpty(productWithdrawalEntryFilter.DateTo))
