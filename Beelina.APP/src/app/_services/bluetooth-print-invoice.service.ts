@@ -24,7 +24,7 @@ export class BluetoothPrintInvoiceService {
 
   constructor() { }
 
-  async print(transaction: Transaction) {
+  async print(company, transaction: Transaction) {
     this.notificationService.openSuccessNotification(
       this.translateService.instant("PRINTING_RECEIPT_PAGE.NOTIFICATION_MESSAGES.PRINTING_MESSAGE")
     );
@@ -81,6 +81,8 @@ export class BluetoothPrintInvoiceService {
         receipt += '         ' + this.translateService.instant("GENERAL_TEXTS.BIZUAL") + '\n';
         receipt += NORMAL_FONT;
         receipt += '================================================\n';
+        receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.COMPANY"), 25) +
+          formatColumn(company, 20, 'right') + '\n';
         receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.TRANSACTION_NO"), 25) +
           formatColumn(transaction.invoiceNo, 20, 'right') + '\n';
         receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.TRANSACTION_DATE"), 25) +
@@ -88,7 +90,7 @@ export class BluetoothPrintInvoiceService {
 
         // Sales Agent Section
         if (transaction.createdBy && typeof transaction.createdBy === 'object') {
-          receipt += formatColumn('Sales Agent:', 25) +
+          receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.SALES_AGENT"), 25) +
             formatColumn(`${transaction.createdBy.firstName} ${transaction.createdBy.lastName.substring(0, 1)}.`, 20, 'right') + '\n';
         }
 
@@ -148,6 +150,8 @@ export class BluetoothPrintInvoiceService {
         receipt += '     ' + this.translateService.instant("GENERAL_TEXTS.BIZUAL") + '\n';
         receipt += NORMAL_FONT;
         receipt += '================================\n';
+        receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.COMPANY"), 20) +
+          formatColumn(company, 12, 'right') + '\n';
         receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.TRANSACTION_NO"), 22) +
           formatColumn(transaction.invoiceNo, 10, 'right') + '\n';
         receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.TRANSACTION_DATE"), 22) +
@@ -155,7 +159,7 @@ export class BluetoothPrintInvoiceService {
 
         // Sales Agent Section
         if (transaction.createdBy && typeof transaction.createdBy === 'object') {
-          receipt += formatColumn('Sales Agent:', 22) +
+          receipt += formatColumn(this.translateService.instant("PRINTING_RECEIPT_PAGE.HEADER_SECTION.SALES_AGENT"), 22) +
             formatColumn(`${transaction.createdBy.firstName} ${transaction.createdBy.lastName.substring(0, 1)}.`, 10, 'right') + '\n';
         }
 
@@ -217,7 +221,7 @@ export class BluetoothPrintInvoiceService {
       // (5) If printing fails, we'll try to print again.
       if (!error.name.includes('NotFoundError')) {
         this.loggerService.logMessage(LogLevelEnum.ERROR, `${error.name}: ${error.message}`);
-        await this.print(transaction);
+        await this.print(company, transaction);
       } else {
         this.loggerService.logMessage(LogLevelEnum.ERROR, `${error.name}: ${error.message}`);
         this.notificationService.openErrorNotification(
