@@ -43,6 +43,7 @@ export class TransactionDetailsComponent
   implements AfterViewInit, OnDestroy {
   loaderLayoutComponent = viewChild(LoaderLayoutComponent);
 
+  private _company = '';
   private _transactionId: number;
   private _transactionDate: string;
   private _transaction: Transaction;
@@ -86,6 +87,10 @@ export class TransactionDetailsComponent
       .subscribe((paymentMethods: Array<PaymentMethod>) => {
         this._paymentMethodOptions = paymentMethods;
       }));
+
+    this._subscription.add(this.authService.company.subscribe((company: string) => {
+      this._company = company;
+    }));
   }
 
   ngAfterViewInit() {
@@ -104,7 +109,7 @@ export class TransactionDetailsComponent
   }
 
   async print() {
-    await this.bluetoothPrintInvoiceService.print(this._transaction);
+    await this.bluetoothPrintInvoiceService.print(this._company, this._transaction);
   }
 
   saveTransaction() {
@@ -260,7 +265,7 @@ export class TransactionDetailsComponent
       transactionDate: new Date(),
       dueDate: new Date(),
       storeId: this._transaction.store.id,
-      store:  this._transaction.store,
+      store: this._transaction.store,
       modeOfPayment: this._transaction.modeOfPayment || 0,
     };
     // Store form state
