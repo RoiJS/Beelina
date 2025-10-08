@@ -18,4 +18,12 @@
   &__transferrable {
     padding: 1em 0 2em;
   }
+
+  .product-details-container {
+    &__footer-section {
+      button {
+        width: 100%;
+      }
+    }
+  }
 }

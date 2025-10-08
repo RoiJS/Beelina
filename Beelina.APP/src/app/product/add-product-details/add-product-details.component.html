@@ -1,7 +1,4 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate">
-  <button mat-icon-button class="toolbar-option" (click)="saveProduct()">
-    <mat-icon>save</mat-icon>
-  </button>
 </app-tool-bar>
 <app-loader-layout [busy]="$isLoading | async">
   <div class="page-container slide-in-left-animation">
@@ -186,6 +183,11 @@
               </div>
             </mat-tab>
           </mat-tab-group>
+        </div>
+        <div class="panel__footer-section product-details-container__footer-section">
+          <button mat-raised-button color="primary" (click)="saveProduct()">
+            {{ "GENERAL_TEXTS.SAVE" | translate }}
+          </button>
         </div>
       </div>
     </div>
