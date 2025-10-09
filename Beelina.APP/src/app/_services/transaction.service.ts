@@ -158,6 +158,42 @@ const GET_TRANSACTIONS_QUERY = gql`
   }
 `;
 
+const GET_TRANSACTIONS_FOR_TABLE_QUERY = gql`
+  query(
+    $filterKeyword: String,
+    $transactionsFilter: TransactionsFilterInput,
+    $skip: Int,
+    $take: Int,
+    $order: [TransactionInformationSortInput!]
+  ) {
+    transactionsForTable(
+      filterKeyword: $filterKeyword,
+      transactionsFilter: $transactionsFilter,
+      skip: $skip,
+      take: $take,
+      order: $order
+    ) {
+      items {
+        id,
+        storeId,
+        invoiceNo,
+        createdBy,
+        detailsUpdatedBy
+        detailsDateUpdated
+        orderItemsDateUpdated
+        finalDateUpdated
+        createdById,
+        transactionDate,
+        hasUnpaidProductTransaction,
+        barangayName
+        storeName
+        status
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_TRANSACTIONS_BY_SALES_AGENT_AND_INVOICE_QUERY = gql`
   query($invoiceSearchTerm: String, $salesAgentId: Int!, $first: Int, $after: String) {
   transactionsByInvoiceNo(
@@ -920,6 +956,80 @@ export class TransactionService {
       );
   }
 
+  getTransactionsForTable(
+    filterKeyword: string,
+    transactionsFilter: TransactionsFilter,
+    skip: number = 0,
+    take: number = 50,
+    sortField: string = 'transactionDate',
+    sortDirection: SortOrderOptionsEnum = SortOrderOptionsEnum.DESCENDING
+  ) {
+    let order: any = {
+      [sortField]: sortDirection
+    };
+
+    return this.apollo
+      .watchQuery({
+        query: GET_TRANSACTIONS_FOR_TABLE_QUERY,
+        variables: {
+          filterKeyword,
+          transactionsFilter,
+          skip,
+          take,
+          order: [order]
+        },
+      })
+      .valueChanges.pipe(
+        map(
+          (
+            result: ApolloQueryResult<{
+              transactionsForTable: {
+                items: TransactionInformation[];
+                totalCount: number;
+              };
+            }>
+          ) => {
+
+            const data = result.data.transactionsForTable;
+            const totalCount = data.totalCount;
+            const transactionsDto = data.items;
+
+            const transactions = transactionsDto.map((t) => {
+              const transaction = new Transaction();
+              transaction.id = t.id;
+              transaction.invoiceNo = t.invoiceNo;
+              transaction.storeId = t.storeId;
+              transaction.createdBy = t.createdBy;
+              transaction.detailsUpdatedBy = t.detailsUpdatedBy;
+              transaction.detailsDateUpdated = t.detailsDateUpdated;
+              transaction.orderItemsDateUpdated = t.orderItemsDateUpdated;
+              transaction.finalDateUpdated = t.finalDateUpdated;
+              transaction.createdById = t.createdById;
+              transaction.status = t.status;
+              transaction.transactionDate = t.transactionDate;
+              transaction.store.name = t.storeName;
+              transaction.barangay.name = t.barangayName;
+              transaction.hasUnpaidProductTransaction =
+                t.hasUnpaidProductTransaction;
+              return transaction;
+            });
+
+            if (transactions) {
+              return {
+                transactions,
+                totalCount
+              };
+            }
+
+            return null;
+          }
+        ),
+        catchError((error) => {
+          throw new Error(error);
+        })
+      );
+  }
+
   getTransactionsByInvoiceNo(
     salesAgentId: number,
     invoiceSearchTerm: string = "",
@@ -1344,7 +1454,7 @@ export class TransactionService {
       })
       .valueChanges.pipe(
         map(
-        (
+          (
             result: ApolloQueryResult<{
               topCustomerSales: IBaseConnection;
             }>

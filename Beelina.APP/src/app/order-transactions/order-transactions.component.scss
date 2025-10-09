@@ -3,11 +3,11 @@
 .order-transactions-list-status-bar-container {
   min-height: 2em;
   display: flex;
-  gap: 1em;
+  gap: $spacing-md;
   width: 100%;
   justify-content: space-between;
   flex-wrap: wrap;
-  margin-bottom: 0.5em;
+  margin-bottom: $spacing-sm;
 
   &__total-accounts-counter-section,
   &__search-result-counter-section {
@@ -16,7 +16,7 @@
     gap: 10px;
 
     span {
-      color: $alt-text-color;
+      color: $text-secondary;
       font-weight: 500;
     }
 
@@ -32,11 +32,11 @@
   .order-transactions-item-container {
     display: flex;
     height: 7em;
-    padding: 0.5em 0 0;
+    padding: $spacing-sm 0 0;
 
     &__order-transactions-icon-container {
-      background-color: $alt-border-color;
-      border-radius: 50%;
+      background-color: $border-light;
+      border-radius: $border-radius-circle;
       display: flex;
       justify-content: space-around;
       overflow: hidden;
@@ -47,7 +47,7 @@
       .order-transactions-icon {
         align-self: center;
         background: $primary-gradient;
-        border-radius: 50%;
+        border-radius: $border-radius-circle;
         display: flex;
         height: 85px;
         justify-content: space-around;
@@ -67,14 +67,14 @@
     &__order-transactions-info-container {
       align-self: center;
       background-color: $white;
-      border-radius: 20px;
-      box-shadow: 1px 1px 3px $alt-border-color;
+      border-radius: $border-radius-xl;
+      box-shadow: $shadow-sm;
       display: flex;
       flex: 1;
-      gap: 1em;
+      gap: $spacing-md;
       height: 4.5em;
       justify-content: space-between;
-      padding: 1em 1em 1em 70px;
+      padding: $spacing-md $spacing-md $spacing-md 70px;
 
       .order-transactions-info {
         max-width: 280px;
@@ -85,12 +85,12 @@
         flex: 1;
 
         &__invoice-no {
-          color: $alt-text-color;
+          color: $text-primary;
           font-size: 1.3em;
           font-weight: 500;
           align-items: center;
           display: flex;
-          gap: 0.5em;
+          gap: $spacing-sm;
 
           app-badge {
             width: 4em;
@@ -99,7 +99,7 @@
 
         &__created-by,
         &__order-transactions-date {
-          color: $alt-text-color;
+          color: $text-secondary;
           font-size: 0.9em;
         }
       }
@@ -119,5 +119,304 @@
         }
       }
     }
+  }
+}
+
+// Table View Styles
+.table-container {
+  background-color: $white;
+  border-radius: $border-radius-sm;
+  box-shadow: $shadow-md;
+  margin-top: $spacing-md;
+  overflow: hidden;
+  overflow-x: auto; // Enable horizontal scrolling on small screens
+
+  .table-select-all-container {
+    padding: $spacing-md;
+    border-bottom: 1px solid $border-light;
+    background-color: $gray-50;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .order-transactions-table {
+    width: 100%;
+    min-width: 100%;
+
+    .mat-mdc-header-cell {
+      background-color: $gray-50;
+      color: $text-secondary;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-bottom: 2px solid $primary;
+      padding: 12px 8px;
+    }
+
+    .mat-mdc-cell {
+      padding: 12px 8px;
+      border-bottom: 1px solid #e9ecef;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .mat-mdc-row {
+      cursor: pointer;
+      transition: $transition-normal;
+      min-height: 48px;
+
+      &:hover {
+        background-color: $gray-50;
+      }
+
+      &:nth-child(even) {
+        background-color: $gray-100;
+      }
+    }
+
+    .invoice-cell {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      flex-wrap: wrap;
+
+      .invoice-no {
+        font-weight: 500;
+        color: $text-primary;
+        word-break: break-word;
+      }
+
+      .mobile-status {
+        display: none; // Hidden by default, shown on mobile
+      }
+
+      app-badge {
+        flex-shrink: 0;
+      }
+    }
+
+    // Column specific styles
+    .mat-column-select {
+      width: 48px;
+      max-width: 48px;
+      flex: 0 0 48px;
+    }
+
+    .mat-column-invoiceNo {
+      min-width: 200px;
+      flex: 1 1 200px;
+    }
+
+    .mat-column-createdBy {
+      min-width: 150px;
+      flex: 1 1 150px;
+    }
+
+    .mat-column-storeName {
+      min-width: 140px;
+      flex: 1 1 140px;
+    }
+
+    .mat-column-transactionDate {
+      min-width: 130px;
+      flex: 1 1 130px;
+    }
+
+    .mat-column-status {
+      width: 120px;
+      text-align: center;
+      flex: 0 0 120px;
+    }
+
+    .mat-column-actions {
+      width: 80px;
+      text-align: center;
+      flex: 0 0 80px;
+    }
+  }
+
+  .mat-mdc-paginator {
+    border-top: 1px solid $gray-200;
+    background-color: $gray-50;
+  }
+}
+
+// Responsive Design for Table View
+@media (max-width: 1200px) {
+  .table-container {
+    .order-transactions-table {
+      .mat-column-storeName {
+        display: none;
+      }
+    }
+  }
+}
+
+// Tablet responsive design
+@media (max-width: 768px) {
+  .table-container {
+    margin-top: $spacing-sm;
+    border-radius: $border-radius-sm - 2px;
+
+    .table-select-all-container {
+      padding: $spacing-sm;
+    }
+
+    .order-transactions-table {
+      .mat-mdc-header-cell,
+      .mat-mdc-cell {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+      }
+
+      .mat-mdc-header-cell {
+        font-size: 0.75rem;
+      }
+
+      // Hide less important columns on tablet
+      .mat-column-createdBy,
+      .mat-column-storeName {
+        display: none;
+      }
+
+      .mat-column-invoiceNo {
+        min-width: 140px;
+        flex: 1 1 140px;
+      }
+
+      .mat-column-transactionDate {
+        min-width: 100px;
+        flex: 1 1 100px;
+      }
+
+      .mat-column-status {
+        width: 100px;
+        flex: 0 0 100px;
+      }
+
+      .mat-column-actions {
+        width: 60px;
+        flex: 0 0 60px;
+      }
+
+      .invoice-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $spacing-xs;
+
+        .invoice-no {
+          font-size: 0.85rem;
+        }
+
+        .mobile-status {
+          display: block; // Show status in invoice cell on tablet
+        }
+
+        app-badge {
+          font-size: 0.7rem;
+        }
+      }
+    }
+
+    .mat-mdc-paginator {
+      font-size: 0.8rem;
+
+      .mat-mdc-paginator-range-label {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}
+
+// Mobile responsive design
+@media (max-width: 480px) {
+  .table-container {
+    .order-transactions-table {
+      .mat-mdc-header-cell,
+      .mat-mdc-cell {
+        padding: 6px 2px;
+        font-size: 0.75rem;
+      }
+
+      // On mobile, show only essential columns
+      .mat-column-createdBy,
+      .mat-column-storeName,
+      .mat-column-transactionDate {
+        display: none;
+      }
+
+      .mat-column-invoiceNo {
+        min-width: auto;
+        flex: 1;
+      }
+
+      .mat-column-status {
+        width: 80px;
+        flex: 0 0 80px;
+      }
+
+      .mat-column-actions {
+        width: 50px;
+        flex: 0 0 50px;
+
+        button {
+          padding: 4px;
+          min-width: auto;
+          width: 36px;
+          height: 36px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+
+      .invoice-cell {
+        .invoice-no {
+          font-size: 0.8rem;
+          line-height: 1.2;
+        }
+
+        .mobile-status {
+          display: block; // Show status in invoice cell on mobile
+        }
+
+        app-badge {
+          font-size: 0.65rem;
+          min-width: auto;
+        }
+      }
+    }
+
+    .mat-mdc-paginator {
+      .mat-mdc-paginator-page-size-select {
+        display: none;
+      }
+
+      .mat-mdc-paginator-range-actions {
+        .mat-mdc-icon-button {
+          padding: 4px;
+          width: 36px;
+          height: 36px;
+
+          mat-icon {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Menu item styles for view switching
+.mat-mdc-menu-item.active-view {
+  background-color: rgba($primary, $opacity-light);
+
+  .mat-icon {
+    color: $primary;
   }
 }

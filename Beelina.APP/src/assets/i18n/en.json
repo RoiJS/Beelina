@@ -1712,6 +1712,23 @@
       "SUCCESS_MESSAGE": "Selected order(s) have been successfully marked as Paid!",
       "ERROR_MESSAGE": "Failed to mark as paid selected order(s). Please try again later!",
       "WARNING_MESSAGE": "There are non confirmed order(s) selected. Marking orders as paid is only allowed for confirmed orders."
+    },
+    "VIEW_OPTIONS": {
+      "LIST_VIEW": "List View",
+      "TABLE_VIEW": "Table View"
+    },
+    "TABLE_VIEW": {
+      "COLUMNS": {
+        "INVOICE_NO": "Invoice No.",
+        "CREATED_BY": "Sales Agent",
+        "STORE": "Store",
+        "TRANSACTION_DATE": "Transaction Date",
+        "STATUS": "Status",
+        "ACTIONS": "Actions"
+      },
+      "ACTIONS": {
+        "VIEW_TRANSACTION": "View Transaction"
+      }
     }
   },
   "MANAGE_ACCOUNT_PAGE": {

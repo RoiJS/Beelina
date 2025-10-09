@@ -43,8 +43,8 @@ export class TransactionFilterComponent extends BaseComponent {
   onReset() {
     this._bottomSheetRef.dismiss({
       transactionStatus: TransactionStatusEnum.ALL,
-      dateFrom: '',
-      dateTo: '',
+      dateFrom: DateFormatter.format(new Date()),
+      dateTo: DateFormatter.format(new Date()),
       paymentStatus: PaymentStatusEnum.All
     });
   }

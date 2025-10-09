@@ -4,9 +4,8 @@ using Beelina.LIB.Enums;
 using Beelina.LIB.GraphQL.Types;
 using Beelina.LIB.Interfaces;
 using Beelina.LIB.Models;
-using HotChocolate.Authorization;
 using Beelina.LIB.Models.Filters;
-using System.Runtime.InteropServices.Marshalling;
+using HotChocolate.Authorization;
 
 namespace Beelina.API.Types.Query
 {
@@ -29,7 +28,7 @@ namespace Beelina.API.Types.Query
 				transactionRepository.SetCurrentUserId(currentUserService.CurrentUserId);
 
 				var result = await transactionRepository.RegisterTransactionWithBusinessLogic(
-					transactionInput, 
+					transactionInput,
 					httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 
 				if (transactionInput.Id > 0)
@@ -186,7 +185,20 @@ namespace Beelina.API.Types.Query
 		[UseProjection]
 		[UseFiltering]
 		[UseSorting]
-		public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "", TransactionsFilter transactionsFilter = null)
+		public async Task<List<TransactionInformation>> GetTransactions([Service] ITransactionRepository<Transaction> transactionRepository, string filterKeyword = "", TransactionsFilter? transactionsFilter = null)
+		{
+			return await transactionRepository.GetTransactions(0, filterKeyword, transactionsFilter);
+		}
+
+		[Authorize]
+		[UseOffsetPaging(MaxPageSize = 50, DefaultPageSize = 50, IncludeTotalCount = true)]
+		[UseProjection]
+		[UseFiltering]
+		[UseSorting]
+		public async Task<IList<TransactionInformation>> GetTransactionsForTable(
+			[Service] ITransactionRepository<Transaction> transactionRepository,
+			string filterKeyword = "",
+			TransactionsFilter? transactionsFilter = null)
 		{
 			return await transactionRepository.GetTransactions(0, filterKeyword, transactionsFilter);
 		}
@@ -309,8 +321,8 @@ namespace Beelina.API.Types.Query
 		)
 		{
 			return await transactionRepository.ValidateMultipleTransactionsProductQuantities(
-				transactionIds, 
-				userAccountId, 
+				transactionIds,
+				userAccountId,
 				productRepository,
 				httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 		}
@@ -324,8 +336,8 @@ namespace Beelina.API.Types.Query
 				int userAccountId)
 		{
 			return await transactionRepository.ValidateProductTransactionsQuantities(
-				transactionInputs, 
-				userAccountId, 
+				transactionInputs,
+				userAccountId,
 				productRepository,
 				httpContextAccessor?.HttpContext?.RequestAborted ?? default);
 		}

@@ -8,6 +8,7 @@ import { TransactionService } from "../_services/transaction.service";
 import { TransactionsFilter } from "../_models/filters/transactions.filter";
 
 import { PaymentStatusEnum } from "../_enum/payment-status.enum";
+import { SortOrderOptionsEnum } from "../_enum/sort-order-options.enum";
 import { TransactionStatusEnum } from "../_enum/transaction-status.enum";
 
 export interface IOrderTransactionState extends IBaseState, IBaseStateConnection {
@@ -18,6 +19,10 @@ export interface IOrderTransactionState extends IBaseState, IBaseStateConnection
   dateTo: string;
   paymentStatus: PaymentStatusEnum
   storeId: number;
+  sortField: string;
+  sortDirection: SortOrderOptionsEnum;
+  skip: number;
+  take: number;
 }
 
 export const initialState: IOrderTransactionState = {
@@ -33,7 +38,11 @@ export const initialState: IOrderTransactionState = {
   error: null,
   totalCount: 0,
   paymentStatus: PaymentStatusEnum.All,
-  storeId: 0
+  storeId: 0,
+  sortField: 'transactionDate',
+  sortDirection: SortOrderOptionsEnum.DESCENDING,
+  skip: 0,
+  take: 50
 };
 
 export const OrderTransactionStore = signalStore(
@@ -106,6 +115,62 @@ export const OrderTransactionStore = signalStore(
         transactionStatus: store.transactionStatus(),
         paymentStatus: store.paymentStatus()
       });
+    },
+
+    /**
+     * Get transactions for table view using the new pagination strategy
+     * This method supports server-side pagination with configurable skip, take, sortField, and sortDirection parameters
+     */
+    getOrderTransactionsForTable: () => {
+      patchState(store, { isLoading: true });
+
+      const transactionsFilter = new TransactionsFilter();
+      transactionsFilter.status = store.transactionStatus();
+      transactionsFilter.paymentStatus = store.paymentStatus();
+      transactionsFilter.dateFrom = store.dateFrom();
+      transactionsFilter.dateTo = store.dateTo();
+      transactionsFilter.storeId = store.storeId();
+
+      if (store.filterKeyword() || transactionsFilter.isActive()) {
+        return transactionService.getTransactionsForTable(
+          store.filterKeyword(),
+          transactionsFilter,
+          store.skip(),
+          store.take(),
+          store.sortField(),
+          store.sortDirection()
+        ).subscribe({
+          next: (data) => {
+            patchState(store, {
+              transactions: data.transactions,
+              isLoading: false,
+              totalCount: data.totalCount
+            });
+          },
+          error: (error) => {
+            patchState(store, { isLoading: false, error: error.message });
+          },
+        });
+      } else {
+        patchState(store, {
+          transactions: initialState.transactions,
+          isLoading: initialState.isLoading,
+          totalCount: initialState.totalCount
+        });
+        return 0;
+      }
+    },
+
+    setPagination: (skip: number, take: number) => {
+      patchState(store, { skip: skip, take: take });
+    },
+
+    setSort: (sortField: string, sortDirection: SortOrderOptionsEnum) => {
+      patchState(store, { sortField: sortField, sortDirection: sortDirection });
+    },
+
+    setSearchFilterKeyword: (keyword: string) => {
+      patchState(store, { filterKeyword: keyword });
     }
   }))
 );

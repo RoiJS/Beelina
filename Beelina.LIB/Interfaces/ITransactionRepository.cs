@@ -20,7 +20,7 @@ namespace Beelina.LIB.Interfaces
         Task<List<TransactionInformation>> GetTransactionsByInvoiceNo(int salesAgentId, string invoiceSearchTerm = "");
         Task<bool> SendTransactionEmailReceipt(int transactionId);
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);
-        Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);
+    Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);
         Task<TransactionSales> GetSales(int userId, string fromDate, string toDate);
         Task<double> GetProfit(int userId, string fromDate, string toDate);
         Task<ProfitBreakdown> GetProfitBreakdown(int userId, string fromDate, string toDate);

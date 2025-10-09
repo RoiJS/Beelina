@@ -2,10 +2,21 @@
 <app-tool-bar [title]="'GENERAL_TEXTS.BIZUAL' | translate" [showBackButton]="false">
   <mat-icon matRipple [matMenuTriggerFor]="menu">more_vert</mat-icon>
   <mat-menu #menu="matMenu">
-    <button [disabled]="dataSource?.itemCount === 0" mat-menu-item
+    <button [disabled]="dataSource?.itemCount === 0 && !tableDataSource?.data?.length" mat-menu-item
       (click)="activateSelectMultiple(true)">
       <mat-icon>list</mat-icon>
       {{ 'GENERAL_TEXTS.SELECT_MULTIPLE' | translate }}
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="switchViewMode(viewModeEnum.LIST)"
+      [class.active-view]="currentViewMode() === viewModeEnum.LIST">
+      <mat-icon>view_list</mat-icon>
+      {{ 'ORDER_TRANSACTIONS_PAGE.VIEW_OPTIONS.LIST_VIEW' | translate }}
+    </button>
+    <button mat-menu-item (click)="switchViewMode(viewModeEnum.TABLE)"
+      [class.active-view]="currentViewMode() === viewModeEnum.TABLE">
+      <mat-icon>table_view</mat-icon>
+      {{ 'ORDER_TRANSACTIONS_PAGE.VIEW_OPTIONS.TABLE_VIEW' | translate }}
     </button>
   </mat-menu>
 </app-tool-bar>
@@ -53,6 +64,8 @@
       }
     </div>
 
+    <!-- LIST VIEW (Virtual Scrolling) -->
+    @if (currentViewMode() === viewModeEnum.LIST) {
     <app-list-container [templateType]="emptyEntityTemplateEnum.TRANSACTIONS"
       [labelInformationTextIdentifier]="'ORDER_TRANSACTIONS_PAGE.ORDER_TRANSACTION_LIST_EMPTY_LABEL.LABEL'"
       [count]="dataSource?.itemCount">
@@ -62,7 +75,6 @@
         [labelPosition]="'after'">{{
         'GENERAL_TEXTS.SELECT_ALL' | translate }}</mat-checkbox>
       }
-
 
       <cdk-virtual-scroll-viewport itemSize="10" orientation="vertical" class="list-container order-transactions-list">
 
@@ -109,5 +121,115 @@
         </div>
       </cdk-virtual-scroll-viewport>
     </app-list-container>
+    }
+
+    <!-- TABLE VIEW (Material Table with Pagination) -->
+    @if (currentViewMode() === viewModeEnum.TABLE) {
+    <div class="table-container">
+      @if(multipleItemsService.selectMultipleActive()) {
+      <div class="table-select-all-container">
+        <mat-checkbox [checked]="multipleItemsService.isSelectedAll()" (change)="selectAllTableItems($event.checked)"
+          [labelPosition]="'after'">{{
+          'GENERAL_TEXTS.SELECT_ALL' | translate }}</mat-checkbox>
+      </div>
+      }
+
+      <div class="table-wrapper">
+        <mat-table [dataSource]="tableDataSource" matSort matSortActive="transactionDate" matSortDisableClear
+          matSortDirection="desc" (matSortChange)="onSortChange($event)" class="order-transactions-table">
+
+        <!-- Select Column (for multiple selection mode) -->
+        @if(multipleItemsService.selectMultipleActive()) {
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-checkbox [checked]="multipleItemsService.isSelected(row)"
+              (change)="selectTableItem($event.checked, row)">
+            </mat-checkbox>
+          </mat-cell>
+        </ng-container>
+        }
+
+        <!-- Invoice No Column -->
+        <ng-container matColumnDef="invoiceNo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.INVOICE_NO' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div class="invoice-cell">
+              <span class="invoice-no">{{ element.invoiceNo }}</span>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Created By Column -->
+        <ng-container matColumnDef="createdBy">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.CREATED_BY' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.createdBy }}</mat-cell>
+        </ng-container>
+
+        <!-- Store Column -->
+        <ng-container matColumnDef="storeName">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.STORE' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.store.name }}</mat-cell>
+        </ng-container>
+
+        <!-- Transaction Date Column -->
+        <ng-container matColumnDef="transactionDate">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.TRANSACTION_DATE' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.transactionDateFormatted }}</mat-cell>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.STATUS' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            @switch(element.status) {
+            @case(_transactionStatusType.DRAFT) {
+            <app-badge [type]="bannerTypeEnum.INFO" [textIdentifier]="'ORDER_TYPE.DRAFT'"></app-badge>
+            }
+            @case(_transactionStatusType.BAD_ORDER) {
+            <app-badge [type]="bannerTypeEnum.ERROR" [textIdentifier]="'ORDER_TYPE.BAD_ORDER'"></app-badge>
+            }
+            @case(_transactionStatusType.CONFIRMED) {
+            <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'ORDER_TYPE.CONFIRM'"></app-badge>
+            }
+            }
+          </mat-cell>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.ACTIONS' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <button mat-icon-button (click)="viewTransaction(element)"
+              matTooltip="{{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.ACTIONS.VIEW_TRANSACTION' | translate }}">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+          <mat-header-row *matHeaderRowDef="getDisplayedColumns()"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: getDisplayedColumns()" class="transaction-table-row"></mat-row>
+        </mat-table>
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator [pageSize]="currentPageSize()" [pageIndex]="currentPageIndex()"
+        [length]="orderTransactionStore.totalCount()" [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+    </div>
+    }
   </div>
 </app-loader-layout>

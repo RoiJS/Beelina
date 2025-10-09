@@ -15,9 +15,26 @@ export class UIService {
       shareReplay()
     );
 
+  private _isMobile: Observable<boolean> = this.breakpointObserver
+    .observe([Breakpoints.HandsetPortrait, Breakpoints.HandsetLandscape])
+    .pipe(
+      map((result) => result.matches),
+      shareReplay()
+    );
+
+  private _isTablet: Observable<boolean> = this.breakpointObserver
+    .observe([Breakpoints.TabletPortrait, Breakpoints.TabletLandscape])
+    .pipe(
+      map((result) => result.matches),
+      shareReplay()
+    );
+
   constructor(private breakpointObserver: BreakpointObserver) {
     this._isHandSet;
+    this._isMobile;
+    this._isTablet;
   }
+
   setDrawerRef(sideNavRef: MatSidenav | undefined): void {
     this._sideNavRef = sideNavRef;
   }
@@ -28,5 +45,13 @@ export class UIService {
 
   get isHandset(): Observable<boolean> {
     return this._isHandSet;
+  }
+
+  get isMobile(): Observable<boolean> {
+    return this._isMobile;
+  }
+
+  get isTablet(): Observable<boolean> {
+    return this._isTablet;
   }
 }
