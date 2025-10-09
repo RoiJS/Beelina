@@ -131,34 +131,25 @@ export const OrderTransactionStore = signalStore(
       transactionsFilter.dateTo = store.dateTo();
       transactionsFilter.storeId = store.storeId();
 
-      if (store.filterKeyword() || transactionsFilter.isActive()) {
-        return transactionService.getTransactionsForTable(
-          store.filterKeyword(),
-          transactionsFilter,
-          store.skip(),
-          store.take(),
-          store.sortField(),
-          store.sortDirection()
-        ).subscribe({
-          next: (data) => {
-            patchState(store, {
-              transactions: data.transactions,
-              isLoading: false,
-              totalCount: data.totalCount
-            });
-          },
-          error: (error) => {
-            patchState(store, { isLoading: false, error: error.message });
-          },
-        });
-      } else {
-        patchState(store, {
-          transactions: initialState.transactions,
-          isLoading: initialState.isLoading,
-          totalCount: initialState.totalCount
-        });
-        return 0;
-      }
+      return transactionService.getTransactionsForTable(
+        store.filterKeyword(),
+        transactionsFilter,
+        store.skip(),
+        store.take(),
+        store.sortField(),
+        store.sortDirection()
+      ).subscribe({
+        next: (data) => {
+          patchState(store, {
+            transactions: data.transactions,
+            isLoading: false,
+            totalCount: data.totalCount
+          });
+        },
+        error: (error) => {
+          patchState(store, { isLoading: false, error: error.message });
+        },
+      });
     },
 
     setPagination: (skip: number, take: number) => {
