@@ -335,7 +335,7 @@ namespace Beelina.LIB.BusinessLogic
                 .ToListAsync();
 
             var totalPurchaseOrderAmount = 0.0;
-            
+
             foreach (var purchaseOrder in purchaseOrdersWithAmounts)
             {
                 var purchaseOrderDiscounts = discounts.Where(d => d.ProductWarehouseStockReceiptEntryId == purchaseOrder.PurchaseOrderId).ToList();
@@ -351,7 +351,7 @@ namespace Beelina.LIB.BusinessLogic
             var purchaseOrdersQuery = (from pore in _beelinaRepository.ClientDbContext.ProductWarehouseStockReceiptEntries
                                        join pswa in _beelinaRepository.ClientDbContext.ProductStockWarehouseAudit
                                        on pore.Id equals pswa.ProductWarehouseStockReceiptEntryId
-                                       
+
                                        join psw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
                                        on pswa.ProductStockPerWarehouseId equals psw.Id
 
@@ -398,7 +398,7 @@ namespace Beelina.LIB.BusinessLogic
                 .ToListAsync();
 
             var totalDiscountProfit = 0.0;
-            
+
             foreach (var purchaseOrder in purchaseOrdersWithAmounts)
             {
                 var purchaseOrderDiscounts = discounts.Where(d => d.ProductWarehouseStockReceiptEntryId == purchaseOrder.PurchaseOrderId).ToList();
@@ -420,39 +420,39 @@ namespace Beelina.LIB.BusinessLogic
             // Filter by userId only for sales agents (User permission level)
             // Managers and administrators can see all transactions
             var transactionsQuery = from t in _beelinaRepository.ClientDbContext.Transactions
-                                   join pt in _beelinaRepository.ClientDbContext.ProductTransactions
-                                   on t.Id equals pt.TransactionId
-                                   join p in _beelinaRepository.ClientDbContext.Products
-                                   on pt.ProductId equals p.Id
-                                   join psw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
-                                   on new { ProductId = pt.ProductId } equals new { ProductId = psw.ProductId }
-                                   
-                                   where
-                                       t.Status == Enums.TransactionStatusEnum.Confirmed
-                                       // Get all transactions if current user is Manager or Administrator
-                                       && (
-                                           userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
-                                           (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
-                                       )
-                                       && t.IsActive
-                                       && !t.IsDelete
-                                       && pt.IsActive
-                                       && !pt.IsDelete
-                                       && psw.IsActive
-                                       && !psw.IsDelete
+                                    join pt in _beelinaRepository.ClientDbContext.ProductTransactions
+                                    on t.Id equals pt.TransactionId
+                                    join p in _beelinaRepository.ClientDbContext.Products
+                                    on pt.ProductId equals p.Id
+                                    join psw in _beelinaRepository.ClientDbContext.ProductStockPerWarehouse
+                                    on new { ProductId = pt.ProductId } equals new { ProductId = psw.ProductId }
 
-                                   select new
-                                   {
-                                       TransactionDate = t.TransactionDate,
-                                       TransactionId = t.Id,
-                                       InvoiceNo = t.InvoiceNo,
-                                       StoreId = t.StoreId,
-                                       CreatedById = t.CreatedById,
-                                       TransactionDiscount = t.Discount, // Transaction-level discount percentage
-                                       SalesPrice = pt.Price, // This comes from ProductStockPerPanel
-                                       WarehousePrice = psw.PricePerUnit, // This is the cost price
-                                       Quantity = pt.Quantity
-                                   };
+                                    where
+                                        t.Status == Enums.TransactionStatusEnum.Confirmed
+                                        // Get all transactions if current user is Manager or Administrator
+                                        && (
+                                            userRetailModulePermission.PermissionLevel > PermissionLevelEnum.User ||
+                                            (userRetailModulePermission.PermissionLevel == PermissionLevelEnum.User && t.CreatedById == userId)
+                                        )
+                                        && t.IsActive
+                                        && !t.IsDelete
+                                        && pt.IsActive
+                                        && !pt.IsDelete
+                                        && psw.IsActive
+                                        && !psw.IsDelete
+
+                                    select new
+                                    {
+                                        TransactionDate = t.TransactionDate,
+                                        TransactionId = t.Id,
+                                        InvoiceNo = t.InvoiceNo,
+                                        StoreId = t.StoreId,
+                                        CreatedById = t.CreatedById,
+                                        TransactionDiscount = t.Discount, // Transaction-level discount percentage
+                                        SalesPrice = pt.Price, // This comes from ProductStockPerPanel
+                                        WarehousePrice = psw.PricePerUnit, // This is the cost price
+                                        Quantity = pt.Quantity
+                                    };
 
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
@@ -468,13 +468,13 @@ namespace Beelina.LIB.BusinessLogic
             var transactionData = await transactionsQuery.AsNoTracking().ToListAsync();
 
             // Group by transaction to calculate profit per transaction, then deduct bad orders
-            var transactionGroups = transactionData.GroupBy(t => new 
-            { 
-                t.TransactionId, 
-                t.InvoiceNo, 
-                t.StoreId, 
-                t.CreatedById, 
-                t.TransactionDiscount 
+            var transactionGroups = transactionData.GroupBy(t => new
+            {
+                t.TransactionId,
+                t.InvoiceNo,
+                t.StoreId,
+                t.CreatedById,
+                t.TransactionDiscount
             });
 
             var totalPriceProfit = 0.0;
@@ -482,7 +482,7 @@ namespace Beelina.LIB.BusinessLogic
             foreach (var transactionGroup in transactionGroups)
             {
                 // Calculate gross profit for this transaction
-                var grossProfit = transactionGroup.Sum(t => 
+                var grossProfit = transactionGroup.Sum(t =>
                     ((t.SalesPrice - (double)t.WarehousePrice)) * t.Quantity);
 
                 // Apply transaction discount to the gross profit
@@ -490,8 +490,8 @@ namespace Beelina.LIB.BusinessLogic
 
                 // Calculate and deduct bad order amount for this transaction
                 var badOrderAmount = await GetBadOrderAmount(
-                    transactionGroup.Key.InvoiceNo, 
-                    transactionGroup.Key.StoreId, 
+                    transactionGroup.Key.InvoiceNo,
+                    transactionGroup.Key.StoreId,
                     transactionGroup.Key.CreatedById);
 
                 // Final profit = discounted profit - bad orders
@@ -538,7 +538,7 @@ namespace Beelina.LIB.BusinessLogic
             return await GetTransactions(_currentUserService.CurrentUserId, "", transactionsFilter);
         }
 
-        public async Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null)
+        public async Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null, bool includeAmounts = true)
         {
             var transactions = await (
                     from t in _beelinaRepository.ClientDbContext.Transactions
@@ -569,7 +569,8 @@ namespace Beelina.LIB.BusinessLogic
                             (transactionsFilter != null && (
                                     (String.IsNullOrEmpty(transactionsFilter.DateFrom) || (!String.IsNullOrEmpty(transactionsFilter.DateFrom) && t.TransactionDate >= Convert.ToDateTime(transactionsFilter.DateFrom))) &&
                                     (String.IsNullOrEmpty(transactionsFilter.DateTo) || (!String.IsNullOrEmpty(transactionsFilter.DateTo) && t.TransactionDate <= Convert.ToDateTime(transactionsFilter.DateTo))) &&
-                                    (transactionsFilter.StoreId == 0 || s.Id == transactionsFilter.StoreId))))
+                                    (transactionsFilter.StoreId == 0 || s.Id == transactionsFilter.StoreId) &&
+                                    (transactionsFilter.SalesAgentId == 0 || t.CreatedById == transactionsFilter.SalesAgentId))))
                         && !t.IsDelete
                         && t.IsActive
 
@@ -584,6 +585,7 @@ namespace Beelina.LIB.BusinessLogic
                         StoreName = s.Name ?? String.Empty,
                         BarangayName = b.Name ?? String.Empty,
                         TransactionDate = t.TransactionDate,
+                        Discount = t.Discount,
                         ProductTransaction = pt,
                         DateUpdated = t.DateUpdated,
                         UpdatedBy = up != null ? (up.PersonFullName ?? String.Empty) : String.Empty,
@@ -608,6 +610,7 @@ namespace Beelina.LIB.BusinessLogic
                                 StoreName = t.StoreName,
                                 BarangayName = t.BarangayName,
                                 TransactionDate = t.TransactionDate,
+                                Discount = t.Discount,
                                 ProductTransaction = t.ProductTransaction,
                                 DateUpdated = t.DateUpdated,
                                 UpdatedBy = t.UpdatedBy,
@@ -627,6 +630,7 @@ namespace Beelina.LIB.BusinessLogic
                                                      t.TransactionDate,
                                                      t.Status,
                                                      t.CreatedById,
+                                                     t.Discount,
                                                      t.DateUpdated,
                                                      t.UpdatedBy
                                                  } into g
@@ -641,6 +645,8 @@ namespace Beelina.LIB.BusinessLogic
                                                      StoreName = g.Key.StoreName,
                                                      BarangayName = g.Key.BarangayName,
                                                      TransactionDate = g.Key.TransactionDate,
+                                                     Discount = g.Key.Discount,
+                                                     Total = includeAmounts ? g.Sum(s => s.ProductTransaction.Price * s.ProductTransaction.Quantity) : 0,
                                                      HasUnpaidProductTransaction = Convert.ToInt32(g.Min(s => s.ProductTransaction.Status)) == 0,
                                                      OrderItemsDateUpdated = g.Max(s => s.ProductTransaction.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone)),
                                                      DetailsDateUpdated = g.Key.DateUpdated.ConvertToTimeZone(_appSettings.Value.GeneralSettings.TimeZone),
@@ -654,11 +660,35 @@ namespace Beelina.LIB.BusinessLogic
             {
                 if (transactionsFilter.PaymentStatus == PaymentStatusEnum.Paid)
                 {
-                    transactionsWithPaymentStatus = [.. transactionsWithPaymentStatus.Where(t => !t.HasUnpaidProductTransaction)];
+                    transactionsWithPaymentStatus = [.. transactionsWithPaymentStatus.Where(t => t.PaymentStatus == PaymentStatusEnum.Paid)];
                 }
                 else if (transactionsFilter.PaymentStatus == PaymentStatusEnum.Unpaid)
                 {
-                    transactionsWithPaymentStatus = [.. transactionsWithPaymentStatus.Where(t => t.HasUnpaidProductTransaction)];
+                    transactionsWithPaymentStatus = [.. transactionsWithPaymentStatus.Where(t => t.PaymentStatus == PaymentStatusEnum.Unpaid)];
+                }
+            }
+
+            if (includeAmounts)
+            {
+                // Calculate BadOrderAmount and PaymentStatus for each transaction
+                foreach (var transaction in transactionsWithPaymentStatus)
+                {
+                    if (transaction.Status == TransactionStatusEnum.Confirmed)
+                    {
+                        transaction.BadOrderAmount = await GetBadOrderAmount(transaction.InvoiceNo, transaction.StoreId, transaction.CreatedById);
+
+                        // Calculate payment status based on balance (only for confirmed transactions)
+                        var netTotal = transaction.Total - (transaction.Discount / 100 * transaction.Total) - transaction.BadOrderAmount;
+                        var totalPayments = await GetTransactionPaymentsTotal(transaction.Id);
+                        var balance = netTotal - totalPayments;
+
+                        transaction.PaymentStatus = balance <= 0 ? PaymentStatusEnum.Paid : PaymentStatusEnum.Unpaid;
+                    }
+                    else
+                    {
+                        // For non-confirmed transactions (Draft, BadOrder), payment status is not applicable
+                        transaction.PaymentStatus = PaymentStatusEnum.Unpaid; // Default value, but won't be displayed in UI
+                    }
                 }
             }
 
@@ -675,7 +705,7 @@ namespace Beelina.LIB.BusinessLogic
                 StoreId = 0
             };
             // Reuse the existing search, then constrain strictly by invoice number.
-            var results = await GetTransactions(salesAgentId, invoiceSearchTerm, transactionsFilter);
+            var results = await GetTransactions(salesAgentId, invoiceSearchTerm, transactionsFilter, false);
 
             if (!string.IsNullOrWhiteSpace(invoiceSearchTerm))
             {
@@ -1359,6 +1389,14 @@ namespace Beelina.LIB.BusinessLogic
             return transactionPayments;
         }
 
+        private async Task<double> GetTransactionPaymentsTotal(int transactionId)
+        {
+            var payments = await _beelinaRepository.ClientDbContext.Payments
+                .Where(p => p.TransactionId == transactionId && p.IsActive && !p.IsDelete)
+                .SumAsync(p => p.Amount);
+
+            return payments;
+        }
 
         public async Task DeleteOrderTransactions(List<int> transactionIds)
         {

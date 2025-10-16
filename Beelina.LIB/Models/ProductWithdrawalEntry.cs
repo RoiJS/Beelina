@@ -1,4 +1,6 @@
 using Beelina.LIB.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 
 namespace Beelina.LIB.Models
 {
@@ -13,6 +15,18 @@ namespace Beelina.LIB.Models
         public List<ProductStockAudit> ProductStockAudits { get; set; }
 
         public virtual UserAccount UserAccount { get; set; }
+
+        [NotMapped]
+        public double TotalAmount { get; set; }
+
+        [NotMapped]
+        public string FormattedTotalAmount
+        {
+            get
+            {
+                return TotalAmount.ToString("C", new CultureInfo("en-PH"));
+            }
+        }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

@@ -54,7 +54,7 @@ export class OrderTransactionsComponent extends SharedComponent implements OnDes
   currentPageIndex = signal<number>(0);
 
   // Table configuration
-  displayedColumns: string[] = ['invoiceNo', 'createdBy', 'storeName', 'transactionDate', 'status', 'actions'];
+  displayedColumns: string[] = ['invoiceNo', 'createdBy', 'storeName', 'transactionDate', 'grossAmount', 'netAmount', 'paymentStatus', 'status', 'actions'];
 
   bottomSheet = inject(MatBottomSheet);
   dialogService = inject(DialogService);
@@ -67,6 +67,10 @@ export class OrderTransactionsComponent extends SharedComponent implements OnDes
 
   transactionsFilter = signal<TransactionsFilter>(new TransactionsFilter());
   multipleItemsService = inject(MultipleEntitiesService<Transaction>);
+
+  // Enum references for template
+  readonly transactionStatusType = TransactionStatusEnum;
+  readonly paymentStatusType = PaymentStatusEnum;
 
   validRoute = false;
 
@@ -88,6 +92,7 @@ export class OrderTransactionsComponent extends SharedComponent implements OnDes
     this.transactionsFilter.update(() => {
       const newTransactionsFilter = new TransactionsFilter();
       newTransactionsFilter.status = this.orderTransactionStore.transactionStatus();
+      newTransactionsFilter.salesAgentId = this.orderTransactionStore.salesAgentId();
 
       if (this.orderTransactionStore.dateFrom().length === 0 && this.orderTransactionStore.dateTo().length === 0) {
         // For initial load, set both dateFrom and dateTo to today's date
@@ -174,6 +179,7 @@ export class OrderTransactionsComponent extends SharedComponent implements OnDes
           dateFrom: string;
           dateTo: string;
           paymentStatus: PaymentStatusEnum;
+          salesAgent: number;
         }) => {
           if (!data) return;
 
@@ -183,6 +189,7 @@ export class OrderTransactionsComponent extends SharedComponent implements OnDes
             newTransactionsFilter.dateTo = data.dateTo;
             newTransactionsFilter.status = data.transactionStatus;
             newTransactionsFilter.paymentStatus = data.paymentStatus;
+            newTransactionsFilter.salesAgentId = data.salesAgent;
             return newTransactionsFilter;
           });
 
@@ -409,10 +416,10 @@ export class OrderTransactionsComponent extends SharedComponent implements OnDes
     // Define columns based on screen size
     if (this._isMobile) {
       // Mobile: Show only essential columns
-      baseColumns = ['invoiceNo', 'status', 'actions'];
+      baseColumns = ['invoiceNo', 'netAmount', 'status', 'actions'];
     } else if (this._isTablet) {
-      // Tablet: Hide less important columns
-      baseColumns = ['invoiceNo', 'transactionDate', 'status', 'actions'];
+      // Tablet: Hide less important columns but show amounts
+      baseColumns = ['invoiceNo', 'transactionDate', 'netAmount', 'status', 'actions'];
     } else {
       // Desktop: Show all columns
       baseColumns = this.displayedColumns;

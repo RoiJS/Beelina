@@ -8,6 +8,7 @@ export class TransactionsFilter {
   public dateTo: string;
   public paymentStatus: PaymentStatusEnum;
   public storeId: number;
+  public salesAgentId: number;
 
   constructor() {
     this.status = TransactionStatusEnum.ALL;
@@ -15,6 +16,7 @@ export class TransactionsFilter {
     this.dateTo = DateFormatter.format(new Date());
     this.paymentStatus = PaymentStatusEnum.All;
     this.storeId = 0; // Default to 0 for all stores
+    this.salesAgentId = 0; // Default to 0 for all sales agents
   }
 
   isActive() {
@@ -22,7 +24,8 @@ export class TransactionsFilter {
     this.dateFrom !== DateFormatter.format(new Date()) ||
     this.dateTo !== DateFormatter.format(new Date()) ||
     this.paymentStatus !== PaymentStatusEnum.All ||
-    this.storeId !== 0; // Check if storeId is set to a specific store
+    this.storeId !== 0 || // Check if storeId is set to a specific store
+    this.salesAgentId !== 0; // Check if salesAgentId is set to a specific agent
   }
 
   reset() {
@@ -31,5 +34,6 @@ export class TransactionsFilter {
     this.dateTo = DateFormatter.format(new Date());
     this.paymentStatus = PaymentStatusEnum.All;
     this.storeId = 0; // Reset to 0 for all stores
+    this.salesAgentId = 0; // Reset to 0 for all sales agents
   }
 }

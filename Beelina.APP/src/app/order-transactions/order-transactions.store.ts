@@ -19,6 +19,7 @@ export interface IOrderTransactionState extends IBaseState, IBaseStateConnection
   dateTo: string;
   paymentStatus: PaymentStatusEnum
   storeId: number;
+  salesAgentId: number;
   sortField: string;
   sortDirection: SortOrderOptionsEnum;
   skip: number;
@@ -39,6 +40,7 @@ export const initialState: IOrderTransactionState = {
   totalCount: 0,
   paymentStatus: PaymentStatusEnum.All,
   storeId: 0,
+  salesAgentId: 0,
   sortField: 'transactionDate',
   sortDirection: SortOrderOptionsEnum.DESCENDING,
   skip: 0,
@@ -58,6 +60,7 @@ export const OrderTransactionStore = signalStore(
       transactionsFilter.dateFrom = store.dateFrom();
       transactionsFilter.dateTo = store.dateTo();
       transactionsFilter.storeId = store.storeId();
+      transactionsFilter.salesAgentId = store.salesAgentId();
 
       return transactionService.getTransactions(store.endCursor(), store.filterKeyword(), transactionsFilter).subscribe({
         next: (data) => {
@@ -88,7 +91,8 @@ export const OrderTransactionStore = signalStore(
         dateFrom: transactionFilter.dateFrom,
         dateTo: transactionFilter.dateTo,
         paymentStatus: transactionFilter.paymentStatus,
-        storeId: transactionFilter.storeId
+        storeId: transactionFilter.storeId,
+        salesAgentId: transactionFilter.salesAgentId
       });
     },
 
@@ -120,6 +124,7 @@ export const OrderTransactionStore = signalStore(
       transactionsFilter.dateFrom = store.dateFrom();
       transactionsFilter.dateTo = store.dateTo();
       transactionsFilter.storeId = store.storeId();
+      transactionsFilter.salesAgentId = store.salesAgentId();
 
       return transactionService.getTransactionsForTable(
         store.filterKeyword(),

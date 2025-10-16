@@ -43,6 +43,7 @@ namespace Beelina.LIB.BusinessLogic
                                     .ProductWarehouseStockReceiptEntries
                                     .Where((p) => p.Id == productWarehouseStockReceiptEntryId)
                                     .Include((p) => p.ProductStockWarehouseAudits)
+                                        .ThenInclude(a => a.ProductStockPerWarehouse)
                                     .Include((p) => p.Discounts)
                                     .FirstOrDefaultAsync();
 
@@ -83,6 +84,10 @@ namespace Beelina.LIB.BusinessLogic
                 ProductStockWarehouseAuditsResult = productStockWarehouseAuditResults,
             };
 
+            // Calculate amounts for the entry
+            productStockPerWarehouseResult.GrossAmount = CalculateGrossAmount(productStockPerWarehouseFromRepo.ProductStockWarehouseAudits);
+            productStockPerWarehouseResult.NetAmount = CalculateNetAmount(productStockPerWarehouseResult.GrossAmount, productStockPerWarehouseFromRepo.Discounts);
+
             return productStockPerWarehouseResult;
         }
 
@@ -93,6 +98,8 @@ namespace Beelina.LIB.BusinessLogic
                                     .ProductWarehouseStockReceiptEntries
                                     .Include(t => t.Supplier)
                                     .Include(t => t.Discounts)
+                                    .Include(t => t.ProductStockWarehouseAudits)
+                                        .ThenInclude(a => a.ProductStockPerWarehouse)
                                     .Where((p) =>
                                         (productReceiptEntryFilter == null ||
                                             (productReceiptEntryFilter != null &&
@@ -119,23 +126,6 @@ namespace Beelina.LIB.BusinessLogic
             }
 
             var productWarehouseStockReceiptEntries = await productWarehouseStockReceiptEntriesFromRepo.
-                        Select(t => new ProductWarehouseStockReceiptEntry
-                        {
-                            Id = t.Id,
-                            SupplierId = t.SupplierId,
-                            Supplier = t.Supplier,
-                            ReferenceNo = t.ReferenceNo,
-                            PlateNo = t.PlateNo,
-                            WarehouseId = t.WarehouseId,
-                            Notes = t.Notes,
-                            StockEntryDate = t.StockEntryDate, // TODO: Apply timezone conversion here
-                            Discounts = t.Discounts,
-                            InvoiceNo = t.InvoiceNo,
-                            InvoiceDate = t.InvoiceDate,
-                            DateEncoded = t.DateEncoded,
-                            PurchaseOrderStatus = t.PurchaseOrderStatus,
-                            Location = t.Location,
-                        }).
                         ToListAsync(cancellationToken);
 
             if (!String.IsNullOrEmpty(filterKeyword))
@@ -143,6 +133,13 @@ namespace Beelina.LIB.BusinessLogic
                 productWarehouseStockReceiptEntries = productWarehouseStockReceiptEntries
                                 .Where((p => p.ReferenceNo.IsMatchAnyKeywords(filterKeyword) || p.PlateNo.IsMatchAnyKeywords(filterKeyword)))
                                 .ToList();
+            }
+
+            // Calculate amounts for each entry
+            foreach (var entry in productWarehouseStockReceiptEntries)
+            {
+                entry.GrossAmount = CalculateGrossAmount(entry.ProductStockWarehouseAudits);
+                entry.NetAmount = CalculateNetAmount(entry.GrossAmount, entry.Discounts);
             }
 
             return productWarehouseStockReceiptEntries;
@@ -390,6 +387,46 @@ namespace Beelina.LIB.BusinessLogic
             var finalEntities = updatedEntities.Where(x => existingEntities.Exists(y => y.Id == x.Id) || x.Id == 0).ToList();
 
             return finalEntities;
+        }
+
+        /// <summary>
+        /// Calculates the gross amount from product stock warehouse audits
+        /// </summary>
+        /// <param name="audits">List of product stock warehouse audits</param>
+        /// <returns>Total gross amount</returns>
+        private static double CalculateGrossAmount(List<ProductStockWarehouseAudit> audits)
+        {
+            if (audits == null || !audits.Any())
+                return 0;
+
+            return audits
+                .Where(audit => audit.ProductStockPerWarehouse != null)
+                .Sum(audit => audit.Quantity * audit.ProductStockPerWarehouse.Cost);
+        }
+
+        /// <summary>
+        /// Calculates the net amount after applying discounts
+        /// </summary>
+        /// <param name="grossAmount">Gross amount before discounts</param>
+        /// <param name="discounts">List of discounts to apply</param>
+        /// <returns>Net amount after discounts</returns>
+        private static double CalculateNetAmount(double grossAmount, List<ProductWarehouseStockReceiptDiscount> discounts)
+        {
+            if (discounts == null || !discounts.Any())
+                return grossAmount;
+
+            var netAmount = grossAmount;
+
+            // Apply discounts in order
+            var orderedDiscounts = discounts.OrderBy(d => d.DiscountOrder).ToList();
+
+            foreach (var discount in orderedDiscounts)
+            {
+                var discountAmount = netAmount * (discount.DiscountPercentage / 100);
+                netAmount -= discountAmount;
+            }
+
+            return Math.Round(netAmount, 2);
         }
     }
 }

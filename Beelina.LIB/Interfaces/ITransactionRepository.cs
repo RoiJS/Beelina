@@ -16,11 +16,11 @@ namespace Beelina.LIB.Interfaces
         Task<Transaction> RegisterTransactionWithBusinessLogic(TransactionInput transactionInput, CancellationToken cancellationToken = default);
         Task<TransactionDetails> GetTransaction(int transactionId, bool includeProductDetails = true);
         Task<List<Transaction>> GetTransactions(List<int> transactionIds);
-        Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null);
+        Task<List<TransactionInformation>> GetTransactions(int userId, string filterKeyword = "", TransactionsFilter transactionsFilter = null, bool includeAmounts = true);
         Task<List<TransactionInformation>> GetTransactionsByInvoiceNo(int salesAgentId, string invoiceSearchTerm = "");
         Task<bool> SendTransactionEmailReceipt(int transactionId);
         Task<List<TransactionDateInformation>> GetTransactonDates(TransactionStatusEnum status, string fromDate, string toDate);
-    Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);
+        Task<List<TransactionInformation>> GetTransactionsByDate(TransactionStatusEnum status, string transactionDate);
         Task<TransactionSales> GetSales(int userId, string fromDate, string toDate);
         Task<double> GetProfit(int userId, string fromDate, string toDate);
         Task<ProfitBreakdown> GetProfitBreakdown(int userId, string fromDate, string toDate);
@@ -32,13 +32,13 @@ namespace Beelina.LIB.Interfaces
         Task<List<Transaction>> SetTransactionsStatus(List<int> transactionIds, TransactionStatusEnum status, bool markAsPaid, CancellationToken cancellationToken = default);
         Task<bool> SendInvoiceTransaction(int userId, int transactionId, IFile file);
         Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateMultipleTransactionsProductQuantities(
-            List<int> transactionIds, 
-            int userAccountId, 
+            List<int> transactionIds,
+            int userAccountId,
             IProductRepository<Product> productRepository,
             CancellationToken cancellationToken = default);
         Task<List<InvalidProductTransactionOverallQuantitiesTransaction>> ValidateProductTransactionsQuantities(
-            List<TransactionInput> transactionInputs, 
-            int userAccountId, 
+            List<TransactionInput> transactionInputs,
+            int userAccountId,
             IProductRepository<Product> productRepository,
             CancellationToken cancellationToken = default);
     }

@@ -80,6 +80,10 @@ export const ProductWarehouseStockReceiptEntriesStore = signalStore(
       patchState(store, { dateFrom: dateFrom, dateTo: dateTo });
     },
 
+    setSupplierFilter: (supplierId: number) => {
+      patchState(store, { supplierId: supplierId });
+    },
+
     reset: () => {
       patchState(store, { ...initialState })
     },

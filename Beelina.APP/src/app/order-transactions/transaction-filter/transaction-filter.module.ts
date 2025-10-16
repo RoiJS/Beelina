@@ -7,11 +7,13 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
 
 import { TransactionFilterComponent } from './transaction-filter.component';
 
 @NgModule({
   imports: [
+    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatDatepickerModule,

@@ -295,7 +295,7 @@ export class ProductCartComponent
               .setValue(this.transaction().invoiceNo);
 
             // If the transaction is new, get the latest transaction code and increment it
-            if (this._transactionId() === 0) {
+            if (this._transactionId() === 0 && !this.transaction().invoiceNo) {
               let latestTransactionCode = '';
 
               if (this.networkService.isOnline.value) {

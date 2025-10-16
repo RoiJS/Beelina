@@ -43,6 +43,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
     {
       startDate: Date;
       endDate: Date;
+      supplierId: number;
     }
   >;
 
@@ -56,6 +57,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.productWarehouseStockEntriesStore.setDateFilters(this.purchaseOrdersFilter().startDate, this.purchaseOrdersFilter().endDate);
     this.productWarehouseStockEntriesStore.setSort(this.sort().active, <SortOrderOptionsEnum>this.sort().direction.toUpperCase());
     this.productWarehouseStockEntriesStore.setPagination(this.paginator().pageIndex, this.paginator().pageSize);
     this.productWarehouseStockEntriesStore.getProductWarehouseStockReceiptEntries();
@@ -98,6 +100,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
         (data: {
           endDate: Date;
           startDate: Date;
+          supplierId: number;
         }) => {
           if (!data) return;
 
@@ -105,11 +108,13 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
             const newPurchaseOrderFilter = new PurchaseOrderFilter();
             newPurchaseOrderFilter.startDate = DateFormatter.format(data.startDate);
             newPurchaseOrderFilter.endDate = DateFormatter.format(data.endDate);
+            newPurchaseOrderFilter.supplierId = data.supplierId;
             return newPurchaseOrderFilter;
           });
 
           this.productWarehouseStockEntriesStore.resetList();
           this.productWarehouseStockEntriesStore.setDateFilters(this.purchaseOrdersFilter().startDate, this.purchaseOrdersFilter().endDate);
+          this.productWarehouseStockEntriesStore.setSupplierFilter(this.purchaseOrdersFilter().supplierId);
           this.productWarehouseStockEntriesStore.getProductWarehouseStockReceiptEntries();
         });
   }
@@ -146,7 +151,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
   }
 
   get columnDefinition(): string[] {
-    return ['stockEntryDate', 'referenceNo', 'plateNo', 'supplierName', 'notes', 'actions'];
+    return ['stockEntryDate', 'referenceNo', 'plateNo', 'supplierName', 'notes', 'grossAmount', 'netAmount', 'actions'];
   }
 
 }

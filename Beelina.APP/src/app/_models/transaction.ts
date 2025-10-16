@@ -30,6 +30,7 @@ export class Transaction extends Entity implements IModelNode {
   public total: number;
   public badOrderAmount: number = 0;
   public status: TransactionStatusEnum;
+  public paymentStatus: PaymentStatusEnum;
   public isLocal: boolean;
 
   get transactionDateFormatted(): string {

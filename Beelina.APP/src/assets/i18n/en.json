@@ -72,7 +72,7 @@
     "TOP_PRODUCTS": "Top Products",
     "PRODUCTS_CATALOGUE": "Products Catalogue",
     "WAREHOUSE_PRODUCTS": "Warehouse",
-    "PURCHASE_ORDERS": "Purchase Orders",
+    "PURCHASE_ORDERS": "Product Stock Entries",
     "PRODUCT_WITHDRAWALS": "Product Withdrawals",
     "ACCOUNTS": "Accounts",
     "DRAFT_ORDERS": "Pre-book Orders",
@@ -90,6 +90,10 @@
     "DRAFT": "Pre-book",
     "BAD_ORDER": "Bad Order",
     "CONFIRM": "Confirm"
+  },
+  "PAYMENT_STATUS": {
+    "PAID": "Paid",
+    "UNPAID": "Unpaid"
   },
   "USER_TYPE": {
     "SALES_AGENT": "Sales Agent",
@@ -152,6 +156,7 @@
   "CUSTOMERS_PAGE": {
     "TITLE": "Customer",
     "DESCRIPTION": "This is where customer information can be managed.",
+    "CREATE_ORDER": "Create New Order",
     "SEARCH_TEXT_FIELD": {
       "PLACEHOLDER": "Search customer name..."
     },
@@ -160,6 +165,10 @@
       "CONFIRM": "Are you sure to delete selected customer?",
       "SUCCESS_MESSAGE": "Selected customer has been successfully removed.",
       "ERROR_MESSAGE": "Removing customer failed. Please again later."
+    },
+    "CREATE_ORDER_DIALOG": {
+      "TITLE": "Override Current Order",
+      "CONFIRM": "There is already an order in progress. Creating a new order will override the current order data. Do you want to continue?"
     }
   },
   "CUSTOMER_ACCOUNTS_PAGE": {
@@ -1135,8 +1144,8 @@
       "SALES_AGENT_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per sales agent on a given date.",
       "CUSTOMER_COLLECTION_SUMMARY_REPORT_NAME": "Customer Collection Summary Report",
       "CUSTOMER_COLLECTION_SUMMARY_REPORT_DESC": "This type of report can generate collection summary per customer on a given date.",
-      "PURCHASE_ORDER_REPORT_NAME": "Purchase Order Report",
-      "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed purchase order information including supplier details, reference numbers, and warehouse stock entries for a given date range.",
+      "PURCHASE_ORDER_REPORT_NAME": "Product Stock Entries Report",
+      "PURCHASE_ORDER_REPORT_DESC": "This report can generate detailed product stock entries information including supplier details, reference numbers, and warehouse stock entries for a given date range.",
       "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_NAME": "Supplier Product Transactions Report",
       "SUPPLIER_PRODUCT_TRANSACTIONS_REPORT_DESC": "This report can generate the product transactions for a specific supplier, allowing for detailed analysis of sales and inventory.",
       "PRODUCTS_PER_SUPPLIER_REPORT_NAME": "Products per Supplier Report",
@@ -1176,7 +1185,7 @@
         "LABEL": "Invoice Number"
       },
       "PURCHASE_ORDER_REFERENCE_NO_AUTOCOMPLETE_CONTROL": {
-        "LABEL": "Purchase Order Reference No"
+        "LABEL": "Product Stock Entries Reference No"
       },
       "SUPPLIER_AUTOCOMPLETE_CONTROL": {
         "LABEL": "Supplier"
@@ -1293,19 +1302,22 @@
     "DESCRIPTION": "This is the page where administrator manages products from warehouse."
   },
   "PURCHASE_ORDERS_PAGE": {
-    "TITLE": "Purchase Orders",
-    "DESCRIPTION": "Manage purchase order details here.",
+    "TITLE": "Product Stock Entries",
+    "DESCRIPTION": "Manage product stock entries details here.",
     "SEARCH_TEXT_FIELD": {
       "PLACEHOLDER": "Search reference or plate no..."
     },
     "PURCHASE_ORDERS_FILTER_DIALOG": {
-      "TITLE": "Purchase Orders Filter",
+      "TITLE": "Product Stock Entries Filter",
       "FORM_CONTROL_SECTION": {
         "START_DATE_CONTROL": {
           "LABEL": "Start Date"
         },
         "END_DATE_CONTROL": {
           "LABEL": "End Date"
+        },
+        "SUPPLIER_CONTROL": {
+          "LABEL": "Supplier"
         }
       }
     },
@@ -1316,29 +1328,30 @@
         "PLATE_NO_FIELD": "Plate No",
         "SUPPLIER_FIELD": "Supplier",
         "DISCOUNT_INFO_FIELD": "Discount Info",
+        "GROSS_AMOUNT_FIELD": "Gross Amount",
         "NET_AMOUNT_FIELD": "Net Amount",
         "NOTES_FIELD": "Notes"
       }
     },
     "DELETE_PURCHASE_ORDER_DIALOG": {
-      "TITLE": "Delete purchase order",
-      "CONFIRM_MESSAGE": "Are you sure you want to delete purchase order?",
-      "SUCCESS_MESSAGE": "Purchase order has been successfully deleted.",
-      "ERROR_MESSAGE": "Failed to delete purchase order. Please try again later."
+      "TITLE": "Delete product stock entries",
+      "CONFIRM_MESSAGE": "Are you sure you want to delete product stock entries?",
+      "SUCCESS_MESSAGE": "Product stock entries has been successfully deleted.",
+      "ERROR_MESSAGE": "Failed to delete product stock entries. Please try again later."
     }
   },
   "PURCHASE_ORDER_DETAILS_PAGE": {
-    "TITLE": "Purchase Order Details",
-    "DESCRIPTION": "Manage purchase order details and product items here.",
+    "TITLE": "Product Stock Entries Details",
+    "DESCRIPTION": "Manage product stock entries details and product items here.",
     "PURCHASE_ORDER_GENERAL_INFO_PANEL": {
       "TITLE": "Product List",
       "BASIC_INFO_SECTION": {
         "TITLE": "Basic Information",
-        "DESCRIPTION": "Core purchase order details"
+        "DESCRIPTION": "Core product stock entries details"
       },
       "ADDITIONAL_INFO_SECTION": {
         "TITLE": "Additional Information",
-        "DESCRIPTION": "Extended purchase order details for reporting"
+        "DESCRIPTION": "Extended product stock entries details for reporting"
       },
       "FORM_CONTROL_SECTION": {
         "SUPPLIER_CONTROL": {
@@ -1423,28 +1436,28 @@
       "CONFIRM_MESSAGE": "Switching supplier will reset the items. Are you sure to proceed?"
     },
     "SAVE_NEW_PURCHASE_ORDER_ITEMS_DIALOG": {
-      "TITLE": "New purchase order",
-      "CONFIRM_MESSAGE": "Are you sure you want to save new purchase order?",
-      "SUCCESS_MESSAGE": "New purchase order has been saved.",
-      "ERROR_MESSAGE": "Failed to save new purchase order. Please try again later."
+      "TITLE": "New product stock entries",
+      "CONFIRM_MESSAGE": "Are you sure you want to save new product stock entries?",
+      "SUCCESS_MESSAGE": "New product stock entries has been saved.",
+      "ERROR_MESSAGE": "Failed to save new product stock entries. Please try again later."
     },
     "UPDATE_PURCHASE_ORDER_ITEMS_DIALOG": {
-      "TITLE": "Update purchase order",
-      "CONFIRM_MESSAGE": "Are you sure you want to update purchase order?",
+      "TITLE": "Update product stock entries",
+      "CONFIRM_MESSAGE": "Are you sure you want to update product stock entries?",
       "SUCCESS_MESSAGE": "New updates has been successfully saved.",
       "ERROR_MESSAGE": "Failed to save new updates. Please try again later."
     },
     "DELETE_PURCHASE_ORDER_ITEMS_DIALOG": {
-      "TITLE": "Delete purchase order",
-      "CONFIRM_MESSAGE": "Are you sure you want to delete purchase order?",
-      "SUCCESS_MESSAGE": "Purchase order has been successfully deleted.",
-      "ERROR_MESSAGE": "Failed to delete purchase order. Please try again later."
+      "TITLE": "Delete product stock entries",
+      "CONFIRM_MESSAGE": "Are you sure you want to delete product stock entries?",
+      "SUCCESS_MESSAGE": "Product stock entries has been successfully deleted.",
+      "ERROR_MESSAGE": "Failed to delete product stock entries. Please try again later."
     },
     "EMPTY_PURCHASE_ORDER_ITEMS_NOTIFICATION": {
-      "MESSAGE": "Purchase order has empty product list. Please add at least one product."
+      "MESSAGE": "Product stock entries has empty product list. Please add at least one product."
     },
     "INVALID_PURCHASE_ORDER_NOTIFICATION": {
-      "MESSAGE": "Invalid purchase order details. Please fill the required fields."
+      "MESSAGE": "Invalid product stock entries details. Please fill the required fields."
     }
   },
   "PRODUCT_WITHDRAWALS_PAGE": {
@@ -1456,6 +1469,9 @@
     "PRODUCT_WITHDRAWALS_FILTER_DIALOG": {
       "TITLE": "Product Withdrawal Filter",
       "FORM_CONTROL_SECTION": {
+        "SALES_AGENT_CONTROL": {
+          "LABEL": "Sales Agent"
+        },
         "START_DATE_CONTROL": {
           "LABEL": "Start Date"
         },
@@ -1469,7 +1485,8 @@
         "STOCK_ENTRY_DATE_FIELD": "Stock Entry Date",
         "WITHDARAWAL_SLIP_NO_FIELD": "Withdrawal Slip No.",
         "SALES_AGENT_FIELD": "Sales Agent",
-        "NOTES_FIELD": "Notes"
+        "NOTES_FIELD": "Notes",
+        "TOTAL_AMOUNT_FIELD": "Total Amount"
       }
     },
     "DELETE_PRODUCT_WITHDRAWAL_DIALOG": {
@@ -1631,7 +1648,7 @@
       "CONFIRM": "Resetting import setup will remove the uploaded file and remove the extracted products as well. Are you sure you want to proceed?"
     },
     "AUTO_REGISTER_PURCHASE_ORDER": {
-      "DEFAULT_NOTES": "This is an automatically generated purchase order from product import."
+      "DEFAULT_NOTES": "This is an automatically generated product stock entries from product import."
     }
   },
   "ACCOUNTS_PAGE": {
@@ -1695,6 +1712,9 @@
             "UNPAID_OPTION": "Unpaid"
           }
         },
+        "SALES_AGENT_CONTROL": {
+          "LABEL": "Sales Agent"
+        },
         "DATE_FROM_CONTROL": {
           "LABEL": "Date From"
         },
@@ -1717,12 +1737,19 @@
       "LIST_VIEW": "List View",
       "TABLE_VIEW": "Table View"
     },
+    "LIST_VIEW": {
+      "NET_AMOUNT": "Net Amount",
+      "PAYMENT_STATUS": "Payment Status"
+    },
     "TABLE_VIEW": {
       "COLUMNS": {
         "INVOICE_NO": "Invoice No.",
         "CREATED_BY": "Sales Agent",
         "STORE": "Store",
         "TRANSACTION_DATE": "Transaction Date",
+        "GROSS_AMOUNT": "Gross Amount",
+        "NET_AMOUNT": "Net Amount",
+        "PAYMENT_STATUS": "Payment Status",
         "STATUS": "Status",
         "ACTIONS": "Actions"
       },

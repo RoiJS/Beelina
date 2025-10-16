@@ -14,9 +14,10 @@
         'PURCHASE_ORDERS_PAGE.SEARCH_TEXT_FIELD.PLACEHOLDER'
       "></app-search-field>
 
-    <div class="purchase-order-grid-container">
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matSortActive="stockEntryDate"
-        matSortDisableClear matSortDirection="desc" (matSortChange)="onSortChange($event)">
+    <div class="table-container">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="purchase-orders-table" matSort matSortActive="stockEntryDate"
+          matSortDisableClear matSortDirection="desc" (matSortChange)="onSortChange($event)">
 
         <!--- Note that these columns can be defined in any order.
         The actual rendered columns are set as a property on the row definition" -->
@@ -30,9 +31,17 @@
 
         <!-- Reference No Column -->
         <ng-container matColumnDef="referenceNo">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="400">{{
+          <th mat-header-cell mat-sort-header *matHeaderCellDef>{{
             "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.REFERENCE_NO_FIELD" | translate }}</th>
-          <td mat-cell *matCellDef="let element"> {{element?.referenceNo}} </td>
+          <td mat-cell *matCellDef="let element">
+            <div class="reference-cell">
+              <span class="reference-no">{{element?.referenceNo}}</span>
+              <div class="mobile-info">
+                <span class="mobile-supplier">{{element?.supplier?.name}}</span>
+                <span class="mobile-date">{{element?.stockEntryDate | date}}</span>
+              </div>
+            </div>
+          </td>
         </ng-container>
 
         <!-- Plate No Column -->
@@ -51,9 +60,23 @@
 
         <!-- Notes Column -->
         <ng-container matColumnDef="notes">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="600">{{
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="400">{{
             "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.NOTES_FIELD" | translate }}</th>
           <td mat-cell *matCellDef="let element"> {{element?.notes}} </td>
+        </ng-container>
+
+        <!-- Gross Amount Column -->
+        <ng-container matColumnDef="grossAmount">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="150">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.GROSS_AMOUNT_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element" class="amount-cell"> {{element?.formattedGrossAmount}} </td>
+        </ng-container>
+
+        <!-- Net Amount Column -->
+        <ng-container matColumnDef="netAmount">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="150">{{
+            "PURCHASE_ORDERS_PAGE.TABLE_GRID.COLUMN_DEFINITION.NET_AMOUNT_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element" class="amount-cell"> {{element?.formattedNetAmount}} </td>
         </ng-container>
 
         <!-- Actions Column -->
@@ -68,9 +91,10 @@
         </ng-container>
 
 
-        <tr mat-header-row *matHeaderRowDef="columnDefinition; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: columnDefinition;"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="columnDefinition; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnDefinition;"></tr>
+        </table>
+      </div>
 
       <mat-paginator [pageSize]="10" (page)="onPageChange($event)"
         [length]="productWarehouseStockEntriesStore.totalCount()" [pageSizeOptions]="[10, 20, 50, 100, 200, 500, 1000]"

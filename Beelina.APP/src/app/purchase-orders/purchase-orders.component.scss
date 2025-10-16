@@ -1,11 +1,285 @@
 @import "../../app-variables";
 
-.purchase-order-grid-container {
+// Table View Styles
+.table-container {
+  background-color: $white;
+  border-radius: $border-radius-sm;
+  box-shadow: $shadow-md;
+  margin-top: $spacing-md;
   margin-bottom: 2em;
+  overflow: hidden;
+  overflow-x: auto; // Enable horizontal scrolling on small screens
 
-  .mat-mdc-row:hover .mat-mdc-cell {
-    background-color: $primary;
-    cursor: pointer;
-    color: $white;
+  .table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .purchase-orders-table {
+    width: 100%;
+    min-width: 100%;
+
+    .mat-mdc-header-cell {
+      background-color: $gray-50;
+      color: $text-secondary;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-bottom: 2px solid $primary;
+      padding: 12px 8px;
+    }
+
+    .mat-mdc-cell {
+      padding: 12px 8px;
+      border-bottom: 1px solid #e9ecef;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .mat-mdc-row {
+      cursor: pointer;
+      transition: $transition-normal;
+      min-height: 48px;
+
+      &:hover {
+        .mat-mdc-cell {
+          background-color: $primary;
+          color: $white;
+        }
+      }
+
+      &:nth-child(even) {
+        background-color: $gray-100;
+      }
+    }
+
+    .amount-cell {
+      text-align: right;
+      font-weight: 500;
+    }
+
+    .reference-cell {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-xs;
+
+      .reference-no {
+        font-weight: 500;
+        color: $text-primary;
+        word-break: break-word;
+      }
+
+      .mobile-info {
+        display: none; // Hidden by default, shown on mobile
+        flex-direction: column;
+        gap: 2px;
+        font-size: 0.8rem;
+        color: $text-secondary;
+
+        .mobile-supplier,
+        .mobile-date {
+          font-size: 0.75rem;
+        }
+      }
+    }
+
+    // Column specific styles
+    .mat-column-stockEntryDate {
+      min-width: 120px;
+      flex: 1 1 120px;
+    }
+
+    .mat-column-referenceNo {
+      min-width: 200px;
+      flex: 1 1 200px;
+    }
+
+    .mat-column-plateNo {
+      min-width: 120px;
+      flex: 1 1 120px;
+    }
+
+    .mat-column-supplierName {
+      min-width: 150px;
+      flex: 1 1 150px;
+    }
+
+    .mat-column-notes {
+      min-width: 200px;
+      flex: 1 1 200px;
+    }
+
+    .mat-column-grossAmount {
+      width: 120px;
+      flex: 0 0 120px;
+    }
+
+    .mat-column-netAmount {
+      width: 120px;
+      flex: 0 0 120px;
+    }
+
+    .mat-column-actions {
+      width: 100px;
+      text-align: center;
+      flex: 0 0 100px;
+    }
+  }
+
+  .mat-mdc-paginator {
+    border-top: 1px solid $gray-200;
+    background-color: $gray-50;
+  }
+}
+
+// Responsive Design for Table View
+@media (max-width: 1200px) {
+  .table-container {
+    .purchase-orders-table {
+      .mat-column-plateNo,
+      .mat-column-notes {
+        display: none;
+      }
+    }
+  }
+}
+
+// Tablet responsive design
+@media (max-width: 768px) {
+  .table-container {
+    margin-top: $spacing-sm;
+    border-radius: $border-radius-sm - 2px;
+
+    .purchase-orders-table {
+      .mat-mdc-header-cell,
+      .mat-mdc-cell {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+      }
+
+      .mat-mdc-header-cell {
+        font-size: 0.75rem;
+      }
+
+      // Hide less important columns on tablet
+      .mat-column-stockEntryDate,
+      .mat-column-plateNo,
+      .mat-column-supplierName,
+      .mat-column-notes {
+        display: none;
+      }
+
+      .mat-column-referenceNo {
+        min-width: 160px;
+        flex: 1 1 160px;
+      }
+
+      .mat-column-grossAmount,
+      .mat-column-netAmount {
+        width: 100px;
+        flex: 0 0 100px;
+      }
+
+      .mat-column-actions {
+        width: 80px;
+        flex: 0 0 80px;
+      }
+
+      .reference-cell {
+        .reference-no {
+          font-size: 0.85rem;
+        }
+
+        .mobile-info {
+          display: flex; // Show mobile info on tablet
+        }
+      }
+    }
+
+    .mat-mdc-paginator {
+      font-size: 0.8rem;
+
+      .mat-mdc-paginator-range-label {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}
+
+// Mobile responsive design
+@media (max-width: 480px) {
+  .table-container {
+    .purchase-orders-table {
+      .mat-mdc-header-cell,
+      .mat-mdc-cell {
+        padding: 6px 2px;
+        font-size: 0.75rem;
+      }
+
+      // On mobile, show only essential columns
+      .mat-column-stockEntryDate,
+      .mat-column-plateNo,
+      .mat-column-supplierName,
+      .mat-column-notes,
+      .mat-column-grossAmount {
+        display: none;
+      }
+
+      .mat-column-referenceNo {
+        min-width: auto;
+        flex: 1;
+      }
+
+      .mat-column-netAmount {
+        width: 80px;
+        flex: 0 0 80px;
+      }
+
+      .mat-column-actions {
+        width: 60px;
+        flex: 0 0 60px;
+
+        div {
+          flex-direction: column !important;
+          gap: 0.2em !important;
+        }
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .reference-cell {
+        .reference-no {
+          font-size: 0.8rem;
+          line-height: 1.2;
+        }
+
+        .mobile-info {
+          display: flex; // Show mobile info on mobile
+        }
+      }
+    }
+
+    .mat-mdc-paginator {
+      .mat-mdc-paginator-page-size-select {
+        display: none;
+      }
+
+      .mat-mdc-paginator-range-actions {
+        .mat-mdc-icon-button {
+          padding: 4px;
+          width: 36px;
+          height: 36px;
+
+          mat-icon {
+            font-size: 18px;
+          }
+        }
+      }
+    }
   }
 }

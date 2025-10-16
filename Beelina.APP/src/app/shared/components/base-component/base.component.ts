@@ -183,6 +183,17 @@ export class BaseComponent {
       return '';
     }
 
+    // Check if the code is a pure numeric value
+    const pureNumericMatch = code.match(/^\d+$/);
+    if (pureNumericMatch) {
+      const number = parseInt(code, 10);
+      const incrementedNumber = number + 1;
+      // Maintain original padding (leading zeros)
+      const paddedNumber = incrementedNumber.toString().padStart(code.length, '0');
+      return paddedNumber;
+    }
+
+    // Handle alphanumeric codes with prefix and suffix patterns
     const match = code.match(/^(?:([A-Za-z]+)(-?)|([A-Za-z]+)_?|([A-Za-z]+))(\d+)$/);
 
     if (!match) {

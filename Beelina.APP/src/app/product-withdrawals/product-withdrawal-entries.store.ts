@@ -10,6 +10,7 @@ import { ProductWithdrawalEntry } from "../_models/product-withdrawal-entry";
 export interface IProductWithdrawalEntryState extends IBaseState, IBaseStateConnection {
   productWithdrawalEntries: Array<ProductWithdrawalEntry>;
   userAccountId: number;
+  salesAgentId: number;
   dateFrom: string;
   dateTo: string;
   totalCount: number;
@@ -24,6 +25,7 @@ export const initialState: IProductWithdrawalEntryState = {
   skip: 0,
   take: 50,
   userAccountId: 0,
+  salesAgentId: 0,
   filterKeyword: '',
   dateFrom: '',
   dateTo: '',
@@ -43,6 +45,7 @@ export const ProductWithdrawalEntriesStore = signalStore(
       return productService.getProductWithdrawalEntries(
         store.filterKeyword(),
         store.userAccountId(),
+        store.salesAgentId(),
         store.dateFrom(),
         store.dateTo(),
         store.skip(),
@@ -78,6 +81,10 @@ export const ProductWithdrawalEntriesStore = signalStore(
 
     setDateFilters: (dateFrom: string, dateTo: string) => {
       patchState(store, { dateFrom: dateFrom, dateTo: dateTo });
+    },
+
+    setSalesAgentFilter: (salesAgentId: number) => {
+      patchState(store, { salesAgentId: salesAgentId });
     },
 
     reset: () => {

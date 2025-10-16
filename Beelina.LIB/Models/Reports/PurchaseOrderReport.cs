@@ -144,7 +144,7 @@ namespace Beelina.LIB.Models.Reports
             worksheet.Cells["A5"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
             // Report Title
-            worksheet.Cells["A6"].Value = "PURCHASE ORDER";
+            worksheet.Cells["A6"].Value = "PRODUCT STOCK ENTRIES";
             worksheet.Cells["A6:F6"].Merge = true;
             worksheet.Cells["A6"].Style.Font.Size = 14;
             worksheet.Cells["A6"].Style.Font.Bold = true;

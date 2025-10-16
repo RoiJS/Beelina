@@ -12,6 +12,7 @@ import { OutletTypeHelper } from '../_helpers/outlet-type.helper';
 import { ProductTransaction, ProductTransactionQuantityHistory, Transaction } from '../_models/transaction';
 
 import { TransactionStatusEnum } from '../_enum/transaction-status.enum';
+import { PaymentStatusEnum } from '../_enum/payment-status.enum';
 
 import { DateFormatter } from '../_helpers/formatters/date-formatter.helper';
 import { NumberFormatter } from '../_helpers/formatters/number-formatter.helper';
@@ -146,6 +147,10 @@ const GET_TRANSACTIONS_QUERY = gql`
         barangayName
         storeName
         status
+        total
+        discount
+        badOrderAmount
+        paymentStatus
       }
       pageInfo {
         endCursor
@@ -188,6 +193,10 @@ const GET_TRANSACTIONS_FOR_TABLE_QUERY = gql`
         barangayName
         storeName
         status
+        total
+        discount
+        badOrderAmount
+        paymentStatus
       }
       totalCount
     }
@@ -561,6 +570,10 @@ export class TransactionInformation {
   public transactionDate: Date;
   public hasUnpaidProductTransaction: boolean;
   public status: TransactionStatusEnum;
+  public total: number;
+  public discount: number;
+  public badOrderAmount: number;
+  public paymentStatus: PaymentStatusEnum;
 }
 
 export class TransactionDetails {
@@ -935,6 +948,10 @@ export class TransactionService {
               transaction.barangay.name = t.barangayName;
               transaction.hasUnpaidProductTransaction =
                 t.hasUnpaidProductTransaction;
+              transaction.total = t.total;
+              transaction.discount = t.discount;
+              transaction.badOrderAmount = t.badOrderAmount;
+              transaction.paymentStatus = t.paymentStatus;
               return transaction;
             });
 
@@ -1011,6 +1028,10 @@ export class TransactionService {
               transaction.barangay.name = t.barangayName;
               transaction.hasUnpaidProductTransaction =
                 t.hasUnpaidProductTransaction;
+              transaction.total = t.total;
+              transaction.discount = t.discount;
+              transaction.badOrderAmount = t.badOrderAmount;
+              transaction.paymentStatus = t.paymentStatus;
               return transaction;
             });
 

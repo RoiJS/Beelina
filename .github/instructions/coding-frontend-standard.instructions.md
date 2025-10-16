@@ -75,7 +75,7 @@ Beelina.APP is an Angular-based SPA (Single Page Application) serving as the mai
   - Transfer/Convert products from one product unit to another.
 - `src/app/product-withdrawals/` – Manage product withdrawals module. This is where manager withdraws products from the warehouse to the sales agents accounts.
 - `src/app/profile/` – Manage user profile module. This is where users can view and edit their profile information.
-- `src/app/purchase-orders/` – Manage purchase orders module. This is where admin and manager can register to product stock entries for product in the warehouse.
+- `src/app/purchase-orders/` – Manage product stock entries module. This is where admin and manager can register to product stock entries for product in the warehouse.
 - `src/app/reports/` – Contains reports module. This is where users can view and generate reports related to sales, inventory, and other business metrics. Specific reports only available based on the user roles.
 - `src/app/sales/` – Sales module for sales agents account. This is where sales agent can view sales information.
 - `src/app/settings/` – Settings module. This is where sales agents can manager their account settings, such as changing password, updating profile information, and other module specific settings.

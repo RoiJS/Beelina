@@ -10,7 +10,7 @@
       </span>
     </div>
 
-    <!-- Purchase Order General Info Panel with Expansion Panels -->
+    <!-- Product Stock Entries General Info Panel with Expansion Panels -->
     <div class="panel panel--full-width purchase-order-panel">
       <div [formGroup]="purchaseOrderDetailsForm" class="panel__details-group-panel">
         <div class="panel__body-section">
@@ -185,7 +185,7 @@
       </div>
     </div>
 
-    <!-- Purchase Order Items Panel -->
+    <!-- Product Stock Entries Items Panel -->
     <div class="panel panel--full-width purchase-order-items-panel">
       <div class="panel__details-group-panel">
 
@@ -340,7 +340,7 @@
           </mat-paginator>
 
           <br>
-          <!-- Purchase Order Summary Section -->
+          <!-- Product Stock Entries Summary Section -->
           @if (getCurrentDiscounts().length > 0) {
           <div class="purchase-order-summary">
             <div class="summary-title" (click)="toggleCalculationExpansion()" [class.expanded]="isCalculationExpanded">
@@ -430,7 +430,7 @@
       </div>
     </div>
 
-    <!-- Purchase Order Buttons Panel -->
+    <!-- Product Stock Entries Buttons Panel -->
     <div class="panel panel--full-width purchase-order-buttons-panel">
       <div class="panel__body-section purchase-order-buttons-panel__body-section">
         <button mat-raised-button color="warn" [disabled]="newPurchaseOrder"

@@ -1,5 +1,6 @@
 using Beelina.LIB.Enums;
 using Beelina.LIB.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Beelina.LIB.Models
 {
@@ -21,6 +22,12 @@ namespace Beelina.LIB.Models
         public List<ProductStockWarehouseAudit> ProductStockWarehouseAudits { get; set; }
         public List<ProductWarehouseStockReceiptDiscount> Discounts { get; set; }
         public virtual Supplier Supplier { get; set; }
+
+        [NotMapped]
+        public double GrossAmount { get; set; }
+
+        [NotMapped]
+        public double NetAmount { get; set; }
 
         public int? DeletedById { get; set; }
         public virtual UserAccount DeletedBy { get; set; }

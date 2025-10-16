@@ -18,6 +18,10 @@ namespace Beelina.LIB.Models
         public string DetailsUpdatedBy { get; set; }
         public string OrderItemsDateUpdated { get; set; }
         public string OrderItemsUpdatedBy { get; set; }
+        public double Total { get; set; }
+        public double Discount { get; set; }
+        public double BadOrderAmount { get; set; }
+        public PaymentStatusEnum PaymentStatus { get; set; }
 
         public DateTime FinalDateUpdated
         {

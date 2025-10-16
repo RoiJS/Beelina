@@ -102,6 +102,12 @@
           color: $text-secondary;
           font-size: 0.9em;
         }
+
+        &__net-amount {
+          color: $primary;
+          font-size: 0.95em;
+          font-weight: 600;
+        }
       }
 
       .order-transactions-actions {
@@ -224,6 +230,19 @@
       flex: 1 1 130px;
     }
 
+    .mat-column-grossAmount {
+      min-width: 120px;
+      text-align: right;
+      flex: 0 0 120px;
+    }
+
+    .mat-column-netAmount {
+      min-width: 120px;
+      text-align: right;
+      flex: 0 0 120px;
+      font-weight: 600;
+    }
+
     .mat-column-status {
       width: 120px;
       text-align: center;
@@ -247,7 +266,8 @@
 @media (max-width: 1200px) {
   .table-container {
     .order-transactions-table {
-      .mat-column-storeName {
+      .mat-column-storeName,
+      .mat-column-grossAmount {
         display: none;
       }
     }
@@ -277,7 +297,9 @@
 
       // Hide less important columns on tablet
       .mat-column-createdBy,
-      .mat-column-storeName {
+      .mat-column-storeName,
+      .mat-column-grossAmount,
+      .mat-column-paymentStatus {
         display: none;
       }
 
@@ -289,6 +311,13 @@
       .mat-column-transactionDate {
         min-width: 100px;
         flex: 1 1 100px;
+      }
+
+      .mat-column-netAmount {
+        min-width: 100px;
+        text-align: right;
+        flex: 0 0 100px;
+        font-weight: 600;
       }
 
       .mat-column-status {
@@ -343,13 +372,23 @@
       // On mobile, show only essential columns
       .mat-column-createdBy,
       .mat-column-storeName,
-      .mat-column-transactionDate {
+      .mat-column-transactionDate,
+      .mat-column-grossAmount,
+      .mat-column-paymentStatus {
         display: none;
       }
 
       .mat-column-invoiceNo {
         min-width: auto;
         flex: 1;
+      }
+
+      .mat-column-netAmount {
+        min-width: 90px;
+        text-align: right;
+        flex: 0 0 90px;
+        font-weight: 600;
+        font-size: 0.7rem;
       }
 
       .mat-column-status {
@@ -419,4 +458,10 @@
   .mat-icon {
     color: $primary;
   }
+}
+
+// Text muted class for payment status placeholder
+.text-muted {
+  color: $text-muted;
+  font-style: italic;
 }

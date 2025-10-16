@@ -226,6 +226,8 @@ const GET_PRODUCT_WAREHOUSE_STOCK_ENTRY_RECEIPT = gql`
           dateEncoded
           purchaseOrderStatus
           location
+          grossAmount
+          netAmount
           productStockWarehouseAuditsResult {
               id
               productId
@@ -309,6 +311,8 @@ const GET_PRODUCT_WAREHOUSE_STOCK_RECEIPT_ENTRIES_QUERY = gql`
                 dateEncoded
                 purchaseOrderStatus
                 location
+                grossAmount
+                netAmount
             }
             pageInfo {
                 hasNextPage
@@ -338,6 +342,8 @@ const GET_PRODUCT_WITHDRAWALS_ENTRIES_QUERY = gql`
               stockEntryDate
               withdrawalSlipNo
               notes
+              totalAmount
+              formattedTotalAmount
           }
           pageInfo {
               hasNextPage
@@ -1349,6 +1355,8 @@ export class ProductService {
             productWarehouseStockReceiptEntry.dateEncoded = productWarehouseStockReceiptEntryDto.dateEncoded;
             productWarehouseStockReceiptEntry.purchaseOrderStatus = productWarehouseStockReceiptEntryDto.purchaseOrderStatus;
             productWarehouseStockReceiptEntry.location = productWarehouseStockReceiptEntryDto.location;
+            productWarehouseStockReceiptEntry.grossAmount = productWarehouseStockReceiptEntryDto.grossAmount || 0;
+            productWarehouseStockReceiptEntry.netAmount = productWarehouseStockReceiptEntryDto.netAmount || 0;
             return productWarehouseStockReceiptEntry;
           });
 
@@ -1370,7 +1378,7 @@ export class ProductService {
       );
   }
 
-  getProductWithdrawalEntries(filterKeyword: string, userAccountId: number, dateFrom: string, dateTo: string, skip: number, take: number, sortField: string, sortDirection: SortOrderOptionsEnum) {
+  getProductWithdrawalEntries(filterKeyword: string, userAccountId: number, salesAgentId: number, dateFrom: string, dateTo: string, skip: number, take: number, sortField: string, sortDirection: SortOrderOptionsEnum) {
 
     let order: any = {
       [sortField]: sortDirection
@@ -1391,6 +1399,7 @@ export class ProductService {
           filterKeyword,
           productWithdrawalFilter: {
             userAccountId,
+            salesAgentId,
             dateFrom,
             dateTo
           },
@@ -1416,6 +1425,7 @@ export class ProductService {
             productWithdrawalEntry.stockEntryDate = productWithdrawalEntryDto.stockEntryDate;
             productWithdrawalEntry.withdrawalSlipNo = productWithdrawalEntryDto.withdrawalSlipNo;
             productWithdrawalEntry.notes = productWithdrawalEntryDto.notes;
+            productWithdrawalEntry.totalAmount = productWithdrawalEntryDto.totalAmount;
             return productWithdrawalEntry;
           });
 

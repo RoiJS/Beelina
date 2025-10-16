@@ -9,5 +9,6 @@ namespace Beelina.LIB.Models.Filters
         public TransactionStatusEnum Status { get; set; }
         public PaymentStatusEnum PaymentStatus { get; set; }
         public int StoreId { get; set; }
+        public int SalesAgentId { get; set; }
     }
 }

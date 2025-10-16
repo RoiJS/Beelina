@@ -43,6 +43,18 @@
       </mat-select>
     </mat-form-field>
 
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.SALES_AGENT_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <mat-select formControlName="salesAgent">
+        <mat-option [value]="0">{{ "GENERAL_TEXTS.ALL" | translate }}</mat-option>
+        <mat-option *ngFor="let agent of salesAgents" [value]="agent.id">
+          {{ agent.fullname }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <mat-form-field appearance="fill" class="date-picker-control">
       <mat-label>{{
         "ORDER_TRANSACTIONS_PAGE.TRANSACTION_FILTER_DIALOG.FORM_CONTROL_SECTION.DATE_FROM_CONTROL.LABEL" |

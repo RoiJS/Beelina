@@ -131,6 +131,13 @@ const GET_CUSTOMER_STORES_PER_BARANGAY = gql`
         transactions {
           id
         }
+        paymentMethod {
+          id
+        }
+        barangay {
+          id
+          name
+        }
         isDeletable
       }
       pageInfo {

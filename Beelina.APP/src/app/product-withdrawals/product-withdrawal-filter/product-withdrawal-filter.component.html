@@ -5,6 +5,18 @@
   </div>
   <div class="dialog-form-container__body" [formGroup]="purchaseOrderFilterForm">
 
+    <mat-form-field appearance="fill">
+      <mat-label>{{
+        "PRODUCT_WITHDRAWALS_PAGE.PRODUCT_WITHDRAWALS_FILTER_DIALOG.FORM_CONTROL_SECTION.SALES_AGENT_CONTROL.LABEL" |
+        translate }}:</mat-label>
+      <mat-select formControlName="salesAgentId">
+        <mat-option [value]="0">{{ "GENERAL_TEXTS.ALL" | translate }}</mat-option>
+        @for(salesAgent of salesAgents(); track salesAgent.id) {
+        <mat-option [value]="salesAgent.id">{{ salesAgent.fullname }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
     <mat-form-field appearance="fill" class="date-picker-control">
       <mat-label>{{
         "PRODUCT_WITHDRAWALS_PAGE.PRODUCT_WITHDRAWALS_FILTER_DIALOG.FORM_CONTROL_SECTION.START_DATE_CONTROL.LABEL" |

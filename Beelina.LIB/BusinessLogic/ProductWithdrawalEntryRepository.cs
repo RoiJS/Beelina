@@ -17,7 +17,7 @@ namespace Beelina.LIB.BusinessLogic
         private readonly IProductRepository<Product> _productRepository;
 
         public ProductWithdrawalEntryRepository(
-            IBeelinaRepository<ProductWithdrawalEntry> beelinaRepository, 
+            IBeelinaRepository<ProductWithdrawalEntry> beelinaRepository,
             IOptions<ApplicationSettings> appSettings,
             IProductRepository<Product> productRepository)
             : base(beelinaRepository, beelinaRepository.ClientDbContext)
@@ -74,11 +74,14 @@ namespace Beelina.LIB.BusinessLogic
                                     .ClientDbContext
                                     .ProductWithdrawalEntries
                                     .Include(t => t.UserAccount)
+                                    .Include(t => t.ProductStockAudits)
+                                        .ThenInclude(audit => audit.ProductStockPerPanel)
                                     .Where((p) =>
                                         (productWithdrawalEntryFilter == null ||
                                             (productWithdrawalEntryFilter != null &&
                                                 (
-                                                    ((productWithdrawalEntryFilter.UserAccountId == 0) || (productWithdrawalEntryFilter.UserAccountId > 0 && p.UserAccountId == productWithdrawalEntryFilter.UserAccountId))
+                                                    ((productWithdrawalEntryFilter.UserAccountId == 0) || (productWithdrawalEntryFilter.UserAccountId > 0 && p.UserAccountId == productWithdrawalEntryFilter.UserAccountId)) &&
+                                                    ((productWithdrawalEntryFilter.SalesAgentId == 0) || (productWithdrawalEntryFilter.SalesAgentId > 0 && p.UserAccountId == productWithdrawalEntryFilter.SalesAgentId))
                                                 )
                                             )
                                         )
@@ -98,8 +101,10 @@ namespace Beelina.LIB.BusinessLogic
                 }
             }
 
-            var productWithdrawalEntries = await productWithdrawalEntriesFromRepo.
-                        Select(t => new ProductWithdrawalEntry
+            var productWithdrawalEntriesFromDb = await productWithdrawalEntriesFromRepo.AsNoTracking().ToListAsync(cancellationToken);
+
+            var productWithdrawalEntries = productWithdrawalEntriesFromDb
+                        .Select(t => new ProductWithdrawalEntry
                         {
                             Id = t.Id,
                             UserAccountId = t.UserAccountId,
@@ -107,8 +112,9 @@ namespace Beelina.LIB.BusinessLogic
                             WithdrawalSlipNo = t.WithdrawalSlipNo,
                             Notes = t.Notes,
                             StockEntryDate = t.StockEntryDate, // TODO: Apply timezone conversion here
+                            TotalAmount = CalculateTotalAmount(t.ProductStockAudits)
                         }).
-                        ToListAsync(cancellationToken);
+                        ToList();
 
             if (!String.IsNullOrEmpty(filterKeyword))
             {
@@ -279,6 +285,16 @@ namespace Beelina.LIB.BusinessLogic
             var finalEntities = result.Where(x => inputs.Exists(y => y.Id == x.Id) || x.Id == 0).ToList();
 
             return finalEntities;
+        }
+
+        private static double CalculateTotalAmount(List<ProductStockAudit> productStockAudits)
+        {
+            if (productStockAudits == null || !productStockAudits.Any())
+                return 0.0;
+
+            return productStockAudits
+                .Where(audit => audit.ProductStockPerPanel != null)
+                .Sum(audit => audit.Quantity * audit.ProductStockPerPanel.PricePerUnit);
         }
     }
 }

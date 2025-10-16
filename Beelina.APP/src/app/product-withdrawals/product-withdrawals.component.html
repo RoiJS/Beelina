@@ -45,9 +45,16 @@
 
         <!-- Notes Column -->
         <ng-container matColumnDef="notes">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="600">{{
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="400">{{
             "PRODUCT_WITHDRAWALS_PAGE.TABLE_GRID.COLUMN_DEFINITION.NOTES_FIELD" | translate }}</th>
           <td mat-cell *matCellDef="let element"> {{element?.notes}} </td>
+        </ng-container>
+
+        <!-- Total Amount Column -->
+        <ng-container matColumnDef="totalAmount">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef [style.width.px]="150">{{
+            "PRODUCT_WITHDRAWALS_PAGE.TABLE_GRID.COLUMN_DEFINITION.TOTAL_AMOUNT_FIELD" | translate }}</th>
+          <td mat-cell *matCellDef="let element" class="amount-cell"> {{element?.formattedTotalAmount}} </td>
         </ng-container>
 
         <!-- Actions Column -->

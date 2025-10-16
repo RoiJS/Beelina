@@ -34,6 +34,11 @@
                   {{ "GENERAL_TEXTS.TRANSACTION_HISTORY" | translate }}
                 </button>
 
+                <button mat-menu-item (click)="createOrderForCustomer(item)">
+                  <mat-icon>add_shopping_cart</mat-icon>
+                  {{ "CUSTOMERS_PAGE.CREATE_ORDER" | translate }}
+                </button>
+
                 <button mat-menu-item (click)="openDetails(item.id)">
                   <mat-icon>border_color</mat-icon>
                   {{ "GENERAL_TEXTS.EDIT" | translate }}

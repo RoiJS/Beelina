@@ -53,7 +53,11 @@ namespace Beelina.LIB.BusinessLogic
         public async Task<List<Store>> GetStoresByBarangay(string barangayName)
         {
             return await _beelinaRepository.ClientDbContext.Stores
-                        .Includes(s => s.Transactions)
+                        .Includes(
+                            s => s.Transactions,
+                            s => s.PaymentMethod,
+                            s => s.Barangay
+                        )
                         .Where(s =>
                             s.Barangay.Name == barangayName
                             && s.Barangay.UserAccountId == CurrentUserService.CurrentUserId

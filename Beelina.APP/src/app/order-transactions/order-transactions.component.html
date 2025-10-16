@@ -91,20 +91,35 @@
               <div class="order-transactions-info" (click)="viewTransaction(item)">
                 <span class="order-transactions-info__invoice-no">{{ item.invoiceNo }}
                   @switch(item.status) {
-                  @case(_transactionStatusType.DRAFT) {
+                  @case(transactionStatusType.DRAFT) {
                   <app-badge [type]="bannerTypeEnum.INFO" [textIdentifier]="'ORDER_TYPE.DRAFT'"></app-badge>
                   }
-                  @case(_transactionStatusType.BAD_ORDER) {
+                  @case(transactionStatusType.BAD_ORDER) {
                   <app-badge [type]="bannerTypeEnum.ERROR" [textIdentifier]="'ORDER_TYPE.BAD_ORDER'"></app-badge>
                   }
-                  @case(_transactionStatusType.CONFIRMED) {
+                  @case(transactionStatusType.CONFIRMED) {
                   <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'ORDER_TYPE.CONFIRM'"></app-badge>
                   }
                   }
                 </span>
                 <span class="order-transactions-info__created-by">{{ item.createdBy }}</span><br>
                 <span class="order-transactions-info__order-transactions-date">{{ item.transactionDateFormatted
-                  }}</span>
+                  }}</span><br>
+                <span class="order-transactions-info__net-amount">{{ 'ORDER_TRANSACTIONS_PAGE.LIST_VIEW.NET_AMOUNT' | translate }}: {{ item.netTotalFormatted }}</span>
+                @if(item.status === transactionStatusType.CONFIRMED) {
+                <br>
+                <span class="order-transactions-info__payment-status">
+                  {{ 'ORDER_TRANSACTIONS_PAGE.LIST_VIEW.PAYMENT_STATUS' | translate }}:
+                  @switch(item.paymentStatus) {
+                  @case(paymentStatusType.Paid) {
+                  <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'PAYMENT_STATUS.PAID'"></app-badge>
+                  }
+                  @case(paymentStatusType.Unpaid) {
+                  <app-badge [type]="bannerTypeEnum.ERROR" [textIdentifier]="'PAYMENT_STATUS.UNPAID'"></app-badge>
+                  }
+                  }
+                </span>
+                }
               </div>
               <div class="order-transactions-actions">
 
@@ -186,6 +201,43 @@
           <mat-cell *matCellDef="let element">{{ element.transactionDateFormatted }}</mat-cell>
         </ng-container>
 
+        <!-- Gross Amount Column -->
+        <ng-container matColumnDef="grossAmount">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.GROSS_AMOUNT' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.grossTotalFormatted }}</mat-cell>
+        </ng-container>
+
+        <!-- Net Amount Column -->
+        <ng-container matColumnDef="netAmount">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.NET_AMOUNT' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.netTotalFormatted }}</mat-cell>
+        </ng-container>
+
+        <!-- Payment Status Column -->
+        <ng-container matColumnDef="paymentStatus">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'ORDER_TRANSACTIONS_PAGE.TABLE_VIEW.COLUMNS.PAYMENT_STATUS' | translate }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            @if(element.status === transactionStatusType.CONFIRMED) {
+              @switch(element.paymentStatus) {
+              @case(paymentStatusType.Paid) {
+              <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'PAYMENT_STATUS.PAID'"></app-badge>
+              }
+              @case(paymentStatusType.Unpaid) {
+              <app-badge [type]="bannerTypeEnum.WARNING" [textIdentifier]="'PAYMENT_STATUS.UNPAID'"></app-badge>
+              }
+              }
+            } @else {
+              <span class="text-muted">—</span>
+            }
+          </mat-cell>
+        </ng-container>
+
         <!-- Status Column -->
         <ng-container matColumnDef="status">
           <mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -193,13 +245,13 @@
           </mat-header-cell>
           <mat-cell *matCellDef="let element">
             @switch(element.status) {
-            @case(_transactionStatusType.DRAFT) {
+            @case(transactionStatusType.DRAFT) {
             <app-badge [type]="bannerTypeEnum.INFO" [textIdentifier]="'ORDER_TYPE.DRAFT'"></app-badge>
             }
-            @case(_transactionStatusType.BAD_ORDER) {
+            @case(transactionStatusType.BAD_ORDER) {
             <app-badge [type]="bannerTypeEnum.ERROR" [textIdentifier]="'ORDER_TYPE.BAD_ORDER'"></app-badge>
             }
-            @case(_transactionStatusType.CONFIRMED) {
+            @case(transactionStatusType.CONFIRMED) {
             <app-badge [type]="bannerTypeEnum.SUCCESS" [textIdentifier]="'ORDER_TYPE.CONFIRM'"></app-badge>
             }
             }

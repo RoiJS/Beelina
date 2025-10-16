@@ -43,6 +43,7 @@ export class ProductWithdrawalsComponent implements AfterViewInit {
     {
       startDate: Date;
       endDate: Date;
+      salesAgentId: number;
     }
   >;
 
@@ -56,6 +57,13 @@ export class ProductWithdrawalsComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.productWithdrawalEntriesStore.setSort(this.sort().active, <SortOrderOptionsEnum>this.sort().direction.toUpperCase());
     this.productWithdrawalEntriesStore.setPagination(this.paginator().pageIndex, this.paginator().pageSize);
+
+    // Set default date filters to current month
+    this.productWithdrawalEntriesStore.setDateFilters(
+      this.productWithdrawalFilter().startDate,
+      this.productWithdrawalFilter().endDate
+    );
+
     this.productWithdrawalEntriesStore.getProductWithdrawalEntries();
   }
 
@@ -96,6 +104,7 @@ export class ProductWithdrawalsComponent implements AfterViewInit {
         (data: {
           endDate: Date;
           startDate: Date;
+          salesAgentId: number;
         }) => {
           if (!data) return;
 
@@ -103,11 +112,13 @@ export class ProductWithdrawalsComponent implements AfterViewInit {
             const productWithdrawalFilter = new ProductWithdrawalFilter();
             productWithdrawalFilter.startDate = DateFormatter.format(data.startDate);
             productWithdrawalFilter.endDate = DateFormatter.format(data.endDate);
+            productWithdrawalFilter.salesAgentId = data.salesAgentId;
             return productWithdrawalFilter;
           });
 
           this.productWithdrawalEntriesStore.resetList();
           this.productWithdrawalEntriesStore.setDateFilters(this.productWithdrawalFilter().startDate, this.productWithdrawalFilter().endDate);
+          this.productWithdrawalEntriesStore.setSalesAgentFilter(this.productWithdrawalFilter().salesAgentId);
           this.productWithdrawalEntriesStore.getProductWithdrawalEntries();
         });
   }
@@ -144,6 +155,6 @@ export class ProductWithdrawalsComponent implements AfterViewInit {
   }
 
   get columnDefinition(): string[] {
-    return ['stockEntryDate', 'withdrawalSlipNo', 'salesAgent', 'notes', 'actions'];
+    return ['stockEntryDate', 'withdrawalSlipNo', 'salesAgent', 'notes', 'totalAmount', 'actions'];
   }
 }
