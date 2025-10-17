@@ -280,6 +280,13 @@
 
           } @else {
 
+            @if (isDraftTransaction()) {
+              <button mat-raised-button color="primary" (click)="confirm()">
+                <mat-icon>check_circle_outline</mat-icon>
+                {{ "GENERAL_TEXTS.CONFIRM" | translate }}
+              </button>
+            }
+
             <button mat-raised-button color="default" (click)="printReceiptAsPDF()">
               <mat-icon>print</mat-icon>
               {{ "GENERAL_TEXTS.PRINT" | translate }}

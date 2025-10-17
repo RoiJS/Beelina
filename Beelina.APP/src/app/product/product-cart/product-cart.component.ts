@@ -1165,10 +1165,14 @@ export class ProductCartComponent
       ProductTransactionActions.resetProductTransactionState()
     );
 
-    if (this._transactionId() === 0) {
-      this.router.navigate(['/product-catalogue']);
+    if (this.isUser()) {
+      if (this._transactionId() === 0) {
+        this.router.navigate(['/product-catalogue']);
+      } else {
+        this.router.navigate(['/draft-transactions']);
+      }
     } else {
-      this.router.navigate(['/draft-transactions']);
+      this.router.navigate(['/order-transactions']);
     }
   }
 
